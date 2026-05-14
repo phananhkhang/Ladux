@@ -9,5 +9,4 @@ public class AuraTechApplication {
      static void main(String[] args) {
         SpringApplication.run(AuraTechApplication.class, args);
     }
-
 }
