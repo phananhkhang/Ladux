@@ -1,46 +1,49 @@
 package org.akira.auratech.controller;
 
-import org.akira.auratech.model.ProductImage;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.ProductImageRequest;
+import org.akira.auratech.dto.ProductImageResponse;
 import org.akira.auratech.service.ProductImageService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/product-images")
+@RequestMapping("/api/v1/product-images")
+@RequiredArgsConstructor
 public class ProductImageController {
-    @Autowired
-    ProductImageService service;
+    private final ProductImageService service;
 
-    @GetMapping("/all")
-    public List<ProductImage> getAllProductImages() {
+    @GetMapping
+    public List<ProductImageResponse> getAllProductImages() {
         return service.getAllProductImages();
     }
 
     @GetMapping("/{id}")
-    public ProductImage getProductImageById(@PathVariable int id) {
+    public ProductImageResponse getProductImageById(@PathVariable int id) {
         return service.getProductImageById(id);
     }
 
     @GetMapping("/product/{productId}")
-    public List<ProductImage> getProductImagesByProductId(@PathVariable int productId) {
+    public List<ProductImageResponse> getProductImagesByProductId(@PathVariable int productId) {
         return service.getProductImagesByProductId(productId);
     }
 
     @GetMapping("/product/{productId}/primary")
-    public List<ProductImage> getPrimaryImagesByProductId(@PathVariable int productId) {
-        return service.getPrimaryImagesByProductId(productId);
+    public List<ProductImageResponse> getPrimaryProductImagesByProductId(@PathVariable int productId) {
+        return service.getPrimaryProductImagesByProductId(productId);
     }
 
     @PostMapping
-    public ProductImage createProductImage(@RequestBody ProductImage image) {
-        return service.createProductImage(image);
+    public ResponseEntity<ProductImageResponse> createProductImage(@Valid @RequestBody ProductImageRequest request) {
+        return ResponseEntity.ok(service.createProductImage(request));
     }
 
-    @PutMapping
-    public ProductImage updateProductImage(@RequestBody ProductImage image) {
-        return service.updateProductImage(image);
+    @PutMapping("/{id}")
+    public ProductImageResponse updateProductImage(@PathVariable int id, @RequestBody ProductImageRequest request) {
+        return service.updateProductImage(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -48,4 +51,3 @@ public class ProductImageController {
         service.deleteProductImageById(id);
     }
 }
-

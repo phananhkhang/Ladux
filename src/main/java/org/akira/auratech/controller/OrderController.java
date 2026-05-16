@@ -1,47 +1,50 @@
 package org.akira.auratech.controller;
 
-import org.akira.auratech.model.Order;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.OrderRequest;
+import org.akira.auratech.dto.OrderResponse;
 import org.akira.auratech.model.enums.OrderStatus;
 import org.akira.auratech.service.OrderService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/api/v1/orders")
+@RequiredArgsConstructor
 public class OrderController {
-    @Autowired
-    OrderService service;
+    private final OrderService service;
 
-    @GetMapping("/all")
-    public List<Order> getAllOrders() {
+    @GetMapping
+    public List<OrderResponse> getAllOrders() {
         return service.getAllOrders();
     }
 
     @GetMapping("/{id}")
-    public Order getOrderById(@PathVariable int id) {
+    public OrderResponse getOrderById(@PathVariable int id) {
         return service.getOrderById(id);
     }
 
     @GetMapping("/user/{userId}")
-    public List<Order> getOrdersByUserId(@PathVariable int userId) {
+    public List<OrderResponse> getOrdersByUserId(@PathVariable int userId) {
         return service.getOrdersByUserId(userId);
     }
 
     @GetMapping("/status/{status}")
-    public List<Order> getOrdersByStatus(@PathVariable OrderStatus status) {
+    public List<OrderResponse> getOrdersByStatus(@PathVariable OrderStatus status) {
         return service.getOrdersByStatus(status);
     }
 
     @PostMapping
-    public Order createOrder(@RequestBody Order order) {
-        return service.createOrder(order);
+    public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderRequest request) {
+        return ResponseEntity.ok(service.createOrder(request));
     }
 
-    @PutMapping
-    public Order updateOrder(@RequestBody Order order) {
-        return service.updateOrder(order);
+    @PutMapping("/{id}")
+    public OrderResponse updateOrder(@PathVariable int id, @RequestBody OrderRequest request) {
+        return service.updateOrder(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -49,4 +52,3 @@ public class OrderController {
         service.deleteOrderById(id);
     }
 }
-

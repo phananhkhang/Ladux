@@ -1,46 +1,49 @@
 package org.akira.auratech.controller;
 
-import org.akira.auratech.model.Review;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.ReviewRequest;
+import org.akira.auratech.dto.ReviewResponse;
 import org.akira.auratech.service.ReviewService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/reviews")
+@RequestMapping("/api/v1/reviews")
+@RequiredArgsConstructor
 public class ReviewController {
-    @Autowired
-    ReviewService service;
+    private final ReviewService service;
 
-    @GetMapping("/all")
-    public List<Review> getAllReviews() {
+    @GetMapping
+    public List<ReviewResponse> getAllReviews() {
         return service.getAllReviews();
     }
 
     @GetMapping("/{id}")
-    public Review getReviewById(@PathVariable int id) {
+    public ReviewResponse getReviewById(@PathVariable int id) {
         return service.getReviewById(id);
     }
 
     @GetMapping("/product/{productId}")
-    public List<Review> getReviewsByProductId(@PathVariable int productId) {
+    public List<ReviewResponse> getReviewsByProductId(@PathVariable int productId) {
         return service.getReviewsByProductId(productId);
     }
 
     @GetMapping("/user/{userId}")
-    public List<Review> getReviewsByUserId(@PathVariable int userId) {
+    public List<ReviewResponse> getReviewsByUserId(@PathVariable int userId) {
         return service.getReviewsByUserId(userId);
     }
 
     @PostMapping
-    public Review createReview(@RequestBody Review review) {
-        return service.createReview(review);
+    public ResponseEntity<ReviewResponse> createReview(@Valid @RequestBody ReviewRequest request) {
+        return ResponseEntity.ok(service.createReview(request));
     }
 
-    @PutMapping
-    public Review updateReview(@RequestBody Review review) {
-        return service.updateReview(review);
+    @PutMapping("/{id}")
+    public ReviewResponse updateReview(@PathVariable int id, @RequestBody ReviewRequest request) {
+        return service.updateReview(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -48,4 +51,3 @@ public class ReviewController {
         service.deleteReviewById(id);
     }
 }
-

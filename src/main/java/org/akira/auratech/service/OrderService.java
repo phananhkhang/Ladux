@@ -1,22 +1,23 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.model.Order;
+import org.akira.auratech.dto.OrderRequest;
+import org.akira.auratech.dto.OrderResponse;
 import org.akira.auratech.model.enums.OrderStatus;
 
 import java.util.List;
 
 public interface OrderService {
-    List<Order> getAllOrders();
+    List<OrderResponse> getAllOrders();
 
-    Order getOrderById(int id);
+    OrderResponse getOrderById(int id);
 
-    List<Order> getOrdersByUserId(int userId);
+    List<OrderResponse> getOrdersByUserId(int userId);
 
-    List<Order> getOrdersByStatus(OrderStatus status);
+    List<OrderResponse> getOrdersByStatus(OrderStatus status);
 
-    Order createOrder(Order order);
+    OrderResponse createOrder(OrderRequest request);
 
-    Order updateOrder(Order order);
+    OrderResponse updateOrder(int id, OrderRequest request);
 
     void deleteOrderById(int id);
 }

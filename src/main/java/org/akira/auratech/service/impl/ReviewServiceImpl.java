@@ -1,8 +1,14 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.ReviewRequest;
+import org.akira.auratech.dto.ReviewResponse;
+import org.akira.auratech.model.Product;
 import org.akira.auratech.model.Review;
+import org.akira.auratech.model.User;
+import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.repository.ReviewRepository;
+import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.ReviewService;
 import org.springframework.stereotype.Service;
 
@@ -12,35 +18,78 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository repo;
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
     @Override
-    public List<Review> getAllReviews() {
-        return repo.findAll();
+    public List<ReviewResponse> getAllReviews() {
+        return repo.findAll().stream()
+                .map(ReviewResponse::fromEntity)
+                .toList();
     }
 
     @Override
-    public Review getReviewById(int id) {
-        return repo.findById(id).orElse(null);
+    public ReviewResponse getReviewById(int id) {
+        return ReviewResponse.fromEntity(repo.findById(id).orElse(null));
     }
 
     @Override
-    public List<Review> getReviewsByProductId(int productId) {
-        return repo.findByProductId(productId);
+    public List<ReviewResponse> getReviewsByProductId(int productId) {
+        return repo.findByProductId(productId).stream()
+                .map(ReviewResponse::fromEntity)
+                .toList();
     }
 
     @Override
-    public List<Review> getReviewsByUserId(int userId) {
-        return repo.findByUserId(userId);
+    public List<ReviewResponse> getReviewsByUserId(int userId) {
+        return repo.findByUserId(userId).stream()
+                .map(ReviewResponse::fromEntity)
+                .toList();
     }
 
     @Override
-    public Review createReview(Review review) {
-        return repo.save(review);
+    public ReviewResponse createReview(ReviewRequest request) {
+        User user = userRepository.findById(request.getUserId()).orElse(null);
+        Product product = productRepository.findById(request.getProductId()).orElse(null);
+        if (user == null || product == null) {
+            return null;
+        }
+        Review review = Review.builder()
+                .user(user)
+                .product(product)
+                .rating(request.getRating() == null ? 0 : request.getRating())
+                .comment(request.getComment())
+                .build();
+        return ReviewResponse.fromEntity(repo.save(review));
     }
 
     @Override
-    public Review updateReview(Review review) {
-        return repo.save(review);
+    public ReviewResponse updateReview(int id, ReviewRequest request) {
+        Review review = repo.findById(id).orElse(null);
+        if (review == null) {
+            return null;
+        }
+        if (request.getUserId() != null) {
+            User user = userRepository.findById(request.getUserId()).orElse(null);
+            if (user == null) {
+                return null;
+            }
+            review.setUser(user);
+        }
+        if (request.getProductId() != null) {
+            Product product = productRepository.findById(request.getProductId()).orElse(null);
+            if (product == null) {
+                return null;
+            }
+            review.setProduct(product);
+        }
+        if (request.getRating() != null) {
+            review.setRating(request.getRating());
+        }
+        if (request.getComment() != null) {
+            review.setComment(request.getComment());
+        }
+        return ReviewResponse.fromEntity(repo.save(review));
     }
 
     @Override
@@ -48,4 +97,3 @@ public class ReviewServiceImpl implements ReviewService {
         repo.deleteById(id);
     }
 }
-

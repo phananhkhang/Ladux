@@ -1,42 +1,45 @@
 package org.akira.auratech.controller;
 
-import org.akira.auratech.model.Role;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.RoleRequest;
+import org.akira.auratech.dto.RoleResponse;
 import org.akira.auratech.model.enums.RoleName;
 import org.akira.auratech.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/roles")
+@RequestMapping("/api/v1/roles")
+@RequiredArgsConstructor
 public class RoleController {
-    @Autowired
-    RoleService service;
+    private final RoleService service;
 
-    @GetMapping("/all")
-    public List<Role> getAllRoles() {
+    @GetMapping
+    public List<RoleResponse> getAllRoles() {
         return service.getAllRoles();
     }
 
     @GetMapping("/{id}")
-    public Role getRoleById(@PathVariable int id) {
+    public RoleResponse getRoleById(@PathVariable int id) {
         return service.getRoleById(id);
     }
 
     @GetMapping("/name/{name}")
-    public Role getRoleByName(@PathVariable RoleName name) {
+    public RoleResponse getRoleByName(@PathVariable RoleName name) {
         return service.getRoleByName(name);
     }
 
     @PostMapping
-    public Role createRole(@RequestBody Role role) {
-        return service.createRole(role);
+    public ResponseEntity<RoleResponse> createRole(@Valid @RequestBody RoleRequest request) {
+        return ResponseEntity.ok(service.createRole(request));
     }
 
-    @PutMapping
-    public Role updateRole(@RequestBody Role role) {
-        return service.updateRole(role);
+    @PutMapping("/{id}")
+    public RoleResponse updateRole(@PathVariable int id, @RequestBody RoleRequest request) {
+        return service.updateRole(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -44,4 +47,3 @@ public class RoleController {
         service.deleteRoleById(id);
     }
 }
-

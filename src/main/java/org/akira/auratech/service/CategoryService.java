@@ -1,23 +1,24 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.model.Category;
+import org.akira.auratech.dto.CategoryRequest;
+import org.akira.auratech.dto.CategoryResponse;
 
 import java.util.List;
 
 public interface CategoryService {
-    List<Category> getAllCategories();
+    List<CategoryResponse> getAllCategories();
 
-    Category getCategoryById(int id);
+    CategoryResponse getCategoryById(int id);
 
-    Category getCategoryByName(String name);
+    CategoryResponse getCategoryByName(String name);
 
-    Category getCategoryBySlug(String slug);
+    CategoryResponse getCategoryBySlug(String slug);
 
-    List<Category> getRootCategories();
+    List<CategoryResponse> getRootCategories();
 
-    Category createCategory(Category category);
+    CategoryResponse createCategory(CategoryRequest request);
 
-    Category updateCategory(Category category);
+    CategoryResponse updateCategory(int id, CategoryRequest request);
 
     void deleteCategoryById(int id);
 }

@@ -1,46 +1,49 @@
 package org.akira.auratech.controller;
 
-import org.akira.auratech.model.CartItem;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.CartItemRequest;
+import org.akira.auratech.dto.CartItemResponse;
 import org.akira.auratech.service.CartItemService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/cart-items")
+@RequestMapping("/api/v1/cart-items")
+@RequiredArgsConstructor
 public class CartItemController {
-    @Autowired
-    CartItemService service;
+    private final CartItemService service;
 
-    @GetMapping("/all")
-    public List<CartItem> getAllCartItems() {
+    @GetMapping
+    public List<CartItemResponse> getAllCartItems() {
         return service.getAllCartItems();
     }
 
     @GetMapping("/{id}")
-    public CartItem getCartItemById(@PathVariable int id) {
+    public CartItemResponse getCartItemById(@PathVariable int id) {
         return service.getCartItemById(id);
     }
 
     @GetMapping("/cart/{cartId}")
-    public List<CartItem> getCartItemsByCartId(@PathVariable int cartId) {
+    public List<CartItemResponse> getCartItemsByCartId(@PathVariable int cartId) {
         return service.getCartItemsByCartId(cartId);
     }
 
     @GetMapping("/product/{productId}")
-    public List<CartItem> getCartItemsByProductId(@PathVariable int productId) {
+    public List<CartItemResponse> getCartItemsByProductId(@PathVariable int productId) {
         return service.getCartItemsByProductId(productId);
     }
 
     @PostMapping
-    public CartItem createCartItem(@RequestBody CartItem cartItem) {
-        return service.createCartItem(cartItem);
+    public ResponseEntity<CartItemResponse> createCartItem(@Valid @RequestBody CartItemRequest request) {
+        return ResponseEntity.ok(service.createCartItem(request));
     }
 
-    @PutMapping
-    public CartItem updateCartItem(@RequestBody CartItem cartItem) {
-        return service.updateCartItem(cartItem);
+    @PutMapping("/{id}")
+    public CartItemResponse updateCartItem(@PathVariable int id, @RequestBody CartItemRequest request) {
+        return service.updateCartItem(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -48,4 +51,3 @@ public class CartItemController {
         service.deleteCartItemById(id);
     }
 }
-

@@ -1,19 +1,20 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.model.Coupon;
+import org.akira.auratech.dto.CouponRequest;
+import org.akira.auratech.dto.CouponResponse;
 
 import java.util.List;
 
 public interface CouponService {
-    List<Coupon> getAllCoupons();
+    List<CouponResponse> getAllCoupons();
 
-    Coupon getCouponById(int id);
+    CouponResponse getCouponById(int id);
 
-    Coupon getCouponByCode(String code);
+    CouponResponse getCouponByCode(String code);
 
-    Coupon createCoupon(Coupon coupon);
+    CouponResponse createCoupon(CouponRequest request);
 
-    Coupon updateCoupon(Coupon coupon);
+    CouponResponse updateCoupon(int id, CouponRequest request);
 
     void deleteCouponById(int id);
 }

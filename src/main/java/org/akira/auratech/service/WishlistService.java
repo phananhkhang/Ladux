@@ -1,21 +1,22 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.model.Wishlist;
+import org.akira.auratech.dto.WishlistRequest;
+import org.akira.auratech.dto.WishlistResponse;
 
 import java.util.List;
 
 public interface WishlistService {
-    List<Wishlist> getAllWishlists();
+    List<WishlistResponse> getAllWishlists();
 
-    Wishlist getWishlistById(int id);
+    WishlistResponse getWishlistById(int id);
 
-    List<Wishlist> getWishlistsByUserId(int userId);
+    List<WishlistResponse> getWishlistsByUserId(int userId);
 
-    List<Wishlist> getWishlistsByProductId(int productId);
+    List<WishlistResponse> getWishlistsByProductId(int productId);
 
-    Wishlist createWishlist(Wishlist wishlist);
+    WishlistResponse createWishlist(WishlistRequest request);
 
-    Wishlist updateWishlist(Wishlist wishlist);
+    WishlistResponse updateWishlist(int id, WishlistRequest request);
 
     void deleteWishlistById(int id);
 }

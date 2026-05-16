@@ -1,21 +1,22 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.model.ProductImage;
+import org.akira.auratech.dto.ProductImageRequest;
+import org.akira.auratech.dto.ProductImageResponse;
 
 import java.util.List;
 
 public interface ProductImageService {
-    List<ProductImage> getAllProductImages();
+    List<ProductImageResponse> getAllProductImages();
 
-    ProductImage getProductImageById(int id);
+    ProductImageResponse getProductImageById(int id);
 
-    List<ProductImage> getProductImagesByProductId(int productId);
+    List<ProductImageResponse> getProductImagesByProductId(int productId);
 
-    List<ProductImage> getPrimaryImagesByProductId(int productId);
+    List<ProductImageResponse> getPrimaryProductImagesByProductId(int productId);
 
-    ProductImage createProductImage(ProductImage image);
+    ProductImageResponse createProductImage(ProductImageRequest request);
 
-    ProductImage updateProductImage(ProductImage image);
+    ProductImageResponse updateProductImage(int id, ProductImageRequest request);
 
     void deleteProductImageById(int id);
 }

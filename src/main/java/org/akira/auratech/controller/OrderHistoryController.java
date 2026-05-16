@@ -1,41 +1,44 @@
 package org.akira.auratech.controller;
 
-import org.akira.auratech.model.OrderHistory;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.OrderHistoryRequest;
+import org.akira.auratech.dto.OrderHistoryResponse;
 import org.akira.auratech.service.OrderHistoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/order-histories")
+@RequestMapping("/api/v1/order-histories")
+@RequiredArgsConstructor
 public class OrderHistoryController {
-    @Autowired
-    OrderHistoryService service;
+    private final OrderHistoryService service;
 
-    @GetMapping("/all")
-    public List<OrderHistory> getAllOrderHistories() {
+    @GetMapping
+    public List<OrderHistoryResponse> getAllOrderHistories() {
         return service.getAllOrderHistories();
     }
 
     @GetMapping("/{id}")
-    public OrderHistory getOrderHistoryById(@PathVariable int id) {
+    public OrderHistoryResponse getOrderHistoryById(@PathVariable int id) {
         return service.getOrderHistoryById(id);
     }
 
     @GetMapping("/order/{orderId}")
-    public List<OrderHistory> getOrderHistoriesByOrderId(@PathVariable int orderId) {
+    public List<OrderHistoryResponse> getOrderHistoriesByOrderId(@PathVariable int orderId) {
         return service.getOrderHistoriesByOrderId(orderId);
     }
 
     @PostMapping
-    public OrderHistory createOrderHistory(@RequestBody OrderHistory history) {
-        return service.createOrderHistory(history);
+    public ResponseEntity<OrderHistoryResponse> createOrderHistory(@Valid @RequestBody OrderHistoryRequest request) {
+        return ResponseEntity.ok(service.createOrderHistory(request));
     }
 
-    @PutMapping
-    public OrderHistory updateOrderHistory(@RequestBody OrderHistory history) {
-        return service.updateOrderHistory(history);
+    @PutMapping("/{id}")
+    public OrderHistoryResponse updateOrderHistory(@PathVariable int id, @RequestBody OrderHistoryRequest request) {
+        return service.updateOrderHistory(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -43,4 +46,3 @@ public class OrderHistoryController {
         service.deleteOrderHistoryById(id);
     }
 }
-

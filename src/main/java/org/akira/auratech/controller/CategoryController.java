@@ -1,51 +1,54 @@
 package org.akira.auratech.controller;
 
-import org.akira.auratech.model.Category;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.CategoryRequest;
+import org.akira.auratech.dto.CategoryResponse;
 import org.akira.auratech.service.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/api/v1/categories")
+@RequiredArgsConstructor
 public class CategoryController {
-    @Autowired
-    CategoryService service;
+    private final CategoryService service;
 
-    @GetMapping("/all")
-    public List<Category> getAllCategories() {
+    @GetMapping
+    public List<CategoryResponse> getAllCategories() {
         return service.getAllCategories();
     }
 
     @GetMapping("/{id}")
-    public Category getCategoryById(@PathVariable int id) {
+    public CategoryResponse getCategoryById(@PathVariable int id) {
         return service.getCategoryById(id);
     }
 
     @GetMapping("/name/{name}")
-    public Category getCategoryByName(@PathVariable String name) {
+    public CategoryResponse getCategoryByName(@PathVariable String name) {
         return service.getCategoryByName(name);
     }
 
     @GetMapping("/slug/{slug}")
-    public Category getCategoryBySlug(@PathVariable String slug) {
+    public CategoryResponse getCategoryBySlug(@PathVariable String slug) {
         return service.getCategoryBySlug(slug);
     }
 
     @GetMapping("/roots")
-    public List<Category> getRootCategories() {
+    public List<CategoryResponse> getRootCategories() {
         return service.getRootCategories();
     }
 
     @PostMapping
-    public Category createCategory(@RequestBody Category category) {
-        return service.createCategory(category);
+    public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {
+        return ResponseEntity.ok(service.createCategory(request));
     }
 
-    @PutMapping
-    public Category updateCategory(@RequestBody Category category) {
-        return service.updateCategory(category);
+    @PutMapping("/{id}")
+    public CategoryResponse updateCategory(@PathVariable int id, @RequestBody CategoryRequest request) {
+        return service.updateCategory(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -53,4 +56,3 @@ public class CategoryController {
         service.deleteCategoryById(id);
     }
 }
-

@@ -1,21 +1,22 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.model.CartItem;
+import org.akira.auratech.dto.CartItemRequest;
+import org.akira.auratech.dto.CartItemResponse;
 
 import java.util.List;
 
 public interface CartItemService {
-    List<CartItem> getAllCartItems();
+    List<CartItemResponse> getAllCartItems();
 
-    CartItem getCartItemById(int id);
+    CartItemResponse getCartItemById(int id);
 
-    List<CartItem> getCartItemsByCartId(int cartId);
+    List<CartItemResponse> getCartItemsByCartId(int cartId);
 
-    List<CartItem> getCartItemsByProductId(int productId);
+    List<CartItemResponse> getCartItemsByProductId(int productId);
 
-    CartItem createCartItem(CartItem cartItem);
+    CartItemResponse createCartItem(CartItemRequest request);
 
-    CartItem updateCartItem(CartItem cartItem);
+    CartItemResponse updateCartItem(int id, CartItemRequest request);
 
     void deleteCartItemById(int id);
 }

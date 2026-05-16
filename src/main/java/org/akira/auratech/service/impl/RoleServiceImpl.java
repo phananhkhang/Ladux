@@ -1,6 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.RoleRequest;
+import org.akira.auratech.dto.RoleResponse;
 import org.akira.auratech.model.Role;
 import org.akira.auratech.model.enums.RoleName;
 import org.akira.auratech.repository.RoleRepository;
@@ -15,28 +17,40 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository repo;
 
     @Override
-    public List<Role> getAllRoles() {
-        return repo.findAll();
+    public List<RoleResponse> getAllRoles() {
+        return repo.findAll().stream()
+                .map(RoleResponse::fromEntity)
+                .toList();
     }
 
     @Override
-    public Role getRoleById(int id) {
-        return repo.findById(id).orElse(null);
+    public RoleResponse getRoleById(int id) {
+        return RoleResponse.fromEntity(repo.findById(id).orElse(null));
     }
 
     @Override
-    public Role getRoleByName(RoleName name) {
-        return repo.findByName(name);
+    public RoleResponse getRoleByName(RoleName name) {
+        return RoleResponse.fromEntity(repo.findByName(name));
     }
 
     @Override
-    public Role createRole(Role role) {
-        return repo.save(role);
+    public RoleResponse createRole(RoleRequest request) {
+        Role role = Role.builder()
+                .name(request.getName())
+                .build();
+        return RoleResponse.fromEntity(repo.save(role));
     }
 
     @Override
-    public Role updateRole(Role role) {
-        return repo.save(role);
+    public RoleResponse updateRole(int id, RoleRequest request) {
+        Role role = repo.findById(id).orElse(null);
+        if (role == null) {
+            return null;
+        }
+        if (request.getName() != null) {
+            role.setName(request.getName());
+        }
+        return RoleResponse.fromEntity(repo.save(role));
     }
 
     @Override
@@ -44,4 +58,3 @@ public class RoleServiceImpl implements RoleService {
         repo.deleteById(id);
     }
 }
-

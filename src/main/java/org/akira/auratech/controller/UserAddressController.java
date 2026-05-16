@@ -1,46 +1,49 @@
 package org.akira.auratech.controller;
 
-import org.akira.auratech.model.UserAddress;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.UserAddressRequest;
+import org.akira.auratech.dto.UserAddressResponse;
 import org.akira.auratech.service.UserAddressService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/user-addresses")
+@RequestMapping("/api/v1/user-addresses")
+@RequiredArgsConstructor
 public class UserAddressController {
-    @Autowired
-    UserAddressService service;
+    private final UserAddressService service;
 
-    @GetMapping("/all")
-    public List<UserAddress> getAllUserAddresses() {
+    @GetMapping
+    public List<UserAddressResponse> getAllUserAddresses() {
         return service.getAllUserAddresses();
     }
 
     @GetMapping("/{id}")
-    public UserAddress getUserAddressById(@PathVariable int id) {
+    public UserAddressResponse getUserAddressById(@PathVariable int id) {
         return service.getUserAddressById(id);
     }
 
     @GetMapping("/user/{userId}")
-    public List<UserAddress> getUserAddressesByUserId(@PathVariable int userId) {
+    public List<UserAddressResponse> getUserAddressesByUserId(@PathVariable int userId) {
         return service.getUserAddressesByUserId(userId);
     }
 
     @GetMapping("/user/{userId}/default")
-    public List<UserAddress> getDefaultAddressesByUserId(@PathVariable int userId) {
-        return service.getDefaultAddressesByUserId(userId);
+    public List<UserAddressResponse> getDefaultUserAddressesByUserId(@PathVariable int userId) {
+        return service.getDefaultUserAddressesByUserId(userId);
     }
 
     @PostMapping
-    public UserAddress createUserAddress(@RequestBody UserAddress address) {
-        return service.createUserAddress(address);
+    public ResponseEntity<UserAddressResponse> createUserAddress(@Valid @RequestBody UserAddressRequest request) {
+        return ResponseEntity.ok(service.createUserAddress(request));
     }
 
-    @PutMapping
-    public UserAddress updateUserAddress(@RequestBody UserAddress address) {
-        return service.updateUserAddress(address);
+    @PutMapping("/{id}")
+    public UserAddressResponse updateUserAddress(@PathVariable int id, @RequestBody UserAddressRequest request) {
+        return service.updateUserAddress(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -48,4 +51,3 @@ public class UserAddressController {
         service.deleteUserAddressById(id);
     }
 }
-

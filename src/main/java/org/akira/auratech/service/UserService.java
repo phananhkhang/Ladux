@@ -1,21 +1,22 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.model.User;
+import org.akira.auratech.dto.UserRequest;
+import org.akira.auratech.dto.UserResponse;
 
 import java.util.List;
 
 public interface UserService {
-    List<User> getAllUsers();
+    List<UserResponse> getAllUsers();
 
-    User getUserById(int id);
+    UserResponse getUserById(int id);
 
-    User getUserByEmail(String email);
+    UserResponse getUserByEmail(String email);
 
-    List<User> getActiveUsers();
+    List<UserResponse> getActiveUsers();
 
-    User createUser(User user);
+    UserResponse createUser(UserRequest request);
 
-    User updateUser(User user);
+    UserResponse updateUser(int id, UserRequest request);
 
     void deleteUserById(int id);
 }

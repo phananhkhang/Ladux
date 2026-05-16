@@ -1,8 +1,12 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.OrderHistoryRequest;
+import org.akira.auratech.dto.OrderHistoryResponse;
+import org.akira.auratech.model.Order;
 import org.akira.auratech.model.OrderHistory;
 import org.akira.auratech.repository.OrderHistoryRepository;
+import org.akira.auratech.repository.OrderRepository;
 import org.akira.auratech.service.OrderHistoryService;
 import org.springframework.stereotype.Service;
 
@@ -12,30 +16,61 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderHistoryServiceImpl implements OrderHistoryService {
     private final OrderHistoryRepository repo;
+    private final OrderRepository orderRepository;
 
     @Override
-    public List<OrderHistory> getAllOrderHistories() {
-        return repo.findAll();
+    public List<OrderHistoryResponse> getAllOrderHistories() {
+        return repo.findAll().stream()
+                .map(OrderHistoryResponse::fromEntity)
+                .toList();
     }
 
     @Override
-    public OrderHistory getOrderHistoryById(int id) {
-        return repo.findById(id).orElse(null);
+    public OrderHistoryResponse getOrderHistoryById(int id) {
+        return OrderHistoryResponse.fromEntity(repo.findById(id).orElse(null));
     }
 
     @Override
-    public List<OrderHistory> getOrderHistoriesByOrderId(int orderId) {
-        return repo.findByOrderId(orderId);
+    public List<OrderHistoryResponse> getOrderHistoriesByOrderId(int orderId) {
+        return repo.findByOrderId(orderId).stream()
+                .map(OrderHistoryResponse::fromEntity)
+                .toList();
     }
 
     @Override
-    public OrderHistory createOrderHistory(OrderHistory history) {
-        return repo.save(history);
+    public OrderHistoryResponse createOrderHistory(OrderHistoryRequest request) {
+        Order order = orderRepository.findById(request.getOrderId()).orElse(null);
+        if (order == null) {
+            return null;
+        }
+        OrderHistory history = OrderHistory.builder()
+                .order(order)
+                .status(request.getStatus())
+                .description(request.getDescription())
+                .build();
+        return OrderHistoryResponse.fromEntity(repo.save(history));
     }
 
     @Override
-    public OrderHistory updateOrderHistory(OrderHistory history) {
-        return repo.save(history);
+    public OrderHistoryResponse updateOrderHistory(int id, OrderHistoryRequest request) {
+        OrderHistory history = repo.findById(id).orElse(null);
+        if (history == null) {
+            return null;
+        }
+        if (request.getOrderId() != null) {
+            Order order = orderRepository.findById(request.getOrderId()).orElse(null);
+            if (order == null) {
+                return null;
+            }
+            history.setOrder(order);
+        }
+        if (request.getStatus() != null) {
+            history.setStatus(request.getStatus());
+        }
+        if (request.getDescription() != null) {
+            history.setDescription(request.getDescription());
+        }
+        return OrderHistoryResponse.fromEntity(repo.save(history));
     }
 
     @Override
@@ -43,4 +78,3 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
         repo.deleteById(id);
     }
 }
-

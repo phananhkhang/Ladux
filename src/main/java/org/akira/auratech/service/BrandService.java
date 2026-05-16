@@ -1,20 +1,22 @@
 package org.akira.auratech.service;
 
+import org.akira.auratech.dto.BrandRequest;
+import org.akira.auratech.dto.BrandResponse;
 import org.akira.auratech.model.Brand;
 import java.util.List;
 
 public interface BrandService {
-    List<Brand> getAllBrands();
+    List<BrandResponse> getAllBrands();
 
-    Brand getBrandById(int id);
+    BrandResponse getBrandById(int id);
 
-    Brand getBrandByName(String name);
+    BrandResponse getBrandByName(String name);
 
-    Brand getBrandBySlug(String slug);
+    BrandResponse getBrandBySlug(String slug);
 
-    Brand createBrand(Brand brand);
+    BrandResponse createBrand(BrandRequest request);
 
-    Brand updateBrand(Brand brand);
+    BrandResponse updateBrand(int id, BrandRequest brand);
 
     void deleteBrandById(int id);
 }

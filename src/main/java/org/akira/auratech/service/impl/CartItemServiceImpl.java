@@ -1,8 +1,14 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.CartItemRequest;
+import org.akira.auratech.dto.CartItemResponse;
+import org.akira.auratech.model.Cart;
 import org.akira.auratech.model.CartItem;
+import org.akira.auratech.model.Product;
 import org.akira.auratech.repository.CartItemRepository;
+import org.akira.auratech.repository.CartRepository;
+import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.service.CartItemService;
 import org.springframework.stereotype.Service;
 
@@ -12,35 +18,74 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CartItemServiceImpl implements CartItemService {
     private final CartItemRepository repo;
+    private final CartRepository cartRepository;
+    private final ProductRepository productRepository;
 
     @Override
-    public List<CartItem> getAllCartItems() {
-        return repo.findAll();
+    public List<CartItemResponse> getAllCartItems() {
+        return repo.findAll().stream()
+                .map(CartItemResponse::fromEntity)
+                .toList();
     }
 
     @Override
-    public CartItem getCartItemById(int id) {
-        return repo.findById(id).orElse(null);
+    public CartItemResponse getCartItemById(int id) {
+        return CartItemResponse.fromEntity(repo.findById(id).orElse(null));
     }
 
     @Override
-    public List<CartItem> getCartItemsByCartId(int cartId) {
-        return repo.findByCartId(cartId);
+    public List<CartItemResponse> getCartItemsByCartId(int cartId) {
+        return repo.findByCartId(cartId).stream()
+                .map(CartItemResponse::fromEntity)
+                .toList();
     }
 
     @Override
-    public List<CartItem> getCartItemsByProductId(int productId) {
-        return repo.findByProductId(productId);
+    public List<CartItemResponse> getCartItemsByProductId(int productId) {
+        return repo.findByProductId(productId).stream()
+                .map(CartItemResponse::fromEntity)
+                .toList();
     }
 
     @Override
-    public CartItem createCartItem(CartItem cartItem) {
-        return repo.save(cartItem);
+    public CartItemResponse createCartItem(CartItemRequest request) {
+        Cart cart = cartRepository.findById(request.getCartId()).orElse(null);
+        Product product = productRepository.findById(request.getProductId()).orElse(null);
+        if (cart == null || product == null) {
+            return null;
+        }
+        CartItem item = CartItem.builder()
+                .cart(cart)
+                .product(product)
+                .quantity(request.getQuantity() == null ? 1 : request.getQuantity())
+                .build();
+        return CartItemResponse.fromEntity(repo.save(item));
     }
 
     @Override
-    public CartItem updateCartItem(CartItem cartItem) {
-        return repo.save(cartItem);
+    public CartItemResponse updateCartItem(int id, CartItemRequest request) {
+        CartItem item = repo.findById(id).orElse(null);
+        if (item == null) {
+            return null;
+        }
+        if (request.getCartId() != null) {
+            Cart cart = cartRepository.findById(request.getCartId()).orElse(null);
+            if (cart == null) {
+                return null;
+            }
+            item.setCart(cart);
+        }
+        if (request.getProductId() != null) {
+            Product product = productRepository.findById(request.getProductId()).orElse(null);
+            if (product == null) {
+                return null;
+            }
+            item.setProduct(product);
+        }
+        if (request.getQuantity() != null) {
+            item.setQuantity(request.getQuantity());
+        }
+        return CartItemResponse.fromEntity(repo.save(item));
     }
 
     @Override
@@ -48,4 +93,3 @@ public class CartItemServiceImpl implements CartItemService {
         repo.deleteById(id);
     }
 }
-

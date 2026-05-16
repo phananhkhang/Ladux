@@ -1,41 +1,44 @@
 package org.akira.auratech.controller;
 
-import org.akira.auratech.model.OrderItem;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.OrderItemRequest;
+import org.akira.auratech.dto.OrderItemResponse;
 import org.akira.auratech.service.OrderItemService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/order-items")
+@RequestMapping("/api/v1/order-items")
+@RequiredArgsConstructor
 public class OrderItemController {
-    @Autowired
-    OrderItemService service;
+    private final OrderItemService service;
 
-    @GetMapping("/all")
-    public List<OrderItem> getAllOrderItems() {
+    @GetMapping
+    public List<OrderItemResponse> getAllOrderItems() {
         return service.getAllOrderItems();
     }
 
     @GetMapping("/{id}")
-    public OrderItem getOrderItemById(@PathVariable int id) {
+    public OrderItemResponse getOrderItemById(@PathVariable int id) {
         return service.getOrderItemById(id);
     }
 
     @GetMapping("/order/{orderId}")
-    public List<OrderItem> getOrderItemsByOrderId(@PathVariable int orderId) {
+    public List<OrderItemResponse> getOrderItemsByOrderId(@PathVariable int orderId) {
         return service.getOrderItemsByOrderId(orderId);
     }
 
     @PostMapping
-    public OrderItem createOrderItem(@RequestBody OrderItem orderItem) {
-        return service.createOrderItem(orderItem);
+    public ResponseEntity<OrderItemResponse> createOrderItem(@Valid @RequestBody OrderItemRequest request) {
+        return ResponseEntity.ok(service.createOrderItem(request));
     }
 
-    @PutMapping
-    public OrderItem updateOrderItem(@RequestBody OrderItem orderItem) {
-        return service.updateOrderItem(orderItem);
+    @PutMapping("/{id}")
+    public OrderItemResponse updateOrderItem(@PathVariable int id, @RequestBody OrderItemRequest request) {
+        return service.updateOrderItem(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -43,4 +46,3 @@ public class OrderItemController {
         service.deleteOrderItemById(id);
     }
 }
-

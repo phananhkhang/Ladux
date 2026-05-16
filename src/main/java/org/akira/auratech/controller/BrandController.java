@@ -1,41 +1,46 @@
 package org.akira.auratech.controller;
 
-import org.akira.auratech.model.Brand;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.BrandRequest;
+import org.akira.auratech.dto.BrandResponse;
 import org.akira.auratech.service.BrandService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/brands")
+@RequestMapping("/api/v1/brands")
+@RequiredArgsConstructor
 public class BrandController {
-    @Autowired
-    BrandService service;
 
-    @GetMapping("/")
-    public List<Brand> getAllBrands() {
+    private final BrandService service;
+
+    @GetMapping
+    public List<BrandResponse> getAllBrands() {
         return service.getAllBrands();
     }
 
     @GetMapping("/{id}")
-    public Brand getBrandById(@PathVariable int id) {
+    public BrandResponse getBrandById(@PathVariable int id) {
         return service.getBrandById(id);
     }
 
-    @GetMapping("/brand/{name}")
-    public Brand getBrandByName(@PathVariable String name) {
+    @GetMapping("/name/{name}")
+    public BrandResponse getBrandByName(@PathVariable String name) {
         return service.getBrandByName(name);
     }
 
     @GetMapping("/slug/{slug}")
-    public Brand getBrandBySlug(@PathVariable String slug) {
+    public BrandResponse getBrandBySlug(@PathVariable String slug) {
         return service.getBrandBySlug(slug);
     }
 
     @PostMapping
-    public Brand createBrand(@RequestBody Brand brand) {
-        return service.createBrand(brand);
+    public ResponseEntity<BrandResponse> createBrand(@Valid @RequestBody BrandRequest request) {
+        BrandResponse response = service.createBrand(request);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
@@ -43,8 +48,8 @@ public class BrandController {
         service.deleteBrandById(id);
     }
 
-    @PutMapping
-    public Brand updateBrand(@RequestBody Brand brand) {
-        return service.updateBrand(brand);
+    @PutMapping("/{id}")
+    public BrandResponse updateBrand(@PathVariable int id, @RequestBody BrandRequest brand) {
+        return service.updateBrand(id, brand);
     }
 }

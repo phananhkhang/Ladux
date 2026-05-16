@@ -1,47 +1,50 @@
 package org.akira.auratech.controller;
 
-import org.akira.auratech.model.Payment;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.PaymentRequest;
+import org.akira.auratech.dto.PaymentResponse;
 import org.akira.auratech.model.enums.PaymentStatus;
 import org.akira.auratech.service.PaymentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/payments")
+@RequestMapping("/api/v1/payments")
+@RequiredArgsConstructor
 public class PaymentController {
-    @Autowired
-    PaymentService service;
+    private final PaymentService service;
 
-    @GetMapping("/all")
-    public List<Payment> getAllPayments() {
+    @GetMapping
+    public List<PaymentResponse> getAllPayments() {
         return service.getAllPayments();
     }
 
     @GetMapping("/{id}")
-    public Payment getPaymentById(@PathVariable int id) {
+    public PaymentResponse getPaymentById(@PathVariable int id) {
         return service.getPaymentById(id);
     }
 
     @GetMapping("/order/{orderId}")
-    public Payment getPaymentByOrderId(@PathVariable int orderId) {
+    public PaymentResponse getPaymentByOrderId(@PathVariable int orderId) {
         return service.getPaymentByOrderId(orderId);
     }
 
     @GetMapping("/status/{status}")
-    public List<Payment> getPaymentsByStatus(@PathVariable PaymentStatus status) {
+    public List<PaymentResponse> getPaymentsByStatus(@PathVariable PaymentStatus status) {
         return service.getPaymentsByStatus(status);
     }
 
     @PostMapping
-    public Payment createPayment(@RequestBody Payment payment) {
-        return service.createPayment(payment);
+    public ResponseEntity<PaymentResponse> createPayment(@Valid @RequestBody PaymentRequest request) {
+        return ResponseEntity.ok(service.createPayment(request));
     }
 
-    @PutMapping
-    public Payment updatePayment(@RequestBody Payment payment) {
-        return service.updatePayment(payment);
+    @PutMapping("/{id}")
+    public PaymentResponse updatePayment(@PathVariable int id, @RequestBody PaymentRequest request) {
+        return service.updatePayment(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -49,4 +52,3 @@ public class PaymentController {
         service.deletePaymentById(id);
     }
 }
-

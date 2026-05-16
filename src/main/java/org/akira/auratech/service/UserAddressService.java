@@ -1,21 +1,22 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.model.UserAddress;
+import org.akira.auratech.dto.UserAddressRequest;
+import org.akira.auratech.dto.UserAddressResponse;
 
 import java.util.List;
 
 public interface UserAddressService {
-    List<UserAddress> getAllUserAddresses();
+    List<UserAddressResponse> getAllUserAddresses();
 
-    UserAddress getUserAddressById(int id);
+    UserAddressResponse getUserAddressById(int id);
 
-    List<UserAddress> getUserAddressesByUserId(int userId);
+    List<UserAddressResponse> getUserAddressesByUserId(int userId);
 
-    List<UserAddress> getDefaultAddressesByUserId(int userId);
+    List<UserAddressResponse> getDefaultUserAddressesByUserId(int userId);
 
-    UserAddress createUserAddress(UserAddress address);
+    UserAddressResponse createUserAddress(UserAddressRequest request);
 
-    UserAddress updateUserAddress(UserAddress address);
+    UserAddressResponse updateUserAddress(int id, UserAddressRequest request);
 
     void deleteUserAddressById(int id);
 }

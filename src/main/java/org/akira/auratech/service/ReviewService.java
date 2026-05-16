@@ -1,21 +1,22 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.model.Review;
+import org.akira.auratech.dto.ReviewRequest;
+import org.akira.auratech.dto.ReviewResponse;
 
 import java.util.List;
 
 public interface ReviewService {
-    List<Review> getAllReviews();
+    List<ReviewResponse> getAllReviews();
 
-    Review getReviewById(int id);
+    ReviewResponse getReviewById(int id);
 
-    List<Review> getReviewsByProductId(int productId);
+    List<ReviewResponse> getReviewsByProductId(int productId);
 
-    List<Review> getReviewsByUserId(int userId);
+    List<ReviewResponse> getReviewsByUserId(int userId);
 
-    Review createReview(Review review);
+    ReviewResponse createReview(ReviewRequest request);
 
-    Review updateReview(Review review);
+    ReviewResponse updateReview(int id, ReviewRequest request);
 
     void deleteReviewById(int id);
 }

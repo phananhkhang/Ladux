@@ -1,19 +1,20 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.model.OrderItem;
+import org.akira.auratech.dto.OrderItemRequest;
+import org.akira.auratech.dto.OrderItemResponse;
 
 import java.util.List;
 
 public interface OrderItemService {
-    List<OrderItem> getAllOrderItems();
+    List<OrderItemResponse> getAllOrderItems();
 
-    OrderItem getOrderItemById(int id);
+    OrderItemResponse getOrderItemById(int id);
 
-    List<OrderItem> getOrderItemsByOrderId(int orderId);
+    List<OrderItemResponse> getOrderItemsByOrderId(int orderId);
 
-    OrderItem createOrderItem(OrderItem orderItem);
+    OrderItemResponse createOrderItem(OrderItemRequest request);
 
-    OrderItem updateOrderItem(OrderItem orderItem);
+    OrderItemResponse updateOrderItem(int id, OrderItemRequest request);
 
     void deleteOrderItemById(int id);
 }

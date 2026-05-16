@@ -1,41 +1,44 @@
 package org.akira.auratech.controller;
 
-import org.akira.auratech.model.Coupon;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.CouponRequest;
+import org.akira.auratech.dto.CouponResponse;
 import org.akira.auratech.service.CouponService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/coupons")
+@RequestMapping("/api/v1/coupons")
+@RequiredArgsConstructor
 public class CouponController {
-    @Autowired
-    CouponService service;
+    private final CouponService service;
 
-    @GetMapping("/all")
-    public List<Coupon> getAllCoupons() {
+    @GetMapping
+    public List<CouponResponse> getAllCoupons() {
         return service.getAllCoupons();
     }
 
     @GetMapping("/{id}")
-    public Coupon getCouponById(@PathVariable int id) {
+    public CouponResponse getCouponById(@PathVariable int id) {
         return service.getCouponById(id);
     }
 
     @GetMapping("/code/{code}")
-    public Coupon getCouponByCode(@PathVariable String code) {
+    public CouponResponse getCouponByCode(@PathVariable String code) {
         return service.getCouponByCode(code);
     }
 
     @PostMapping
-    public Coupon createCoupon(@RequestBody Coupon coupon) {
-        return service.createCoupon(coupon);
+    public ResponseEntity<CouponResponse> createCoupon(@Valid @RequestBody CouponRequest request) {
+        return ResponseEntity.ok(service.createCoupon(request));
     }
 
-    @PutMapping
-    public Coupon updateCoupon(@RequestBody Coupon coupon) {
-        return service.updateCoupon(coupon);
+    @PutMapping("/{id}")
+    public CouponResponse updateCoupon(@PathVariable int id, @RequestBody CouponRequest request) {
+        return service.updateCoupon(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -43,4 +46,3 @@ public class CouponController {
         service.deleteCouponById(id);
     }
 }
-

@@ -1,27 +1,28 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.model.Product;
+import org.akira.auratech.dto.ProductRequest;
+import org.akira.auratech.dto.ProductResponse;
 
 import java.util.List;
 
 public interface ProductService {
-    List<Product> getAllProducts();
+    List<ProductResponse> getAllProducts();
 
-    Product getProductById(int id);
+    ProductResponse getProductById(int id);
 
-    Product getProductBySlug(String slug);
+    ProductResponse getProductBySlug(String slug);
 
-    Product getProductBySku(String sku);
+    ProductResponse getProductBySku(String sku);
 
-    List<Product> getProductsByBrandId(int brandId);
+    List<ProductResponse> getProductsByBrandId(int brandId);
 
-    List<Product> getProductsByCategoryId(int categoryId);
+    List<ProductResponse> getProductsByCategoryId(int categoryId);
 
-    List<Product> getActiveProducts();
+    List<ProductResponse> getActiveProducts();
 
-    Product createProduct(Product product);
+    ProductResponse createProduct(ProductRequest request);
 
-    Product updateProduct(Product product);
+    ProductResponse updateProduct(int id, ProductRequest request);
 
     void deleteProductById(int id);
 }

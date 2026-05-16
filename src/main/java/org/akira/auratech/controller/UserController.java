@@ -1,46 +1,49 @@
 package org.akira.auratech.controller;
 
-import org.akira.auratech.model.User;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.UserRequest;
+import org.akira.auratech.dto.UserResponse;
 import org.akira.auratech.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
+@RequiredArgsConstructor
 public class UserController {
-    @Autowired
-    UserService service;
+    private final UserService service;
 
-    @GetMapping("/all")
-    public List<User> getAllUsers() {
+    @GetMapping
+    public List<UserResponse> getAllUsers() {
         return service.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable int id) {
+    public UserResponse getUserById(@PathVariable int id) {
         return service.getUserById(id);
     }
 
     @GetMapping("/email/{email}")
-    public User getUserByEmail(@PathVariable String email) {
+    public UserResponse getUserByEmail(@PathVariable String email) {
         return service.getUserByEmail(email);
     }
 
     @GetMapping("/active")
-    public List<User> getActiveUsers() {
+    public List<UserResponse> getActiveUsers() {
         return service.getActiveUsers();
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return service.createUser(user);
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest request) {
+        return ResponseEntity.ok(service.createUser(request));
     }
 
-    @PutMapping
-    public User updateUser(@RequestBody User user) {
-        return service.updateUser(user);
+    @PutMapping("/{id}")
+    public UserResponse updateUser(@PathVariable int id, @RequestBody UserRequest request) {
+        return service.updateUser(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -48,4 +51,3 @@ public class UserController {
         service.deleteUserById(id);
     }
 }
-

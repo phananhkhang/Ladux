@@ -1,20 +1,21 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.model.Role;
+import org.akira.auratech.dto.RoleRequest;
+import org.akira.auratech.dto.RoleResponse;
 import org.akira.auratech.model.enums.RoleName;
 
 import java.util.List;
 
 public interface RoleService {
-    List<Role> getAllRoles();
+    List<RoleResponse> getAllRoles();
 
-    Role getRoleById(int id);
+    RoleResponse getRoleById(int id);
 
-    Role getRoleByName(RoleName name);
+    RoleResponse getRoleByName(RoleName name);
 
-    Role createRole(Role role);
+    RoleResponse createRole(RoleRequest request);
 
-    Role updateRole(Role role);
+    RoleResponse updateRole(int id, RoleRequest request);
 
     void deleteRoleById(int id);
 }

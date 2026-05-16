@@ -1,61 +1,64 @@
 package org.akira.auratech.controller;
 
-import org.akira.auratech.model.Product;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.ProductRequest;
+import org.akira.auratech.dto.ProductResponse;
 import org.akira.auratech.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/v1/products")
+@RequiredArgsConstructor
 public class ProductController {
-    @Autowired
-    ProductService service;
+    private final ProductService service;
 
-    @GetMapping("/all")
-    public List<Product> getAllProducts() {
+    @GetMapping
+    public List<ProductResponse> getAllProducts() {
         return service.getAllProducts();
     }
 
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable int id) {
+    public ProductResponse getProductById(@PathVariable int id) {
         return service.getProductById(id);
     }
 
     @GetMapping("/slug/{slug}")
-    public Product getProductBySlug(@PathVariable String slug) {
+    public ProductResponse getProductBySlug(@PathVariable String slug) {
         return service.getProductBySlug(slug);
     }
 
     @GetMapping("/sku/{sku}")
-    public Product getProductBySku(@PathVariable String sku) {
+    public ProductResponse getProductBySku(@PathVariable String sku) {
         return service.getProductBySku(sku);
     }
 
     @GetMapping("/brand/{brandId}")
-    public List<Product> getProductsByBrandId(@PathVariable int brandId) {
+    public List<ProductResponse> getProductsByBrandId(@PathVariable int brandId) {
         return service.getProductsByBrandId(brandId);
     }
 
     @GetMapping("/category/{categoryId}")
-    public List<Product> getProductsByCategoryId(@PathVariable int categoryId) {
+    public List<ProductResponse> getProductsByCategoryId(@PathVariable int categoryId) {
         return service.getProductsByCategoryId(categoryId);
     }
 
     @GetMapping("/active")
-    public List<Product> getActiveProducts() {
+    public List<ProductResponse> getActiveProducts() {
         return service.getActiveProducts();
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return service.createProduct(product);
+    public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductRequest request) {
+        return ResponseEntity.ok(service.createProduct(request));
     }
 
-    @PutMapping
-    public Product updateProduct(@RequestBody Product product) {
-        return service.updateProduct(product);
+    @PutMapping("/{id}")
+    public ProductResponse updateProduct(@PathVariable int id, @RequestBody ProductRequest request) {
+        return service.updateProduct(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -63,4 +66,3 @@ public class ProductController {
         service.deleteProductById(id);
     }
 }
-

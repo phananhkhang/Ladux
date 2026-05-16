@@ -1,6 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.CategoryRequest;
+import org.akira.auratech.dto.CategoryResponse;
 import org.akira.auratech.model.Category;
 import org.akira.auratech.repository.CategoryRepository;
 import org.akira.auratech.service.CategoryService;
@@ -15,44 +17,77 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository repo;
 
     @Override
-    public List<Category> getAllCategories() {
-        return repo.findAll();
+    public List<CategoryResponse> getAllCategories() {
+        return repo.findAll().stream()
+                .map(CategoryResponse::fromEntity)
+                .toList();
     }
 
     @Override
-    public Category getCategoryById(int id) {
-        return repo.findById(id).orElse(null);
+    public CategoryResponse getCategoryById(int id) {
+        return CategoryResponse.fromEntity(repo.findById(id).orElse(null));
     }
 
     @Override
-    public Category getCategoryByName(String name) {
-        return repo.findByName(name);
+    public CategoryResponse getCategoryByName(String name) {
+        return CategoryResponse.fromEntity(repo.findByName(name));
     }
 
     @Override
-    public Category getCategoryBySlug(String slug) {
-        return repo.findBySlug(slug);
+    public CategoryResponse getCategoryBySlug(String slug) {
+        return CategoryResponse.fromEntity(repo.findBySlug(slug));
     }
 
     @Override
-    public List<Category> getRootCategories() {
-        return repo.findByParentIsNull();
+    public List<CategoryResponse> getRootCategories() {
+        return repo.findByParentIsNull().stream()
+                .map(CategoryResponse::fromEntity)
+                .toList();
     }
 
     @Override
-    public Category createCategory(Category category) {
-        if (category.getName() != null) {
-            category.setSlug(SlugUtils.toSlug(category.getName()));
+    public CategoryResponse createCategory(CategoryRequest request) {
+        Category parent = null;
+        if (request.getParentId() != null) {
+            parent = repo.findById(request.getParentId()).orElse(null);
+            if (parent == null) {
+                return null;
+            }
         }
-        return repo.save(category);
+        String slug = request.getSlug();
+        if (slug == null || slug.isBlank()) {
+            slug = SlugUtils.toSlug(request.getName());
+        }
+        Category category = Category.builder()
+                .name(request.getName())
+                .slug(slug)
+                .parent(parent)
+                .build();
+        return CategoryResponse.fromEntity(repo.save(category));
     }
 
     @Override
-    public Category updateCategory(Category category) {
-        if (category.getName() != null) {
-            category.setSlug(SlugUtils.toSlug(category.getName()));
+    public CategoryResponse updateCategory(int id, CategoryRequest request) {
+        Category category = repo.findById(id).orElse(null);
+        if (category == null) {
+            return null;
         }
-        return repo.save(category);
+        if (request.getName() != null) {
+            category.setName(request.getName());
+        }
+        if (request.getSlug() != null && !request.getSlug().isBlank()) {
+            category.setSlug(request.getSlug());
+        } else if (request.getName() != null) {
+            category.setSlug(SlugUtils.toSlug(request.getName()));
+        }
+        if (request.getParentId() != null) {
+            Category parent = repo.findById(request.getParentId()).orElse(null);
+            if (parent == null) {
+                return null;
+            }
+            category.setParent(parent);
+        }
+        return CategoryResponse.fromEntity(repo.save(category));
     }
 
     @Override
@@ -60,4 +95,3 @@ public class CategoryServiceImpl implements CategoryService {
         repo.deleteById(id);
     }
 }
-
