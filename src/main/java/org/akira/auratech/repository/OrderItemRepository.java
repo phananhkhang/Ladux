@@ -1,15 +1,13 @@
 package org.akira.auratech.repository;
 
-import org.akira.auratech.model.Brand;
+import org.akira.auratech.model.OrderItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface BrandRepository extends JpaRepository<Brand, Integer> {
-
-    Brand findByName(String name);
-
-    Brand findBySlug(String slug);
+public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
+    List<OrderItem> findByOrderId(Integer orderId);
 }
+
