@@ -7,6 +7,7 @@ import org.akira.auratech.model.Category;
 import org.akira.auratech.repository.CategoryRepository;
 import org.akira.auratech.service.CategoryService;
 import org.akira.auratech.utils.SlugUtils;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +26,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponse getCategoryById(int id) {
-        return CategoryResponse.fromEntity(repo.findById(id).orElse(null));
+        return CategoryResponse.fromEntity(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + id)));
     }
 
     @Override
@@ -49,10 +51,8 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse createCategory(CategoryRequest request) {
         Category parent = null;
         if (request.getParentId() != null) {
-            parent = repo.findById(request.getParentId()).orElse(null);
-            if (parent == null) {
-                return null;
-            }
+            parent = repo.findById(request.getParentId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.getParentId()));
         }
         String slug = request.getSlug();
         if (slug == null || slug.isBlank()) {
@@ -68,10 +68,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponse updateCategory(int id, CategoryRequest request) {
-        Category category = repo.findById(id).orElse(null);
-        if (category == null) {
-            return null;
-        }
+        Category category = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + id));
         if (request.getName() != null) {
             category.setName(request.getName());
         }
@@ -81,10 +79,8 @@ public class CategoryServiceImpl implements CategoryService {
             category.setSlug(SlugUtils.toSlug(request.getName()));
         }
         if (request.getParentId() != null) {
-            Category parent = repo.findById(request.getParentId()).orElse(null);
-            if (parent == null) {
-                return null;
-            }
+            Category parent = repo.findById(request.getParentId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.getParentId()));
             category.setParent(parent);
         }
         return CategoryResponse.fromEntity(repo.save(category));

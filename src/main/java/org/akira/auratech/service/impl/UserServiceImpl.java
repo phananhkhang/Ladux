@@ -8,6 +8,7 @@ import org.akira.auratech.model.User;
 import org.akira.auratech.repository.RoleRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.UserService;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashSet;
@@ -29,7 +30,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getUserById(int id) {
-        return UserResponse.fromEntity(repo.findById(id).orElse(null));
+        return UserResponse.fromEntity(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id)));
     }
 
     @Override
@@ -64,10 +66,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse updateUser(int id, UserRequest request) {
-        User user = repo.findById(id).orElse(null);
-        if (user == null) {
-            return null;
-        }
+        User user = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id));
         if (request.getEmail() != null) {
             user.setEmail(request.getEmail());
         }
@@ -107,10 +107,8 @@ public class UserServiceImpl implements UserService {
         }
         Set<Role> roles = new LinkedHashSet<>();
         for (Integer roleId : roleIds) {
-            Role role = roleRepository.findById(roleId).orElse(null);
-            if (role == null) {
-                return null;
-            }
+            Role role = roleRepository.findById(roleId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay role voi id = " + roleId));
             roles.add(role);
         }
         return roles;

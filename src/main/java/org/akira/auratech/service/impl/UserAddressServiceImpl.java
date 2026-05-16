@@ -8,6 +8,7 @@ import org.akira.auratech.model.UserAddress;
 import org.akira.auratech.repository.UserAddressRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.UserAddressService;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +28,8 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     public UserAddressResponse getUserAddressById(int id) {
-        return UserAddressResponse.fromEntity(repo.findById(id).orElse(null));
+        return UserAddressResponse.fromEntity(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user address voi id = " + id)));
     }
 
     @Override
@@ -46,7 +48,8 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     public UserAddressResponse createUserAddress(UserAddressRequest request) {
-        User user = userRepository.findById(request.getUserId()).orElse(null);
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
         if (user == null) {
             return null;
         }
@@ -64,15 +67,11 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     public UserAddressResponse updateUserAddress(int id, UserAddressRequest request) {
-        UserAddress address = repo.findById(id).orElse(null);
-        if (address == null) {
-            return null;
-        }
+        UserAddress address = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user address voi id = " + id));
         if (request.getUserId() != null) {
-            User user = userRepository.findById(request.getUserId()).orElse(null);
-            if (user == null) {
-                return null;
-            }
+            User user = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
             address.setUser(user);
         }
         if (request.getReceiverName() != null) {

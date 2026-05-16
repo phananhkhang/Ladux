@@ -11,6 +11,7 @@ import org.akira.auratech.repository.CouponRepository;
 import org.akira.auratech.repository.OrderRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.OrderService;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +32,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse getOrderById(int id) {
-        return OrderResponse.fromEntity(repo.findById(id).orElse(null));
+        return OrderResponse.fromEntity(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + id)));
     }
 
     @Override
@@ -50,16 +52,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse createOrder(OrderRequest request) {
-        User user = userRepository.findById(request.getUserId()).orElse(null);
-        if (user == null) {
-            return null;
-        }
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
         Coupon coupon = null;
         if (request.getCouponId() != null) {
-            coupon = couponRepository.findById(request.getCouponId()).orElse(null);
-            if (coupon == null) {
-                return null;
-            }
+            coupon = couponRepository.findById(request.getCouponId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + request.getCouponId()));
         }
         Order order = Order.builder()
                 .user(user)
@@ -76,22 +74,16 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse updateOrder(int id, OrderRequest request) {
-        Order order = repo.findById(id).orElse(null);
-        if (order == null) {
-            return null;
-        }
+        Order order = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + id));
         if (request.getUserId() != null) {
-            User user = userRepository.findById(request.getUserId()).orElse(null);
-            if (user == null) {
-                return null;
-            }
+            User user = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
             order.setUser(user);
         }
         if (request.getCouponId() != null) {
-            Coupon coupon = couponRepository.findById(request.getCouponId()).orElse(null);
-            if (coupon == null) {
-                return null;
-            }
+            Coupon coupon = couponRepository.findById(request.getCouponId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + request.getCouponId()));
             order.setCoupon(coupon);
         }
         if (request.getSubTotal() != null) {

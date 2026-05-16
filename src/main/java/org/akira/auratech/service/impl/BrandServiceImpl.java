@@ -3,6 +3,7 @@ package org.akira.auratech.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.BrandRequest;
 import org.akira.auratech.dto.BrandResponse;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.akira.auratech.model.Brand;
 import org.akira.auratech.repository.BrandRepository;
 import org.akira.auratech.service.BrandService;
@@ -26,7 +27,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public BrandResponse getBrandById(int id) {
-        return BrandResponse.fromEntity(repo.findById(id).orElse(null));
+        return BrandResponse.fromEntity(repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thương hiệu với id = " + id)));
     }
 
     @Override
@@ -55,7 +56,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public BrandResponse updateBrand(int id, BrandRequest brand) {
-        Brand b = repo.findById(id).orElse(null);
+        Brand b = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thương hiệu với id = " + id));
         if (b == null) return null;
         b.setName(brand.getName());
         b.setSlug(SlugUtils.toSlug(brand.getName()));

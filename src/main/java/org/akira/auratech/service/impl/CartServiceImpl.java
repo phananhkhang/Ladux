@@ -8,6 +8,7 @@ import org.akira.auratech.model.User;
 import org.akira.auratech.repository.CartRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.CartService;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,17 +28,23 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartResponse getCartById(int id) {
-        return CartResponse.fromEntity(repo.findById(id).orElse(null));
+        return CartResponse.fromEntity(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart voi id = " + id)));
     }
 
     @Override
     public CartResponse getCartByUserId(int userId) {
-        return CartResponse.fromEntity(repo.findByUserId(userId));
+        Cart cart = repo.findByUserId(userId);
+        if (cart == null) {
+            throw new ResourceNotFoundException("Khong tim thay cart voi userId = " + userId);
+        }
+        return CartResponse.fromEntity(cart);
     }
 
     @Override
     public CartResponse createCart(CartRequest request) {
-        User user = userRepository.findById(request.getUserId()).orElse(null);
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
         if (user == null) {
             return null;
         }
@@ -49,15 +56,11 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartResponse updateCart(int id, CartRequest request) {
-        Cart cart = repo.findById(id).orElse(null);
-        if (cart == null) {
-            return null;
-        }
+        Cart cart = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart voi id = " + id));
         if (request.getUserId() != null) {
-            User user = userRepository.findById(request.getUserId()).orElse(null);
-            if (user == null) {
-                return null;
-            }
+            User user = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
             cart.setUser(user);
         }
         return CartResponse.fromEntity(repo.save(cart));

@@ -7,6 +7,7 @@ import org.akira.auratech.model.Role;
 import org.akira.auratech.model.enums.RoleName;
 import org.akira.auratech.repository.RoleRepository;
 import org.akira.auratech.service.RoleService;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +26,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleResponse getRoleById(int id) {
-        return RoleResponse.fromEntity(repo.findById(id).orElse(null));
+        return RoleResponse.fromEntity(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay role voi id = " + id)));
     }
 
     @Override
@@ -43,10 +45,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleResponse updateRole(int id, RoleRequest request) {
-        Role role = repo.findById(id).orElse(null);
-        if (role == null) {
-            return null;
-        }
+        Role role = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay role voi id = " + id));
         if (request.getName() != null) {
             role.setName(request.getName());
         }

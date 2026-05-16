@@ -8,6 +8,7 @@ import org.akira.auratech.model.OrderHistory;
 import org.akira.auratech.repository.OrderHistoryRepository;
 import org.akira.auratech.repository.OrderRepository;
 import org.akira.auratech.service.OrderHistoryService;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +28,8 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
 
     @Override
     public OrderHistoryResponse getOrderHistoryById(int id) {
-        return OrderHistoryResponse.fromEntity(repo.findById(id).orElse(null));
+        return OrderHistoryResponse.fromEntity(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order history voi id = " + id)));
     }
 
     @Override
@@ -39,7 +41,8 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
 
     @Override
     public OrderHistoryResponse createOrderHistory(OrderHistoryRequest request) {
-        Order order = orderRepository.findById(request.getOrderId()).orElse(null);
+        Order order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.getOrderId()));
         if (order == null) {
             return null;
         }
@@ -53,15 +56,11 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
 
     @Override
     public OrderHistoryResponse updateOrderHistory(int id, OrderHistoryRequest request) {
-        OrderHistory history = repo.findById(id).orElse(null);
-        if (history == null) {
-            return null;
-        }
+        OrderHistory history = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order history voi id = " + id));
         if (request.getOrderId() != null) {
-            Order order = orderRepository.findById(request.getOrderId()).orElse(null);
-            if (order == null) {
-                return null;
-            }
+            Order order = orderRepository.findById(request.getOrderId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.getOrderId()));
             history.setOrder(order);
         }
         if (request.getStatus() != null) {

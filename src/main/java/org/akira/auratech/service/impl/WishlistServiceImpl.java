@@ -10,6 +10,7 @@ import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.repository.WishlistRepository;
 import org.akira.auratech.service.WishlistService;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,7 +31,8 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Override
     public WishlistResponse getWishlistById(int id) {
-        return WishlistResponse.fromEntity(repo.findById(id).orElse(null));
+        return WishlistResponse.fromEntity(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay wishlist voi id = " + id)));
     }
 
     @Override
@@ -49,8 +51,10 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Override
     public WishlistResponse createWishlist(WishlistRequest request) {
-        User user = userRepository.findById(request.getUserId()).orElse(null);
-        Product product = productRepository.findById(request.getProductId()).orElse(null);
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
         if (user == null || product == null) {
             return null;
         }
@@ -63,22 +67,16 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Override
     public WishlistResponse updateWishlist(int id, WishlistRequest request) {
-        Wishlist wishlist = repo.findById(id).orElse(null);
-        if (wishlist == null) {
-            return null;
-        }
+        Wishlist wishlist = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay wishlist voi id = " + id));
         if (request.getUserId() != null) {
-            User user = userRepository.findById(request.getUserId()).orElse(null);
-            if (user == null) {
-                return null;
-            }
+            User user = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
             wishlist.setUser(user);
         }
         if (request.getProductId() != null) {
-            Product product = productRepository.findById(request.getProductId()).orElse(null);
-            if (product == null) {
-                return null;
-            }
+            Product product = productRepository.findById(request.getProductId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
             wishlist.setProduct(product);
         }
         return WishlistResponse.fromEntity(repo.save(wishlist));

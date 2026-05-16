@@ -11,6 +11,7 @@ import org.akira.auratech.repository.CategoryRepository;
 import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.service.ProductService;
 import org.akira.auratech.utils.SlugUtils;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +32,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse getProductById(int id) {
-        return ProductResponse.fromEntity(repo.findById(id).orElse(null));
+        return ProductResponse.fromEntity(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + id)));
     }
 
     @Override
@@ -67,8 +69,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse createProduct(ProductRequest request) {
-        Brand brand = brandRepository.findById(request.getBrandId()).orElse(null);
-        Category category = categoryRepository.findById(request.getCategoryId()).orElse(null);
+        Brand brand = brandRepository.findById(request.getBrandId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay brand voi id = " + request.getBrandId()));
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.getCategoryId()));
         if (brand == null || category == null) {
             return null;
         }
@@ -94,22 +98,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse updateProduct(int id, ProductRequest request) {
-        Product product = repo.findById(id).orElse(null);
-        if (product == null) {
-            return null;
-        }
+        Product product = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + id));
         if (request.getBrandId() != null) {
-            Brand brand = brandRepository.findById(request.getBrandId()).orElse(null);
-            if (brand == null) {
-                return null;
-            }
+            Brand brand = brandRepository.findById(request.getBrandId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay brand voi id = " + request.getBrandId()));
             product.setBrand(brand);
         }
         if (request.getCategoryId() != null) {
-            Category category = categoryRepository.findById(request.getCategoryId()).orElse(null);
-            if (category == null) {
-                return null;
-            }
+            Category category = categoryRepository.findById(request.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.getCategoryId()));
             product.setCategory(category);
         }
         if (request.getSku() != null) {

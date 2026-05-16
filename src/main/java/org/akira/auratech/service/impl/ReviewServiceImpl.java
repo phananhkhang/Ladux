@@ -10,6 +10,7 @@ import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.repository.ReviewRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.ReviewService;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,7 +31,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewResponse getReviewById(int id) {
-        return ReviewResponse.fromEntity(repo.findById(id).orElse(null));
+        return ReviewResponse.fromEntity(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + id)));
     }
 
     @Override
@@ -49,8 +51,10 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewResponse createReview(ReviewRequest request) {
-        User user = userRepository.findById(request.getUserId()).orElse(null);
-        Product product = productRepository.findById(request.getProductId()).orElse(null);
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
         if (user == null || product == null) {
             return null;
         }
@@ -65,22 +69,16 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewResponse updateReview(int id, ReviewRequest request) {
-        Review review = repo.findById(id).orElse(null);
-        if (review == null) {
-            return null;
-        }
+        Review review = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + id));
         if (request.getUserId() != null) {
-            User user = userRepository.findById(request.getUserId()).orElse(null);
-            if (user == null) {
-                return null;
-            }
+            User user = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
             review.setUser(user);
         }
         if (request.getProductId() != null) {
-            Product product = productRepository.findById(request.getProductId()).orElse(null);
-            if (product == null) {
-                return null;
-            }
+            Product product = productRepository.findById(request.getProductId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
             review.setProduct(product);
         }
         if (request.getRating() != null) {

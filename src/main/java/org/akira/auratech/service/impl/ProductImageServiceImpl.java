@@ -8,6 +8,7 @@ import org.akira.auratech.model.ProductImage;
 import org.akira.auratech.repository.ProductImageRepository;
 import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.service.ProductImageService;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +28,8 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     @Override
     public ProductImageResponse getProductImageById(int id) {
-        return ProductImageResponse.fromEntity(repo.findById(id).orElse(null));
+        return ProductImageResponse.fromEntity(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product image voi id = " + id)));
     }
 
     @Override
@@ -46,7 +48,8 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     @Override
     public ProductImageResponse createProductImage(ProductImageRequest request) {
-        Product product = productRepository.findById(request.getProductId()).orElse(null);
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
         if (product == null) {
             return null;
         }
@@ -60,15 +63,11 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     @Override
     public ProductImageResponse updateProductImage(int id, ProductImageRequest request) {
-        ProductImage image = repo.findById(id).orElse(null);
-        if (image == null) {
-            return null;
-        }
+        ProductImage image = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product image voi id = " + id));
         if (request.getProductId() != null) {
-            Product product = productRepository.findById(request.getProductId()).orElse(null);
-            if (product == null) {
-                return null;
-            }
+            Product product = productRepository.findById(request.getProductId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
             image.setProduct(product);
         }
         if (request.getImageUrl() != null) {

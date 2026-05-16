@@ -6,6 +6,7 @@ import org.akira.auratech.dto.CouponResponse;
 import org.akira.auratech.model.Coupon;
 import org.akira.auratech.repository.CouponRepository;
 import org.akira.auratech.service.CouponService;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +25,8 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public CouponResponse getCouponById(int id) {
-        return CouponResponse.fromEntity(repo.findById(id).orElse(null));
+        return CouponResponse.fromEntity(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + id)));
     }
 
     @Override
@@ -48,10 +50,8 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public CouponResponse updateCoupon(int id, CouponRequest request) {
-        Coupon coupon = repo.findById(id).orElse(null);
-        if (coupon == null) {
-            return null;
-        }
+        Coupon coupon = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + id));
         if (request.getCode() != null) {
             coupon.setCode(request.getCode());
         }

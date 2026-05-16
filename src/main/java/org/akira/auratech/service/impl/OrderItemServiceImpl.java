@@ -10,6 +10,7 @@ import org.akira.auratech.repository.OrderItemRepository;
 import org.akira.auratech.repository.OrderRepository;
 import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.service.OrderItemService;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,7 +31,8 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public OrderItemResponse getOrderItemById(int id) {
-        return OrderItemResponse.fromEntity(repo.findById(id).orElse(null));
+        return OrderItemResponse.fromEntity(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order item voi id = " + id)));
     }
 
     @Override
@@ -42,8 +44,10 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public OrderItemResponse createOrderItem(OrderItemRequest request) {
-        Order order = orderRepository.findById(request.getOrderId()).orElse(null);
-        Product product = productRepository.findById(request.getProductId()).orElse(null);
+        Order order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.getOrderId()));
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
         if (order == null || product == null) {
             return null;
         }
@@ -58,22 +62,16 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public OrderItemResponse updateOrderItem(int id, OrderItemRequest request) {
-        OrderItem item = repo.findById(id).orElse(null);
-        if (item == null) {
-            return null;
-        }
+        OrderItem item = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order item voi id = " + id));
         if (request.getOrderId() != null) {
-            Order order = orderRepository.findById(request.getOrderId()).orElse(null);
-            if (order == null) {
-                return null;
-            }
+            Order order = orderRepository.findById(request.getOrderId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.getOrderId()));
             item.setOrder(order);
         }
         if (request.getProductId() != null) {
-            Product product = productRepository.findById(request.getProductId()).orElse(null);
-            if (product == null) {
-                return null;
-            }
+            Product product = productRepository.findById(request.getProductId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
             item.setProduct(product);
         }
         if (request.getQuantity() != null) {

@@ -11,6 +11,7 @@ import org.akira.auratech.repository.CartRepository;
 import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.service.CartItemService;
 import org.springframework.stereotype.Service;
+import org.akira.auratech.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -30,7 +31,8 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public CartItemResponse getCartItemById(int id) {
-        return CartItemResponse.fromEntity(repo.findById(id).orElse(null));
+        return CartItemResponse.fromEntity(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart item voi id = " + id)));
     }
 
     @Override
@@ -49,8 +51,10 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public CartItemResponse createCartItem(CartItemRequest request) {
-        Cart cart = cartRepository.findById(request.getCartId()).orElse(null);
-        Product product = productRepository.findById(request.getProductId()).orElse(null);
+        Cart cart = cartRepository.findById(request.getCartId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart voi id = " + request.getCartId()));
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
         if (cart == null || product == null) {
             return null;
         }
@@ -64,22 +68,16 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public CartItemResponse updateCartItem(int id, CartItemRequest request) {
-        CartItem item = repo.findById(id).orElse(null);
-        if (item == null) {
-            return null;
-        }
+        CartItem item = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart item voi id = " + id));
         if (request.getCartId() != null) {
-            Cart cart = cartRepository.findById(request.getCartId()).orElse(null);
-            if (cart == null) {
-                return null;
-            }
+            Cart cart = cartRepository.findById(request.getCartId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart voi id = " + request.getCartId()));
             item.setCart(cart);
         }
         if (request.getProductId() != null) {
-            Product product = productRepository.findById(request.getProductId()).orElse(null);
-            if (product == null) {
-                return null;
-            }
+            Product product = productRepository.findById(request.getProductId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
             item.setProduct(product);
         }
         if (request.getQuantity() != null) {

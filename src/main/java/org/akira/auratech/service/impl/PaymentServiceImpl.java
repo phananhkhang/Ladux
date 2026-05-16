@@ -9,6 +9,7 @@ import org.akira.auratech.model.enums.PaymentStatus;
 import org.akira.auratech.repository.OrderRepository;
 import org.akira.auratech.repository.PaymentRepository;
 import org.akira.auratech.service.PaymentService;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,12 +29,17 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResponse getPaymentById(int id) {
-        return PaymentResponse.fromEntity(repo.findById(id).orElse(null));
+        return PaymentResponse.fromEntity(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay payment voi id = " + id)));
     }
 
     @Override
     public PaymentResponse getPaymentByOrderId(int orderId) {
-        return PaymentResponse.fromEntity(repo.findByOrderId(orderId));
+        Payment payment = repo.findByOrderId(orderId);
+        if (payment == null) {
+            throw new ResourceNotFoundException("Khong tim thay payment voi orderId = " + orderId);
+        }
+        return PaymentResponse.fromEntity(payment);
     }
 
     @Override
@@ -45,7 +51,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResponse createPayment(PaymentRequest request) {
-        Order order = orderRepository.findById(request.getOrderId()).orElse(null);
+        Order order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.getOrderId()));
         if (order == null) {
             return null;
         }
@@ -61,15 +68,11 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResponse updatePayment(int id, PaymentRequest request) {
-        Payment payment = repo.findById(id).orElse(null);
-        if (payment == null) {
-            return null;
-        }
+        Payment payment = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay payment voi id = " + id));
         if (request.getOrderId() != null) {
-            Order order = orderRepository.findById(request.getOrderId()).orElse(null);
-            if (order == null) {
-                return null;
-            }
+            Order order = orderRepository.findById(request.getOrderId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.getOrderId()));
             payment.setOrder(order);
         }
         if (request.getProvider() != null) {
