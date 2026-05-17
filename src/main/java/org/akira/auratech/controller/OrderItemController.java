@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.OrderItemRequest;
 import org.akira.auratech.dto.OrderItemResponse;
 import org.akira.auratech.service.OrderItemService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,32 +18,33 @@ public class OrderItemController {
     private final OrderItemService service;
 
     @GetMapping
-    public List<OrderItemResponse> getAllOrderItems() {
-        return service.getAllOrderItems();
+    public ResponseEntity<List<OrderItemResponse>> getAllOrderItems() {
+        return ResponseEntity.ok(service.getAllOrderItems());
     }
 
     @GetMapping("/{id}")
-    public OrderItemResponse getOrderItemById(@PathVariable int id) {
-        return service.getOrderItemById(id);
+    public ResponseEntity<OrderItemResponse> getOrderItemById(@PathVariable int id) {
+        return ResponseEntity.ok(service.getOrderItemById(id));
     }
 
     @GetMapping("/order/{orderId}")
-    public List<OrderItemResponse> getOrderItemsByOrderId(@PathVariable int orderId) {
-        return service.getOrderItemsByOrderId(orderId);
+    public ResponseEntity<List<OrderItemResponse>> getOrderItemsByOrderId(@PathVariable int orderId) {
+        return ResponseEntity.ok(service.getOrderItemsByOrderId(orderId));
     }
 
     @PostMapping
     public ResponseEntity<OrderItemResponse> createOrderItem(@Valid @RequestBody OrderItemRequest request) {
-        return ResponseEntity.ok(service.createOrderItem(request));
+        return new ResponseEntity<>(service.createOrderItem(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public OrderItemResponse updateOrderItem(@PathVariable int id, @RequestBody OrderItemRequest request) {
-        return service.updateOrderItem(id, request);
+    public ResponseEntity<OrderItemResponse> updateOrderItem(@PathVariable int id, @Valid @RequestBody OrderItemRequest request) {
+        return ResponseEntity.ok(service.updateOrderItem(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteOrderItemById(@PathVariable int id) {
+    public ResponseEntity<Void> deleteOrderItemById(@PathVariable int id) {
         service.deleteOrderItemById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

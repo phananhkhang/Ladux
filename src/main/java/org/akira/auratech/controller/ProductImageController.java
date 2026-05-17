@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.ProductImageRequest;
 import org.akira.auratech.dto.ProductImageResponse;
 import org.akira.auratech.service.ProductImageService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,37 +18,38 @@ public class ProductImageController {
     private final ProductImageService service;
 
     @GetMapping
-    public List<ProductImageResponse> getAllProductImages() {
-        return service.getAllProductImages();
+    public ResponseEntity<List<ProductImageResponse>> getAllProductImages() {
+        return ResponseEntity.ok(service.getAllProductImages());
     }
 
     @GetMapping("/{id}")
-    public ProductImageResponse getProductImageById(@PathVariable int id) {
-        return service.getProductImageById(id);
+    public ResponseEntity<ProductImageResponse> getProductImageById(@PathVariable int id) {
+        return ResponseEntity.ok(service.getProductImageById(id));
     }
 
     @GetMapping("/product/{productId}")
-    public List<ProductImageResponse> getProductImagesByProductId(@PathVariable int productId) {
-        return service.getProductImagesByProductId(productId);
+    public ResponseEntity<List<ProductImageResponse>> getProductImagesByProductId(@PathVariable int productId) {
+        return ResponseEntity.ok(service.getProductImagesByProductId(productId));
     }
 
     @GetMapping("/product/{productId}/primary")
-    public List<ProductImageResponse> getPrimaryProductImagesByProductId(@PathVariable int productId) {
-        return service.getPrimaryProductImagesByProductId(productId);
+    public ResponseEntity<List<ProductImageResponse>> getPrimaryProductImagesByProductId(@PathVariable int productId) {
+        return ResponseEntity.ok(service.getPrimaryProductImagesByProductId(productId));
     }
 
     @PostMapping
     public ResponseEntity<ProductImageResponse> createProductImage(@Valid @RequestBody ProductImageRequest request) {
-        return ResponseEntity.ok(service.createProductImage(request));
+        return new ResponseEntity<>(service.createProductImage(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ProductImageResponse updateProductImage(@PathVariable int id, @RequestBody ProductImageRequest request) {
-        return service.updateProductImage(id, request);
+    public ResponseEntity<ProductImageResponse> updateProductImage(@PathVariable int id, @Valid @RequestBody ProductImageRequest request) {
+        return ResponseEntity.ok(service.updateProductImage(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProductImageById(@PathVariable int id) {
+    public ResponseEntity<Void> deleteProductImageById(@PathVariable int id) {
         service.deleteProductImageById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

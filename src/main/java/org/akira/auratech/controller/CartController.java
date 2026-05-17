@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.CartRequest;
 import org.akira.auratech.dto.CartResponse;
 import org.akira.auratech.service.CartService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,32 +18,33 @@ public class CartController {
     private final CartService service;
 
     @GetMapping
-    public List<CartResponse> getAllCarts() {
-        return service.getAllCarts();
+    public ResponseEntity<List<CartResponse>> getAllCarts() {
+        return ResponseEntity.ok(service.getAllCarts());
     }
 
     @GetMapping("/{id}")
-    public CartResponse getCartById(@PathVariable int id) {
-        return service.getCartById(id);
+    public ResponseEntity<CartResponse> getCartById(@PathVariable int id) {
+        return ResponseEntity.ok(service.getCartById(id));
     }
 
     @GetMapping("/user/{userId}")
-    public CartResponse getCartByUserId(@PathVariable int userId) {
-        return service.getCartByUserId(userId);
+    public ResponseEntity<CartResponse> getCartByUserId(@PathVariable int userId) {
+        return ResponseEntity.ok(service.getCartByUserId(userId));
     }
 
     @PostMapping
     public ResponseEntity<CartResponse> createCart(@Valid @RequestBody CartRequest request) {
-        return ResponseEntity.ok(service.createCart(request));
+        return new ResponseEntity<>(service.createCart(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public CartResponse updateCart(@PathVariable int id, @RequestBody CartRequest request) {
-        return service.updateCart(id, request);
+    public ResponseEntity<CartResponse> updateCart(@PathVariable int id, @Valid @RequestBody CartRequest request) {
+        return ResponseEntity.ok(service.updateCart(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCartById(@PathVariable int id) {
+    public ResponseEntity<Void> deleteCartById(@PathVariable int id) {
         service.deleteCartById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

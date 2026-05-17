@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.CouponRequest;
 import org.akira.auratech.dto.CouponResponse;
 import org.akira.auratech.service.CouponService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,32 +18,33 @@ public class CouponController {
     private final CouponService service;
 
     @GetMapping
-    public List<CouponResponse> getAllCoupons() {
-        return service.getAllCoupons();
+    public ResponseEntity<List<CouponResponse>> getAllCoupons() {
+        return ResponseEntity.ok(service.getAllCoupons());
     }
 
     @GetMapping("/{id}")
-    public CouponResponse getCouponById(@PathVariable int id) {
-        return service.getCouponById(id);
+    public ResponseEntity<CouponResponse> getCouponById(@PathVariable int id) {
+        return ResponseEntity.ok(service.getCouponById(id));
     }
 
     @GetMapping("/code/{code}")
-    public CouponResponse getCouponByCode(@PathVariable String code) {
-        return service.getCouponByCode(code);
+    public ResponseEntity<CouponResponse> getCouponByCode(@PathVariable String code) {
+        return ResponseEntity.ok(service.getCouponByCode(code));
     }
 
     @PostMapping
     public ResponseEntity<CouponResponse> createCoupon(@Valid @RequestBody CouponRequest request) {
-        return ResponseEntity.ok(service.createCoupon(request));
+        return new ResponseEntity<>(service.createCoupon(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public CouponResponse updateCoupon(@PathVariable int id, @RequestBody CouponRequest request) {
-        return service.updateCoupon(id, request);
+    public ResponseEntity<CouponResponse> updateCoupon(@PathVariable int id, @Valid @RequestBody CouponRequest request) {
+        return ResponseEntity.ok(service.updateCoupon(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCouponById(@PathVariable int id) {
+    public ResponseEntity<Void> deleteCouponById(@PathVariable int id) {
         service.deleteCouponById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

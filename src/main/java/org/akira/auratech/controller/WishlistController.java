@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.WishlistRequest;
 import org.akira.auratech.dto.WishlistResponse;
 import org.akira.auratech.service.WishlistService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,37 +18,38 @@ public class WishlistController {
     private final WishlistService service;
 
     @GetMapping
-    public List<WishlistResponse> getAllWishlists() {
-        return service.getAllWishlists();
+    public ResponseEntity<List<WishlistResponse>> getAllWishlists() {
+        return ResponseEntity.ok(service.getAllWishlists());
     }
 
     @GetMapping("/{id}")
-    public WishlistResponse getWishlistById(@PathVariable int id) {
-        return service.getWishlistById(id);
+    public ResponseEntity<WishlistResponse> getWishlistById(@PathVariable int id) {
+        return ResponseEntity.ok(service.getWishlistById(id));
     }
 
     @GetMapping("/user/{userId}")
-    public List<WishlistResponse> getWishlistsByUserId(@PathVariable int userId) {
-        return service.getWishlistsByUserId(userId);
+    public ResponseEntity<List<WishlistResponse>> getWishlistsByUserId(@PathVariable int userId) {
+        return ResponseEntity.ok(service.getWishlistsByUserId(userId));
     }
 
     @GetMapping("/product/{productId}")
-    public List<WishlistResponse> getWishlistsByProductId(@PathVariable int productId) {
-        return service.getWishlistsByProductId(productId);
+    public ResponseEntity<List<WishlistResponse>> getWishlistsByProductId(@PathVariable int productId) {
+        return ResponseEntity.ok(service.getWishlistsByProductId(productId));
     }
 
     @PostMapping
     public ResponseEntity<WishlistResponse> createWishlist(@Valid @RequestBody WishlistRequest request) {
-        return ResponseEntity.ok(service.createWishlist(request));
+        return new ResponseEntity<>(service.createWishlist(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public WishlistResponse updateWishlist(@PathVariable int id, @RequestBody WishlistRequest request) {
-        return service.updateWishlist(id, request);
+    public ResponseEntity<WishlistResponse> updateWishlist(@PathVariable int id, @Valid @RequestBody WishlistRequest request) {
+        return ResponseEntity.ok(service.updateWishlist(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteWishlistById(@PathVariable int id) {
+    public ResponseEntity<Void> deleteWishlistById(@PathVariable int id) {
         service.deleteWishlistById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

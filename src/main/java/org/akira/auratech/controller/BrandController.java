@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.BrandRequest;
 import org.akira.auratech.dto.BrandResponse;
 import org.akira.auratech.service.BrandService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,38 +19,40 @@ public class BrandController {
     private final BrandService service;
 
     @GetMapping
-    public List<BrandResponse> getAllBrands() {
-        return service.getAllBrands();
+    public ResponseEntity<List<BrandResponse>> getAllBrands() {
+        return ResponseEntity.ok(service.getAllBrands());
     }
 
     @GetMapping("/{id}")
-    public BrandResponse getBrandById(@PathVariable int id) {
-        return service.getBrandById(id);
+    public ResponseEntity<BrandResponse> getBrandById(@PathVariable int id) {
+        return ResponseEntity.ok(service.getBrandById(id));
     }
 
     @GetMapping("/name/{name}")
-    public BrandResponse getBrandByName(@PathVariable String name) {
-        return service.getBrandByName(name);
+    public ResponseEntity<BrandResponse> getBrandByName(@PathVariable String name) {
+        return ResponseEntity.ok(service.getBrandByName(name));
     }
 
     @GetMapping("/slug/{slug}")
-    public BrandResponse getBrandBySlug(@PathVariable String slug) {
-        return service.getBrandBySlug(slug);
+    public ResponseEntity<BrandResponse> getBrandBySlug(@PathVariable String slug) {
+        return ResponseEntity.ok(service.getBrandBySlug(slug));
     }
 
     @PostMapping
     public ResponseEntity<BrandResponse> createBrand(@Valid @RequestBody BrandRequest request) {
         BrandResponse response = service.createBrand(request);
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBrandById(@PathVariable int id) {
+    public ResponseEntity<Void> deleteBrandById(@PathVariable int id) {
         service.deleteBrandById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/{id}")
-    public BrandResponse updateBrand(@PathVariable int id, @RequestBody BrandRequest brand) {
-        return service.updateBrand(id, brand);
+    public ResponseEntity<BrandResponse> updateBrand(@PathVariable int id, @Valid @RequestBody BrandRequest brand) {
+        BrandResponse response = service.updateBrand(id, brand);
+        return ResponseEntity.ok(response);
     }
 }

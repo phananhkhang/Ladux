@@ -6,6 +6,7 @@ import org.akira.auratech.dto.OrderRequest;
 import org.akira.auratech.dto.OrderResponse;
 import org.akira.auratech.model.enums.OrderStatus;
 import org.akira.auratech.service.OrderService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,37 +19,38 @@ public class OrderController {
     private final OrderService service;
 
     @GetMapping
-    public List<OrderResponse> getAllOrders() {
-        return service.getAllOrders();
+    public ResponseEntity<List<OrderResponse>> getAllOrders() {
+        return ResponseEntity.ok(service.getAllOrders());
     }
 
     @GetMapping("/{id}")
-    public OrderResponse getOrderById(@PathVariable int id) {
-        return service.getOrderById(id);
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable int id) {
+        return ResponseEntity.ok(service.getOrderById(id));
     }
 
     @GetMapping("/user/{userId}")
-    public List<OrderResponse> getOrdersByUserId(@PathVariable int userId) {
-        return service.getOrdersByUserId(userId);
+    public ResponseEntity<List<OrderResponse>> getOrdersByUserId(@PathVariable int userId) {
+        return ResponseEntity.ok(service.getOrdersByUserId(userId));
     }
 
     @GetMapping("/status/{status}")
-    public List<OrderResponse> getOrdersByStatus(@PathVariable OrderStatus status) {
-        return service.getOrdersByStatus(status);
+    public ResponseEntity<List<OrderResponse>> getOrdersByStatus(@PathVariable OrderStatus status) {
+        return ResponseEntity.ok(service.getOrdersByStatus(status));
     }
 
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderRequest request) {
-        return ResponseEntity.ok(service.createOrder(request));
+        return new ResponseEntity<>(service.createOrder(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public OrderResponse updateOrder(@PathVariable int id, @RequestBody OrderRequest request) {
-        return service.updateOrder(id, request);
+    public ResponseEntity<OrderResponse> updateOrder(@PathVariable int id, @Valid @RequestBody OrderRequest request) {
+        return ResponseEntity.ok(service.updateOrder(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteOrderById(@PathVariable int id) {
+    public ResponseEntity<Void> deleteOrderById(@PathVariable int id) {
         service.deleteOrderById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

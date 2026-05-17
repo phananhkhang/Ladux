@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.OrderHistoryRequest;
 import org.akira.auratech.dto.OrderHistoryResponse;
 import org.akira.auratech.service.OrderHistoryService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,32 +18,33 @@ public class OrderHistoryController {
     private final OrderHistoryService service;
 
     @GetMapping
-    public List<OrderHistoryResponse> getAllOrderHistories() {
-        return service.getAllOrderHistories();
+    public ResponseEntity<List<OrderHistoryResponse>> getAllOrderHistories() {
+        return ResponseEntity.ok(service.getAllOrderHistories());
     }
 
     @GetMapping("/{id}")
-    public OrderHistoryResponse getOrderHistoryById(@PathVariable int id) {
-        return service.getOrderHistoryById(id);
+    public ResponseEntity<OrderHistoryResponse> getOrderHistoryById(@PathVariable int id) {
+        return ResponseEntity.ok(service.getOrderHistoryById(id));
     }
 
     @GetMapping("/order/{orderId}")
-    public List<OrderHistoryResponse> getOrderHistoriesByOrderId(@PathVariable int orderId) {
-        return service.getOrderHistoriesByOrderId(orderId);
+    public ResponseEntity<List<OrderHistoryResponse>> getOrderHistoriesByOrderId(@PathVariable int orderId) {
+        return ResponseEntity.ok(service.getOrderHistoriesByOrderId(orderId));
     }
 
     @PostMapping
     public ResponseEntity<OrderHistoryResponse> createOrderHistory(@Valid @RequestBody OrderHistoryRequest request) {
-        return ResponseEntity.ok(service.createOrderHistory(request));
+        return new ResponseEntity<>(service.createOrderHistory(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public OrderHistoryResponse updateOrderHistory(@PathVariable int id, @RequestBody OrderHistoryRequest request) {
-        return service.updateOrderHistory(id, request);
+    public ResponseEntity<OrderHistoryResponse> updateOrderHistory(@PathVariable int id, @Valid @RequestBody OrderHistoryRequest request) {
+        return ResponseEntity.ok(service.updateOrderHistory(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteOrderHistoryById(@PathVariable int id) {
+    public ResponseEntity<Void> deleteOrderHistoryById(@PathVariable int id) {
         service.deleteOrderHistoryById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -6,6 +6,7 @@ import org.akira.auratech.dto.PaymentRequest;
 import org.akira.auratech.dto.PaymentResponse;
 import org.akira.auratech.model.enums.PaymentStatus;
 import org.akira.auratech.service.PaymentService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,37 +19,38 @@ public class PaymentController {
     private final PaymentService service;
 
     @GetMapping
-    public List<PaymentResponse> getAllPayments() {
-        return service.getAllPayments();
+    public ResponseEntity<List<PaymentResponse>> getAllPayments() {
+        return ResponseEntity.ok(service.getAllPayments());
     }
 
     @GetMapping("/{id}")
-    public PaymentResponse getPaymentById(@PathVariable int id) {
-        return service.getPaymentById(id);
+    public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable int id) {
+        return ResponseEntity.ok(service.getPaymentById(id));
     }
 
     @GetMapping("/order/{orderId}")
-    public PaymentResponse getPaymentByOrderId(@PathVariable int orderId) {
-        return service.getPaymentByOrderId(orderId);
+    public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable int orderId) {
+        return ResponseEntity.ok(service.getPaymentByOrderId(orderId));
     }
 
     @GetMapping("/status/{status}")
-    public List<PaymentResponse> getPaymentsByStatus(@PathVariable PaymentStatus status) {
-        return service.getPaymentsByStatus(status);
+    public ResponseEntity<List<PaymentResponse>> getPaymentsByStatus(@PathVariable PaymentStatus status) {
+        return ResponseEntity.ok(service.getPaymentsByStatus(status));
     }
 
     @PostMapping
     public ResponseEntity<PaymentResponse> createPayment(@Valid @RequestBody PaymentRequest request) {
-        return ResponseEntity.ok(service.createPayment(request));
+        return new ResponseEntity<>(service.createPayment(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public PaymentResponse updatePayment(@PathVariable int id, @RequestBody PaymentRequest request) {
-        return service.updatePayment(id, request);
+    public ResponseEntity<PaymentResponse> updatePayment(@PathVariable int id, @Valid @RequestBody PaymentRequest request) {
+        return ResponseEntity.ok(service.updatePayment(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public void deletePaymentById(@PathVariable int id) {
+    public ResponseEntity<Void> deletePaymentById(@PathVariable int id) {
         service.deletePaymentById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
