@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.UserAddressRequest;
-import org.akira.auratech.dto.UserAddressResponse;
+import org.akira.auratech.dto.request.UserAddressRequest;
+import org.akira.auratech.dto.response.UserAddressResponse;
 import org.akira.auratech.model.User;
 import org.akira.auratech.model.UserAddress;
 import org.akira.auratech.repository.UserAddressRepository;
@@ -48,19 +48,19 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     public UserAddressResponse createUserAddress(UserAddressRequest request) {
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
         if (user == null) {
             return null;
         }
         UserAddress address = UserAddress.builder()
                 .user(user)
-                .receiverName(request.getReceiverName())
-                .phone(request.getPhone())
-                .street(request.getStreet())
-                .district(request.getDistrict())
-                .city(request.getCity())
-                .isDefault(request.getIsDefault() == null ? false : request.getIsDefault())
+                .receiverName(request.receiverName())
+                .phone(request.phone())
+                .street(request.street())
+                .district(request.district())
+                .city(request.city())
+                .isDefault(request.isDefault() == null ? false : request.isDefault())
                 .build();
         return UserAddressResponse.fromEntity(repo.save(address));
     }
@@ -69,28 +69,28 @@ public class UserAddressServiceImpl implements UserAddressService {
     public UserAddressResponse updateUserAddress(int id, UserAddressRequest request) {
         UserAddress address = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user address voi id = " + id));
-        if (request.getUserId() != null) {
-            User user = userRepository.findById(request.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
+        if (request.userId() != null) {
+            User user = userRepository.findById(request.userId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
             address.setUser(user);
         }
-        if (request.getReceiverName() != null) {
-            address.setReceiverName(request.getReceiverName());
+        if (request.receiverName() != null) {
+            address.setReceiverName(request.receiverName());
         }
-        if (request.getPhone() != null) {
-            address.setPhone(request.getPhone());
+        if (request.phone() != null) {
+            address.setPhone(request.phone());
         }
-        if (request.getStreet() != null) {
-            address.setStreet(request.getStreet());
+        if (request.street() != null) {
+            address.setStreet(request.street());
         }
-        if (request.getDistrict() != null) {
-            address.setDistrict(request.getDistrict());
+        if (request.district() != null) {
+            address.setDistrict(request.district());
         }
-        if (request.getCity() != null) {
-            address.setCity(request.getCity());
+        if (request.city() != null) {
+            address.setCity(request.city());
         }
-        if (request.getIsDefault() != null) {
-            address.setDefault(request.getIsDefault());
+        if (request.isDefault() != null) {
+            address.setDefault(request.isDefault());
         }
         return UserAddressResponse.fromEntity(repo.save(address));
     }

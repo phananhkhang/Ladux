@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.OrderRequest;
-import org.akira.auratech.dto.OrderResponse;
+import org.akira.auratech.dto.request.OrderRequest;
+import org.akira.auratech.dto.response.OrderResponse;
 import org.akira.auratech.model.Coupon;
 import org.akira.auratech.model.Order;
 import org.akira.auratech.model.User;
@@ -52,22 +52,22 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse createOrder(OrderRequest request) {
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
         Coupon coupon = null;
-        if (request.getCouponId() != null) {
-            coupon = couponRepository.findById(request.getCouponId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + request.getCouponId()));
+        if (request.couponId() != null) {
+            coupon = couponRepository.findById(request.couponId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + request.couponId()));
         }
         Order order = Order.builder()
                 .user(user)
                 .coupon(coupon)
-                .subTotal(request.getSubTotal())
-                .discountAmount(request.getDiscountAmount())
-                .finalAmount(request.getFinalAmount())
-                .status(request.getStatus() == null ? OrderStatus.PENDING : request.getStatus())
-                .shippingAddress(request.getShippingAddress())
-                .trackingNumber(request.getTrackingNumber())
+                .subTotal(request.subTotal())
+                .discountAmount(request.discountAmount())
+                .finalAmount(request.finalAmount())
+                .status(request.status() == null ? OrderStatus.PENDING : request.status())
+                .shippingAddress(request.shippingAddress())
+                .trackingNumber(request.trackingNumber())
                 .build();
         return OrderResponse.fromEntity(repo.save(order));
     }
@@ -76,33 +76,33 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse updateOrder(int id, OrderRequest request) {
         Order order = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + id));
-        if (request.getUserId() != null) {
-            User user = userRepository.findById(request.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
+        if (request.userId() != null) {
+            User user = userRepository.findById(request.userId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
             order.setUser(user);
         }
-        if (request.getCouponId() != null) {
-            Coupon coupon = couponRepository.findById(request.getCouponId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + request.getCouponId()));
+        if (request.couponId() != null) {
+            Coupon coupon = couponRepository.findById(request.couponId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + request.couponId()));
             order.setCoupon(coupon);
         }
-        if (request.getSubTotal() != null) {
-            order.setSubTotal(request.getSubTotal());
+        if (request.subTotal() != null) {
+            order.setSubTotal(request.subTotal());
         }
-        if (request.getDiscountAmount() != null) {
-            order.setDiscountAmount(request.getDiscountAmount());
+        if (request.discountAmount() != null) {
+            order.setDiscountAmount(request.discountAmount());
         }
-        if (request.getFinalAmount() != null) {
-            order.setFinalAmount(request.getFinalAmount());
+        if (request.finalAmount() != null) {
+            order.setFinalAmount(request.finalAmount());
         }
-        if (request.getStatus() != null) {
-            order.setStatus(request.getStatus());
+        if (request.status() != null) {
+            order.setStatus(request.status());
         }
-        if (request.getShippingAddress() != null) {
-            order.setShippingAddress(request.getShippingAddress());
+        if (request.shippingAddress() != null) {
+            order.setShippingAddress(request.shippingAddress());
         }
-        if (request.getTrackingNumber() != null) {
-            order.setTrackingNumber(request.getTrackingNumber());
+        if (request.trackingNumber() != null) {
+            order.setTrackingNumber(request.trackingNumber());
         }
         return OrderResponse.fromEntity(repo.save(order));
     }

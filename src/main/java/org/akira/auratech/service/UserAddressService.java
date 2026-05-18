@@ -1,7 +1,7 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.dto.UserAddressRequest;
-import org.akira.auratech.dto.UserAddressResponse;
+import org.akira.auratech.dto.request.UserAddressRequest;
+import org.akira.auratech.dto.response.UserAddressResponse;
 
 import java.util.List;
 

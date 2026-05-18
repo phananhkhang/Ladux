@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.BrandRequest;
-import org.akira.auratech.dto.BrandResponse;
+import org.akira.auratech.dto.request.BrandRequest;
+import org.akira.auratech.dto.response.BrandResponse;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.akira.auratech.model.Brand;
 import org.akira.auratech.repository.BrandRepository;
@@ -42,11 +42,11 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public BrandResponse createBrand(BrandRequest request) {
-        String slug = SlugUtils.toSlug(request.getName());
+        String slug = SlugUtils.toSlug(request.name());
         Brand brand = Brand.builder()
-                .name(request.getName())
+                .name(request.name())
                 .slug(slug)
-                .logoUrl(request.getLogoUrl())
+                .logoUrl(request.logoUrl())
                 .build();
 
         Brand savedBrand = repo.save(brand);
@@ -58,9 +58,9 @@ public class BrandServiceImpl implements BrandService {
     public BrandResponse updateBrand(int id, BrandRequest brand) {
         Brand b = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thương hiệu với id = " + id));
         if (b == null) return null;
-        b.setName(brand.getName());
-        b.setSlug(SlugUtils.toSlug(brand.getName()));
-        b.setLogoUrl(brand.getLogoUrl());
+        b.setName(brand.name());
+        b.setSlug(SlugUtils.toSlug(brand.name()));
+        b.setLogoUrl(brand.logoUrl());
         Brand savedBrand = repo.save(b);
         return BrandResponse.fromEntity(savedBrand);
     }

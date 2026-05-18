@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.UserRequest;
-import org.akira.auratech.dto.UserResponse;
+import org.akira.auratech.dto.request.UserRequest;
+import org.akira.auratech.dto.response.UserResponse;
 import org.akira.auratech.model.Role;
 import org.akira.auratech.model.User;
 import org.akira.auratech.repository.RoleRepository;
@@ -48,17 +48,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse createUser(UserRequest request) {
-        Set<Role> roles = resolveRoles(request.getRoleIds());
-        if (request.getRoleIds() != null && roles == null) {
+        Set<Role> roles = resolveRoles(request.roleIds());
+        if (request.roleIds() != null && roles == null) {
             return null;
         }
         User user = User.builder()
-                .email(request.getEmail())
-                .passwordHash(request.getPasswordHash())
-                .fullName(request.getFullName())
-                .phone(request.getPhone())
-                .avatar(request.getAvatar())
-                .isActive(request.getIsActive() == null ? true : request.getIsActive())
+                .email(request.email())
+                .passwordHash(request.passwordHash())
+                .fullName(request.fullName())
+                .phone(request.phone())
+                .avatar(request.avatar())
+                .isActive(request.isActive() == null ? true : request.isActive())
                 .roles(roles == null ? new LinkedHashSet<>() : roles)
                 .build();
         return UserResponse.fromEntity(repo.save(user));
@@ -68,26 +68,26 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUser(int id, UserRequest request) {
         User user = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id));
-        if (request.getEmail() != null) {
-            user.setEmail(request.getEmail());
+        if (request.email() != null) {
+            user.setEmail(request.email());
         }
-        if (request.getPasswordHash() != null) {
-            user.setPasswordHash(request.getPasswordHash());
+        if (request.passwordHash() != null) {
+            user.setPasswordHash(request.passwordHash());
         }
-        if (request.getFullName() != null) {
-            user.setFullName(request.getFullName());
+        if (request.fullName() != null) {
+            user.setFullName(request.fullName());
         }
-        if (request.getPhone() != null) {
-            user.setPhone(request.getPhone());
+        if (request.phone() != null) {
+            user.setPhone(request.phone());
         }
-        if (request.getAvatar() != null) {
-            user.setAvatar(request.getAvatar());
+        if (request.avatar() != null) {
+            user.setAvatar(request.avatar());
         }
-        if (request.getIsActive() != null) {
-            user.setActive(request.getIsActive());
+        if (request.isActive() != null) {
+            user.setActive(request.isActive());
         }
-        if (request.getRoleIds() != null) {
-            Set<Role> roles = resolveRoles(request.getRoleIds());
+        if (request.roleIds() != null) {
+            Set<Role> roles = resolveRoles(request.roleIds());
             if (roles == null) {
                 return null;
             }

@@ -1,7 +1,7 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.dto.OrderHistoryRequest;
-import org.akira.auratech.dto.OrderHistoryResponse;
+import org.akira.auratech.dto.request.OrderHistoryRequest;
+import org.akira.auratech.dto.response.OrderHistoryResponse;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.RoleRequest;
-import org.akira.auratech.dto.RoleResponse;
+import org.akira.auratech.dto.request.RoleRequest;
+import org.akira.auratech.dto.response.RoleResponse;
 import org.akira.auratech.model.Role;
 import org.akira.auratech.model.enums.RoleName;
 import org.akira.auratech.repository.RoleRepository;
@@ -38,7 +38,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleResponse createRole(RoleRequest request) {
         Role role = Role.builder()
-                .name(request.getName())
+                .name(request.name())
                 .build();
         return RoleResponse.fromEntity(repo.save(role));
     }
@@ -47,8 +47,8 @@ public class RoleServiceImpl implements RoleService {
     public RoleResponse updateRole(int id, RoleRequest request) {
         Role role = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay role voi id = " + id));
-        if (request.getName() != null) {
-            role.setName(request.getName());
+        if (request.name() != null) {
+            role.setName(request.name());
         }
         return RoleResponse.fromEntity(repo.save(role));
     }

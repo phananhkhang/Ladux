@@ -2,8 +2,8 @@ package org.akira.auratech.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.BrandRequest;
-import org.akira.auratech.dto.BrandResponse;
+import org.akira.auratech.dto.request.BrandRequest;
+import org.akira.auratech.dto.response.BrandResponse;
 import org.akira.auratech.service.BrandService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

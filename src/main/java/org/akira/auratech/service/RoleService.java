@@ -1,7 +1,7 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.dto.RoleRequest;
-import org.akira.auratech.dto.RoleResponse;
+import org.akira.auratech.dto.request.RoleRequest;
+import org.akira.auratech.dto.response.RoleResponse;
 import org.akira.auratech.model.enums.RoleName;
 
 import java.util.List;

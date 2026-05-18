@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.CategoryRequest;
-import org.akira.auratech.dto.CategoryResponse;
+import org.akira.auratech.dto.request.CategoryRequest;
+import org.akira.auratech.dto.response.CategoryResponse;
 import org.akira.auratech.model.Category;
 import org.akira.auratech.repository.CategoryRepository;
 import org.akira.auratech.service.CategoryService;
@@ -50,16 +50,16 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse createCategory(CategoryRequest request) {
         Category parent = null;
-        if (request.getParentId() != null) {
-            parent = repo.findById(request.getParentId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.getParentId()));
+        if (request.parentId() != null) {
+            parent = repo.findById(request.parentId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.parentId()));
         }
-        String slug = request.getSlug();
+        String slug = request.slug();
         if (slug == null || slug.isBlank()) {
-            slug = SlugUtils.toSlug(request.getName());
+            slug = SlugUtils.toSlug(request.name());
         }
         Category category = Category.builder()
-                .name(request.getName())
+                .name(request.name())
                 .slug(slug)
                 .parent(parent)
                 .build();
@@ -70,17 +70,17 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse updateCategory(int id, CategoryRequest request) {
         Category category = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + id));
-        if (request.getName() != null) {
-            category.setName(request.getName());
+        if (request.name() != null) {
+            category.setName(request.name());
         }
-        if (request.getSlug() != null && !request.getSlug().isBlank()) {
-            category.setSlug(request.getSlug());
-        } else if (request.getName() != null) {
-            category.setSlug(SlugUtils.toSlug(request.getName()));
+        if (request.slug() != null && !request.slug().isBlank()) {
+            category.setSlug(request.slug());
+        } else if (request.name() != null) {
+            category.setSlug(SlugUtils.toSlug(request.name()));
         }
-        if (request.getParentId() != null) {
-            Category parent = repo.findById(request.getParentId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.getParentId()));
+        if (request.parentId() != null) {
+            Category parent = repo.findById(request.parentId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.parentId()));
             category.setParent(parent);
         }
         return CategoryResponse.fromEntity(repo.save(category));

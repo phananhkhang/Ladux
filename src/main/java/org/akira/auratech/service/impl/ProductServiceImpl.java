@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.ProductRequest;
-import org.akira.auratech.dto.ProductResponse;
+import org.akira.auratech.dto.request.ProductRequest;
+import org.akira.auratech.dto.response.ProductResponse;
 import org.akira.auratech.model.Brand;
 import org.akira.auratech.model.Category;
 import org.akira.auratech.model.Product;
@@ -69,29 +69,29 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse createProduct(ProductRequest request) {
-        Brand brand = brandRepository.findById(request.getBrandId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay brand voi id = " + request.getBrandId()));
-        Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.getCategoryId()));
+        Brand brand = brandRepository.findById(request.brandId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay brand voi id = " + request.brandId()));
+        Category category = categoryRepository.findById(request.categoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.categoryId()));
         if (brand == null || category == null) {
             return null;
         }
-        String slug = request.getSlug();
+        String slug = request.slug();
         if (slug == null || slug.isBlank()) {
-            slug = SlugUtils.toSlug(request.getName());
+            slug = SlugUtils.toSlug(request.name());
         }
         Product product = Product.builder()
                 .brand(brand)
                 .category(category)
-                .sku(request.getSku())
-                .name(request.getName())
+                .sku(request.sku())
+                .name(request.name())
                 .slug(slug)
-                .basePrice(request.getBasePrice())
-                .discountPrice(request.getDiscountPrice())
-                .stockQuantity(request.getStockQuantity() == null ? 0 : request.getStockQuantity())
-                .specs(request.getSpecs())
-                .thumbnail(request.getThumbnail())
-                .isActive(request.getIsActive() == null ? true : request.getIsActive())
+                .basePrice(request.basePrice())
+                .discountPrice(request.discountPrice())
+                .stockQuantity(request.stockQuantity() == null ? 0 : request.stockQuantity())
+                .specs(request.specs())
+                .thumbnail(request.thumbnail())
+                .isActive(request.isActive() == null ? true : request.isActive())
                 .build();
         return ProductResponse.fromEntity(repo.save(product));
     }
@@ -100,44 +100,44 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse updateProduct(int id, ProductRequest request) {
         Product product = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + id));
-        if (request.getBrandId() != null) {
-            Brand brand = brandRepository.findById(request.getBrandId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay brand voi id = " + request.getBrandId()));
+        if (request.brandId() != null) {
+            Brand brand = brandRepository.findById(request.brandId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay brand voi id = " + request.brandId()));
             product.setBrand(brand);
         }
-        if (request.getCategoryId() != null) {
-            Category category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.getCategoryId()));
+        if (request.categoryId() != null) {
+            Category category = categoryRepository.findById(request.categoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.categoryId()));
             product.setCategory(category);
         }
-        if (request.getSku() != null) {
-            product.setSku(request.getSku());
+        if (request.sku() != null) {
+            product.setSku(request.sku());
         }
-        if (request.getName() != null) {
-            product.setName(request.getName());
+        if (request.name() != null) {
+            product.setName(request.name());
         }
-        if (request.getSlug() != null && !request.getSlug().isBlank()) {
-            product.setSlug(request.getSlug());
-        } else if (request.getName() != null) {
-            product.setSlug(SlugUtils.toSlug(request.getName()));
+        if (request.slug() != null && !request.slug().isBlank()) {
+            product.setSlug(request.slug());
+        } else if (request.name() != null) {
+            product.setSlug(SlugUtils.toSlug(request.name()));
         }
-        if (request.getBasePrice() != null) {
-            product.setBasePrice(request.getBasePrice());
+        if (request.basePrice() != null) {
+            product.setBasePrice(request.basePrice());
         }
-        if (request.getDiscountPrice() != null) {
-            product.setDiscountPrice(request.getDiscountPrice());
+        if (request.discountPrice() != null) {
+            product.setDiscountPrice(request.discountPrice());
         }
-        if (request.getStockQuantity() != null) {
-            product.setStockQuantity(request.getStockQuantity());
+        if (request.stockQuantity() != null) {
+            product.setStockQuantity(request.stockQuantity());
         }
-        if (request.getSpecs() != null) {
-            product.setSpecs(request.getSpecs());
+        if (request.specs() != null) {
+            product.setSpecs(request.specs());
         }
-        if (request.getThumbnail() != null) {
-            product.setThumbnail(request.getThumbnail());
+        if (request.thumbnail() != null) {
+            product.setThumbnail(request.thumbnail());
         }
-        if (request.getIsActive() != null) {
-            product.setActive(request.getIsActive());
+        if (request.isActive() != null) {
+            product.setActive(request.isActive());
         }
         return ProductResponse.fromEntity(repo.save(product));
     }

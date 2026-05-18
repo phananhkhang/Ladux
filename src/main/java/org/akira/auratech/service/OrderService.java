@@ -1,7 +1,7 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.dto.OrderRequest;
-import org.akira.auratech.dto.OrderResponse;
+import org.akira.auratech.dto.request.OrderRequest;
+import org.akira.auratech.dto.response.OrderResponse;
 import org.akira.auratech.model.enums.OrderStatus;
 
 import java.util.List;

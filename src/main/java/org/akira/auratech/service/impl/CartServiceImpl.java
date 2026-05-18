@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.CartRequest;
-import org.akira.auratech.dto.CartResponse;
+import org.akira.auratech.dto.request.CartRequest;
+import org.akira.auratech.dto.response.CartResponse;
 import org.akira.auratech.model.Cart;
 import org.akira.auratech.model.User;
 import org.akira.auratech.repository.CartRepository;
@@ -43,8 +43,8 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartResponse createCart(CartRequest request) {
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
         if (user == null) {
             return null;
         }
@@ -58,9 +58,9 @@ public class CartServiceImpl implements CartService {
     public CartResponse updateCart(int id, CartRequest request) {
         Cart cart = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart voi id = " + id));
-        if (request.getUserId() != null) {
-            User user = userRepository.findById(request.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
+        if (request.userId() != null) {
+            User user = userRepository.findById(request.userId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
             cart.setUser(user);
         }
         return CartResponse.fromEntity(repo.save(cart));

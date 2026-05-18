@@ -2,8 +2,8 @@ package org.akira.auratech.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.CouponRequest;
-import org.akira.auratech.dto.CouponResponse;
+import org.akira.auratech.dto.request.CouponRequest;
+import org.akira.auratech.dto.response.CouponResponse;
 import org.akira.auratech.service.CouponService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

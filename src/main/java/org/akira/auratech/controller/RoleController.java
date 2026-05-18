@@ -2,8 +2,8 @@ package org.akira.auratech.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.RoleRequest;
-import org.akira.auratech.dto.RoleResponse;
+import org.akira.auratech.dto.request.RoleRequest;
+import org.akira.auratech.dto.response.RoleResponse;
 import org.akira.auratech.model.enums.RoleName;
 import org.akira.auratech.service.RoleService;
 import org.springframework.http.HttpStatus;

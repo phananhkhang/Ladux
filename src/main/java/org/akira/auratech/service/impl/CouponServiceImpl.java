@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.CouponRequest;
-import org.akira.auratech.dto.CouponResponse;
+import org.akira.auratech.dto.request.CouponRequest;
+import org.akira.auratech.dto.response.CouponResponse;
 import org.akira.auratech.model.Coupon;
 import org.akira.auratech.repository.CouponRepository;
 import org.akira.auratech.service.CouponService;
@@ -37,13 +37,13 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public CouponResponse createCoupon(CouponRequest request) {
         Coupon coupon = Coupon.builder()
-                .code(request.getCode())
-                .discountType(request.getDiscountType())
-                .discountValue(request.getDiscountValue())
-                .minOrderValue(request.getMinOrderValue())
-                .usageLimit(request.getUsageLimit())
-                .usedCount(request.getUsedCount() == null ? 0 : request.getUsedCount())
-                .expiresAt(request.getExpiresAt())
+                .code(request.code())
+                .discountType(request.discountType())
+                .discountValue(request.discountValue())
+                .minOrderValue(request.minOrderValue())
+                .usageLimit(request.usageLimit())
+                .usedCount(request.usedCount() == null ? 0 : request.usedCount())
+                .expiresAt(request.expiresAt())
                 .build();
         return CouponResponse.fromEntity(repo.save(coupon));
     }
@@ -52,26 +52,26 @@ public class CouponServiceImpl implements CouponService {
     public CouponResponse updateCoupon(int id, CouponRequest request) {
         Coupon coupon = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + id));
-        if (request.getCode() != null) {
-            coupon.setCode(request.getCode());
+        if (request.code() != null) {
+            coupon.setCode(request.code());
         }
-        if (request.getDiscountType() != null) {
-            coupon.setDiscountType(request.getDiscountType());
+        if (request.discountType() != null) {
+            coupon.setDiscountType(request.discountType());
         }
-        if (request.getDiscountValue() != null) {
-            coupon.setDiscountValue(request.getDiscountValue());
+        if (request.discountValue() != null) {
+            coupon.setDiscountValue(request.discountValue());
         }
-        if (request.getMinOrderValue() != null) {
-            coupon.setMinOrderValue(request.getMinOrderValue());
+        if (request.minOrderValue() != null) {
+            coupon.setMinOrderValue(request.minOrderValue());
         }
-        if (request.getUsageLimit() != null) {
-            coupon.setUsageLimit(request.getUsageLimit());
+        if (request.usageLimit() != null) {
+            coupon.setUsageLimit(request.usageLimit());
         }
-        if (request.getUsedCount() != null) {
-            coupon.setUsedCount(request.getUsedCount());
+        if (request.usedCount() != null) {
+            coupon.setUsedCount(request.usedCount());
         }
-        if (request.getExpiresAt() != null) {
-            coupon.setExpiresAt(request.getExpiresAt());
+        if (request.expiresAt() != null) {
+            coupon.setExpiresAt(request.expiresAt());
         }
         return CouponResponse.fromEntity(repo.save(coupon));
     }

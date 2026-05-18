@@ -1,8 +1,8 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.dto.BrandRequest;
-import org.akira.auratech.dto.BrandResponse;
-import org.akira.auratech.model.Brand;
+import org.akira.auratech.dto.request.BrandRequest;
+import org.akira.auratech.dto.response.BrandResponse;
+
 import java.util.List;
 
 public interface BrandService {

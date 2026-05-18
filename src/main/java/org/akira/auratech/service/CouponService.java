@@ -1,7 +1,7 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.dto.CouponRequest;
-import org.akira.auratech.dto.CouponResponse;
+import org.akira.auratech.dto.request.CouponRequest;
+import org.akira.auratech.dto.response.CouponResponse;
 
 import java.util.List;
 

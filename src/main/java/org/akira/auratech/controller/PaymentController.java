@@ -2,8 +2,8 @@ package org.akira.auratech.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.PaymentRequest;
-import org.akira.auratech.dto.PaymentResponse;
+import org.akira.auratech.dto.request.PaymentRequest;
+import org.akira.auratech.dto.response.PaymentResponse;
 import org.akira.auratech.model.enums.PaymentStatus;
 import org.akira.auratech.service.PaymentService;
 import org.springframework.http.HttpStatus;

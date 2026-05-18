@@ -1,7 +1,7 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.dto.PaymentRequest;
-import org.akira.auratech.dto.PaymentResponse;
+import org.akira.auratech.dto.request.PaymentRequest;
+import org.akira.auratech.dto.response.PaymentResponse;
 import org.akira.auratech.model.enums.PaymentStatus;
 
 import java.util.List;

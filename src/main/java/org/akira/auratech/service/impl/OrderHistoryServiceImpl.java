@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.OrderHistoryRequest;
-import org.akira.auratech.dto.OrderHistoryResponse;
+import org.akira.auratech.dto.request.OrderHistoryRequest;
+import org.akira.auratech.dto.response.OrderHistoryResponse;
 import org.akira.auratech.model.Order;
 import org.akira.auratech.model.OrderHistory;
 import org.akira.auratech.repository.OrderHistoryRepository;
@@ -41,15 +41,15 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
 
     @Override
     public OrderHistoryResponse createOrderHistory(OrderHistoryRequest request) {
-        Order order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.getOrderId()));
+        Order order = orderRepository.findById(request.orderId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.orderId()));
         if (order == null) {
             return null;
         }
         OrderHistory history = OrderHistory.builder()
                 .order(order)
-                .status(request.getStatus())
-                .description(request.getDescription())
+                .status(request.status())
+                .description(request.description())
                 .build();
         return OrderHistoryResponse.fromEntity(repo.save(history));
     }
@@ -58,16 +58,16 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
     public OrderHistoryResponse updateOrderHistory(int id, OrderHistoryRequest request) {
         OrderHistory history = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order history voi id = " + id));
-        if (request.getOrderId() != null) {
-            Order order = orderRepository.findById(request.getOrderId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.getOrderId()));
+        if (request.orderId() != null) {
+            Order order = orderRepository.findById(request.orderId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.orderId()));
             history.setOrder(order);
         }
-        if (request.getStatus() != null) {
-            history.setStatus(request.getStatus());
+        if (request.status() != null) {
+            history.setStatus(request.status());
         }
-        if (request.getDescription() != null) {
-            history.setDescription(request.getDescription());
+        if (request.description() != null) {
+            history.setDescription(request.description());
         }
         return OrderHistoryResponse.fromEntity(repo.save(history));
     }

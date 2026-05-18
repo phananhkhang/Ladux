@@ -1,7 +1,7 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.dto.CategoryRequest;
-import org.akira.auratech.dto.CategoryResponse;
+import org.akira.auratech.dto.request.CategoryRequest;
+import org.akira.auratech.dto.response.CategoryResponse;
 
 import java.util.List;
 

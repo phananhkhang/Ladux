@@ -1,7 +1,7 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.dto.WishlistRequest;
-import org.akira.auratech.dto.WishlistResponse;
+import org.akira.auratech.dto.request.WishlistRequest;
+import org.akira.auratech.dto.response.WishlistResponse;
 
 import java.util.List;
 

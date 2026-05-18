@@ -2,8 +2,8 @@ package org.akira.auratech.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.ProductImageRequest;
-import org.akira.auratech.dto.ProductImageResponse;
+import org.akira.auratech.dto.request.ProductImageRequest;
+import org.akira.auratech.dto.response.ProductImageResponse;
 import org.akira.auratech.service.ProductImageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

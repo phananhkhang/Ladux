@@ -1,7 +1,7 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.dto.CartItemRequest;
-import org.akira.auratech.dto.CartItemResponse;
+import org.akira.auratech.dto.request.CartItemRequest;
+import org.akira.auratech.dto.response.CartItemResponse;
 
 import java.util.List;
 

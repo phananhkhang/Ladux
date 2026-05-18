@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.PaymentRequest;
-import org.akira.auratech.dto.PaymentResponse;
+import org.akira.auratech.dto.request.PaymentRequest;
+import org.akira.auratech.dto.response.PaymentResponse;
 import org.akira.auratech.model.Order;
 import org.akira.auratech.model.Payment;
 import org.akira.auratech.model.enums.PaymentStatus;
@@ -51,17 +51,17 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResponse createPayment(PaymentRequest request) {
-        Order order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.getOrderId()));
+        Order order = orderRepository.findById(request.orderId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.orderId()));
         if (order == null) {
             return null;
         }
         Payment payment = Payment.builder()
                 .order(order)
-                .provider(request.getProvider())
-                .transactionNo(request.getTransactionNo())
-                .amount(request.getAmount())
-                .status(request.getStatus() == null ? PaymentStatus.PENDING : request.getStatus())
+                .provider(request.provider())
+                .transactionNo(request.transactionNo())
+                .amount(request.amount())
+                .status(request.status() == null ? PaymentStatus.PENDING : request.status())
                 .build();
         return PaymentResponse.fromEntity(repo.save(payment));
     }
@@ -70,22 +70,22 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentResponse updatePayment(int id, PaymentRequest request) {
         Payment payment = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay payment voi id = " + id));
-        if (request.getOrderId() != null) {
-            Order order = orderRepository.findById(request.getOrderId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.getOrderId()));
+        if (request.orderId() != null) {
+            Order order = orderRepository.findById(request.orderId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.orderId()));
             payment.setOrder(order);
         }
-        if (request.getProvider() != null) {
-            payment.setProvider(request.getProvider());
+        if (request.provider() != null) {
+            payment.setProvider(request.provider());
         }
-        if (request.getTransactionNo() != null) {
-            payment.setTransactionNo(request.getTransactionNo());
+        if (request.transactionNo() != null) {
+            payment.setTransactionNo(request.transactionNo());
         }
-        if (request.getAmount() != null) {
-            payment.setAmount(request.getAmount());
+        if (request.amount() != null) {
+            payment.setAmount(request.amount());
         }
-        if (request.getStatus() != null) {
-            payment.setStatus(request.getStatus());
+        if (request.status() != null) {
+            payment.setStatus(request.status());
         }
         return PaymentResponse.fromEntity(repo.save(payment));
     }

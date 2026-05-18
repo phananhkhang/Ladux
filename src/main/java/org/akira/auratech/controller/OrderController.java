@@ -2,8 +2,8 @@ package org.akira.auratech.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.OrderRequest;
-import org.akira.auratech.dto.OrderResponse;
+import org.akira.auratech.dto.request.OrderRequest;
+import org.akira.auratech.dto.response.OrderResponse;
 import org.akira.auratech.model.enums.OrderStatus;
 import org.akira.auratech.service.OrderService;
 import org.springframework.http.HttpStatus;

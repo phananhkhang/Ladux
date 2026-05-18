@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.OrderItemRequest;
-import org.akira.auratech.dto.OrderItemResponse;
+import org.akira.auratech.dto.request.OrderItemRequest;
+import org.akira.auratech.dto.response.OrderItemResponse;
 import org.akira.auratech.model.Order;
 import org.akira.auratech.model.OrderItem;
 import org.akira.auratech.model.Product;
@@ -44,18 +44,18 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public OrderItemResponse createOrderItem(OrderItemRequest request) {
-        Order order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.getOrderId()));
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
+        Order order = orderRepository.findById(request.orderId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.orderId()));
+        Product product = productRepository.findById(request.productId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
         if (order == null || product == null) {
             return null;
         }
         OrderItem item = OrderItem.builder()
                 .order(order)
                 .product(product)
-                .quantity(request.getQuantity() == null ? 1 : request.getQuantity())
-                .priceAtPurchase(request.getPriceAtPurchase())
+                .quantity(request.quantity() == null ? 1 : request.quantity())
+                .priceAtPurchase(request.priceAtPurchase())
                 .build();
         return OrderItemResponse.fromEntity(repo.save(item));
     }
@@ -64,21 +64,21 @@ public class OrderItemServiceImpl implements OrderItemService {
     public OrderItemResponse updateOrderItem(int id, OrderItemRequest request) {
         OrderItem item = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order item voi id = " + id));
-        if (request.getOrderId() != null) {
-            Order order = orderRepository.findById(request.getOrderId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.getOrderId()));
+        if (request.orderId() != null) {
+            Order order = orderRepository.findById(request.orderId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.orderId()));
             item.setOrder(order);
         }
-        if (request.getProductId() != null) {
-            Product product = productRepository.findById(request.getProductId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
+        if (request.productId() != null) {
+            Product product = productRepository.findById(request.productId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
             item.setProduct(product);
         }
-        if (request.getQuantity() != null) {
-            item.setQuantity(request.getQuantity());
+        if (request.quantity() != null) {
+            item.setQuantity(request.quantity());
         }
-        if (request.getPriceAtPurchase() != null) {
-            item.setPriceAtPurchase(request.getPriceAtPurchase());
+        if (request.priceAtPurchase() != null) {
+            item.setPriceAtPurchase(request.priceAtPurchase());
         }
         return OrderItemResponse.fromEntity(repo.save(item));
     }

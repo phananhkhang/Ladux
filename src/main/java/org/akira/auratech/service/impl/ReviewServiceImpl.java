@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.ReviewRequest;
-import org.akira.auratech.dto.ReviewResponse;
+import org.akira.auratech.dto.request.ReviewRequest;
+import org.akira.auratech.dto.response.ReviewResponse;
 import org.akira.auratech.model.Product;
 import org.akira.auratech.model.Review;
 import org.akira.auratech.model.User;
@@ -51,18 +51,18 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewResponse createReview(ReviewRequest request) {
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
+        Product product = productRepository.findById(request.productId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
         if (user == null || product == null) {
             return null;
         }
         Review review = Review.builder()
                 .user(user)
                 .product(product)
-                .rating(request.getRating() == null ? 0 : request.getRating())
-                .comment(request.getComment())
+                .rating(request.rating() == null ? 0 : request.rating())
+                .comment(request.comment())
                 .build();
         return ReviewResponse.fromEntity(repo.save(review));
     }
@@ -71,21 +71,21 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewResponse updateReview(int id, ReviewRequest request) {
         Review review = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + id));
-        if (request.getUserId() != null) {
-            User user = userRepository.findById(request.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
+        if (request.userId() != null) {
+            User user = userRepository.findById(request.userId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
             review.setUser(user);
         }
-        if (request.getProductId() != null) {
-            Product product = productRepository.findById(request.getProductId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
+        if (request.productId() != null) {
+            Product product = productRepository.findById(request.productId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
             review.setProduct(product);
         }
-        if (request.getRating() != null) {
-            review.setRating(request.getRating());
+        if (request.rating() != null) {
+            review.setRating(request.rating());
         }
-        if (request.getComment() != null) {
-            review.setComment(request.getComment());
+        if (request.comment() != null) {
+            review.setComment(request.comment());
         }
         return ReviewResponse.fromEntity(repo.save(review));
     }

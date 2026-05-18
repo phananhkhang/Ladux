@@ -1,7 +1,7 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.dto.ReviewRequest;
-import org.akira.auratech.dto.ReviewResponse;
+import org.akira.auratech.dto.request.ReviewRequest;
+import org.akira.auratech.dto.response.ReviewResponse;
 
 import java.util.List;
 

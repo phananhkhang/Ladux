@@ -2,8 +2,8 @@ package org.akira.auratech.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.CartItemRequest;
-import org.akira.auratech.dto.CartItemResponse;
+import org.akira.auratech.dto.request.CartItemRequest;
+import org.akira.auratech.dto.response.CartItemResponse;
 import org.akira.auratech.service.CartItemService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

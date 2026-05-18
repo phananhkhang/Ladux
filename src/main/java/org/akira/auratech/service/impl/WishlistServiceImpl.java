@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.WishlistRequest;
-import org.akira.auratech.dto.WishlistResponse;
+import org.akira.auratech.dto.request.WishlistRequest;
+import org.akira.auratech.dto.response.WishlistResponse;
 import org.akira.auratech.model.Product;
 import org.akira.auratech.model.User;
 import org.akira.auratech.model.Wishlist;
@@ -51,10 +51,10 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Override
     public WishlistResponse createWishlist(WishlistRequest request) {
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
+        Product product = productRepository.findById(request.productId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
         if (user == null || product == null) {
             return null;
         }
@@ -69,14 +69,14 @@ public class WishlistServiceImpl implements WishlistService {
     public WishlistResponse updateWishlist(int id, WishlistRequest request) {
         Wishlist wishlist = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay wishlist voi id = " + id));
-        if (request.getUserId() != null) {
-            User user = userRepository.findById(request.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.getUserId()));
+        if (request.userId() != null) {
+            User user = userRepository.findById(request.userId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
             wishlist.setUser(user);
         }
-        if (request.getProductId() != null) {
-            Product product = productRepository.findById(request.getProductId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
+        if (request.productId() != null) {
+            Product product = productRepository.findById(request.productId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
             wishlist.setProduct(product);
         }
         return WishlistResponse.fromEntity(repo.save(wishlist));

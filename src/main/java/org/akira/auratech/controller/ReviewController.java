@@ -2,8 +2,8 @@ package org.akira.auratech.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.ReviewRequest;
-import org.akira.auratech.dto.ReviewResponse;
+import org.akira.auratech.dto.request.ReviewRequest;
+import org.akira.auratech.dto.response.ReviewResponse;
 import org.akira.auratech.service.ReviewService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

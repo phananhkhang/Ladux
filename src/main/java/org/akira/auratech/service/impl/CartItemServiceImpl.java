@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.CartItemRequest;
-import org.akira.auratech.dto.CartItemResponse;
+import org.akira.auratech.dto.request.CartItemRequest;
+import org.akira.auratech.dto.response.CartItemResponse;
 import org.akira.auratech.model.Cart;
 import org.akira.auratech.model.CartItem;
 import org.akira.auratech.model.Product;
@@ -51,17 +51,17 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public CartItemResponse createCartItem(CartItemRequest request) {
-        Cart cart = cartRepository.findById(request.getCartId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart voi id = " + request.getCartId()));
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
+        Cart cart = cartRepository.findById(request.cartId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart voi id = " + request.cartId()));
+        Product product = productRepository.findById(request.productId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
         if (cart == null || product == null) {
             return null;
         }
         CartItem item = CartItem.builder()
                 .cart(cart)
                 .product(product)
-                .quantity(request.getQuantity() == null ? 1 : request.getQuantity())
+                .quantity(request.quantity() == null ? 1 : request.quantity())
                 .build();
         return CartItemResponse.fromEntity(repo.save(item));
     }
@@ -70,18 +70,18 @@ public class CartItemServiceImpl implements CartItemService {
     public CartItemResponse updateCartItem(int id, CartItemRequest request) {
         CartItem item = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart item voi id = " + id));
-        if (request.getCartId() != null) {
-            Cart cart = cartRepository.findById(request.getCartId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart voi id = " + request.getCartId()));
+        if (request.cartId() != null) {
+            Cart cart = cartRepository.findById(request.cartId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart voi id = " + request.cartId()));
             item.setCart(cart);
         }
-        if (request.getProductId() != null) {
-            Product product = productRepository.findById(request.getProductId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.getProductId()));
+        if (request.productId() != null) {
+            Product product = productRepository.findById(request.productId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
             item.setProduct(product);
         }
-        if (request.getQuantity() != null) {
-            item.setQuantity(request.getQuantity());
+        if (request.quantity() != null) {
+            item.setQuantity(request.quantity());
         }
         return CartItemResponse.fromEntity(repo.save(item));
     }
