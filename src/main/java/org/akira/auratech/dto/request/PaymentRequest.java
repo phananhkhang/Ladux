@@ -1,17 +1,21 @@
 package org.akira.auratech.dto.request;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import org.akira.auratech.model.enums.PaymentProvider;
 import org.akira.auratech.model.enums.PaymentStatus;
-import java.math.BigDecimal;
 
 public record PaymentRequest(
         @NotNull(message = "OrderId khong duoc de trong")
+        @Positive(message = "OrderId phai la so duong")
         Integer orderId,
+
         @NotNull(message = "Provider khong duoc de trong")
         PaymentProvider provider,
+
+        @Size(max = 255, message = "TransactionNo khong duoc vuot qua 255 ky tu")
         String transactionNo,
-        @NotNull(message = "Amount khong duoc de trong")
-        BigDecimal amount,
+
         PaymentStatus status
 ) {}

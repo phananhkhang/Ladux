@@ -3,12 +3,15 @@ package org.akira.auratech.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.CouponRequest;
 import org.akira.auratech.dto.response.CouponResponse;
+import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.model.Coupon;
+import org.akira.auratech.model.enums.DiscountType;
 import org.akira.auratech.repository.CouponRepository;
 import org.akira.auratech.service.CouponService;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -36,13 +39,14 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public CouponResponse createCoupon(CouponRequest request) {
+        validateCouponDefinition(request.discountType(), request.discountValue());
         Coupon coupon = Coupon.builder()
                 .code(request.code())
                 .discountType(request.discountType())
                 .discountValue(request.discountValue())
                 .minOrderValue(request.minOrderValue())
                 .usageLimit(request.usageLimit())
-                .usedCount(request.usedCount() == null ? 0 : request.usedCount())
+                .usedCount(0)
                 .expiresAt(request.expiresAt())
                 .build();
         return CouponResponse.fromEntity(repo.save(coupon));
@@ -52,6 +56,9 @@ public class CouponServiceImpl implements CouponService {
     public CouponResponse updateCoupon(int id, CouponRequest request) {
         Coupon coupon = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + id));
+        DiscountType nextType = request.discountType() == null ? coupon.getDiscountType() : request.discountType();
+        BigDecimal nextValue = request.discountValue() == null ? coupon.getDiscountValue() : request.discountValue();
+        validateCouponDefinition(nextType, nextValue);
         if (request.code() != null) {
             coupon.setCode(request.code());
         }
@@ -67,9 +74,6 @@ public class CouponServiceImpl implements CouponService {
         if (request.usageLimit() != null) {
             coupon.setUsageLimit(request.usageLimit());
         }
-        if (request.usedCount() != null) {
-            coupon.setUsedCount(request.usedCount());
-        }
         if (request.expiresAt() != null) {
             coupon.setExpiresAt(request.expiresAt());
         }
@@ -79,5 +83,13 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public void deleteCouponById(int id) {
         repo.deleteById(id);
+    }
+
+    private void validateCouponDefinition(DiscountType discountType, BigDecimal discountValue) {
+        if (discountType == DiscountType.PERCENT
+                && discountValue != null
+                && discountValue.compareTo(BigDecimal.valueOf(100)) > 0) {
+            throw new BusinessRuleException("Coupon PERCENT khong duoc vuot qua 100%");
+        }
     }
 }

@@ -11,9 +11,11 @@ import org.akira.auratech.repository.CategoryRepository;
 import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.service.ProductService;
 import org.akira.auratech.utils.SlugUtils;
+import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -80,6 +82,7 @@ public class ProductServiceImpl implements ProductService {
         if (slug == null || slug.isBlank()) {
             slug = SlugUtils.toSlug(request.name());
         }
+        validateProductPricing(request.basePrice(), request.discountPrice());
         Product product = Product.builder()
                 .brand(brand)
                 .category(category)
@@ -100,6 +103,9 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse updateProduct(int id, ProductRequest request) {
         Product product = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + id));
+        BigDecimal nextBasePrice = request.basePrice() == null ? product.getBasePrice() : request.basePrice();
+        BigDecimal nextDiscountPrice = request.discountPrice() == null ? product.getDiscountPrice() : request.discountPrice();
+        validateProductPricing(nextBasePrice, nextDiscountPrice);
         if (request.brandId() != null) {
             Brand brand = brandRepository.findById(request.brandId())
                     .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay brand voi id = " + request.brandId()));
@@ -145,5 +151,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProductById(int id) {
         repo.deleteById(id);
+    }
+
+    private void validateProductPricing(BigDecimal basePrice, BigDecimal discountPrice) {
+        if (discountPrice != null && discountPrice.compareTo(basePrice) > 0) {
+            throw new BusinessRuleException("DiscountPrice khong duoc lon hon BasePrice");
+        }
     }
 }

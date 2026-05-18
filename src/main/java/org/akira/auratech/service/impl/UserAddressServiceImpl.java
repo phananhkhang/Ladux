@@ -10,6 +10,7 @@ import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.UserAddressService;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -47,11 +48,15 @@ public class UserAddressServiceImpl implements UserAddressService {
     }
 
     @Override
+    @Transactional
     public UserAddressResponse createUserAddress(UserAddressRequest request) {
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
         if (user == null) {
             return null;
+        }
+        if (Boolean.TRUE.equals(request.isDefault())) {
+            clearDefaultAddresses(user.getId());
         }
         UserAddress address = UserAddress.builder()
                 .user(user)
@@ -66,6 +71,7 @@ public class UserAddressServiceImpl implements UserAddressService {
     }
 
     @Override
+    @Transactional
     public UserAddressResponse updateUserAddress(int id, UserAddressRequest request) {
         UserAddress address = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user address voi id = " + id));
@@ -90,6 +96,9 @@ public class UserAddressServiceImpl implements UserAddressService {
             address.setCity(request.city());
         }
         if (request.isDefault() != null) {
+            if (Boolean.TRUE.equals(request.isDefault())) {
+                clearDefaultAddresses(address.getUser().getId());
+            }
             address.setDefault(request.isDefault());
         }
         return UserAddressResponse.fromEntity(repo.save(address));
@@ -98,5 +107,9 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Override
     public void deleteUserAddressById(int id) {
         repo.deleteById(id);
+    }
+
+    private void clearDefaultAddresses(Integer userId) {
+        repo.findByUserIdAndIsDefaultTrue(userId).forEach(address -> address.setDefault(false));
     }
 }

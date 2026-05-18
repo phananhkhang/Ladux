@@ -1,12 +1,17 @@
 package org.akira.auratech.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+
+import java.util.List;
 
 public record ProductImageRequest(
-        @NotNull(message = "ProductId khong duoc de trong")
-        Integer productId,
-        @NotBlank(message = "ImageUrl khong duoc de trong")
-        String imageUrl,
-        Boolean isPrimary
+
+        @NotEmpty(message = "Danh sách không được để trống")
+        List<
+                @NotBlank(message = "Đường dẫn hình ảnh không được để trống")
+                @Size(max = 255, message = "Đường dẫn hình ảnh không được vượt quá 255 ký tự")
+                String
+                > imageUrl
 ) {}

@@ -66,7 +66,8 @@ public class Order {
     @Builder.Default
     private List<OrderHistory> histories = new ArrayList<>();
 
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private Payment payment;
+    @Builder.Default
+    private List<Payment> payments = new ArrayList<>();
 }

@@ -1,27 +1,51 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.request.OrderLineRequest;
 import org.akira.auratech.dto.request.OrderRequest;
+import org.akira.auratech.dto.request.OrderStatusUpdateRequest;
+import org.akira.auratech.dto.request.PaymentRetryRequest;
 import org.akira.auratech.dto.response.OrderResponse;
+import org.akira.auratech.dto.response.PaymentResponse;
+import org.akira.auratech.exception.BusinessRuleException;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.akira.auratech.model.Coupon;
 import org.akira.auratech.model.Order;
+import org.akira.auratech.model.OrderHistory;
+import org.akira.auratech.model.OrderItem;
+import org.akira.auratech.model.Payment;
+import org.akira.auratech.model.Product;
 import org.akira.auratech.model.User;
+import org.akira.auratech.model.enums.DiscountType;
 import org.akira.auratech.model.enums.OrderStatus;
+import org.akira.auratech.model.enums.PaymentStatus;
 import org.akira.auratech.repository.CouponRepository;
 import org.akira.auratech.repository.OrderRepository;
+import org.akira.auratech.repository.PaymentRepository;
+import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.OrderService;
-import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+    private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
+
     private final OrderRepository repo;
     private final UserRepository userRepository;
     private final CouponRepository couponRepository;
+    private final ProductRepository productRepository;
+    private final PaymentRepository paymentRepository;
 
     @Override
     public List<OrderResponse> getAllOrders() {
@@ -51,64 +75,223 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderResponse createOrder(OrderRequest request) {
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
-        Coupon coupon = null;
-        if (request.couponId() != null) {
-            coupon = couponRepository.findById(request.couponId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + request.couponId()));
+        if (!user.isActive()) {
+            throw new BusinessRuleException("Tai khoan dang bi khoa, khong the dat hang");
         }
+
+        List<LineDraft> lineDrafts = reserveStockAndPriceLines(request.items());
+        BigDecimal subTotal = lineDrafts.stream()
+                .map(LineDraft::lineTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
+
+        Coupon coupon = null;
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        if (request.couponId() != null) {
+            coupon = couponRepository.findByIdForUpdate(request.couponId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + request.couponId()));
+            validateCoupon(coupon, subTotal);
+            discountAmount = calculateDiscount(coupon, subTotal);
+            coupon.setUsedCount(coupon.getUsedCount() + 1);
+        }
+
+        BigDecimal finalAmount = subTotal.subtract(discountAmount)
+                .max(BigDecimal.ZERO)
+                .setScale(2, RoundingMode.HALF_UP);
+
         Order order = Order.builder()
                 .user(user)
                 .coupon(coupon)
-                .subTotal(request.subTotal())
-                .discountAmount(request.discountAmount())
-                .finalAmount(request.finalAmount())
-                .status(request.status() == null ? OrderStatus.PENDING : request.status())
+                .subTotal(subTotal)
+                .discountAmount(discountAmount)
+                .finalAmount(finalAmount)
+                .status(OrderStatus.PENDING)
                 .shippingAddress(request.shippingAddress())
-                .trackingNumber(request.trackingNumber())
                 .build();
+
+        for (LineDraft draft : lineDrafts) {
+            order.getItems().add(OrderItem.builder()
+                    .order(order)
+                    .product(draft.product())
+                    .quantity(draft.quantity())
+                    .priceAtPurchase(draft.priceAtPurchase())
+                    .build());
+        }
+
+        order.getHistories().add(OrderHistory.builder()
+                .order(order)
+                .status(OrderStatus.PENDING.name())
+                .description("Order created")
+                .build());
+
+        order.getPayments().add(Payment.builder()
+                .order(order)
+                .provider(request.paymentProvider())
+                .amount(finalAmount)
+                .status(PaymentStatus.PENDING)
+                .build());
+
         return OrderResponse.fromEntity(repo.save(order));
     }
 
     @Override
-    public OrderResponse updateOrder(int id, OrderRequest request) {
-        Order order = repo.findById(id)
+    @Transactional
+    public OrderResponse updateOrderStatus(int id, OrderStatusUpdateRequest request) {
+        Order order = repo.findWithItemsById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + id));
-        if (request.userId() != null) {
-            User user = userRepository.findById(request.userId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
-            order.setUser(user);
+
+        OrderStatus current = order.getStatus();
+        OrderStatus target = request.status();
+        if (current == target) {
+            return OrderResponse.fromEntity(order);
         }
-        if (request.couponId() != null) {
-            Coupon coupon = couponRepository.findById(request.couponId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + request.couponId()));
-            order.setCoupon(coupon);
+
+        validateTransition(current, target);
+        if (target == OrderStatus.CANCELLED) {
+            releaseReservedInventory(order);
+            rollbackCouponUsage(order);
         }
-        if (request.subTotal() != null) {
-            order.setSubTotal(request.subTotal());
-        }
-        if (request.discountAmount() != null) {
-            order.setDiscountAmount(request.discountAmount());
-        }
-        if (request.finalAmount() != null) {
-            order.setFinalAmount(request.finalAmount());
-        }
-        if (request.status() != null) {
-            order.setStatus(request.status());
-        }
-        if (request.shippingAddress() != null) {
-            order.setShippingAddress(request.shippingAddress());
-        }
-        if (request.trackingNumber() != null) {
+        if (target == OrderStatus.SHIPPED) {
+            if (request.trackingNumber() == null || request.trackingNumber().isBlank()) {
+                throw new BusinessRuleException("TrackingNumber bat buoc khi chuyen sang SHIPPED");
+            }
             order.setTrackingNumber(request.trackingNumber());
         }
+
+        order.setStatus(target);
+        order.getHistories().add(OrderHistory.builder()
+                .order(order)
+                .status(target.name())
+                .description("Order status changed from " + current.name() + " to " + target.name())
+                .build());
         return OrderResponse.fromEntity(repo.save(order));
+    }
+
+    @Override
+    @Transactional
+    public PaymentResponse retryPayment(int id, PaymentRetryRequest request) {
+        Order order = repo.findByIdForUpdate(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + id));
+        if (order.getStatus() == OrderStatus.CANCELLED || order.getStatus() == OrderStatus.DELIVERED) {
+            throw new BusinessRuleException("Don hang khong con o trang thai co the thanh toan lai");
+        }
+
+        Payment lastPayment = paymentRepository.findFirstByOrderIdOrderByCreatedAtDesc(id)
+                .orElseThrow(() -> new BusinessRuleException("Don hang chua co lan thanh toan nao de thu lai"));
+        if (lastPayment.getStatus() != PaymentStatus.FAILED) {
+            throw new BusinessRuleException("Chi co the thanh toan lai khi lan thanh toan gan nhat FAILED");
+        }
+
+        Payment retry = Payment.builder()
+                .order(order)
+                .provider(request.provider())
+                .amount(order.getFinalAmount())
+                .status(PaymentStatus.PENDING)
+                .build();
+        return PaymentResponse.fromEntity(paymentRepository.save(retry));
     }
 
     @Override
     public void deleteOrderById(int id) {
-        repo.deleteById(id);
+        throw new BusinessRuleException("Khong xoa truc tiep don hang. Hay chuyen trang thai sang CANCELLED");
+    }
+
+    private List<LineDraft> reserveStockAndPriceLines(List<OrderLineRequest> items) {
+        Map<Integer, Integer> quantitiesByProduct = new LinkedHashMap<>();
+        for (OrderLineRequest item : items) {
+            quantitiesByProduct.merge(item.productId(), item.quantity(), Math::addExact);
+        }
+
+        List<LineDraft> drafts = new ArrayList<>();
+        List<Map.Entry<Integer, Integer>> lockedOrder = quantitiesByProduct.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .toList();
+        for (Map.Entry<Integer, Integer> entry : lockedOrder) {
+            Product product = productRepository.findByIdForUpdate(entry.getKey())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + entry.getKey()));
+            if (!product.isActive()) {
+                throw new BusinessRuleException("San pham " + product.getName() + " dang ngung kinh doanh");
+            }
+            int quantity = entry.getValue();
+            if (product.getStockQuantity() < quantity) {
+                throw new BusinessRuleException("San pham " + product.getName() + " khong du ton kho");
+            }
+            product.setStockQuantity(product.getStockQuantity() - quantity);
+            drafts.add(new LineDraft(product, quantity, sellingPrice(product)));
+        }
+        return drafts;
+    }
+
+    private BigDecimal sellingPrice(Product product) {
+        return product.getDiscountPrice() != null ? product.getDiscountPrice() : product.getBasePrice();
+    }
+
+    private void validateCoupon(Coupon coupon, BigDecimal subTotal) {
+        if (!coupon.getExpiresAt().isAfter(Instant.now())) {
+            throw new BusinessRuleException("Coupon da het han");
+        }
+        if (coupon.getUsageLimit() != null && coupon.getUsedCount() >= coupon.getUsageLimit()) {
+            throw new BusinessRuleException("Coupon da het luot su dung");
+        }
+        BigDecimal minOrderValue = coupon.getMinOrderValue() == null ? BigDecimal.ZERO : coupon.getMinOrderValue();
+        if (subTotal.compareTo(minOrderValue) < 0) {
+            throw new BusinessRuleException("Don hang chua dat gia tri toi thieu cua coupon");
+        }
+    }
+
+    private BigDecimal calculateDiscount(Coupon coupon, BigDecimal subTotal) {
+        BigDecimal discount = coupon.getDiscountType() == DiscountType.PERCENT
+                ? subTotal.multiply(coupon.getDiscountValue()).divide(ONE_HUNDRED, 2, RoundingMode.HALF_UP)
+                : coupon.getDiscountValue();
+        return discount.min(subTotal).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private void validateTransition(OrderStatus current, OrderStatus target) {
+        if (current == OrderStatus.CANCELLED || current == OrderStatus.DELIVERED) {
+            throw new BusinessRuleException("Don hang o trang thai " + current + " khong the chuyen trang thai");
+        }
+        if (target == OrderStatus.CANCELLED) {
+            if (current == OrderStatus.PENDING || current == OrderStatus.CONFIRMED) {
+                return;
+            }
+            throw new BusinessRuleException("Chi huy don khi don dang PENDING hoac CONFIRMED");
+        }
+        boolean allowed = (current == OrderStatus.PENDING && target == OrderStatus.CONFIRMED)
+                || (current == OrderStatus.CONFIRMED && target == OrderStatus.SHIPPED)
+                || (current == OrderStatus.SHIPPED && target == OrderStatus.DELIVERED);
+        if (!allowed) {
+            throw new BusinessRuleException("Trang thai don hang khong duoc nhay coc tu " + current + " sang " + target);
+        }
+    }
+
+    private void releaseReservedInventory(Order order) {
+        for (OrderItem item : order.getItems()) {
+            Integer productId = item.getProduct().getId();
+            Product product = productRepository.findByIdForUpdate(productId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + productId));
+            product.setStockQuantity(product.getStockQuantity() + item.getQuantity());
+        }
+    }
+
+    private void rollbackCouponUsage(Order order) {
+        if (order.getCoupon() == null) {
+            return;
+        }
+        Integer couponId = order.getCoupon().getId();
+        Coupon coupon = couponRepository.findByIdForUpdate(couponId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + couponId));
+        if (coupon.getUsedCount() > 0) {
+            coupon.setUsedCount(coupon.getUsedCount() - 1);
+        }
+    }
+
+    private record LineDraft(Product product, int quantity, BigDecimal priceAtPurchase) {
+        BigDecimal lineTotal() {
+            return priceAtPurchase.multiply(BigDecimal.valueOf(quantity));
+        }
     }
 }

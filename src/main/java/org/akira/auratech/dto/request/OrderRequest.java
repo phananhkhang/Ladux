@@ -1,19 +1,30 @@
 package org.akira.auratech.dto.request;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import org.akira.auratech.model.enums.OrderStatus;
-import java.math.BigDecimal;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+import org.akira.auratech.model.enums.PaymentProvider;
+
+import java.util.List;
 
 public record OrderRequest(
         @NotNull(message = "UserId khong duoc de trong")
+        @Positive(message = "UserId phai la so duong")
         Integer userId,
+
+        @Positive(message = "CouponId phai la so duong")
         Integer couponId,
-        @NotNull(message = "SubTotal khong duoc de trong")
-        BigDecimal subTotal,
-        BigDecimal discountAmount,
-        @NotNull(message = "FinalAmount khong duoc de trong")
-        BigDecimal finalAmount,
-        OrderStatus status,
+
+        @NotNull(message = "PaymentProvider khong duoc de trong")
+        PaymentProvider paymentProvider,
+
+        @NotBlank(message = "ShippingAddress khong duoc de trong")
+        @Size(max = 1000, message = "ShippingAddress khong duoc vuot qua 1000 ky tu")
         String shippingAddress,
-        String trackingNumber
+
+        @NotEmpty(message = "Danh sach san pham khong duoc de trong")
+        List<@Valid OrderLineRequest> items
 ) {}

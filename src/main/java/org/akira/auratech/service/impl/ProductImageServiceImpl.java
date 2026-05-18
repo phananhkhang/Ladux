@@ -3,13 +3,15 @@ package org.akira.auratech.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.ProductImageRequest;
 import org.akira.auratech.dto.response.ProductImageResponse;
+import org.akira.auratech.exception.BusinessRuleException;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.akira.auratech.model.Product;
 import org.akira.auratech.model.ProductImage;
 import org.akira.auratech.repository.ProductImageRepository;
 import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.service.ProductImageService;
-import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,20 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductImageServiceImpl implements ProductImageService {
     private final ProductImageRepository repo;
-    private final ProductRepository productRepository;
-
-    @Override
-    public List<ProductImageResponse> getAllProductImages() {
-        return repo.findAll().stream()
-                .map(ProductImageResponse::fromEntity)
-                .toList();
-    }
-
-    @Override
-    public ProductImageResponse getProductImageById(int id) {
-        return ProductImageResponse.fromEntity(repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product image voi id = " + id)));
-    }
+    private final ProductRepository productRepo;
 
     @Override
     public List<ProductImageResponse> getProductImagesByProductId(int productId) {
@@ -40,47 +29,32 @@ public class ProductImageServiceImpl implements ProductImageService {
     }
 
     @Override
-    public List<ProductImageResponse> getPrimaryProductImagesByProductId(int productId) {
-        return repo.findByProductIdAndIsPrimaryTrue(productId).stream()
+    @Transactional
+    public List<ProductImageResponse> addImages(int productId, ProductImageRequest request) {
+        Product product = productRepo.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham voi id = " + productId));
+
+        List<ProductImage> productImages = request.imageUrl().stream()
+                .map(imageUrl -> ProductImage.builder()
+                        .product(product)
+                        .imageUrl(imageUrl)
+                        .isPrimary(false)
+                        .build())
+                .toList();
+
+        return repo.saveAll(productImages).stream()
                 .map(ProductImageResponse::fromEntity)
                 .toList();
     }
 
     @Override
-    public ProductImageResponse createProductImage(ProductImageRequest request) {
-        Product product = productRepository.findById(request.productId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
-        if (product == null) {
-            return null;
+    @Transactional
+    public void deleteProductImageById(int productId, int imageId) {
+        ProductImage image = repo.findById(imageId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product image voi id = " + imageId));
+        if (image.getProduct() == null || !image.getProduct().getId().equals(productId)) {
+            throw new BusinessRuleException("Anh khong thuoc san pham dang thao tac");
         }
-        ProductImage image = ProductImage.builder()
-                .product(product)
-                .imageUrl(request.imageUrl())
-                .isPrimary(request.isPrimary() == null ? false : request.isPrimary())
-                .build();
-        return ProductImageResponse.fromEntity(repo.save(image));
-    }
-
-    @Override
-    public ProductImageResponse updateProductImage(int id, ProductImageRequest request) {
-        ProductImage image = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product image voi id = " + id));
-        if (request.productId() != null) {
-            Product product = productRepository.findById(request.productId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
-            image.setProduct(product);
-        }
-        if (request.imageUrl() != null) {
-            image.setImageUrl(request.imageUrl());
-        }
-        if (request.isPrimary() != null) {
-            image.setPrimary(request.isPrimary());
-        }
-        return ProductImageResponse.fromEntity(repo.save(image));
-    }
-
-    @Override
-    public void deleteProductImageById(int id) {
-        repo.deleteById(id);
+        repo.delete(image);
     }
 }

@@ -10,6 +10,7 @@ import org.akira.auratech.repository.CartItemRepository;
 import org.akira.auratech.repository.CartRepository;
 import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.service.CartItemService;
+import org.akira.auratech.exception.BusinessRuleException;
 import org.springframework.stereotype.Service;
 import org.akira.auratech.exception.ResourceNotFoundException;
 
@@ -58,10 +59,11 @@ public class CartItemServiceImpl implements CartItemService {
         if (cart == null || product == null) {
             return null;
         }
+        validateCartQuantity(product, request.quantity());
         CartItem item = CartItem.builder()
                 .cart(cart)
                 .product(product)
-                .quantity(request.quantity() == null ? 1 : request.quantity())
+                .quantity(request.quantity())
                 .build();
         return CartItemResponse.fromEntity(repo.save(item));
     }
@@ -80,14 +82,22 @@ public class CartItemServiceImpl implements CartItemService {
                     .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
             item.setProduct(product);
         }
-        if (request.quantity() != null) {
-            item.setQuantity(request.quantity());
-        }
+        validateCartQuantity(item.getProduct(), request.quantity());
+        item.setQuantity(request.quantity());
         return CartItemResponse.fromEntity(repo.save(item));
     }
 
     @Override
     public void deleteCartItemById(int id) {
         repo.deleteById(id);
+    }
+
+    private void validateCartQuantity(Product product, int quantity) {
+        if (!product.isActive()) {
+            throw new BusinessRuleException("San pham dang ngung kinh doanh");
+        }
+        if (product.getStockQuantity() < quantity) {
+            throw new BusinessRuleException("So luong trong gio vuot qua ton kho hien co");
+        }
     }
 }

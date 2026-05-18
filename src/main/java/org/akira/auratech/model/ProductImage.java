@@ -27,4 +27,10 @@ public class ProductImage {
     @Builder.Default
     @Column(nullable = false)
     private boolean isPrimary = false;
+
+    @PrePersist
+    @PreUpdate
+    private void forceSecondaryImage() {
+        this.isPrimary = false;
+    }
 }

@@ -11,7 +11,7 @@ public interface PaymentService {
 
     PaymentResponse getPaymentById(int id);
 
-    PaymentResponse getPaymentByOrderId(int orderId);
+    List<PaymentResponse> getPaymentsByOrderId(int orderId);
 
     List<PaymentResponse> getPaymentsByStatus(PaymentStatus status);
 

@@ -6,10 +6,13 @@ import org.akira.auratech.dto.response.ReviewResponse;
 import org.akira.auratech.model.Product;
 import org.akira.auratech.model.Review;
 import org.akira.auratech.model.User;
+import org.akira.auratech.model.enums.OrderStatus;
+import org.akira.auratech.repository.OrderRepository;
 import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.repository.ReviewRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.ReviewService;
+import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository repo;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
     @Override
     public List<ReviewResponse> getAllReviews() {
@@ -58,10 +62,16 @@ public class ReviewServiceImpl implements ReviewService {
         if (user == null || product == null) {
             return null;
         }
+        if (repo.existsByUserIdAndProductId(user.getId(), product.getId())) {
+            throw new BusinessRuleException("Nguoi dung da danh gia san pham nay");
+        }
+        if (!orderRepository.existsOrderContainingProductWithStatus(user.getId(), product.getId(), OrderStatus.DELIVERED)) {
+            throw new BusinessRuleException("Chi co the danh gia san pham sau khi don hang da DELIVERED");
+        }
         Review review = Review.builder()
                 .user(user)
                 .product(product)
-                .rating(request.rating() == null ? 0 : request.rating())
+                .rating(request.rating())
                 .comment(request.comment())
                 .build();
         return ReviewResponse.fromEntity(repo.save(review));

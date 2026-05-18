@@ -1,13 +1,13 @@
 package org.akira.auratech.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.OrderItemRequest;
 import org.akira.auratech.dto.response.OrderItemResponse;
 import org.akira.auratech.service.OrderItemService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -30,21 +30,5 @@ public class OrderItemController {
     @GetMapping("/order/{orderId}")
     public ResponseEntity<List<OrderItemResponse>> getOrderItemsByOrderId(@PathVariable int orderId) {
         return ResponseEntity.ok(service.getOrderItemsByOrderId(orderId));
-    }
-
-    @PostMapping
-    public ResponseEntity<OrderItemResponse> createOrderItem(@Valid @RequestBody OrderItemRequest request) {
-        return new ResponseEntity<>(service.createOrderItem(request), HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<OrderItemResponse> updateOrderItem(@PathVariable int id, @Valid @RequestBody OrderItemRequest request) {
-        return ResponseEntity.ok(service.updateOrderItem(id, request));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrderItemById(@PathVariable int id) {
-        service.deleteOrderItemById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

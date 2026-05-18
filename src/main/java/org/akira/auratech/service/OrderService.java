@@ -1,7 +1,10 @@
 package org.akira.auratech.service;
 
 import org.akira.auratech.dto.request.OrderRequest;
+import org.akira.auratech.dto.request.OrderStatusUpdateRequest;
+import org.akira.auratech.dto.request.PaymentRetryRequest;
 import org.akira.auratech.dto.response.OrderResponse;
+import org.akira.auratech.dto.response.PaymentResponse;
 import org.akira.auratech.model.enums.OrderStatus;
 
 import java.util.List;
@@ -17,7 +20,9 @@ public interface OrderService {
 
     OrderResponse createOrder(OrderRequest request);
 
-    OrderResponse updateOrder(int id, OrderRequest request);
+    OrderResponse updateOrderStatus(int id, OrderStatusUpdateRequest request);
+
+    PaymentResponse retryPayment(int id, PaymentRetryRequest request);
 
     void deleteOrderById(int id);
 }

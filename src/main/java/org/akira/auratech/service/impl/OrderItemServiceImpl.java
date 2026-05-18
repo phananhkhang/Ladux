@@ -42,49 +42,4 @@ public class OrderItemServiceImpl implements OrderItemService {
                 .toList();
     }
 
-    @Override
-    public OrderItemResponse createOrderItem(OrderItemRequest request) {
-        Order order = orderRepository.findById(request.orderId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.orderId()));
-        Product product = productRepository.findById(request.productId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
-        if (order == null || product == null) {
-            return null;
-        }
-        OrderItem item = OrderItem.builder()
-                .order(order)
-                .product(product)
-                .quantity(request.quantity() == null ? 1 : request.quantity())
-                .priceAtPurchase(request.priceAtPurchase())
-                .build();
-        return OrderItemResponse.fromEntity(repo.save(item));
-    }
-
-    @Override
-    public OrderItemResponse updateOrderItem(int id, OrderItemRequest request) {
-        OrderItem item = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order item voi id = " + id));
-        if (request.orderId() != null) {
-            Order order = orderRepository.findById(request.orderId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.orderId()));
-            item.setOrder(order);
-        }
-        if (request.productId() != null) {
-            Product product = productRepository.findById(request.productId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
-            item.setProduct(product);
-        }
-        if (request.quantity() != null) {
-            item.setQuantity(request.quantity());
-        }
-        if (request.priceAtPurchase() != null) {
-            item.setPriceAtPurchase(request.priceAtPurchase());
-        }
-        return OrderItemResponse.fromEntity(repo.save(item));
-    }
-
-    @Override
-    public void deleteOrderItemById(int id) {
-        repo.deleteById(id);
-    }
 }
