@@ -69,4 +69,5 @@ public class BrandServiceImpl implements BrandService {
     public void deleteBrandById(int id) {
         repo.deleteById(id);
     }
+
 }
