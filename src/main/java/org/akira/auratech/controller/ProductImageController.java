@@ -2,7 +2,6 @@ package org.akira.auratech.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.ProductImageRequest;
 import org.akira.auratech.dto.response.ProductImageResponse;
 import org.akira.auratech.service.ProductImageService;
 import org.springframework.http.HttpStatus;
@@ -31,9 +30,9 @@ public class ProductImageController {
     @PostMapping
     public ResponseEntity<List<ProductImageResponse>> addSecondaryImages(
             @PathVariable int productId,
-            @Valid @RequestBody ProductImageRequest request
+            List<String> imageUrls
     ) {
-        return new ResponseEntity<>(service.addImages(productId, request), HttpStatus.CREATED);
+        return new ResponseEntity<>(service.addImages(productId, imageUrls), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{imageId}")

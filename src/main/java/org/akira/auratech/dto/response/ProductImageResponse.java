@@ -4,9 +4,7 @@ import org.akira.auratech.model.ProductImage;
 
 public record ProductImageResponse(
         Integer id,
-        Integer productId,
-        String imageUrl,
-        boolean isPrimary
+        String imageUrl
 ) {
     public static ProductImageResponse fromEntity(ProductImage image) {
         if (image == null) {
@@ -14,9 +12,7 @@ public record ProductImageResponse(
         }
         return new ProductImageResponse(
                 image.getId(),
-                image.getProduct() == null ? null : image.getProduct().getId(),
-                image.getImageUrl(),
-                image.isPrimary()
+                image.getImageUrl()
         );
     }
 }

@@ -11,7 +11,7 @@ import org.akira.auratech.model.enums.DiscountType;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-public record CouponRequest(
+public record CouponAdminRequest(
         @NotBlank(message = "Code khong duoc de trong")
         @Size(max = 50, message = "Code khong duoc vuot qua 50 ky tu")
         String code,

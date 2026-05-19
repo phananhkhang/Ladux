@@ -1,6 +1,5 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.dto.request.OrderHistoryRequest;
 import org.akira.auratech.dto.response.OrderHistoryResponse;
 
 import java.util.List;
@@ -11,10 +10,4 @@ public interface OrderHistoryService {
     OrderHistoryResponse getOrderHistoryById(int id);
 
     List<OrderHistoryResponse> getOrderHistoriesByOrderId(int orderId);
-
-    OrderHistoryResponse createOrderHistory(OrderHistoryRequest request);
-
-    OrderHistoryResponse updateOrderHistory(int id, OrderHistoryRequest request);
-
-    void deleteOrderHistoryById(int id);
 }

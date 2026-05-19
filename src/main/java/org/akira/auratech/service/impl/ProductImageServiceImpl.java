@@ -1,7 +1,6 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.ProductImageRequest;
 import org.akira.auratech.dto.response.ProductImageResponse;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
@@ -30,11 +29,11 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     @Override
     @Transactional
-    public List<ProductImageResponse> addImages(int productId, ProductImageRequest request) {
+    public List<ProductImageResponse> addImages(int productId, List<String> imageUrls) {
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham voi id = " + productId));
 
-        List<ProductImage> productImages = request.imageUrl().stream()
+        List<ProductImage> productImages = imageUrls.stream()
                 .map(imageUrl -> ProductImage.builder()
                         .product(product)
                         .imageUrl(imageUrl)

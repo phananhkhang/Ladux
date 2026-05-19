@@ -4,6 +4,7 @@ import org.akira.auratech.model.Order;
 import org.akira.auratech.model.enums.OrderStatus;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 public record OrderResponse(
         Integer id,
@@ -15,7 +16,8 @@ public record OrderResponse(
         OrderStatus status,
         String shippingAddress,
         String trackingNumber,
-        Instant createdAt
+        Instant createdAt,
+        List<OrderItemResponse> orderItems
 ) {
     public static OrderResponse fromEntity(Order order) {
         if (order == null) {
@@ -31,7 +33,10 @@ public record OrderResponse(
                 order.getStatus(),
                 order.getShippingAddress(),
                 order.getTrackingNumber(),
-                order.getCreatedAt()
+                order.getCreatedAt(),
+                order.getItems().stream()
+                        .map(OrderItemResponse::fromEntity)
+                        .toList()
         );
     }
 }

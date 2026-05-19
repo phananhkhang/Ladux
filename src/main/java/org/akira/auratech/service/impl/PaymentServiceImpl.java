@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.PaymentRequest;
-import org.akira.auratech.dto.response.PaymentResponse;
+import org.akira.auratech.dto.request.PaymentCallbackRequest;
+import org.akira.auratech.dto.response.PaymentCallbackResponse;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.akira.auratech.model.Order;
@@ -23,35 +23,35 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderRepository orderRepository;
 
     @Override
-    public List<PaymentResponse> getAllPayments() {
+    public List<PaymentCallbackResponse> getAllPayments() {
         return repo.findAll().stream()
-                .map(PaymentResponse::fromEntity)
+                .map(PaymentCallbackResponse::fromEntity)
                 .toList();
     }
 
     @Override
-    public PaymentResponse getPaymentById(int id) {
-        return PaymentResponse.fromEntity(repo.findById(id)
+    public PaymentCallbackResponse getPaymentById(int id) {
+        return PaymentCallbackResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay payment voi id = " + id)));
     }
 
     @Override
-    public List<PaymentResponse> getPaymentsByOrderId(int orderId) {
+    public List<PaymentCallbackResponse> getPaymentsByOrderId(int orderId) {
         return repo.findByOrderIdOrderByCreatedAtDesc(orderId).stream()
-                .map(PaymentResponse::fromEntity)
+                .map(PaymentCallbackResponse::fromEntity)
                 .toList();
     }
 
     @Override
-    public List<PaymentResponse> getPaymentsByStatus(PaymentStatus status) {
+    public List<PaymentCallbackResponse> getPaymentsByStatus(PaymentStatus status) {
         return repo.findByStatus(status).stream()
-                .map(PaymentResponse::fromEntity)
+                .map(PaymentCallbackResponse::fromEntity)
                 .toList();
     }
 
     @Override
     @Transactional
-    public PaymentResponse createPayment(PaymentRequest request) {
+    public PaymentCallbackResponse createPayment(PaymentCallbackRequest request) {
         Order order = orderRepository.findById(request.orderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.orderId()));
         repo.findFirstByOrderIdOrderByCreatedAtDesc(order.getId()).ifPresent(lastPayment -> {
@@ -67,12 +67,12 @@ public class PaymentServiceImpl implements PaymentService {
                 .amount(order.getFinalAmount())
                 .status(request.status() == null ? PaymentStatus.PENDING : request.status())
                 .build();
-        return PaymentResponse.fromEntity(repo.save(payment));
+        return PaymentCallbackResponse.fromEntity(repo.save(payment));
     }
 
     @Override
     @Transactional
-    public PaymentResponse updatePayment(int id, PaymentRequest request) {
+    public PaymentCallbackResponse updatePayment(int id, PaymentCallbackRequest request) {
         Payment payment = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay payment voi id = " + id));
         if (!payment.getOrder().getId().equals(request.orderId())) {
@@ -87,7 +87,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (request.status() != null) {
             payment.setStatus(request.status());
         }
-        return PaymentResponse.fromEntity(repo.save(payment));
+        return PaymentCallbackResponse.fromEntity(repo.save(payment));
     }
 
     @Override

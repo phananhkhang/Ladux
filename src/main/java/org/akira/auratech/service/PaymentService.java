@@ -1,23 +1,23 @@
 package org.akira.auratech.service;
 
-import org.akira.auratech.dto.request.PaymentRequest;
-import org.akira.auratech.dto.response.PaymentResponse;
+import org.akira.auratech.dto.request.PaymentCallbackRequest;
+import org.akira.auratech.dto.response.PaymentCallbackResponse;
 import org.akira.auratech.model.enums.PaymentStatus;
 
 import java.util.List;
 
 public interface PaymentService {
-    List<PaymentResponse> getAllPayments();
+    List<PaymentCallbackResponse> getAllPayments();
 
-    PaymentResponse getPaymentById(int id);
+    PaymentCallbackResponse getPaymentById(int id);
 
-    List<PaymentResponse> getPaymentsByOrderId(int orderId);
+    List<PaymentCallbackResponse> getPaymentsByOrderId(int orderId);
 
-    List<PaymentResponse> getPaymentsByStatus(PaymentStatus status);
+    List<PaymentCallbackResponse> getPaymentsByStatus(PaymentStatus status);
 
-    PaymentResponse createPayment(PaymentRequest request);
+    PaymentCallbackResponse createPayment(PaymentCallbackRequest request);
 
-    PaymentResponse updatePayment(int id, PaymentRequest request);
+    PaymentCallbackResponse updatePayment(int id, PaymentCallbackRequest request);
 
     void deletePaymentById(int id);
 }

@@ -6,7 +6,7 @@ import org.akira.auratech.model.enums.PaymentStatus;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-public record PaymentResponse(
+public record PaymentCallbackResponse(
         Integer id,
         Integer orderId,
         PaymentProvider provider,
@@ -15,11 +15,11 @@ public record PaymentResponse(
         PaymentStatus status,
         Instant createdAt
 ) {
-    public static PaymentResponse fromEntity(Payment payment) {
+    public static PaymentCallbackResponse fromEntity(Payment payment) {
         if (payment == null) {
             return null;
         }
-        return new PaymentResponse(
+        return new PaymentCallbackResponse(
                 payment.getId(),
                 payment.getOrder() == null ? null : payment.getOrder().getId(),
                 payment.getProvider(),

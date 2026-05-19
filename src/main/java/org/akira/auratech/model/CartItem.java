@@ -1,6 +1,7 @@
 package org.akira.auratech.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 
 @Entity
@@ -28,5 +29,10 @@ public class CartItem {
 
     @Column(nullable = false)
     @Builder.Default
+    @Min(1)
     private int quantity = 1;
+
+    public void incrementQuantity(int quantity) {
+        this.quantity = this.quantity + quantity;
+    }
 }

@@ -3,11 +3,12 @@ package org.akira.auratech.dto.response;
 import org.akira.auratech.model.Product;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 public record ProductResponse(
         Integer id,
-        Integer brandId,
-        Integer categoryId,
+        BrandResponse brand,
+        CategoryResponse category,
         String sku,
         String name,
         String slug,
@@ -17,7 +18,8 @@ public record ProductResponse(
         String specs,
         String thumbnail,
         boolean isActive,
-        Instant createdAt
+        Instant createdAt,
+        List<ProductImageResponse> image
 ) {
     public static ProductResponse fromEntity(Product product) {
         if (product == null) {
@@ -25,8 +27,8 @@ public record ProductResponse(
         }
         return new ProductResponse(
                 product.getId(),
-                product.getBrand() == null ? null : product.getBrand().getId(),
-                product.getCategory() == null ? null : product.getCategory().getId(),
+                product.getBrand() == null ? null : BrandResponse.fromEntity(product.getBrand()),
+                product.getCategory() == null ? null : CategoryResponse.fromEntity(product.getCategory()),
                 product.getSku(),
                 product.getName(),
                 product.getSlug(),
@@ -36,7 +38,10 @@ public record ProductResponse(
                 product.getSpecs(),
                 product.getThumbnail(),
                 product.isActive(),
-                product.getCreatedAt()
+                product.getCreatedAt(),
+                product.getImages() == null ? List.of() : product.getImages().stream()
+                        .map(ProductImageResponse::fromEntity)
+                        .toList()
         );
     }
 }

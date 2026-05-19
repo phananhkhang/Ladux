@@ -4,9 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.OrderLineRequest;
 import org.akira.auratech.dto.request.OrderRequest;
 import org.akira.auratech.dto.request.OrderStatusUpdateRequest;
-import org.akira.auratech.dto.request.PaymentRetryRequest;
 import org.akira.auratech.dto.response.OrderResponse;
-import org.akira.auratech.dto.response.PaymentResponse;
+import org.akira.auratech.dto.response.PaymentCallbackResponse;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.akira.auratech.model.Coupon;
@@ -173,7 +172,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public PaymentResponse retryPayment(int id, PaymentRetryRequest request) {
+    public PaymentCallbackResponse retryPayment(int id) {
         Order order = repo.findByIdForUpdate(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + id));
         if (order.getStatus() == OrderStatus.CANCELLED || order.getStatus() == OrderStatus.DELIVERED) {
@@ -188,11 +187,10 @@ public class OrderServiceImpl implements OrderService {
 
         Payment retry = Payment.builder()
                 .order(order)
-                .provider(request.provider())
                 .amount(order.getFinalAmount())
                 .status(PaymentStatus.PENDING)
                 .build();
-        return PaymentResponse.fromEntity(paymentRepository.save(retry));
+        return PaymentCallbackResponse.fromEntity(paymentRepository.save(retry));
     }
 
     @Override

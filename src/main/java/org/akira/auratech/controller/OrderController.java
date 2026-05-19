@@ -4,9 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.OrderRequest;
 import org.akira.auratech.dto.request.OrderStatusUpdateRequest;
-import org.akira.auratech.dto.request.PaymentRetryRequest;
 import org.akira.auratech.dto.response.OrderResponse;
-import org.akira.auratech.dto.response.PaymentResponse;
+import org.akira.auratech.dto.response.PaymentCallbackResponse;
 import org.akira.auratech.model.enums.OrderStatus;
 import org.akira.auratech.service.OrderService;
 import org.springframework.http.HttpStatus;
@@ -62,11 +61,10 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/payments/retry")
-    public ResponseEntity<PaymentResponse> retryPayment(
-            @PathVariable int id,
-            @Valid @RequestBody PaymentRetryRequest request
+    public ResponseEntity<PaymentCallbackResponse> retryPayment(
+            @PathVariable int id
     ) {
-        return new ResponseEntity<>(service.retryPayment(id, request), HttpStatus.CREATED);
+        return new ResponseEntity<>(service.retryPayment(id), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")

@@ -3,19 +3,15 @@ package org.akira.auratech.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 public record UserAddressRequest(
-        @NotNull(message = "UserId khong duoc de trong")
-        @Positive(message = "UserId phai la so duong")
-        Integer userId,
-
         @NotBlank(message = "ReceiverName khong duoc de trong")
         @Size(max = 150, message = "ReceiverName khong duoc vuot qua 150 ky tu")
         String receiverName,
 
-        @Pattern(regexp = "^[0-9+\\-\\s]{8,20}$", message = "Phone khong hop le")
+        @NotBlank(message = "So dien thoai nhan hang khong duoc de trong")
+        @Pattern(regexp = "^(0|\\+84)[3|5|7|8|9][0-9]{8}$", message = "So dien thoai Viet Nam khong hop le")
         String phone,
 
         @NotBlank(message = "Street khong duoc de trong")
@@ -30,5 +26,6 @@ public record UserAddressRequest(
         @Size(max = 120, message = "City khong duoc vuot qua 120 ky tu")
         String city,
 
+        @NotNull(message = "Trang thai mac dinh khong duoc de trong")
         Boolean isDefault
 ) {}

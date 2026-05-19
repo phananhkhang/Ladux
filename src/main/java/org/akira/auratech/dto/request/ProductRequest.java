@@ -5,8 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import org.akira.auratech.model.ProductImage;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public record ProductRequest(
         @NotNull(message = "BrandId khong duoc de trong")
@@ -25,14 +27,11 @@ public record ProductRequest(
         @Size(max = 255, message = "Ten san pham khong duoc vuot qua 255 ky tu")
         String name,
 
-        @Size(max = 255, message = "Slug khong duoc vuot qua 255 ky tu")
-        String slug,
-
         @NotNull(message = "BasePrice khong duoc de trong")
         @Positive(message = "BasePrice phai lon hon 0")
         BigDecimal basePrice,
 
-        @Positive(message = "DiscountPrice phai lon hon 0")
+        @PositiveOrZero(message = "DiscountPrice phai lon hon 0")
         BigDecimal discountPrice,
 
         @PositiveOrZero(message = "StockQuantity khong duoc am")
@@ -43,5 +42,7 @@ public record ProductRequest(
         @Size(max = 255, message = "Thumbnail khong duoc vuot qua 255 ky tu")
         String thumbnail,
 
-        Boolean isActive
+        Boolean isActive,
+
+        List<ProductImage> imageUrls
 ) {}

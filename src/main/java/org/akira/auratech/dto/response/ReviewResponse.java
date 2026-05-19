@@ -5,8 +5,8 @@ import java.time.Instant;
 
 public record ReviewResponse(
         Integer id,
-        Integer userId,
-        Integer productId,
+        String reviewerName,
+        String reviewerAvatar,
         int rating,
         String comment,
         Instant createdAt
@@ -17,8 +17,8 @@ public record ReviewResponse(
         }
         return new ReviewResponse(
                 review.getId(),
-                review.getUser() == null ? null : review.getUser().getId(),
-                review.getProduct() == null ? null : review.getProduct().getId(),
+                review.getUser() == null ? "Anonymous" : review.getUser().getFullName(),
+                review.getUser() == null ? null : review.getUser().getAvatar(),
                 review.getRating(),
                 review.getComment(),
                 review.getCreatedAt()

@@ -12,14 +12,14 @@ public record UserResponse(
         String avatar,
         boolean isActive,
         Instant createdAt,
-        List<Integer> roleIds
+        List<String> roles
 ) {
     public static UserResponse fromEntity(User user) {
         if (user == null) {
             return null;
         }
-        List<Integer> roleIds = user.getRoles() == null ? List.of() : user.getRoles().stream()
-                .map(role -> role.getId())
+        List<String> roleNames = user.getRoles() == null ? List.of() : user.getRoles().stream()
+                .map(role -> role.getName().name())
                 .toList();
         return new UserResponse(
                 user.getId(),
@@ -29,7 +29,7 @@ public record UserResponse(
                 user.getAvatar(),
                 user.isActive(),
                 user.getCreatedAt(),
-                roleIds
+                roleNames
         );
     }
 }

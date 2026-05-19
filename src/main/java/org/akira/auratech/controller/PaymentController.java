@@ -2,8 +2,8 @@ package org.akira.auratech.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.PaymentRequest;
-import org.akira.auratech.dto.response.PaymentResponse;
+import org.akira.auratech.dto.request.PaymentCallbackRequest;
+import org.akira.auratech.dto.response.PaymentCallbackResponse;
 import org.akira.auratech.model.enums.PaymentStatus;
 import org.akira.auratech.service.PaymentService;
 import org.springframework.http.HttpStatus;
@@ -26,32 +26,32 @@ public class PaymentController {
     private final PaymentService service;
 
     @GetMapping
-    public ResponseEntity<List<PaymentResponse>> getAllPayments() {
+    public ResponseEntity<List<PaymentCallbackResponse>> getAllPayments() {
         return ResponseEntity.ok(service.getAllPayments());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable int id) {
+    public ResponseEntity<PaymentCallbackResponse> getPaymentById(@PathVariable int id) {
         return ResponseEntity.ok(service.getPaymentById(id));
     }
 
     @GetMapping("/order/{orderId}")
-    public ResponseEntity<List<PaymentResponse>> getPaymentsByOrderId(@PathVariable int orderId) {
+    public ResponseEntity<List<PaymentCallbackResponse>> getPaymentsByOrderId(@PathVariable int orderId) {
         return ResponseEntity.ok(service.getPaymentsByOrderId(orderId));
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<PaymentResponse>> getPaymentsByStatus(@PathVariable PaymentStatus status) {
+    public ResponseEntity<List<PaymentCallbackResponse>> getPaymentsByStatus(@PathVariable PaymentStatus status) {
         return ResponseEntity.ok(service.getPaymentsByStatus(status));
     }
 
     @PostMapping
-    public ResponseEntity<PaymentResponse> createPayment(@Valid @RequestBody PaymentRequest request) {
+    public ResponseEntity<PaymentCallbackResponse> createPayment(@Valid @RequestBody PaymentCallbackRequest request) {
         return new ResponseEntity<>(service.createPayment(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PaymentResponse> updatePayment(@PathVariable int id, @Valid @RequestBody PaymentRequest request) {
+    public ResponseEntity<PaymentCallbackResponse> updatePayment(@PathVariable int id, @Valid @RequestBody PaymentCallbackRequest request) {
         return ResponseEntity.ok(service.updatePayment(id, request));
     }
 

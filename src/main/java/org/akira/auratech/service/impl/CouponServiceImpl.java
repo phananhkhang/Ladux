@@ -1,7 +1,7 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.CouponRequest;
+import org.akira.auratech.dto.request.CouponApplyRequest;
 import org.akira.auratech.dto.response.CouponResponse;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.model.Coupon;
@@ -38,7 +38,7 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public CouponResponse createCoupon(CouponRequest request) {
+    public CouponResponse createCoupon(CouponApplyRequest request) {
         validateCouponDefinition(request.discountType(), request.discountValue());
         Coupon coupon = Coupon.builder()
                 .code(request.code())
@@ -53,7 +53,7 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public CouponResponse updateCoupon(int id, CouponRequest request) {
+    public CouponResponse updateCoupon(int id, CouponApplyRequest request) {
         Coupon coupon = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + id));
         DiscountType nextType = request.discountType() == null ? coupon.getDiscountType() : request.discountType();

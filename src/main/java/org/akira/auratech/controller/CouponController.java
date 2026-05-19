@@ -2,7 +2,7 @@ package org.akira.auratech.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.CouponRequest;
+import org.akira.auratech.dto.request.CouponApplyRequest;
 import org.akira.auratech.dto.response.CouponResponse;
 import org.akira.auratech.service.CouponService;
 import org.springframework.http.HttpStatus;
@@ -33,12 +33,12 @@ public class CouponController {
     }
 
     @PostMapping
-    public ResponseEntity<CouponResponse> createCoupon(@Valid @RequestBody CouponRequest request) {
+    public ResponseEntity<CouponResponse> createCoupon(@Valid @RequestBody CouponApplyRequest request) {
         return new ResponseEntity<>(service.createCoupon(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CouponResponse> updateCoupon(@PathVariable int id, @Valid @RequestBody CouponRequest request) {
+    public ResponseEntity<CouponResponse> updateCoupon(@PathVariable int id, @Valid @RequestBody CouponApplyRequest request) {
         return ResponseEntity.ok(service.updateCoupon(id, request));
     }
 

@@ -71,9 +71,6 @@ public class UserServiceImpl implements UserService {
         if (request.email() != null) {
             user.setEmail(request.email());
         }
-        if (request.passwordHash() != null) {
-            user.setPasswordHash(request.passwordHash());
-        }
         if (request.fullName() != null) {
             user.setFullName(request.fullName());
         }

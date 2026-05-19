@@ -9,9 +9,6 @@ public record CategoryRequest(
         @Size(min = 1, max = 100, message = "Ten category phai tu 1 den 100 ky tu")
         String name,
 
-        @Size(max = 255, message = "Slug khong duoc vuot qua 255 ky tu")
-        String slug,
-
         @Positive(message = "ParentId phai la so duong")
         Integer parentId
 ) {}

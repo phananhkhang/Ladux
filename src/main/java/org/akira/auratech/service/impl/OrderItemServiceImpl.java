@@ -1,11 +1,7 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.OrderItemRequest;
 import org.akira.auratech.dto.response.OrderItemResponse;
-import org.akira.auratech.model.Order;
-import org.akira.auratech.model.OrderItem;
-import org.akira.auratech.model.Product;
 import org.akira.auratech.repository.OrderItemRepository;
 import org.akira.auratech.repository.OrderRepository;
 import org.akira.auratech.repository.ProductRepository;

@@ -5,8 +5,7 @@ import java.time.Instant;
 
 public record WishlistResponse(
         Integer id,
-        Integer userId,
-        Integer productId,
+        ProductResponse product,
         Instant addedAt
 ) {
     public static WishlistResponse fromEntity(Wishlist wishlist) {
@@ -15,8 +14,7 @@ public record WishlistResponse(
         }
         return new WishlistResponse(
                 wishlist.getId(),
-                wishlist.getUser() == null ? null : wishlist.getUser().getId(),
-                wishlist.getProduct() == null ? null : wishlist.getProduct().getId(),
+                wishlist.getProduct() == null ? null : ProductResponse.fromEntity(wishlist.getProduct()),
                 wishlist.getAddedAt()
         );
     }

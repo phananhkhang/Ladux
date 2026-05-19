@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import org.akira.auratech.model.enums.PaymentProvider;
 import org.akira.auratech.model.enums.PaymentStatus;
 
-public record PaymentRequest(
+public record PaymentCallbackRequest(
         @NotNull(message = "OrderId khong duoc de trong")
         @Positive(message = "OrderId phai la so duong")
         Integer orderId,

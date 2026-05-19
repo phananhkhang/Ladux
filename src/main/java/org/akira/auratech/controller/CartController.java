@@ -2,7 +2,7 @@ package org.akira.auratech.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.CartRequest;
+import org.akira.auratech.dto.request.CartItemRequest;
 import org.akira.auratech.dto.response.CartResponse;
 import org.akira.auratech.service.CartService;
 import org.springframework.http.HttpStatus;
@@ -12,39 +12,38 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/carts")
+@RequestMapping("/api/v1/cart")
 @RequiredArgsConstructor
 public class CartController {
     private final CartService service;
 
     @GetMapping
-    public ResponseEntity<List<CartResponse>> getAllCarts() {
-        return ResponseEntity.ok(service.getAllCarts());
+    public ResponseEntity<CartResponse> getCartByUserId() {
+        CartResponse response = service.getCartByUserId(1);
+        return ResponseEntity.ok(response);
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<CartResponse> getCartById(@PathVariable int id) {
-        return ResponseEntity.ok(service.getCartById(id));
+    @PostMapping("/items")
+    public ResponseEntity<Void> addItemToCart(@RequestBody CartItemRequest request) {
+        int userId = 1;
+        service.addItemToCart(userId, request.productId(), request.quantity());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<CartResponse> getCartByUserId(@PathVariable int userId) {
-        return ResponseEntity.ok(service.getCartByUserId(userId));
+    @PutMapping("/items/{productId}")
+    public ResponseEntity<Void> updateQuantity(@PathVariable int productId, @RequestBody int quantity) {
+        int userId = 1;
+        service.updateQuantity(userId, productId, quantity);
+        return ResponseEntity.ok().build();
     }
-
-    @PostMapping
-    public ResponseEntity<CartResponse> createCart(@Valid @RequestBody CartRequest request) {
-        return new ResponseEntity<>(service.createCart(request), HttpStatus.CREATED);
+    @DeleteMapping("/items/{productId}")
+    public ResponseEntity<Void> removeItemFromCart(@PathVariable int productId) {
+        int userId = 1;
+        service.removeItemFromCart(userId, productId);
+        return ResponseEntity.noContent().build();
     }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<CartResponse> updateCart(@PathVariable int id, @Valid @RequestBody CartRequest request) {
-        return ResponseEntity.ok(service.updateCart(id, request));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCartById(@PathVariable int id) {
-        service.deleteCartById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping
+    public ResponseEntity<Void> clearCart() {
+        int userId = 1;
+        service.clearCart(userId);
+        return ResponseEntity.noContent().build();
     }
 }
