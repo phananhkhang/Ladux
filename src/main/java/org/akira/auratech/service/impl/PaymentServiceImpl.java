@@ -23,6 +23,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderRepository orderRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<PaymentCallbackResponse> getAllPayments() {
         return repo.findAll().stream()
                 .map(PaymentCallbackResponse::fromEntity)
@@ -30,12 +31,14 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PaymentCallbackResponse getPaymentById(int id) {
         return PaymentCallbackResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay payment voi id = " + id)));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PaymentCallbackResponse> getPaymentsByOrderId(int orderId) {
         return repo.findByOrderIdOrderByCreatedAtDesc(orderId).stream()
                 .map(PaymentCallbackResponse::fromEntity)
@@ -43,6 +46,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PaymentCallbackResponse> getPaymentsByStatus(PaymentStatus status) {
         return repo.findByStatus(status).stream()
                 .map(PaymentCallbackResponse::fromEntity)
@@ -87,10 +91,11 @@ public class PaymentServiceImpl implements PaymentService {
         if (request.status() != null) {
             payment.setStatus(request.status());
         }
-        return PaymentCallbackResponse.fromEntity(repo.save(payment));
+        return PaymentCallbackResponse.fromEntity(payment);
     }
 
     @Override
+    @Transactional
     public void deletePaymentById(int id) {
         repo.deleteById(id);
     }

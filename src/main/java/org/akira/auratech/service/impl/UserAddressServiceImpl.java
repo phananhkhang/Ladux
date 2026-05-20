@@ -22,6 +22,7 @@ public class UserAddressServiceImpl implements UserAddressService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserAddressResponse> getAllUserAddresses() {
         return repo.findAll().stream()
                 .map(UserAddressResponse::fromEntity)
@@ -29,12 +30,14 @@ public class UserAddressServiceImpl implements UserAddressService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserAddressResponse getUserAddressById(int id) {
         return UserAddressResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user address voi id = " + id)));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserAddressResponse> getUserAddressesByUserId(int userId) {
         return repo.findByUserId(userId).stream()
                 .map(UserAddressResponse::fromEntity)
@@ -42,6 +45,7 @@ public class UserAddressServiceImpl implements UserAddressService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserAddressResponse> getDefaultUserAddressesByUserId(int userId) {
         return repo.findByUserIdAndIsDefaultTrue(userId).stream()
                 .map(UserAddressResponse::fromEntity)
@@ -100,6 +104,7 @@ public class UserAddressServiceImpl implements UserAddressService {
     }
 
     @Override
+    @Transactional
     public void deleteUserAddressById(int id) {
         repo.deleteById(id);
     }

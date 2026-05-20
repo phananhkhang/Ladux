@@ -21,6 +21,7 @@ public class ProductImageServiceImpl implements ProductImageService {
     private final ProductRepository productRepo;
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProductImageResponse> getProductImagesByProductId(int productId) {
         return repo.findByProductId(productId).stream()
                 .map(ProductImageResponse::fromEntity)

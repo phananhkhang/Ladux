@@ -10,6 +10,7 @@ import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.UserService;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -22,6 +23,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
         return repo.findAll().stream()
                 .map(UserResponse::fromEntity)
@@ -29,17 +31,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserResponse getUserById(int id) {
         return UserResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id)));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserResponse getUserByEmail(String email) {
         return UserResponse.fromEntity(repo.findByEmail(email));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserResponse> getActiveUsers() {
         return repo.findByIsActiveTrue().stream()
                 .map(UserResponse::fromEntity)
@@ -47,6 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse createUser(UserRequest request) {
         Set<Role> roles = resolveRoles(request.roleIds());
         if (request.roleIds() != null && roles == null) {
@@ -65,6 +71,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse updateUser(int id, UserRequest request) {
         User user = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id));
@@ -90,10 +97,11 @@ public class UserServiceImpl implements UserService {
             }
             user.setRoles(roles);
         }
-        return UserResponse.fromEntity(repo.save(user));
+        return UserResponse.fromEntity(user);
     }
 
     @Override
+    @Transactional
     public void deleteUserById(int id) {
         repo.deleteById(id);
     }

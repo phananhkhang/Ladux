@@ -9,6 +9,7 @@ import org.akira.auratech.repository.BrandRepository;
 import org.akira.auratech.service.BrandService;
 import org.akira.auratech.utils.SlugUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class BrandServiceImpl implements BrandService {
     private final BrandRepository repo;
 
     @Override
+    @Transactional(readOnly = true)
     public List<BrandResponse> getAllBrands() {
         List<Brand> brands = repo.findAll();
         return brands.stream()
@@ -26,21 +28,25 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BrandResponse getBrandById(int id) {
         return BrandResponse.fromEntity(repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thương hiệu với id = " + id)));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BrandResponse getBrandByName(String name) {
         return BrandResponse.fromEntity(repo.findByName(name));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BrandResponse getBrandBySlug(String slug) {
         return BrandResponse.fromEntity(repo.findBySlug(slug));
     }
 
     @Override
+    @Transactional
     public BrandResponse createBrand(BrandRequest request) {
         String slug = SlugUtils.toSlug(request.name());
         Brand brand = Brand.builder()
@@ -55,17 +61,18 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
+    @Transactional
     public BrandResponse updateBrand(int id, BrandRequest brand) {
         Brand b = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thương hiệu với id = " + id));
         if (b == null) return null;
         b.setName(brand.name());
         b.setSlug(SlugUtils.toSlug(brand.name()));
         b.setLogoUrl(brand.logoUrl());
-        Brand savedBrand = repo.save(b);
-        return BrandResponse.fromEntity(savedBrand);
+        return BrandResponse.fromEntity(b);
     }
 
     @Override
+    @Transactional
     public void deleteBrandById(int id) {
         repo.deleteById(id);
     }

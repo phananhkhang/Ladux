@@ -14,6 +14,7 @@ import org.akira.auratech.utils.SlugUtils;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,6 +27,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProductResponse> getAllProducts() {
         return repo.findAll().stream()
                 .map(ProductResponse::fromEntity)
@@ -33,22 +35,26 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ProductResponse getProductById(int id) {
         return ProductResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + id)));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ProductResponse getProductBySlug(String slug) {
         return ProductResponse.fromEntity(repo.findBySlug(slug));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ProductResponse getProductBySku(String sku) {
         return ProductResponse.fromEntity(repo.findBySku(sku));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProductResponse> getProductsByBrandId(int brandId) {
         return repo.findByBrandId(brandId).stream()
                 .map(ProductResponse::fromEntity)
@@ -56,6 +62,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProductResponse> getProductsByCategoryId(int categoryId) {
         return repo.findByCategoryId(categoryId).stream()
                 .map(ProductResponse::fromEntity)
@@ -63,6 +70,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProductResponse> getActiveProducts() {
         return repo.findByIsActiveTrue().stream()
                 .map(ProductResponse::fromEntity)
@@ -70,6 +78,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductResponse createProduct(ProductRequest request) {
         Brand brand = brandRepository.findById(request.brandId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay brand voi id = " + request.brandId()));
@@ -95,6 +104,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductResponse updateProduct(int id, ProductRequest request) {
         Product product = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + id));
@@ -136,10 +146,11 @@ public class ProductServiceImpl implements ProductService {
         if (request.isActive() != null) {
             product.setActive(request.isActive());
         }
-        return ProductResponse.fromEntity(repo.save(product));
+        return ProductResponse.fromEntity(product);
     }
 
     @Override
+    @Transactional
     public void deleteProductById(int id) {
         repo.deleteById(id);
     }

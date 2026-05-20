@@ -15,6 +15,7 @@ import org.akira.auratech.service.ReviewService;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final OrderRepository orderRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<ReviewResponse> getAllReviews() {
         return repo.findAll().stream()
                 .map(ReviewResponse::fromEntity)
@@ -34,12 +36,14 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ReviewResponse getReviewById(int id) {
         return ReviewResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + id)));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ReviewResponse> getReviewsByProductId(int productId) {
         return repo.findByProductId(productId).stream()
                 .map(ReviewResponse::fromEntity)
@@ -47,6 +51,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ReviewResponse> getReviewsByUserId(int userId) {
         return repo.findByUserId(userId).stream()
                 .map(ReviewResponse::fromEntity)
@@ -54,6 +59,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional
     public ReviewResponse createReview(ReviewRequest request) {
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
@@ -78,6 +84,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional
     public ReviewResponse updateReview(int id, ReviewRequest request) {
         Review review = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + id));
@@ -97,10 +104,11 @@ public class ReviewServiceImpl implements ReviewService {
         if (request.comment() != null) {
             review.setComment(request.comment());
         }
-        return ReviewResponse.fromEntity(repo.save(review));
+        return ReviewResponse.fromEntity(review);
     }
 
     @Override
+    @Transactional
     public void deleteReviewById(int id) {
         repo.deleteById(id);
     }

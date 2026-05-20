@@ -11,6 +11,7 @@ import org.akira.auratech.repository.CouponRepository;
 import org.akira.auratech.service.CouponService;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,6 +22,7 @@ public class CouponServiceImpl implements CouponService {
     private final CouponRepository repo;
 
     @Override
+    @Transactional(readOnly = true)
     public List<CouponResponse> getAllCoupons() {
         return repo.findAll().stream()
                 .map(CouponResponse::fromEntity)
@@ -28,17 +30,20 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CouponResponse getCouponById(int id) {
         return CouponResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + id)));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CouponResponse getCouponByCode(String code) {
         return CouponResponse.fromEntity(repo.findByCode(code));
     }
 
     @Override
+    @Transactional
     public CouponResponse createCoupon(CouponAdminRequest request) {
         validateCouponDefinition(request.discountType(), request.discountValue());
         Coupon coupon = Coupon.builder()
@@ -54,6 +59,7 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
+    @Transactional
     public CouponResponse updateCoupon(int id, CouponAdminRequest request) {
         Coupon coupon = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + id));
@@ -78,10 +84,11 @@ public class CouponServiceImpl implements CouponService {
         if (request.expiresAt() != null) {
             coupon.setExpiresAt(request.expiresAt());
         }
-        return CouponResponse.fromEntity(repo.save(coupon));
+        return CouponResponse.fromEntity(coupon);
     }
 
     @Override
+    @Transactional
     public void deleteCouponById(int id) {
         repo.deleteById(id);
     }

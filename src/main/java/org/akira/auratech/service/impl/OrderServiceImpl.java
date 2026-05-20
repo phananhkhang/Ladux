@@ -47,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRepository paymentRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderResponse> getAllOrders() {
         return repo.findAll().stream()
                 .map(OrderResponse::fromEntity)
@@ -54,12 +55,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrderResponse getOrderById(int id) {
         return OrderResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + id)));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderResponse> getOrdersByUserId(int userId) {
         return repo.findByUserId(userId).stream()
                 .map(OrderResponse::fromEntity)
@@ -67,6 +70,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderResponse> getOrdersByStatus(OrderStatus status) {
         return repo.findByStatus(status).stream()
                 .map(OrderResponse::fromEntity)
@@ -167,7 +171,7 @@ public class OrderServiceImpl implements OrderService {
                 .status(target.name())
                 .description("Order status changed from " + current.name() + " to " + target.name())
                 .build());
-        return OrderResponse.fromEntity(repo.save(order));
+        return OrderResponse.fromEntity(order);
     }
 
     @Override
@@ -194,6 +198,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public void deleteOrderById(int id) {
         throw new BusinessRuleException("Khong xoa truc tiep don hang. Hay chuyen trang thai sang CANCELLED");
     }

@@ -9,6 +9,7 @@ import org.akira.auratech.service.CategoryService;
 import org.akira.auratech.utils.SlugUtils;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository repo;
 
     @Override
+    @Transactional(readOnly = true)
     public List<CategoryResponse> getAllCategories() {
         return repo.findAll().stream()
                 .map(CategoryResponse::fromEntity)
@@ -25,22 +27,26 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CategoryResponse getCategoryById(int id) {
         return CategoryResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + id)));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CategoryResponse getCategoryByName(String name) {
         return CategoryResponse.fromEntity(repo.findByName(name));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CategoryResponse getCategoryBySlug(String slug) {
         return CategoryResponse.fromEntity(repo.findBySlug(slug));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CategoryResponse> getRootCategories() {
         return repo.findByParentIsNull().stream()
                 .map(CategoryResponse::fromEntity)
@@ -48,6 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryResponse createCategory(CategoryRequest request) {
         Category parent = null;
         if (request.parentId() != null) {
@@ -63,6 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryResponse updateCategory(int id, CategoryRequest request) {
         Category category = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + id));
@@ -75,10 +83,11 @@ public class CategoryServiceImpl implements CategoryService {
                     .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.parentId()));
             category.setParent(parent);
         }
-        return CategoryResponse.fromEntity(repo.save(category));
+        return CategoryResponse.fromEntity(category);
     }
 
     @Override
+    @Transactional
     public void deleteCategoryById(int id) {
         repo.deleteById(id);
     }

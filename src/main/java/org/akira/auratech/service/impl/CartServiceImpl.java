@@ -22,6 +22,7 @@ public class CartServiceImpl implements CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     @Override
+    @Transactional(readOnly = true)
     public CartResponse getCartByUserId(int userId) {
         Cart cart = repo.findByUserId(userId);
         if (cart == null) {
@@ -30,7 +31,7 @@ public class CartServiceImpl implements CartService {
         return CartResponse.fromEntity(cart);
     }
     @Override
-    @Transactional // 💡 Rất quan trọng: Thêm sản phẩm phải là một giao dịch nguyên tử
+    @Transactional
     public void addItemToCart(int userId, int productId, int quantity) {
         // 1. Tìm giỏ hàng hiện có, nếu chưa có thì tạo mới
         Cart cart = repo.findByUserId(userId);
@@ -61,6 +62,7 @@ public class CartServiceImpl implements CartService {
                     .build();
             cart.getItems().add(newItem);
         }
+        repo.save(cart);
     }
     @Override
     @Transactional
