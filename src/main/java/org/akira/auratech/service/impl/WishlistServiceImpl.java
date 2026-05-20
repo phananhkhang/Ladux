@@ -1,8 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.WishlistRequest;
 import org.akira.auratech.dto.response.WishlistResponse;
+import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.model.Product;
 import org.akira.auratech.model.User;
 import org.akira.auratech.model.Wishlist;
@@ -12,6 +12,7 @@ import org.akira.auratech.repository.WishlistRepository;
 import org.akira.auratech.service.WishlistService;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,19 +24,31 @@ public class WishlistServiceImpl implements WishlistService {
     private final ProductRepository productRepository;
 
     @Override
-    public List<WishlistResponse> getAllWishlists() {
-        return repo.findAll().stream()
-                .map(WishlistResponse::fromEntity)
-                .toList();
+    @Transactional
+    public void addItemToWishlist(int userId, int productId) {
+        // 1. Check xem User và Product có tồn tại không
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User khong ton tai"));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product khong ton tai"));
+
+        // 2. CHỐT CHẶN: Check xem User này đã thả tim sản phẩm này chưa
+        boolean alreadyExists = repo.existsByUserIdAndProductId(userId, productId);
+        if (alreadyExists) {
+            throw new BusinessRuleException("San pham nay da nam trong danh sach yeu thich");
+        }
+
+        // 3. Nếu chưa có thì mới tạo mới
+        Wishlist wishlist = Wishlist.builder()
+                .user(user)
+                .product(product)
+                .build();
+
+        repo.save(wishlist);
     }
 
     @Override
-    public WishlistResponse getWishlistById(int id) {
-        return WishlistResponse.fromEntity(repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay wishlist voi id = " + id)));
-    }
-
-    @Override
+    @Transactional(readOnly = true)
     public List<WishlistResponse> getWishlistsByUserId(int userId) {
         return repo.findByUserId(userId).stream()
                 .map(WishlistResponse::fromEntity)
@@ -43,47 +56,12 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
-    public List<WishlistResponse> getWishlistsByProductId(int productId) {
-        return repo.findByProductId(productId).stream()
-                .map(WishlistResponse::fromEntity)
-                .toList();
-    }
-
-    @Override
-    public WishlistResponse createWishlist(WishlistRequest request) {
-        User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
-        Product product = productRepository.findById(request.productId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
-        if (user == null || product == null) {
-            return null;
+    @Transactional
+    public void removeItemFromWishlist(int userId, int productId) {
+        Wishlist wishlist = repo.findByUserIdAndProductId(userId, productId);
+        if (wishlist == null) {
+            throw new ResourceNotFoundException("Wishlist khong ton tai");
         }
-        Wishlist wishlist = Wishlist.builder()
-                .user(user)
-                .product(product)
-                .build();
-        return WishlistResponse.fromEntity(repo.save(wishlist));
-    }
-
-    @Override
-    public WishlistResponse updateWishlist(int id, WishlistRequest request) {
-        Wishlist wishlist = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay wishlist voi id = " + id));
-        if (request.userId() != null) {
-            User user = userRepository.findById(request.userId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
-            wishlist.setUser(user);
-        }
-        if (request.productId() != null) {
-            Product product = productRepository.findById(request.productId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
-            wishlist.setProduct(product);
-        }
-        return WishlistResponse.fromEntity(repo.save(wishlist));
-    }
-
-    @Override
-    public void deleteWishlistById(int id) {
-        repo.deleteById(id);
+        repo.delete(wishlist);
     }
 }

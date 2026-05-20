@@ -2,6 +2,7 @@ package org.akira.auratech.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.request.CouponAdminRequest;
 import org.akira.auratech.dto.request.CouponApplyRequest;
 import org.akira.auratech.dto.response.CouponResponse;
 import org.akira.auratech.service.CouponService;
@@ -33,12 +34,12 @@ public class CouponController {
     }
 
     @PostMapping
-    public ResponseEntity<CouponResponse> createCoupon(@Valid @RequestBody CouponApplyRequest request) {
+    public ResponseEntity<CouponResponse> createCoupon(@Valid @RequestBody CouponAdminRequest request) {
         return new ResponseEntity<>(service.createCoupon(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CouponResponse> updateCoupon(@PathVariable int id, @Valid @RequestBody CouponApplyRequest request) {
+    public ResponseEntity<CouponResponse> updateCoupon(@PathVariable int id, @Valid @RequestBody CouponAdminRequest request) {
         return ResponseEntity.ok(service.updateCoupon(id, request));
     }
 

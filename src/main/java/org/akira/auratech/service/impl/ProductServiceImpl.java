@@ -78,17 +78,12 @@ public class ProductServiceImpl implements ProductService {
         if (brand == null || category == null) {
             return null;
         }
-        String slug = request.slug();
-        if (slug == null || slug.isBlank()) {
-            slug = SlugUtils.toSlug(request.name());
-        }
         validateProductPricing(request.basePrice(), request.discountPrice());
         Product product = Product.builder()
                 .brand(brand)
                 .category(category)
                 .sku(request.sku())
                 .name(request.name())
-                .slug(slug)
                 .basePrice(request.basePrice())
                 .discountPrice(request.discountPrice())
                 .stockQuantity(request.stockQuantity() == null ? 0 : request.stockQuantity())
@@ -121,10 +116,6 @@ public class ProductServiceImpl implements ProductService {
         }
         if (request.name() != null) {
             product.setName(request.name());
-        }
-        if (request.slug() != null && !request.slug().isBlank()) {
-            product.setSlug(request.slug());
-        } else if (request.name() != null) {
             product.setSlug(SlugUtils.toSlug(request.name()));
         }
         if (request.basePrice() != null) {

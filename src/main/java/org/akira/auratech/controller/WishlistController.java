@@ -17,39 +17,22 @@ import java.util.List;
 public class WishlistController {
     private final WishlistService service;
 
+    @PostMapping
+    public ResponseEntity<Void> addItemToWishlist(@Valid @RequestBody WishlistRequest request) {
+        int userId = 1;
+        service.addItemToWishlist(userId, request.productId());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
     @GetMapping
-    public ResponseEntity<List<WishlistResponse>> getAllWishlists() {
-        return ResponseEntity.ok(service.getAllWishlists());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<WishlistResponse> getWishlistById(@PathVariable int id) {
-        return ResponseEntity.ok(service.getWishlistById(id));
-    }
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<WishlistResponse>> getWishlistsByUserId(@PathVariable int userId) {
+    public ResponseEntity<List<WishlistResponse>> getWishlistsByUserId() {
+        int userId = 1;
         return ResponseEntity.ok(service.getWishlistsByUserId(userId));
     }
 
-    @GetMapping("/product/{productId}")
-    public ResponseEntity<List<WishlistResponse>> getWishlistsByProductId(@PathVariable int productId) {
-        return ResponseEntity.ok(service.getWishlistsByProductId(productId));
-    }
-
-    @PostMapping
-    public ResponseEntity<WishlistResponse> createWishlist(@Valid @RequestBody WishlistRequest request) {
-        return new ResponseEntity<>(service.createWishlist(request), HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<WishlistResponse> updateWishlist(@PathVariable int id, @Valid @RequestBody WishlistRequest request) {
-        return ResponseEntity.ok(service.updateWishlist(id, request));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteWishlistById(@PathVariable int id) {
-        service.deleteWishlistById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<Void> removeItemFromWishlist(@PathVariable int productId) {
+        int userId = 1;
+        service.removeItemFromWishlist(userId, productId);
+        return ResponseEntity.noContent().build();
     }
 }

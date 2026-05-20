@@ -14,9 +14,9 @@ public interface UserAddressService {
 
     List<UserAddressResponse> getDefaultUserAddressesByUserId(int userId);
 
-    UserAddressResponse createUserAddress(UserAddressRequest request);
+    UserAddressResponse createUserAddress(int userId, UserAddressRequest request);
 
-    UserAddressResponse updateUserAddress(int id, UserAddressRequest request);
+    UserAddressResponse updateUserAddress(int userId, int addressId, UserAddressRequest request);
 
     void deleteUserAddressById(int id);
 }

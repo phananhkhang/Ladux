@@ -54,13 +54,9 @@ public class CategoryServiceImpl implements CategoryService {
             parent = repo.findById(request.parentId())
                     .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.parentId()));
         }
-        String slug = request.slug();
-        if (slug == null || slug.isBlank()) {
-            slug = SlugUtils.toSlug(request.name());
-        }
         Category category = Category.builder()
                 .name(request.name())
-                .slug(slug)
+                .slug(SlugUtils.toSlug(request.name()))
                 .parent(parent)
                 .build();
         return CategoryResponse.fromEntity(repo.save(category));
@@ -72,10 +68,6 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + id));
         if (request.name() != null) {
             category.setName(request.name());
-        }
-        if (request.slug() != null && !request.slug().isBlank()) {
-            category.setSlug(request.slug());
-        } else if (request.name() != null) {
             category.setSlug(SlugUtils.toSlug(request.name()));
         }
         if (request.parentId() != null) {

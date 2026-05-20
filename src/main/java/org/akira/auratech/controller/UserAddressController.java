@@ -39,12 +39,14 @@ public class UserAddressController {
 
     @PostMapping
     public ResponseEntity<UserAddressResponse> createUserAddress(@Valid @RequestBody UserAddressRequest request) {
-        return new ResponseEntity<>(service.createUserAddress(request), HttpStatus.CREATED);
+        int userId = 1;
+        return new ResponseEntity<>(service.createUserAddress(userId, request), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserAddressResponse> updateUserAddress(@PathVariable int id, @Valid @RequestBody UserAddressRequest request) {
-        return ResponseEntity.ok(service.updateUserAddress(id, request));
+    @PutMapping("/user/{addressId}")
+    public ResponseEntity<UserAddressResponse> updateUserAddress(@PathVariable int addressId, @Valid @RequestBody UserAddressRequest request) {
+        int userId = 1;
+        return ResponseEntity.ok(service.updateUserAddress(userId, addressId, request));
     }
 
     @DeleteMapping("/{id}")

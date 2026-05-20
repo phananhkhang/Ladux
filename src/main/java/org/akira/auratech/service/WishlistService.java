@@ -6,17 +6,9 @@ import org.akira.auratech.dto.response.WishlistResponse;
 import java.util.List;
 
 public interface WishlistService {
-    List<WishlistResponse> getAllWishlists();
-
-    WishlistResponse getWishlistById(int id);
+    void addItemToWishlist(int userId, int productId);
 
     List<WishlistResponse> getWishlistsByUserId(int userId);
 
-    List<WishlistResponse> getWishlistsByProductId(int productId);
-
-    WishlistResponse createWishlist(WishlistRequest request);
-
-    WishlistResponse updateWishlist(int id, WishlistRequest request);
-
-    void deleteWishlistById(int id);
+    void removeItemFromWishlist(int usrerId, int productId);
 }
