@@ -61,10 +61,4 @@ public class OrderController {
     ) {
         return new ResponseEntity<>(service.retryPayment(userId, orderId), HttpStatus.CREATED);
     }
-
-    @DeleteMapping("/{orderId}")
-    public ResponseEntity<Void> deleteOrderById(@RequestHeader("X-User-Id") int userId, @PathVariable int orderId) {
-        service.deleteOrderById(userId, orderId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
 }

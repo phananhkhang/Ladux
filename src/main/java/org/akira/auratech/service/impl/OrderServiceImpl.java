@@ -1,6 +1,7 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.akira.auratech.dto.LineDraft;
 import org.akira.auratech.dto.request.OrderLineRequest;
 import org.akira.auratech.dto.request.OrderRequest;
 import org.akira.auratech.dto.request.OrderStatusUpdateRequest;
@@ -24,11 +25,13 @@ import org.akira.auratech.repository.PaymentRepository;
 import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.OrderService;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.AccessDeniedException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -57,8 +60,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public OrderResponse getOrderById(int userId, int orderId) {
-        return OrderResponse.fromEntity(repo.findByUserIdAndId(userId, orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + orderId)));
+        Order order = repo.findWithItemsById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng"));
+
+          if (!order.getUser().getId().equals(userId)) {
+            throw new BusinessRuleException("Bạn không có quyền xem đơn hàng này!");
+        }
+        return OrderResponse.fromEntity(order);
     }
 
     @Override
@@ -139,12 +147,31 @@ public class OrderServiceImpl implements OrderService {
 
         return OrderResponse.fromEntity(repo.save(order));
     }
+    private List<LineDraft> reserveStockAndPriceLines(List<OrderLineRequest> items) {
+        List<LineDraft> drafts = new ArrayList<>();
 
+        for (var item : items) {
+            Product product = productRepository.findByIdForUpdate(item.productId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm với id = " + item.productId()));
+
+            if (product.getStockQuantity() < item.quantity()) {
+                throw new BusinessRuleException("Sản phẩm " + product.getName() + " không đủ tồn kho");
+            }
+
+            product.setStockQuantity(product.getStockQuantity() - item.quantity());
+
+            BigDecimal price = product.getDiscountPrice() != null ? product.getDiscountPrice() : product.getBasePrice();
+            BigDecimal lineTotal = price.multiply(BigDecimal.valueOf(item.quantity()));
+
+            drafts.add(new LineDraft(product, item.quantity(), price, lineTotal));
+        }
+        return drafts;
+    }
     @Override
     @Transactional
     public OrderResponse updateOrderStatus(int userId, int orderId, OrderStatusUpdateRequest request) {
-        Order order = repo.findWithItemsById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + orderId));
+        Order order = repo.findOwnedWithItemsForUpdate(userId, orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng của bạn"));
 
         OrderStatus current = order.getStatus();
         OrderStatus target = request.status();
@@ -197,37 +224,6 @@ public class OrderServiceImpl implements OrderService {
                 .provider(lastPayment.getProvider())
                 .build();
         return PaymentCallbackResponse.fromEntity(paymentRepository.save(retry));
-    }
-
-    @Override
-    @Transactional
-    public void deleteOrderById(int userId, int orderId) {
-        throw new BusinessRuleException("Khong xoa truc tiep don hang. Hay chuyen trang thai sang CANCELLED");
-    }
-    private List<LineDraft> reserveStockAndPriceLines(List<OrderLineRequest> items) {
-        Map<Integer, Integer> quantitiesByProduct = new LinkedHashMap<>();
-        for (OrderLineRequest item : items) {
-            quantitiesByProduct.merge(item.productId(), item.quantity(), Math::addExact);
-        }
-
-        List<LineDraft> drafts = new ArrayList<>();
-        List<Map.Entry<Integer, Integer>> lockedOrder = quantitiesByProduct.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .toList();
-        for (Map.Entry<Integer, Integer> entry : lockedOrder) {
-            Product product = productRepository.findByIdForUpdate(entry.getKey())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + entry.getKey()));
-            if (!product.isActive()) {
-                throw new BusinessRuleException("San pham " + product.getName() + " dang ngung kinh doanh");
-            }
-            int quantity = entry.getValue();
-            if (product.getStockQuantity() < quantity) {
-                throw new BusinessRuleException("San pham " + product.getName() + " khong du ton kho");
-            }
-            product.setStockQuantity(product.getStockQuantity() - quantity);
-            drafts.add(new LineDraft(product, quantity, sellingPrice(product)));
-        }
-        return drafts;
     }
 
     private BigDecimal sellingPrice(Product product) {
@@ -290,11 +286,6 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + couponId));
         if (coupon.getUsedCount() > 0) {
             coupon.setUsedCount(coupon.getUsedCount() - 1);
-        }
-    }
-    private record LineDraft(Product product, int quantity, BigDecimal priceAtPurchase) {
-        BigDecimal lineTotal() {
-            return priceAtPurchase.multiply(BigDecimal.valueOf(quantity));
         }
     }
 }

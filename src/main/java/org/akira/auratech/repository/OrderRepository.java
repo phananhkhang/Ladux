@@ -41,5 +41,9 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     );
 
     Optional<Order> findByUserIdAndId(int userId, int orderId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT o FROM Order o WHERE o.id = :orderId AND o.user.id = :userId")
+    Optional<Order> findOwnedWithItemsForUpdate(@Param("userId") int userId, @Param("orderId") int orderId);
 }
 

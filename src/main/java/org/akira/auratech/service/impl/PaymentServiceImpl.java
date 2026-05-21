@@ -7,6 +7,7 @@ import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.akira.auratech.model.Order;
 import org.akira.auratech.model.Payment;
+import org.akira.auratech.model.enums.OrderStatus;
 import org.akira.auratech.model.enums.PaymentStatus;
 import org.akira.auratech.repository.OrderRepository;
 import org.akira.auratech.repository.PaymentRepository;
@@ -56,8 +57,13 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public PaymentCallbackResponse createPayment(PaymentCallbackRequest request) {
-        Order order = orderRepository.findById(request.orderId())
+        Order order = orderRepository.findByIdForUpdate(request.orderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.orderId()));
+
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            throw new BusinessRuleException("Khong the tao yeu cau thanh toan vi don hang nay da bi huy");
+        }
+
         repo.findFirstByOrderIdOrderByCreatedAtDesc(order.getId()).ifPresent(lastPayment -> {
             if (lastPayment.getStatus() != PaymentStatus.FAILED) {
                 throw new BusinessRuleException("Chi tao payment attempt moi khi lan truoc FAILED");
@@ -79,9 +85,21 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentCallbackResponse updatePayment(int id, PaymentCallbackRequest request) {
         Payment payment = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay payment voi id = " + id));
-        if (!payment.getOrder().getId().equals(request.orderId())) {
+
+        Order order = payment.getOrder();
+
+        if (!order.getId().equals(request.orderId())) {
             throw new BusinessRuleException("OrderId khong khop voi payment dang cap nhat");
         }
+
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            throw new BusinessRuleException("Don hang da bi huy, khong the cap nhat trang thai thanh toan");
+        }
+
+        if (payment.getStatus() != PaymentStatus.PENDING) {
+            return PaymentCallbackResponse.fromEntity(payment);
+        }
+
         if (request.provider() != null) {
             payment.setProvider(request.provider());
         }
@@ -90,6 +108,10 @@ public class PaymentServiceImpl implements PaymentService {
         }
         if (request.status() != null) {
             payment.setStatus(request.status());
+
+            if (request.status() == PaymentStatus.SUCCESS) {
+                order.setStatus(OrderStatus.CONFIRMED);
+            }
         }
         return PaymentCallbackResponse.fromEntity(payment);
     }

@@ -6,7 +6,9 @@ import lombok.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "wishlists")
+@Table(name = "wishlists", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "product_id"})
+})
 @Getter
 @Setter
 @Builder

@@ -22,6 +22,4 @@ public interface OrderService {
     OrderResponse updateOrderStatus(int userId, int orderId, OrderStatusUpdateRequest request);
 
     PaymentCallbackResponse retryPayment(int userid, int orderId);
-
-    void deleteOrderById(int userId, int orderId);
 }
