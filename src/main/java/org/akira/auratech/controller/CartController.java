@@ -23,7 +23,7 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
     @PostMapping("/items")
-    public ResponseEntity<Void> addItemToCart(@RequestBody CartItemRequest request) {
+    public ResponseEntity<Void> addItemToCart(@RequestBody @Valid CartItemRequest request) {
         int userId = 1;
         service.addItemToCart(userId, request.productId(), request.quantity());
         return ResponseEntity.status(HttpStatus.CREATED).build();

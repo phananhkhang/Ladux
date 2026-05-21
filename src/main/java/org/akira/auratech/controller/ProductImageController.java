@@ -30,7 +30,7 @@ public class ProductImageController {
     @PostMapping
     public ResponseEntity<List<ProductImageResponse>> addSecondaryImages(
             @PathVariable int productId,
-            List<String> imageUrls
+            @RequestBody List<String> imageUrls
     ) {
         return new ResponseEntity<>(service.addImages(productId, imageUrls), HttpStatus.CREATED);
     }

@@ -85,9 +85,9 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public ReviewResponse updateReview(int id, ReviewRequest request) {
-        Review review = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + id));
+    public ReviewResponse updateReview(int userId, int reviewId, ReviewRequest request) {
+        Review review = (Review) repo.findByUserIdAndId(userId, reviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + reviewId + " va userId = " + userId));
         if (request.userId() != null) {
             User user = userRepository.findById(request.userId())
                     .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
@@ -109,7 +109,9 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public void deleteReviewById(int id) {
-        repo.deleteById(id);
+    public void deleteReviewById(int userId, int reviewId) {
+        Review review = (Review) repo.findByUserIdAndId(userId, reviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + reviewId + " va userId = " + userId));
+        repo.delete(review);
     }
 }

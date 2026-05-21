@@ -41,13 +41,13 @@ public class BrandController {
     @PostMapping
     public ResponseEntity<BrandResponse> createBrand(@Valid @RequestBody BrandRequest request) {
         BrandResponse response = service.createBrand(request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBrandById(@PathVariable int id) {
         service.deleteBrandById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")

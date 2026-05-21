@@ -10,14 +10,7 @@ import org.akira.auratech.model.enums.OrderStatus;
 import org.akira.auratech.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,13 +25,13 @@ public class OrderController {
         return ResponseEntity.ok(service.getAllOrders());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<OrderResponse> getOrderById(@PathVariable int id) {
-        return ResponseEntity.ok(service.getOrderById(id));
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderResponse> getOrderById(@RequestHeader("X-User-Id") int userId, @PathVariable int orderId) {
+        return ResponseEntity.ok(service.getOrderById(userId, orderId));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<OrderResponse>> getOrdersByUserId(@PathVariable int userId) {
+    @GetMapping("/user")
+    public ResponseEntity<List<OrderResponse>> getOrdersByUserId(@RequestHeader("X-User-Id") int userId) {
         return ResponseEntity.ok(service.getOrdersByUserId(userId));
     }
 
@@ -48,28 +41,30 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderRequest request) {
-        return new ResponseEntity<>(service.createOrder(request), HttpStatus.CREATED);
+    public ResponseEntity<OrderResponse> createOrder(@RequestHeader("X-User-Id") int userId, @Valid @RequestBody OrderRequest request) {
+        return new ResponseEntity<>(service.createOrder(userId, request), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{id}/status")
+    @PatchMapping("/{orderId}/status")
     public ResponseEntity<OrderResponse> updateOrderStatus(
-            @PathVariable int id,
+            @RequestHeader("X-User-Id") int userId,
+            @PathVariable int orderId,
             @Valid @RequestBody OrderStatusUpdateRequest request
     ) {
-        return ResponseEntity.ok(service.updateOrderStatus(id, request));
+        return ResponseEntity.ok(service.updateOrderStatus(userId, orderId, request));
     }
 
-    @PostMapping("/{id}/payments/retry")
+    @PostMapping("/{orderId}/payments/retry")
     public ResponseEntity<PaymentCallbackResponse> retryPayment(
-            @PathVariable int id
+            @RequestHeader("X-User-Id") int userId,
+            @PathVariable int orderId
     ) {
-        return new ResponseEntity<>(service.retryPayment(id), HttpStatus.CREATED);
+        return new ResponseEntity<>(service.retryPayment(userId, orderId), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrderById(@PathVariable int id) {
-        service.deleteOrderById(id);
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<Void> deleteOrderById(@RequestHeader("X-User-Id") int userId, @PathVariable int orderId) {
+        service.deleteOrderById(userId, orderId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

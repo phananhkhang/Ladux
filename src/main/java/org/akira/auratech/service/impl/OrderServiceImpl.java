@@ -56,9 +56,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public OrderResponse getOrderById(int id) {
-        return OrderResponse.fromEntity(repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + id)));
+    public OrderResponse getOrderById(int userId, int orderId) {
+        return OrderResponse.fromEntity(repo.findByUserIdAndId(userId, orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + orderId)));
     }
 
     @Override
@@ -79,9 +79,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderResponse createOrder(OrderRequest request) {
-        User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
+    public OrderResponse createOrder(int userId, OrderRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));
         if (!user.isActive()) {
             throw new BusinessRuleException("Tai khoan dang bi khoa, khong the dat hang");
         }
@@ -101,19 +101,18 @@ public class OrderServiceImpl implements OrderService {
             discountAmount = calculateDiscount(coupon, subTotal);
             coupon.setUsedCount(coupon.getUsedCount() + 1);
         }
-
         BigDecimal finalAmount = subTotal.subtract(discountAmount)
                 .max(BigDecimal.ZERO)
                 .setScale(2, RoundingMode.HALF_UP);
 
         Order order = Order.builder()
-                .user(user)
                 .coupon(coupon)
                 .subTotal(subTotal)
                 .discountAmount(discountAmount)
                 .finalAmount(finalAmount)
                 .status(OrderStatus.PENDING)
                 .shippingAddress(request.shippingAddress())
+                .user(user)
                 .build();
 
         for (LineDraft draft : lineDrafts) {
@@ -143,9 +142,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderResponse updateOrderStatus(int id, OrderStatusUpdateRequest request) {
-        Order order = repo.findWithItemsById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + id));
+    public OrderResponse updateOrderStatus(int userId, int orderId, OrderStatusUpdateRequest request) {
+        Order order = repo.findWithItemsById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + orderId));
 
         OrderStatus current = order.getStatus();
         OrderStatus target = request.status();
@@ -176,14 +175,16 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public PaymentCallbackResponse retryPayment(int id) {
-        Order order = repo.findByIdForUpdate(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + id));
+    public PaymentCallbackResponse retryPayment(int userId, int orderId) {
+        Order order = repo.findByIdForUpdate(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + orderId));
         if (order.getStatus() == OrderStatus.CANCELLED || order.getStatus() == OrderStatus.DELIVERED) {
             throw new BusinessRuleException("Don hang khong con o trang thai co the thanh toan lai");
         }
-
-        Payment lastPayment = paymentRepository.findFirstByOrderIdOrderByCreatedAtDesc(id)
+        if (order.getUser().getId() != userId) {
+            throw new BusinessRuleException("Khong the thu lai thanh toan cho don hang cua nguoi khac");
+        }
+        Payment lastPayment = paymentRepository.findFirstByOrderIdOrderByCreatedAtDesc(orderId)
                 .orElseThrow(() -> new BusinessRuleException("Don hang chua co lan thanh toan nao de thu lai"));
         if (lastPayment.getStatus() != PaymentStatus.FAILED) {
             throw new BusinessRuleException("Chi co the thanh toan lai khi lan thanh toan gan nhat FAILED");
@@ -193,16 +194,16 @@ public class OrderServiceImpl implements OrderService {
                 .order(order)
                 .amount(order.getFinalAmount())
                 .status(PaymentStatus.PENDING)
+                .provider(lastPayment.getProvider())
                 .build();
         return PaymentCallbackResponse.fromEntity(paymentRepository.save(retry));
     }
 
     @Override
     @Transactional
-    public void deleteOrderById(int id) {
+    public void deleteOrderById(int userId, int orderId) {
         throw new BusinessRuleException("Khong xoa truc tiep don hang. Hay chuyen trang thai sang CANCELLED");
     }
-
     private List<LineDraft> reserveStockAndPriceLines(List<OrderLineRequest> items) {
         Map<Integer, Integer> quantitiesByProduct = new LinkedHashMap<>();
         for (OrderLineRequest item : items) {
@@ -291,7 +292,6 @@ public class OrderServiceImpl implements OrderService {
             coupon.setUsedCount(coupon.getUsedCount() - 1);
         }
     }
-
     private record LineDraft(Product product, int quantity, BigDecimal priceAtPurchase) {
         BigDecimal lineTotal() {
             return priceAtPurchase.multiply(BigDecimal.valueOf(quantity));

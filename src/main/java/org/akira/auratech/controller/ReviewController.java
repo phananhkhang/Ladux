@@ -42,14 +42,14 @@ public class ReviewController {
         return new ResponseEntity<>(service.createReview(request), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ReviewResponse> updateReview(@PathVariable int id, @Valid @RequestBody ReviewRequest request) {
-        return ResponseEntity.ok(service.updateReview(id, request));
+    @PutMapping("/{reviewId}")
+    public ResponseEntity<ReviewResponse> updateReview(@RequestHeader("X-User-Id") int userId, @PathVariable int reviewId, @Valid @RequestBody ReviewRequest request) {
+        return ResponseEntity.ok(service.updateReview(userId, reviewId, request));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReviewById(@PathVariable int id) {
-        service.deleteReviewById(id);
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<Void> deleteReviewById(@RequestHeader("X-User-Id") int userId, @PathVariable int reviewId) {
+        service.deleteReviewById(userId, reviewId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

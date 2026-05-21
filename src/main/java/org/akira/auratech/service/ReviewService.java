@@ -16,7 +16,7 @@ public interface ReviewService {
 
     ReviewResponse createReview(ReviewRequest request);
 
-    ReviewResponse updateReview(int id, ReviewRequest request);
+    ReviewResponse updateReview(int userId, int reviewId, ReviewRequest request);
 
-    void deleteReviewById(int id);
+    void deleteReviewById(int userId, int reviewId);
 }

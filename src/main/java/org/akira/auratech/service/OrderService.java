@@ -11,17 +11,17 @@ import java.util.List;
 public interface OrderService {
     List<OrderResponse> getAllOrders();
 
-    OrderResponse getOrderById(int id);
+    OrderResponse getOrderById(int userId, int orderId);
 
     List<OrderResponse> getOrdersByUserId(int userId);
 
     List<OrderResponse> getOrdersByStatus(OrderStatus status);
 
-    OrderResponse createOrder(OrderRequest request);
+    OrderResponse createOrder(int userId, OrderRequest request);
 
-    OrderResponse updateOrderStatus(int id, OrderStatusUpdateRequest request);
+    OrderResponse updateOrderStatus(int userId, int orderId, OrderStatusUpdateRequest request);
 
-    PaymentCallbackResponse retryPayment(int id);
+    PaymentCallbackResponse retryPayment(int userid, int orderId);
 
-    void deleteOrderById(int id);
+    void deleteOrderById(int userId, int orderId);
 }

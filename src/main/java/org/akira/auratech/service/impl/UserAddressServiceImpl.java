@@ -31,9 +31,9 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserAddressResponse getUserAddressById(int id) {
-        return UserAddressResponse.fromEntity(repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user address voi id = " + id)));
+    public UserAddressResponse getUserAddressById(int userId, int addressId) {
+        return UserAddressResponse.fromEntity((UserAddress) repo.findByUserIdAndId(userId, addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user address voi id = " + addressId)));
     }
 
     @Override
@@ -105,10 +105,11 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     @Transactional
-    public void deleteUserAddressById(int id) {
-        repo.deleteById(id);
+    public void deleteUserAddressById(int userId, int addressId) {
+        UserAddress address = (UserAddress) repo.findByUserIdAndId(userId, addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user address voi id = " + addressId));
+        repo.delete(address);
     }
-
     private void clearDefaultAddresses(Integer userId) {
         repo.findByUserIdAndIsDefaultTrue(userId).forEach(address -> address.setDefault(false));
     }

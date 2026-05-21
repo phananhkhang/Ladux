@@ -18,20 +18,17 @@ public class WishlistController {
     private final WishlistService service;
 
     @PostMapping
-    public ResponseEntity<Void> addItemToWishlist(@Valid @RequestBody WishlistRequest request) {
-        int userId = 1;
+    public ResponseEntity<Void> addItemToWishlist(@RequestHeader("X-User-Id") int userId, @Valid @RequestBody WishlistRequest request) {
         service.addItemToWishlist(userId, request.productId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
     @GetMapping
-    public ResponseEntity<List<WishlistResponse>> getWishlistsByUserId() {
-        int userId = 1;
+    public ResponseEntity<List<WishlistResponse>> getWishlistsByUserId(@RequestHeader("X-User-Id") int userId) {
         return ResponseEntity.ok(service.getWishlistsByUserId(userId));
     }
 
     @DeleteMapping("/{productId}")
-    public ResponseEntity<Void> removeItemFromWishlist(@PathVariable int productId) {
-        int userId = 1;
+    public ResponseEntity<Void> removeItemFromWishlist(@RequestHeader("X-User-Id") int userId, @PathVariable int productId) {
         service.removeItemFromWishlist(userId, productId);
         return ResponseEntity.noContent().build();
     }

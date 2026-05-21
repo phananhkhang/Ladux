@@ -22,36 +22,34 @@ public class UserAddressController {
         return ResponseEntity.ok(service.getAllUserAddresses());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserAddressResponse> getUserAddressById(@PathVariable int id) {
-        return ResponseEntity.ok(service.getUserAddressById(id));
+    @GetMapping("/{addressId}")
+    public ResponseEntity<UserAddressResponse> getUserAddressById(@RequestHeader("X-User-Id") int userId, @PathVariable int addressId) {
+        return ResponseEntity.ok(service.getUserAddressById(userId, addressId));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<UserAddressResponse>> getUserAddressesByUserId(@PathVariable int userId) {
+    @GetMapping("/user")
+    public ResponseEntity<List<UserAddressResponse>> getUserAddressesByUserId(@RequestHeader("X-User-Id") int userId) {
         return ResponseEntity.ok(service.getUserAddressesByUserId(userId));
     }
 
-    @GetMapping("/user/{userId}/default")
-    public ResponseEntity<List<UserAddressResponse>> getDefaultUserAddressesByUserId(@PathVariable int userId) {
+    @GetMapping("/default")
+    public ResponseEntity<List<UserAddressResponse>> getDefaultUserAddressesByUserId(@RequestHeader("X-User-Id") int userId) {
         return ResponseEntity.ok(service.getDefaultUserAddressesByUserId(userId));
     }
 
     @PostMapping
-    public ResponseEntity<UserAddressResponse> createUserAddress(@Valid @RequestBody UserAddressRequest request) {
-        int userId = 1;
-        return new ResponseEntity<>(service.createUserAddress(userId, request), HttpStatus.CREATED);
+    public ResponseEntity<UserAddressResponse> createUserAddress(@RequestHeader("X-User-Id") int userId, @Valid @RequestBody UserAddressRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createUserAddress(userId, request));
     }
 
-    @PutMapping("/user/{addressId}")
-    public ResponseEntity<UserAddressResponse> updateUserAddress(@PathVariable int addressId, @Valid @RequestBody UserAddressRequest request) {
-        int userId = 1;
+    @PutMapping("/{addressId}")
+    public ResponseEntity<UserAddressResponse> updateUserAddress(@RequestHeader("X-User-Id") int userId, @PathVariable int addressId, @Valid @RequestBody UserAddressRequest request) {
         return ResponseEntity.ok(service.updateUserAddress(userId, addressId, request));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUserAddressById(@PathVariable int id) {
-        service.deleteUserAddressById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping("/{addressId}")
+    public ResponseEntity<Void> deleteUserAddressById(@RequestHeader("X-User-Id") int userId, @PathVariable int addressId) {
+        service.deleteUserAddressById(userId, addressId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 public interface UserAddressService {
     List<UserAddressResponse> getAllUserAddresses();
 
-    UserAddressResponse getUserAddressById(int id);
+    UserAddressResponse getUserAddressById(int userId, int addressId);
 
     List<UserAddressResponse> getUserAddressesByUserId(int userId);
 
@@ -18,5 +18,5 @@ public interface UserAddressService {
 
     UserAddressResponse updateUserAddress(int userId, int addressId, UserAddressRequest request);
 
-    void deleteUserAddressById(int id);
+    void deleteUserAddressById(int userId, int addressId);
 }
