@@ -2,6 +2,8 @@ package org.akira.auratech.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -50,7 +52,8 @@ public class Product {
     @Builder.Default
     private int stockQuantity = 0;
 
-    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "specs", columnDefinition = "jsonb")
     private String specs;
 
     private String thumbnail;
