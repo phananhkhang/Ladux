@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = User.builder()
                 .email(request.email())
-                .passwordHash(request.passwordHash())
+                .password(request.password())
                 .fullName(request.fullName())
                 .phone(request.phone())
                 .avatar(request.avatar())

@@ -71,27 +71,27 @@ INSERT INTO categories (id, name, slug, parent_id) VALUES
 (20, 'Category 20', 'category-20', 5);
 
 -- users (20 rows)
-INSERT INTO users (id, email, password_hash, full_name, phone, avatar, is_active, created_at) VALUES
-(1, 'user1@auratech.com', 'hash1', 'User 1', '0900000001', 'https://img.example.com/u1.png', true, '2026-05-01 10:00:00+00'),
-(2, 'user2@auratech.com', 'hash2', 'User 2', '0900000002', 'https://img.example.com/u2.png', true, '2026-05-01 10:05:00+00'),
-(3, 'user3@auratech.com', 'hash3', 'User 3', '0900000003', 'https://img.example.com/u3.png', true, '2026-05-01 10:10:00+00'),
-(4, 'user4@auratech.com', 'hash4', 'User 4', '0900000004', 'https://img.example.com/u4.png', true, '2026-05-01 10:15:00+00'),
-(5, 'user5@auratech.com', 'hash5', 'User 5', '0900000005', 'https://img.example.com/u5.png', true, '2026-05-01 10:20:00+00'),
-(6, 'user6@auratech.com', 'hash6', 'User 6', '0900000006', 'https://img.example.com/u6.png', true, '2026-05-01 10:25:00+00'),
-(7, 'user7@auratech.com', 'hash7', 'User 7', '0900000007', 'https://img.example.com/u7.png', true, '2026-05-01 10:30:00+00'),
-(8, 'user8@auratech.com', 'hash8', 'User 8', '0900000008', 'https://img.example.com/u8.png', true, '2026-05-01 10:35:00+00'),
-(9, 'user9@auratech.com', 'hash9', 'User 9', '0900000009', 'https://img.example.com/u9.png', true, '2026-05-01 10:40:00+00'),
-(10, 'user10@auratech.com', 'hash10', 'User 10', '0900000010', 'https://img.example.com/u10.png', true, '2026-05-01 10:45:00+00'),
-(11, 'user11@auratech.com', 'hash11', 'User 11', '0900000011', 'https://img.example.com/u11.png', true, '2026-05-01 10:50:00+00'),
-(12, 'user12@auratech.com', 'hash12', 'User 12', '0900000012', 'https://img.example.com/u12.png', true, '2026-05-01 10:55:00+00'),
-(13, 'user13@auratech.com', 'hash13', 'User 13', '0900000013', 'https://img.example.com/u13.png', true, '2026-05-01 11:00:00+00'),
-(14, 'user14@auratech.com', 'hash14', 'User 14', '0900000014', 'https://img.example.com/u14.png', true, '2026-05-01 11:05:00+00'),
-(15, 'user15@auratech.com', 'hash15', 'User 15', '0900000015', 'https://img.example.com/u15.png', true, '2026-05-01 11:10:00+00'),
-(16, 'user16@auratech.com', 'hash16', 'User 16', '0900000016', 'https://img.example.com/u16.png', true, '2026-05-01 11:15:00+00'),
-(17, 'user17@auratech.com', 'hash17', 'User 17', '0900000017', 'https://img.example.com/u17.png', true, '2026-05-01 11:20:00+00'),
-(18, 'user18@auratech.com', 'hash18', 'User 18', '0900000018', 'https://img.example.com/u18.png', true, '2026-05-01 11:25:00+00'),
-(19, 'user19@auratech.com', 'hash19', 'User 19', '0900000019', 'https://img.example.com/u19.png', false, '2026-05-01 11:30:00+00'),
-(20, 'user20@auratech.com', 'hash20', 'User 20', '0900000020', 'https://img.example.com/u20.png', false, '2026-05-01 11:35:00+00');
+INSERT INTO users (id, email, username, password, full_name, phone, avatar, is_active, created_at) VALUES
+(1, 'user1@auratech.com', 'user1', 'hash1', 'User 1', '0900000001', 'https://img.example.com/u1.png', true, '2026-05-01 10:00:00+00'),
+(2, 'user2@auratech.com', 'user2', 'hash2', 'User 2', '0900000002', 'https://img.example.com/u2.png', true, '2026-05-01 10:05:00+00'),
+(3, 'user3@auratech.com', 'user3', 'hash3', 'User 3', '0900000003', 'https://img.example.com/u3.png', true, '2026-05-01 10:10:00+00'),
+(4, 'user4@auratech.com', 'user4', 'hash4', 'User 4', '0900000004', 'https://img.example.com/u4.png', true, '2026-05-01 10:15:00+00'),
+(5, 'user5@auratech.com', 'user5', 'hash5', 'User 5', '0900000005', 'https://img.example.com/u5.png', true, '2026-05-01 10:20:00+00'),
+(6, 'user6@auratech.com', 'user6', 'hash6', 'User 6', '0900000006', 'https://img.example.com/u6.png', true, '2026-05-01 10:25:00+00'),
+(7, 'user7@auratech.com', 'user7', 'hash7', 'User 7', '0900000007', 'https://img.example.com/u7.png', true, '2026-05-01 10:30:00+00'),
+(8, 'user8@auratech.com', 'user8', 'hash8', 'User 8', '0900000008', 'https://img.example.com/u8.png', true, '2026-05-01 10:35:00+00'),
+(9, 'user9@auratech.com', 'user9', 'hash9', 'User 9', '0900000009', 'https://img.example.com/u9.png', true, '2026-05-01 10:40:00+00'),
+(10, 'user10@auratech.com', 'user10', 'hash10', 'User 10', '0900000010', 'https://img.example.com/u10.png', true, '2026-05-01 10:45:00+00'),
+(11, 'user11@auratech.com', 'user11', 'hash11', 'User 11', '0900000011', 'https://img.example.com/u11.png', true, '2026-05-01 10:50:00+00'),
+(12, 'user12@auratech.com', 'user12', 'hash12', 'User 12', '0900000012', 'https://img.example.com/u12.png', true, '2026-05-01 10:55:00+00'),
+(13, 'user13@auratech.com', 'user13', 'hash13', 'User 13', '0900000013', 'https://img.example.com/u13.png', true, '2026-05-01 11:00:00+00'),
+(14, 'user14@auratech.com', 'user14', 'hash14', 'User 14', '0900000014', 'https://img.example.com/u14.png', true, '2026-05-01 11:05:00+00'),
+(15, 'user15@auratech.com', 'user15', 'hash15', 'User 15', '0900000015', 'https://img.example.com/u15.png', true, '2026-05-01 11:10:00+00'),
+(16, 'user16@auratech.com', 'user16', 'hash16', 'User 16', '0900000016', 'https://img.example.com/u16.png', true, '2026-05-01 11:15:00+00'),
+(17, 'user17@auratech.com', 'user17', 'hash17', 'User 17', '0900000017', 'https://img.example.com/u17.png', true, '2026-05-01 11:20:00+00'),
+(18, 'user18@auratech.com', 'user18', 'hash18', 'User 18', '0900000018', 'https://img.example.com/u18.png', true, '2026-05-01 11:25:00+00'),
+(19, 'user19@auratech.com', 'user19', 'hash19', 'User 19', '0900000019', 'https://img.example.com/u19.png', false, '2026-05-01 11:30:00+00'),
+(20, 'user20@auratech.com', 'user20', 'hash20', 'User 20', '0900000020', 'https://img.example.com/u20.png', false, '2026-05-01 11:35:00+00');
 
 -- user_roles (20 rows)
 INSERT INTO user_roles (user_id, role_id) VALUES

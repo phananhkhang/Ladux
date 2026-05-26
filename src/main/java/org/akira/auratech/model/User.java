@@ -24,9 +24,10 @@ public class User {
 
     @Column(nullable = false, unique = true, length = 150)
     private String email;
-
+    @Column(nullable = false, unique = true, length = 60)
+    private String username;
     @Column(nullable = false)
-    private String passwordHash;
+    private String password;
 
     @Column(nullable = false, length = 150)
     private String fullName;
