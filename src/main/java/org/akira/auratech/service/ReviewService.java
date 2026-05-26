@@ -2,17 +2,17 @@ package org.akira.auratech.service;
 
 import org.akira.auratech.dto.request.ReviewRequest;
 import org.akira.auratech.dto.response.ReviewResponse;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ReviewService {
-    List<ReviewResponse> getAllReviews();
+    Page<ReviewResponse> getAllReviews(Pageable pageable);
 
     ReviewResponse getReviewById(int id);
 
-    List<ReviewResponse> getReviewsByProductId(int productId);
+    Page<ReviewResponse> getReviewsByProductId(int productId, Pageable pageable);
 
-    List<ReviewResponse> getReviewsByUserId(int userId);
+    Page<ReviewResponse> getReviewsByUserId(int userId, Pageable pageable);
 
     ReviewResponse createReview(ReviewRequest request);
 

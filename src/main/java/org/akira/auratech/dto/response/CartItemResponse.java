@@ -1,8 +1,6 @@
 package org.akira.auratech.dto.response;
 
-import org.akira.auratech.dto.request.ProductRequest;
 import org.akira.auratech.model.CartItem;
-import org.akira.auratech.model.Product;
 
 public record CartItemResponse(
         Integer id,
@@ -15,7 +13,7 @@ public record CartItemResponse(
         }
         return new CartItemResponse(
                 item.getId(),
-                item.getProduct() == null ? null : ProductResponse.fromEntity(item.getProduct()),
+                item.getProduct() == null ? null : ProductResponse.summaryFromEntity(item.getProduct()),
                 item.getQuantity()
         );
     }

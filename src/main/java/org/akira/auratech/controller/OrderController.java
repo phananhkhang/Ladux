@@ -8,11 +8,11 @@ import org.akira.auratech.dto.response.OrderResponse;
 import org.akira.auratech.dto.response.PaymentCallbackResponse;
 import org.akira.auratech.model.enums.OrderStatus;
 import org.akira.auratech.service.OrderService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -21,8 +21,8 @@ public class OrderController {
     private final OrderService service;
 
     @GetMapping
-    public ResponseEntity<List<OrderResponse>> getAllOrders() {
-        return ResponseEntity.ok(service.getAllOrders());
+    public ResponseEntity<Page<OrderResponse>> getAllOrders(Pageable pageable) {
+        return ResponseEntity.ok(service.getAllOrders(pageable));
     }
 
     @GetMapping("/{orderId}")
@@ -31,13 +31,13 @@ public class OrderController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<OrderResponse>> getOrdersByUserId(@RequestHeader("X-User-Id") int userId) {
-        return ResponseEntity.ok(service.getOrdersByUserId(userId));
+    public ResponseEntity<Page<OrderResponse>> getOrdersByUserId(@RequestHeader("X-User-Id") int userId, Pageable pageable) {
+        return ResponseEntity.ok(service.getOrdersByUserId(userId, pageable));
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<OrderResponse>> getOrdersByStatus(@PathVariable OrderStatus status) {
-        return ResponseEntity.ok(service.getOrdersByStatus(status));
+    public ResponseEntity<Page<OrderResponse>> getOrdersByStatus(@PathVariable OrderStatus status, Pageable pageable) {
+        return ResponseEntity.ok(service.getOrdersByStatus(status, pageable));
     }
 
     @PostMapping

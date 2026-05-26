@@ -15,16 +15,21 @@ public record CartResponse(
         if (cart == null) {
             return null;
         }
-        List<Integer> itemIds = cart.getItems() == null ? List.of() : cart.getItems().stream()
-                .map(item -> item.getId())
-                .toList();
+        BigDecimal totalPrice = cart.getItems() == null ? BigDecimal.ZERO : cart.getItems().stream()
+                .map(item -> {
+                    BigDecimal price = item.getProduct().getDiscountPrice() == null
+                            ? item.getProduct().getBasePrice()
+                            : item.getProduct().getDiscountPrice();
+                    return price.multiply(BigDecimal.valueOf(item.getQuantity()));
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         return new CartResponse(
                 cart.getId(),
                 cart.getUser() == null ? null : cart.getUser().getId(),
                 cart.getItems() == null ? List.of() : cart.getItems().stream()
                         .map(CartItemResponse::fromEntity)
                         .toList(),
-                BigDecimal.ZERO
+                totalPrice
         );
     }
 }

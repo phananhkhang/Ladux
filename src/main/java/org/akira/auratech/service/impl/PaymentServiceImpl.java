@@ -11,24 +11,27 @@ import org.akira.auratech.model.enums.OrderStatus;
 import org.akira.auratech.model.enums.PaymentStatus;
 import org.akira.auratech.repository.OrderRepository;
 import org.akira.auratech.repository.PaymentRepository;
+import org.akira.auratech.service.OrderLifecycleService;
 import org.akira.auratech.service.PaymentService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository repo;
     private final OrderRepository orderRepository;
+    private final OrderLifecycleService orderLifecycleService;
 
     @Override
     @Transactional(readOnly = true)
-    public List<PaymentCallbackResponse> getAllPayments() {
-        return repo.findAll().stream()
-                .map(PaymentCallbackResponse::fromEntity)
-                .toList();
+    public Page<PaymentCallbackResponse> getAllPayments(Pageable pageable) {
+        return repo.findAll(pageable)
+                .map(PaymentCallbackResponse::fromEntity);
     }
 
     @Override
@@ -40,18 +43,23 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PaymentCallbackResponse> getPaymentsByOrderId(int orderId) {
-        return repo.findByOrderIdOrderByCreatedAtDesc(orderId).stream()
-                .map(PaymentCallbackResponse::fromEntity)
-                .toList();
+    public Page<PaymentCallbackResponse> getPaymentsByOrderId(int userId, int orderId, Pageable pageable) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order"));
+
+        if (order.getUser().getId() != userId) {
+            throw new BusinessRuleException("Ban khong co quyen xem thong tin thanh toan cua don hang nay");
+        }
+
+        return repo.findByOrderId(orderId, pageable)
+                .map(PaymentCallbackResponse::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<PaymentCallbackResponse> getPaymentsByStatus(PaymentStatus status) {
-        return repo.findByStatus(status).stream()
-                .map(PaymentCallbackResponse::fromEntity)
-                .toList();
+    public Page<PaymentCallbackResponse> getPaymentsByStatus(PaymentStatus status, Pageable pageable) {
+        return repo.findByStatus(status, pageable)
+                .map(PaymentCallbackResponse::fromEntity);
     }
 
     @Override
@@ -60,9 +68,7 @@ public class PaymentServiceImpl implements PaymentService {
         Order order = orderRepository.findByIdForUpdate(request.orderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.orderId()));
 
-        if (order.getStatus() == OrderStatus.CANCELLED) {
-            throw new BusinessRuleException("Khong the tao yeu cau thanh toan vi don hang nay da bi huy");
-        }
+        ensureOrderCanAcceptPayment(order);
 
         repo.findFirstByOrderIdOrderByCreatedAtDesc(order.getId()).ifPresent(lastPayment -> {
             if (lastPayment.getStatus() != PaymentStatus.FAILED) {
@@ -77,24 +83,25 @@ public class PaymentServiceImpl implements PaymentService {
                 .amount(order.getFinalAmount())
                 .status(request.status() == null ? PaymentStatus.PENDING : request.status())
                 .build();
-        return PaymentCallbackResponse.fromEntity(repo.save(payment));
+        Payment savedPayment = repo.save(payment);
+        applyPaymentStatus(order, savedPayment.getStatus());
+        return PaymentCallbackResponse.fromEntity(savedPayment);
     }
 
     @Override
     @Transactional
     public PaymentCallbackResponse updatePayment(int id, PaymentCallbackRequest request) {
-        Payment payment = repo.findById(id)
+        Payment payment = repo.findByIdForUpdate(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay payment voi id = " + id));
 
-        Order order = payment.getOrder();
+        Order order = orderRepository.findWithItemsByIdForUpdate(payment.getOrder().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order cua payment id = " + id));
 
         if (!order.getId().equals(request.orderId())) {
             throw new BusinessRuleException("OrderId khong khop voi payment dang cap nhat");
         }
 
-        if (order.getStatus() == OrderStatus.CANCELLED) {
-            throw new BusinessRuleException("Don hang da bi huy, khong the cap nhat trang thai thanh toan");
-        }
+        ensureOrderCanAcceptPayment(order);
 
         if (payment.getStatus() != PaymentStatus.PENDING) {
             return PaymentCallbackResponse.fromEntity(payment);
@@ -108,17 +115,30 @@ public class PaymentServiceImpl implements PaymentService {
         }
         if (request.status() != null) {
             payment.setStatus(request.status());
-
-            if (request.status() == PaymentStatus.SUCCESS) {
-                order.setStatus(OrderStatus.CONFIRMED);
-            }
+            applyPaymentStatus(order, request.status());
         }
         return PaymentCallbackResponse.fromEntity(payment);
     }
 
-    @Override
-    @Transactional
-    public void deletePaymentById(int id) {
-        repo.deleteById(id);
+    private void ensureOrderCanAcceptPayment(Order order) {
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            throw new BusinessRuleException("Don hang da bi huy, khong the cap nhat thanh toan");
+        }
+        if (order.getStatus() == OrderStatus.SHIPPED || order.getStatus() == OrderStatus.DELIVERED) {
+            throw new BusinessRuleException("Don hang da duoc van chuyen, khong the cap nhat thanh toan");
+        }
+        if (order.getPaymentExpiresAt() != null && !order.getPaymentExpiresAt().isAfter(Instant.now())) {
+            orderLifecycleService.cancelOrder(order, "Payment window expired");
+            throw new BusinessRuleException("Don hang da qua han thanh toan");
+        }
+    }
+
+    private void applyPaymentStatus(Order order, PaymentStatus status) {
+        if (status == PaymentStatus.SUCCESS) {
+            orderLifecycleService.confirmAfterSuccessfulPayment(order); // Buộc đơn hàng phải đang ở trạng thái PENDING trước.
+        }
+        if (status == PaymentStatus.FAILED) {
+            orderLifecycleService.cancelOrder(order, "Payment failed"); // Chuyển trạng thái đơn hàng sang CANCELLED
+        }
     }
 }

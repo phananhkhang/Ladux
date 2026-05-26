@@ -13,11 +13,12 @@ import org.akira.auratech.service.ProductService;
 import org.akira.auratech.utils.SlugUtils;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,10 +29,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductResponse> getAllProducts() {
-        return repo.findAll().stream()
-                .map(ProductResponse::fromEntity)
-                .toList();
+    public Page<ProductResponse> getAllProducts(Pageable pageable) {
+        return repo.findAll(pageable)
+                .map(ProductResponse::summaryFromEntity);
     }
 
     @Override
@@ -55,26 +55,23 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductResponse> getProductsByBrandId(int brandId) {
-        return repo.findByBrandId(brandId).stream()
-                .map(ProductResponse::fromEntity)
-                .toList();
+    public Page<ProductResponse> getProductsByBrandId(int brandId, Pageable pageable) {
+        return repo.findByBrandId(brandId, pageable)
+                .map(ProductResponse::summaryFromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductResponse> getProductsByCategoryId(int categoryId) {
-        return repo.findByCategoryId(categoryId).stream()
-                .map(ProductResponse::fromEntity)
-                .toList();
+    public Page<ProductResponse> getProductsByCategoryId(int categoryId, Pageable pageable) {
+        return repo.findByCategoryId(categoryId, pageable)
+                .map(ProductResponse::summaryFromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductResponse> getActiveProducts() {
-        return repo.findByIsActiveTrue().stream()
-                .map(ProductResponse::fromEntity)
-                .toList();
+    public Page<ProductResponse> getActiveProducts(Pageable pageable) {
+        return repo.findByIsActiveTrue(pageable)
+                .map(ProductResponse::summaryFromEntity);
     }
 
     @Override
@@ -99,6 +96,7 @@ public class ProductServiceImpl implements ProductService {
                 .specs(request.specs())
                 .thumbnail(request.thumbnail())
                 .isActive(request.isActive() == null ? true : request.isActive())
+                .slug(SlugUtils.toSlug(request.name()))
                 .build();
         return ProductResponse.fromEntity(repo.save(product));
     }

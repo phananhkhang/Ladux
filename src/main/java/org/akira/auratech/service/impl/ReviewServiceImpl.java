@@ -14,10 +14,10 @@ import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.ReviewService;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,10 +29,9 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewResponse> getAllReviews() {
-        return repo.findAll().stream()
-                .map(ReviewResponse::fromEntity)
-                .toList();
+    public Page<ReviewResponse> getAllReviews(Pageable pageable) {
+        return repo.findAll(pageable)
+                .map(ReviewResponse::fromEntity);
     }
 
     @Override
@@ -44,18 +43,16 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewResponse> getReviewsByProductId(int productId) {
-        return repo.findByProductId(productId).stream()
-                .map(ReviewResponse::fromEntity)
-                .toList();
+    public Page<ReviewResponse> getReviewsByProductId(int productId, Pageable pageable) {
+        return repo.findByProductId(productId, pageable)
+                .map(ReviewResponse::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewResponse> getReviewsByUserId(int userId) {
-        return repo.findByUserId(userId).stream()
-                .map(ReviewResponse::fromEntity)
-                .toList();
+    public Page<ReviewResponse> getReviewsByUserId(int userId, Pageable pageable) {
+        return repo.findByUserId(userId, pageable)
+                .map(ReviewResponse::fromEntity);
     }
 
     @Override
@@ -65,9 +62,6 @@ public class ReviewServiceImpl implements ReviewService {
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
         Product product = productRepository.findById(request.productId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
-        if (user == null || product == null) {
-            return null;
-        }
         if (repo.existsByUserIdAndProductId(user.getId(), product.getId())) {
             throw new BusinessRuleException("Nguoi dung da danh gia san pham nay");
         }
@@ -86,19 +80,12 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional
     public ReviewResponse updateReview(int userId, int reviewId, ReviewRequest request) {
-        Review review = (Review) repo.findByUserIdAndId(userId, reviewId)
+        Review review = repo.findByUserIdAndId(userId, reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + reviewId + " va userId = " + userId));
-        if (request.userId() != null) {
-            User user = userRepository.findById(request.userId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
-            review.setUser(user);
-        }
-        if (request.productId() != null) {
-            Product product = productRepository.findById(request.productId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
-            review.setProduct(product);
-        }
         if (request.rating() != null) {
+            if (request.rating() < 1 || request.rating() > 5) {
+                throw new BusinessRuleException("Rating phai nam trong khoang 1 den 5");
+            }
             review.setRating(request.rating());
         }
         if (request.comment() != null) {
@@ -110,7 +97,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional
     public void deleteReviewById(int userId, int reviewId) {
-        Review review = (Review) repo.findByUserIdAndId(userId, reviewId)
+        Review review = repo.findByUserIdAndId(userId, reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + reviewId + " va userId = " + userId));
         repo.delete(review);
     }

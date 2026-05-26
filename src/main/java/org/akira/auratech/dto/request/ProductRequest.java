@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-import org.akira.auratech.model.ProductImage;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -44,5 +43,5 @@ public record ProductRequest(
 
         Boolean isActive,
 
-        List<ProductImage> imageUrls
+        List<String> imageUrls
 ) {}

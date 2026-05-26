@@ -3,7 +3,6 @@ package org.akira.auratech.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.CouponAdminRequest;
-import org.akira.auratech.dto.request.CouponApplyRequest;
 import org.akira.auratech.dto.response.CouponResponse;
 import org.akira.auratech.service.CouponService;
 import org.springframework.http.HttpStatus;

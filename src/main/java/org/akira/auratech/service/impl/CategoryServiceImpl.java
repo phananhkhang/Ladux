@@ -7,6 +7,7 @@ import org.akira.auratech.model.Category;
 import org.akira.auratech.repository.CategoryRepository;
 import org.akira.auratech.service.CategoryService;
 import org.akira.auratech.utils.SlugUtils;
+import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,6 +82,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (request.parentId() != null) {
             Category parent = repo.findById(request.parentId())
                     .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.parentId()));
+            validateParentDoesNotCreateCycle(category, parent);
             category.setParent(parent);
         }
         return CategoryResponse.fromEntity(category);
@@ -90,5 +92,18 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public void deleteCategoryById(int id) {
         repo.deleteById(id);
+    }
+
+    private void validateParentDoesNotCreateCycle(Category category, Category parentCandidate) {
+        if (parentCandidate.getId().equals(category.getId())) {
+            throw new BusinessRuleException("Category khong the lam parent cua chinh no");
+        }
+        Category cursor = parentCandidate;
+        while (cursor != null) {
+            if (cursor.getId().equals(category.getId())) {
+                throw new BusinessRuleException("Parent category khong duoc nam trong cay con cua category hien tai");
+            }
+            cursor = cursor.getParent();
+        }
     }
 }

@@ -5,11 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.ProductRequest;
 import org.akira.auratech.dto.response.ProductResponse;
 import org.akira.auratech.service.ProductService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -18,8 +18,8 @@ public class ProductController {
     private final ProductService service;
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAllProducts() {
-        return ResponseEntity.ok(service.getAllProducts());
+    public ResponseEntity<Page<ProductResponse>> getAllProducts(Pageable pageable) {
+        return ResponseEntity.ok(service.getAllProducts(pageable));
     }
 
     @GetMapping("/{id}")
@@ -38,18 +38,18 @@ public class ProductController {
     }
 
     @GetMapping("/brand/{brandId}")
-    public ResponseEntity<List<ProductResponse>> getProductsByBrandId(@PathVariable int brandId) {
-        return ResponseEntity.ok(service.getProductsByBrandId(brandId));
+    public ResponseEntity<Page<ProductResponse>> getProductsByBrandId(@PathVariable int brandId, Pageable pageable) {
+        return ResponseEntity.ok(service.getProductsByBrandId(brandId, pageable));
     }
 
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<ProductResponse>> getProductsByCategoryId(@PathVariable int categoryId) {
-        return ResponseEntity.ok(service.getProductsByCategoryId(categoryId));
+    public ResponseEntity<Page<ProductResponse>> getProductsByCategoryId(@PathVariable int categoryId, Pageable pageable) {
+        return ResponseEntity.ok(service.getProductsByCategoryId(categoryId, pageable));
     }
 
     @GetMapping("/active")
-    public ResponseEntity<List<ProductResponse>> getActiveProducts() {
-        return ResponseEntity.ok(service.getActiveProducts());
+    public ResponseEntity<Page<ProductResponse>> getActiveProducts(Pageable pageable) {
+        return ResponseEntity.ok(service.getActiveProducts(pageable));
     }
 
     @PostMapping

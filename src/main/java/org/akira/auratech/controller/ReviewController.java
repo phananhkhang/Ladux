@@ -5,11 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.ReviewRequest;
 import org.akira.auratech.dto.response.ReviewResponse;
 import org.akira.auratech.service.ReviewService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/reviews")
@@ -18,8 +18,8 @@ public class ReviewController {
     private final ReviewService service;
 
     @GetMapping
-    public ResponseEntity<List<ReviewResponse>> getAllReviews() {
-        return ResponseEntity.ok(service.getAllReviews());
+    public ResponseEntity<Page<ReviewResponse>> getAllReviews(Pageable pageable) {
+        return ResponseEntity.ok(service.getAllReviews(pageable));
     }
 
     @GetMapping("/{id}")
@@ -28,13 +28,13 @@ public class ReviewController {
     }
 
     @GetMapping("/product/{productId}")
-    public ResponseEntity<List<ReviewResponse>> getReviewsByProductId(@PathVariable int productId) {
-        return ResponseEntity.ok(service.getReviewsByProductId(productId));
+    public ResponseEntity<Page<ReviewResponse>> getReviewsByProductId(@PathVariable int productId, Pageable pageable) {
+        return ResponseEntity.ok(service.getReviewsByProductId(productId, pageable));
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ReviewResponse>> getReviewsByUserId(@PathVariable int userId) {
-        return ResponseEntity.ok(service.getReviewsByUserId(userId));
+    public ResponseEntity<Page<ReviewResponse>> getReviewsByUserId(@PathVariable int userId, Pageable pageable) {
+        return ResponseEntity.ok(service.getReviewsByUserId(userId, pageable));
     }
 
     @PostMapping
@@ -43,7 +43,7 @@ public class ReviewController {
     }
 
     @PutMapping("/{reviewId}")
-    public ResponseEntity<ReviewResponse> updateReview(@RequestHeader("X-User-Id") int userId, @PathVariable int reviewId, @Valid @RequestBody ReviewRequest request) {
+    public ResponseEntity<ReviewResponse> updateReview(@RequestHeader("X-User-Id") int userId, @PathVariable int reviewId, @RequestBody ReviewRequest request) {
         return ResponseEntity.ok(service.updateReview(userId, reviewId, request));
     }
 

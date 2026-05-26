@@ -20,7 +20,7 @@ public class BrandController {
 
     @GetMapping
     public ResponseEntity<List<BrandResponse>> getAllBrands() {
-        return ResponseEntity.ok(service.getAllBrands());
+        return ResponseEntity.ok(service.getAllBrands()); // Giúp chuẩn restful hơn, ResponseEntity nó chứa 3 thành phần là status code, header và body
     }
 
     @GetMapping("/{id}")

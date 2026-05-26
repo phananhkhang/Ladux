@@ -2,11 +2,11 @@ package org.akira.auratech.service;
 
 import org.akira.auratech.dto.request.ProductRequest;
 import org.akira.auratech.dto.response.ProductResponse;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ProductService {
-    List<ProductResponse> getAllProducts();
+    Page<ProductResponse> getAllProducts(Pageable pageable);
 
     ProductResponse getProductById(int id);
 
@@ -14,11 +14,11 @@ public interface ProductService {
 
     ProductResponse getProductBySku(String sku);
 
-    List<ProductResponse> getProductsByBrandId(int brandId);
+    Page<ProductResponse> getProductsByBrandId(int brandId, Pageable pageable);
 
-    List<ProductResponse> getProductsByCategoryId(int categoryId);
+    Page<ProductResponse> getProductsByCategoryId(int categoryId, Pageable pageable);
 
-    List<ProductResponse> getActiveProducts();
+    Page<ProductResponse> getActiveProducts(Pageable pageable);
 
     ProductResponse createProduct(ProductRequest request);
 

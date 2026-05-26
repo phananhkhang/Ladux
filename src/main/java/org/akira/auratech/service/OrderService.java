@@ -5,21 +5,23 @@ import org.akira.auratech.dto.request.OrderStatusUpdateRequest;
 import org.akira.auratech.dto.response.OrderResponse;
 import org.akira.auratech.dto.response.PaymentCallbackResponse;
 import org.akira.auratech.model.enums.OrderStatus;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
-    List<OrderResponse> getAllOrders();
+    Page<OrderResponse> getAllOrders(Pageable pageable);
 
     OrderResponse getOrderById(int userId, int orderId);
 
-    List<OrderResponse> getOrdersByUserId(int userId);
+    Page<OrderResponse> getOrdersByUserId(int userId, Pageable pageable);
 
-    List<OrderResponse> getOrdersByStatus(OrderStatus status);
+    Page<OrderResponse> getOrdersByStatus(OrderStatus status, Pageable pageable);
 
     OrderResponse createOrder(int userId, OrderRequest request);
 
     OrderResponse updateOrderStatus(int userId, int orderId, OrderStatusUpdateRequest request);
 
     PaymentCallbackResponse retryPayment(int userid, int orderId);
+
+    int expirePendingOrders();
 }

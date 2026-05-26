@@ -11,8 +11,7 @@ import org.akira.auratech.model.enums.PaymentProvider;
 import java.util.List;
 
 public record OrderRequest(
-        @Positive(message = "CouponId phai la so duong")
-        Integer couponId,
+        String couponId,
 
         @NotNull(message = "PaymentProvider khong duoc de trong")
         PaymentProvider paymentProvider,

@@ -56,6 +56,8 @@ public class Order {
     @Builder.Default
     private Instant createdAt = Instant.now();
 
+    private Instant paymentExpiresAt;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default
@@ -70,4 +72,5 @@ public class Order {
     @ToString.Exclude
     @Builder.Default
     private List<Payment> payments = new ArrayList<>();
-}
+
+ }

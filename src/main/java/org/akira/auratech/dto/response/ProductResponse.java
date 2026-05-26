@@ -44,4 +44,26 @@ public record ProductResponse(
                         .toList()
         );
     }
+
+    public static ProductResponse summaryFromEntity(Product product) {
+        if (product == null) {
+            return null;
+        }
+        return new ProductResponse(
+                product.getId(),
+                product.getBrand() == null ? null : BrandResponse.fromEntity(product.getBrand()),
+                product.getCategory() == null ? null : CategoryResponse.fromEntity(product.getCategory()),
+                product.getSku(),
+                product.getName(),
+                product.getSlug(),
+                product.getBasePrice(),
+                product.getDiscountPrice(),
+                product.getStockQuantity(),
+                product.getSpecs(),
+                product.getThumbnail(),
+                product.isActive(),
+                product.getCreatedAt(),
+                List.of()
+        );
+    }
 }

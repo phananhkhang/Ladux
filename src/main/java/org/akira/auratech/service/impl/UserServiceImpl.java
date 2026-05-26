@@ -9,6 +9,8 @@ import org.akira.auratech.repository.RoleRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.UserService;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +26,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponse> getAllUsers() {
-        return repo.findAll().stream()
-                .map(UserResponse::fromEntity)
-                .toList();
+    public Page<UserResponse> getAllUsers(Pageable pageable) {
+        return repo.findAll(pageable)
+                .map(UserResponse::fromEntity);
     }
 
     @Override
@@ -45,10 +46,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponse> getActiveUsers() {
-        return repo.findByIsActiveTrue().stream()
-                .map(UserResponse::fromEntity)
-                .toList();
+    public Page<UserResponse> getActiveUsers(Pageable pageable) {
+        return repo.findByIsActiveTrue(pageable)
+                .map(UserResponse::fromEntity);
     }
 
     @Override

@@ -17,6 +17,7 @@ public record OrderResponse(
         String shippingAddress,
         String trackingNumber,
         Instant createdAt,
+        Instant paymentExpiresAt,
         List<OrderItemResponse> orderItems
 ) {
     public static OrderResponse fromEntity(Order order) {
@@ -34,9 +35,30 @@ public record OrderResponse(
                 order.getShippingAddress(),
                 order.getTrackingNumber(),
                 order.getCreatedAt(),
+                order.getPaymentExpiresAt(),
                 order.getItems().stream()
                         .map(OrderItemResponse::fromEntity)
                         .toList()
+        );
+    }
+
+    public static OrderResponse summaryFromEntity(Order order) {
+        if (order == null) {
+            return null;
+        }
+        return new OrderResponse(
+                order.getId(),
+                order.getUser() == null ? null : order.getUser().getId(),
+                order.getCoupon() == null ? null : order.getCoupon().getId(),
+                order.getSubTotal(),
+                order.getDiscountAmount(),
+                order.getFinalAmount(),
+                order.getStatus(),
+                order.getShippingAddress(),
+                order.getTrackingNumber(),
+                order.getCreatedAt(),
+                order.getPaymentExpiresAt(),
+                List.of()
         );
     }
 }

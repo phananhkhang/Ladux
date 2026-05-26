@@ -5,6 +5,7 @@ import org.akira.auratech.dto.response.CartResponse;
 import org.akira.auratech.model.Cart;
 import org.akira.auratech.model.CartItem;
 import org.akira.auratech.model.Product;
+import org.akira.auratech.model.User;
 import org.akira.auratech.repository.CartRepository;
 import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.repository.UserRepository;
@@ -33,13 +34,12 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public void addItemToCart(int userId, int productId, int quantity) {
-        // 1. Tìm giỏ hàng hiện có, nếu chưa có thì tạo mới
-        Cart cart = repo.findByUserId(userId);
-        if (cart == null) {
-            cart = Cart.builder()
-                    .user(userRepository.getReferenceById(userId)) // Lấy user từ ID
-                    .build();
-        }
+        User user = userRepository.findByIdForUpdate(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));
+        Cart cart = repo.findByUserIdForUpdate(userId)
+                .orElseGet(() -> Cart.builder()
+                        .user(user)
+                        .build());
 
         // 2. Tìm sản phẩm để đảm bảo nó tồn tại
         Product product = productRepository.findById(productId)
@@ -67,10 +67,10 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public void updateQuantity(int userId, int productId, int quantity) {
-        Cart cart = repo.findByUserId(userId);
-        if (cart == null) {
-            throw new ResourceNotFoundException("Khong tim thay cart voi userId = " + userId);
-        }
+        userRepository.findByIdForUpdate(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));
+        Cart cart = repo.findByUserIdForUpdate(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart voi userId = " + userId));
         CartItem item = cart.getItems().stream()
                 .filter(i -> i.getProduct().getId().equals(productId))
                 .findFirst()
@@ -85,10 +85,10 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public void removeItemFromCart(int userId, int productId) {
-        Cart cart = repo.findByUserId(userId);
-        if (cart == null) {
-            throw new ResourceNotFoundException("Khong tim thay cart voi userId = " + userId);
-        }
+        userRepository.findByIdForUpdate(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));
+        Cart cart = repo.findByUserIdForUpdate(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart voi userId = " + userId));
         CartItem item = cart.getItems().stream()
                 .filter(i -> i.getProduct().getId().equals(productId))
                 .findFirst()
@@ -98,10 +98,10 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public void clearCart(int userId) {
-        Cart cart = repo.findByUserId(userId);
-        if (cart == null) {
-            throw new ResourceNotFoundException("Khong tim thay cart voi userId = " + userId);
-        }
+        userRepository.findByIdForUpdate(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));
+        Cart cart = repo.findByUserIdForUpdate(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart voi userId = " + userId));
         cart.getItems().clear();
     }
 }

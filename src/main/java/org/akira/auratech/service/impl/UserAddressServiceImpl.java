@@ -32,7 +32,7 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Override
     @Transactional(readOnly = true)
     public UserAddressResponse getUserAddressById(int userId, int addressId) {
-        return UserAddressResponse.fromEntity((UserAddress) repo.findByUserIdAndId(userId, addressId)
+        return UserAddressResponse.fromEntity(repo.findByUserIdAndId(userId, addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user address voi id = " + addressId)));
     }
 
@@ -55,11 +55,12 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Override
     @Transactional
     public UserAddressResponse createUserAddress(int userId, UserAddressRequest request) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdForUpdate(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));
 
 
         if (Boolean.TRUE.equals(request.isDefault())) {
+            repo.findByUserIdForUpdate(userId);
             clearDefaultAddresses(userId);
         }
 
@@ -79,13 +80,10 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Override
     @Transactional
     public UserAddressResponse updateUserAddress(int userId, int addressId, UserAddressRequest request) { // 💡 Nhận cả userId và addressId
-        UserAddress address = repo.findById(addressId)
+        userRepository.findByIdForUpdate(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));
+        UserAddress address = repo.findByUserIdAndIdForUpdate(userId, addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user address voi id = " + addressId));
-
-        // CHỐT CHẶN BẢO MẬT: Kiểm tra xem địa chỉ này có đúng là của User đang login không
-        if (address.getUser() == null || !address.getUser().getId().equals(userId)) {
-            throw new BusinessRuleException("Dia chi nay khong thuoc ve user dang thao tac");
-        }
 
         if (request.receiverName() != null) address.setReceiverName(request.receiverName());
         if (request.phone() != null) address.setPhone(request.phone());
@@ -95,6 +93,7 @@ public class UserAddressServiceImpl implements UserAddressService {
 
         if (request.isDefault() != null) {
             if (Boolean.TRUE.equals(request.isDefault())) {
+                repo.findByUserIdForUpdate(userId);
                 clearDefaultAddresses(userId);
             }
             address.setDefault(request.isDefault());
@@ -106,11 +105,11 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Override
     @Transactional
     public void deleteUserAddressById(int userId, int addressId) {
-        UserAddress address = (UserAddress) repo.findByUserIdAndId(userId, addressId)
+        UserAddress address = repo.findByUserIdAndIdForUpdate(userId, addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user address voi id = " + addressId));
         repo.delete(address);
     }
     private void clearDefaultAddresses(Integer userId) {
-        repo.findByUserIdAndIsDefaultTrue(userId).forEach(address -> address.setDefault(false));
+        repo.clearDefaultByUserId(userId);
     }
 }
