@@ -1,5 +1,6 @@
 package org.akira.auratech.service;
 
+import jakarta.validation.Valid;
 import org.akira.auratech.dto.request.UserRequest;
 import org.akira.auratech.dto.response.UserResponse;
 import org.springframework.data.domain.Page;
@@ -14,9 +15,9 @@ public interface UserService {
 
     Page<UserResponse> getActiveUsers(Pageable pageable);
 
-    UserResponse createUser(UserRequest request);
-
     UserResponse updateUser(int id, UserRequest request);
 
     void deleteUserById(int id);
+
+    UserResponse savedUser(UserRequest request);
 }

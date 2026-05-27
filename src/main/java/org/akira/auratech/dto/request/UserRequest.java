@@ -11,11 +11,11 @@ public record UserRequest(
         String email,
 
         @NotBlank(message = "Username khong duoc de trong")
-        @Size(min = 4, max = 60, message = "Username khong duoc vuot qua 60 ky tu")
+        @Size(min = 4, max = 60, message = "Username phải từ 4 đến 60 ký tự")
         String username,
 
         @NotBlank(message = "Password khong duoc de trong")
-        @Size(min = 6, max = 100, message = "Password khong duoc vuot qua 100 ky tu")
+        @Size(min = 6, max = 100, message = "Password phải từ {min} đến {max} ký tự")
         String password,
 
         @NotBlank(message = "FullName khong duoc de trong")

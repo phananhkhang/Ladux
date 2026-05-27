@@ -32,12 +32,12 @@ public class SecurityConfig {
         http
                 .csrf(customizer -> customizer.disable())// Vo hieu hoa CSRF chi o post, put, delete
                 .authorizeHttpRequests(request -> request
-                                                                            .requestMatchers("/register", "/login")
+                                                                            .requestMatchers("/api/v1/users/register", "/api/v1/users/login")
                                                                             .permitAll()// Cho phep truy cap khong can xac thuc den endpoint /register, /login
                                                                             .anyRequest().authenticated())// Yeu cau xac thuc cho tat ca cac request
                 .httpBasic(Customizer.withDefaults()) // Su dung HTTP Basic Authentication mac dinh cua Spring Security
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
         return http.build();
     }
     @Bean

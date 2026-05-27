@@ -11,6 +11,7 @@ import org.akira.auratech.service.UserService;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,22 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
     private final UserRepository repo;
     private final RoleRepository roleRepository;
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
+    @Override
+    @Transactional
+    public UserResponse savedUser(UserRequest request) {
+        User user = User.builder()
+                .email(request.email())
+                .username(request.username())
+                .password(encoder.encode(request.password()))
+                .fullName(request.fullName())
+                .phone(request.phone())
+                .avatar(request.avatar())
+                .isActive(true)
+                .build();
+        return UserResponse.fromEntity(repo.save(user));
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -49,25 +66,6 @@ public class UserServiceImpl implements UserService {
     public Page<UserResponse> getActiveUsers(Pageable pageable) {
         return repo.findByIsActiveTrue(pageable)
                 .map(UserResponse::fromEntity);
-    }
-
-    @Override
-    @Transactional
-    public UserResponse createUser(UserRequest request) {
-        Set<Role> roles = resolveRoles(request.roleIds());
-        if (request.roleIds() != null && roles == null) {
-            return null;
-        }
-        User user = User.builder()
-                .email(request.email())
-                .password(request.password())
-                .fullName(request.fullName())
-                .phone(request.phone())
-                .avatar(request.avatar())
-                .isActive(request.isActive() == null ? true : request.isActive())
-                .roles(roles == null ? new LinkedHashSet<>() : roles)
-                .build();
-        return UserResponse.fromEntity(repo.save(user));
     }
 
     @Override
