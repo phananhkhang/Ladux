@@ -30,7 +30,7 @@ public record ProductRequest(
         @Positive(message = "BasePrice phai lon hon 0")
         BigDecimal basePrice,
 
-        @PositiveOrZero(message = "DiscountPrice phai lon hon 0")
+        @PositiveOrZero(message = "DiscountPrice khong duoc am")
         BigDecimal discountPrice,
 
         @PositiveOrZero(message = "StockQuantity khong duoc am")
@@ -43,5 +43,5 @@ public record ProductRequest(
 
         Boolean isActive,
 
-        List<String> imageUrls
+        List<@NotBlank(message = "ImageUrl khong duoc de trong") @Size(max = 255, message = "ImageUrl khong duoc vuot qua 255 ky tu") String> imageUrls
 ) {}

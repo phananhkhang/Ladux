@@ -19,7 +19,7 @@ public interface OrderService {
 
     OrderResponse createOrder(int userId, OrderRequest request);
 
-    OrderResponse updateOrderStatus(int userId, int orderId, OrderStatusUpdateRequest request);
+    OrderResponse updateOrderStatus(int orderId, OrderStatusUpdateRequest request);
 
     PaymentCallbackResponse retryPayment(int userid, int orderId);
 

@@ -1,25 +1,23 @@
 package org.akira.auratech.dto.request;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-public record UserRequest(
-        @NotBlank(message = "Email khong duoc de trong")
+import java.util.List;
+
+public record UserAdminUpdateRequest(
         @Email(message = "Email khong hop le")
         @Size(max = 150, message = "Email khong duoc vuot qua 150 ky tu")
         String email,
 
-        @NotBlank(message = "Username khong duoc de trong")
         @Size(min = 4, max = 60, message = "Username phai tu 4 den 60 ky tu")
         String username,
 
-        @NotBlank(message = "Password khong duoc de trong")
-        @Size(min = 6, max = 100, message = "Password phai tu {min} den {max} ky tu")
+        @Size(min = 6, max = 100, message = "Password phai tu 6 den 100 ky tu")
         String password,
 
-        @NotBlank(message = "FullName khong duoc de trong")
         @Size(max = 150, message = "FullName khong duoc vuot qua 150 ky tu")
         String fullName,
 
@@ -28,5 +26,9 @@ public record UserRequest(
         String phone,
 
         @Size(max = 255, message = "Avatar khong duoc vuot qua 255 ky tu")
-        String avatar
+        String avatar,
+
+        Boolean isActive,
+
+        List<@Positive(message = "RoleId phai la so duong") Integer> roleIds
 ) {}

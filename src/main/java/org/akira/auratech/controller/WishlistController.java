@@ -4,9 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.WishlistRequest;
 import org.akira.auratech.dto.response.WishlistResponse;
+import org.akira.auratech.model.UserPrincipal;
 import org.akira.auratech.service.WishlistService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,18 +20,18 @@ public class WishlistController {
     private final WishlistService service;
 
     @PostMapping
-    public ResponseEntity<Void> addItemToWishlist(@RequestHeader("X-User-Id") int userId, @Valid @RequestBody WishlistRequest request) {
-        service.addItemToWishlist(userId, request.productId());
+    public ResponseEntity<Void> addItemToWishlist(@AuthenticationPrincipal UserPrincipal principal, @Valid @RequestBody WishlistRequest request) {
+        service.addItemToWishlist(principal.getId(), request.productId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
     @GetMapping
-    public ResponseEntity<List<WishlistResponse>> getWishlistsByUserId(@RequestHeader("X-User-Id") int userId) {
-        return ResponseEntity.ok(service.getWishlistsByUserId(userId));
+    public ResponseEntity<List<WishlistResponse>> getWishlistsByUserId(@AuthenticationPrincipal UserPrincipal principal) {
+        return ResponseEntity.ok(service.getWishlistsByUserId(principal.getId()));
     }
 
     @DeleteMapping("/{productId}")
-    public ResponseEntity<Void> removeItemFromWishlist(@RequestHeader("X-User-Id") int userId, @PathVariable int productId) {
-        service.removeItemFromWishlist(userId, productId);
+    public ResponseEntity<Void> removeItemFromWishlist(@AuthenticationPrincipal UserPrincipal principal, @PathVariable int productId) {
+        service.removeItemFromWishlist(principal.getId(), productId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -12,6 +12,8 @@ import org.akira.auratech.model.enums.OrderStatus;
 import org.akira.auratech.repository.CouponRepository;
 import org.akira.auratech.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class OrderLifecycleService {
     private final ProductRepository productRepository;
     private final CouponRepository couponRepository;
 
+    @Transactional(propagation = Propagation.MANDATORY)
     public void confirmAfterSuccessfulPayment(Order order) {
         if (order.getStatus() == OrderStatus.CANCELLED) {
             throw new BusinessRuleException("Don hang da bi huy, khong the xac nhan thanh toan");
@@ -39,6 +42,7 @@ public class OrderLifecycleService {
                 .build());
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     public void cancelOrder(Order order, String description) {
         if (order.getStatus() == OrderStatus.CANCELLED) {
             return;

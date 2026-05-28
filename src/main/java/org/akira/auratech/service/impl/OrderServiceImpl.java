@@ -203,10 +203,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderResponse updateOrderStatus(int userId, int orderId, OrderStatusUpdateRequest request) {
-        // Lấy đơn hàng thuộc sở hữu người dùng và khóa để cập nhật an toàn.
-        Order order = repo.findOwnedWithItemsForUpdate(userId, orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng của bạn"));
+    public OrderResponse updateOrderStatus(int orderId, OrderStatusUpdateRequest request) {
+        // Lấy đơn hàng và khóa để cập nhật trạng thái an toàn.
+        Order order = repo.findByIdForUpdate(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng"));
 
         // Kiểm tra trạng thái hiện tại và trạng thái muốn chuyển sang.
         OrderStatus current = order.getStatus();

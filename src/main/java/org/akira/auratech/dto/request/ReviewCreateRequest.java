@@ -6,11 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-public record ReviewRequest(
-        @NotNull(message = "UserId khong duoc de trong")
-        @Positive(message = "UserId phai la so duong")
-        Integer userId,
-
+public record ReviewCreateRequest(
         @NotNull(message = "ProductId khong duoc de trong")
         @Positive(message = "ProductId phai la so duong")
         Integer productId,

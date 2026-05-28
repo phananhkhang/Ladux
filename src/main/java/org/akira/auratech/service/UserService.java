@@ -1,7 +1,7 @@
 package org.akira.auratech.service;
 
-import jakarta.validation.Valid;
-import org.akira.auratech.dto.request.UserRequest;
+import org.akira.auratech.dto.request.RegisterRequest;
+import org.akira.auratech.dto.request.UserAdminUpdateRequest;
 import org.akira.auratech.dto.response.UserResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +15,9 @@ public interface UserService {
 
     Page<UserResponse> getActiveUsers(Pageable pageable);
 
-    UserResponse updateUser(int id, UserRequest request);
+    UserResponse updateUser(int id, UserAdminUpdateRequest request);
 
     void deleteUserById(int id);
 
-    UserResponse savedUser(UserRequest request);
+    UserResponse savedUser(RegisterRequest request);
 }

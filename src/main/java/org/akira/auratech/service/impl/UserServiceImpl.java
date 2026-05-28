@@ -1,17 +1,20 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.UserRequest;
+import org.akira.auratech.dto.request.RegisterRequest;
+import org.akira.auratech.dto.request.UserAdminUpdateRequest;
+import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.dto.response.UserResponse;
 import org.akira.auratech.model.Role;
 import org.akira.auratech.model.User;
+import org.akira.auratech.model.enums.RoleName;
 import org.akira.auratech.repository.RoleRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.UserService;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,19 +27,23 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
     private final UserRepository repo;
     private final RoleRepository roleRepository;
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    private final PasswordEncoder encoder;
 
     @Override
     @Transactional
-    public UserResponse savedUser(UserRequest request) {
+    public UserResponse savedUser(RegisterRequest request) {
+        Role customerRole = roleRepository.findByName(RoleName.CUSTOMER);
+        if (customerRole == null) {
+            throw new ResourceNotFoundException("Khong tim thay role CUSTOMER");
+        }
         User user = User.builder()
                 .email(request.email())
                 .username(request.username())
                 .password(encoder.encode(request.password()))
                 .fullName(request.fullName())
                 .phone(request.phone())
-                .avatar(request.avatar())
                 .isActive(true)
+                .roles(Set.of(customerRole))
                 .build();
         return UserResponse.fromEntity(repo.save(user));
     }
@@ -70,11 +77,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse updateUser(int id, UserRequest request) {
+    public UserResponse updateUser(int id, UserAdminUpdateRequest request) {
         User user = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id));
         if (request.email() != null) {
             user.setEmail(request.email());
+        }
+        if (request.username() != null) {
+            user.setUsername(request.username());
+        }
+        if (request.password() != null) {
+            user.setPassword(encoder.encode(request.password()));
         }
         if (request.fullName() != null) {
             user.setFullName(request.fullName());
@@ -89,10 +102,10 @@ public class UserServiceImpl implements UserService {
             user.setActive(request.isActive());
         }
         if (request.roleIds() != null) {
-            Set<Role> roles = resolveRoles(request.roleIds());
-            if (roles == null) {
-                return null;
+            if (request.roleIds().isEmpty()) {
+                throw new BusinessRuleException("User phai co it nhat 1 role");
             }
+            Set<Role> roles = resolveRoles(request.roleIds());
             user.setRoles(roles);
         }
         return UserResponse.fromEntity(user);

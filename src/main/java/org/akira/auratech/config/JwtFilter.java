@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.service.JwtService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,7 +46,12 @@ public class JwtFilter extends OncePerRequestFilter {
         jwt = authHeader.substring(7);
 
         // 4. Dùng JwtService để bốc cái Username ra khỏi Token
-        username = jwtService.extractUsername(jwt); // Cần nghiên cứu
+        try {
+            username = jwtService.extractUsername(jwt);
+        } catch (JwtException | IllegalArgumentException ex) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
         // 5. Nếu bốc được Username và hệ thống chưa xác thực cho request này (Authentication == null)
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) { // Ồ thấy người rồi, nhưng mà cháu đã được đóng dấu chưa, chưa thì bác đóng dấu cho nè

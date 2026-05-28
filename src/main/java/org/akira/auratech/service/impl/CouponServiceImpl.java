@@ -50,7 +50,7 @@ public class CouponServiceImpl implements CouponService {
                 .code(request.code())
                 .discountType(request.discountType())
                 .discountValue(request.discountValue())
-                .minOrderValue(request.minOrderValue())
+                .minOrderValue(request.minOrderValue() == null ? BigDecimal.ZERO : request.minOrderValue())
                 .usageLimit(request.usageLimit())
                 .usedCount(0)
                 .expiresAt(request.expiresAt())

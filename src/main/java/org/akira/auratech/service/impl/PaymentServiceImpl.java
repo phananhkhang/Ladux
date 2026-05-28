@@ -2,6 +2,7 @@ package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.PaymentCallbackRequest;
+import org.akira.auratech.dto.request.PaymentCreateRequest;
 import org.akira.auratech.dto.response.PaymentCallbackResponse;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
@@ -64,9 +65,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public PaymentCallbackResponse createPayment(PaymentCallbackRequest request) {
+    public PaymentCallbackResponse createPayment(int userId, PaymentCreateRequest request) {
         Order order = orderRepository.findByIdForUpdate(request.orderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.orderId()));
+        if (!order.getUser().getId().equals(userId)) {
+            throw new BusinessRuleException("Ban khong co quyen tao thanh toan cho don hang nay");
+        }
 
         ensureOrderCanAcceptPayment(order);
 
@@ -79,12 +83,10 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = Payment.builder()
                 .order(order)
                 .provider(request.provider())
-                .transactionNo(request.transactionNo())
                 .amount(order.getFinalAmount())
-                .status(request.status() == null ? PaymentStatus.PENDING : request.status())
+                .status(PaymentStatus.PENDING)
                 .build();
         Payment savedPayment = repo.save(payment);
-        applyPaymentStatus(order, savedPayment.getStatus());
         return PaymentCallbackResponse.fromEntity(savedPayment);
     }
 
@@ -135,10 +137,10 @@ public class PaymentServiceImpl implements PaymentService {
 
     private void applyPaymentStatus(Order order, PaymentStatus status) {
         if (status == PaymentStatus.SUCCESS) {
-            orderLifecycleService.confirmAfterSuccessfulPayment(order); // Buộc đơn hàng phải đang ở trạng thái PENDING trước.
+            orderLifecycleService.confirmAfterSuccessfulPayment(order);
         }
         if (status == PaymentStatus.FAILED) {
-            orderLifecycleService.cancelOrder(order, "Payment failed"); // Chuyển trạng thái đơn hàng sang CANCELLED
+            orderLifecycleService.cancelOrder(order, "Payment failed");
         }
     }
 }

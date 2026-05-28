@@ -1,5 +1,6 @@
 package org.akira.auratech.service;
 
+import org.akira.auratech.dto.request.PaymentCreateRequest;
 import org.akira.auratech.dto.request.PaymentCallbackRequest;
 import org.akira.auratech.dto.response.PaymentCallbackResponse;
 import org.akira.auratech.model.enums.PaymentStatus;
@@ -17,7 +18,7 @@ public interface PaymentService {
 
     Page<PaymentCallbackResponse> getPaymentsByStatus(PaymentStatus status, Pageable pageable);
 
-    PaymentCallbackResponse createPayment(PaymentCallbackRequest request);
+    PaymentCallbackResponse createPayment(int userId, PaymentCreateRequest request);
 
     PaymentCallbackResponse updatePayment(int id, PaymentCallbackRequest request);
 }

@@ -6,6 +6,7 @@ import org.akira.auratech.dto.response.ProductResponse;
 import org.akira.auratech.model.Brand;
 import org.akira.auratech.model.Category;
 import org.akira.auratech.model.Product;
+import org.akira.auratech.model.ProductImage;
 import org.akira.auratech.repository.BrandRepository;
 import org.akira.auratech.repository.CategoryRepository;
 import org.akira.auratech.repository.ProductRepository;
@@ -98,6 +99,7 @@ public class ProductServiceImpl implements ProductService {
                 .isActive(request.isActive() == null ? true : request.isActive())
                 .slug(SlugUtils.toSlug(request.name()))
                 .build();
+        replaceProductImages(product, request.imageUrls());
         return ProductResponse.fromEntity(repo.save(product));
     }
 
@@ -144,6 +146,9 @@ public class ProductServiceImpl implements ProductService {
         if (request.isActive() != null) {
             product.setActive(request.isActive());
         }
+        if (request.imageUrls() != null) {
+            replaceProductImages(product, request.imageUrls());
+        }
         return ProductResponse.fromEntity(product);
     }
 
@@ -157,5 +162,16 @@ public class ProductServiceImpl implements ProductService {
         if (discountPrice != null && discountPrice.compareTo(basePrice) > 0) {
             throw new BusinessRuleException("DiscountPrice khong duoc lon hon BasePrice");
         }
+    }
+
+    private void replaceProductImages(Product product, java.util.List<String> imageUrls) {
+        if (imageUrls == null) {
+            return;
+        }
+        product.getImages().clear();
+        imageUrls.forEach(imageUrl -> product.getImages().add(ProductImage.builder()
+                .product(product)
+                .imageUrl(imageUrl)
+                .build()));
     }
 }

@@ -16,8 +16,14 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
+    @EntityGraph(attributePaths = {"brand", "category", "images"})
+    @Override
+    Optional<Product> findById(Integer id);
+
+    @EntityGraph(attributePaths = {"brand", "category", "images"})
     Product findBySlug(String slug);
 
+    @EntityGraph(attributePaths = {"brand", "category", "images"})
     Product findBySku(String sku);
 
     @EntityGraph(attributePaths = {"brand", "category"})

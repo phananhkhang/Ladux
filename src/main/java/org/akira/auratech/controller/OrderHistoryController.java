@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.response.OrderHistoryResponse;
 import org.akira.auratech.service.OrderHistoryService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/order-histories")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class OrderHistoryController {
     private final OrderHistoryService service;
 

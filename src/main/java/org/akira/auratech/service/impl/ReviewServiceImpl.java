@@ -1,7 +1,8 @@
 package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.ReviewRequest;
+import org.akira.auratech.dto.request.ReviewCreateRequest;
+import org.akira.auratech.dto.request.ReviewUpdateRequest;
 import org.akira.auratech.dto.response.ReviewResponse;
 import org.akira.auratech.model.Product;
 import org.akira.auratech.model.Review;
@@ -57,9 +58,9 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public ReviewResponse createReview(ReviewRequest request) {
-        User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + request.userId()));
+    public ReviewResponse createReview(int userId, ReviewCreateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));
         Product product = productRepository.findById(request.productId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + request.productId()));
         if (repo.existsByUserIdAndProductId(user.getId(), product.getId())) {
@@ -79,13 +80,10 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public ReviewResponse updateReview(int userId, int reviewId, ReviewRequest request) {
+    public ReviewResponse updateReview(int userId, int reviewId, ReviewUpdateRequest request) {
         Review review = repo.findByUserIdAndId(userId, reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + reviewId + " va userId = " + userId));
         if (request.rating() != null) {
-            if (request.rating() < 1 || request.rating() > 5) {
-                throw new BusinessRuleException("Rating phai nam trong khoang 1 den 5");
-            }
             review.setRating(request.rating());
         }
         if (request.comment() != null) {

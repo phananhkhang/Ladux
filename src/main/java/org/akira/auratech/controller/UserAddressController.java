@@ -4,9 +4,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.UserAddressRequest;
 import org.akira.auratech.dto.response.UserAddressResponse;
+import org.akira.auratech.model.UserPrincipal;
 import org.akira.auratech.service.UserAddressService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,38 +21,39 @@ public class UserAddressController {
     private final UserAddressService service;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserAddressResponse>> getAllUserAddresses() {
         return ResponseEntity.ok(service.getAllUserAddresses());
     }
 
     @GetMapping("/{addressId}")
-    public ResponseEntity<UserAddressResponse> getUserAddressById(@RequestHeader("X-User-Id") int userId, @PathVariable int addressId) {
-        return ResponseEntity.ok(service.getUserAddressById(userId, addressId));
+    public ResponseEntity<UserAddressResponse> getUserAddressById(@AuthenticationPrincipal UserPrincipal principal, @PathVariable int addressId) {
+        return ResponseEntity.ok(service.getUserAddressById(principal.getId(), addressId));
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<UserAddressResponse>> getUserAddressesByUserId(@RequestHeader("X-User-Id") int userId) {
-        return ResponseEntity.ok(service.getUserAddressesByUserId(userId));
+    public ResponseEntity<List<UserAddressResponse>> getUserAddressesByUserId(@AuthenticationPrincipal UserPrincipal principal) {
+        return ResponseEntity.ok(service.getUserAddressesByUserId(principal.getId()));
     }
 
     @GetMapping("/default")
-    public ResponseEntity<List<UserAddressResponse>> getDefaultUserAddressesByUserId(@RequestHeader("X-User-Id") int userId) {
-        return ResponseEntity.ok(service.getDefaultUserAddressesByUserId(userId));
+    public ResponseEntity<List<UserAddressResponse>> getDefaultUserAddressesByUserId(@AuthenticationPrincipal UserPrincipal principal) {
+        return ResponseEntity.ok(service.getDefaultUserAddressesByUserId(principal.getId()));
     }
 
     @PostMapping
-    public ResponseEntity<UserAddressResponse> createUserAddress(@RequestHeader("X-User-Id") int userId, @Valid @RequestBody UserAddressRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.createUserAddress(userId, request));
+    public ResponseEntity<UserAddressResponse> createUserAddress(@AuthenticationPrincipal UserPrincipal principal, @Valid @RequestBody UserAddressRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createUserAddress(principal.getId(), request));
     }
 
     @PutMapping("/{addressId}")
-    public ResponseEntity<UserAddressResponse> updateUserAddress(@RequestHeader("X-User-Id") int userId, @PathVariable int addressId, @Valid @RequestBody UserAddressRequest request) {
-        return ResponseEntity.ok(service.updateUserAddress(userId, addressId, request));
+    public ResponseEntity<UserAddressResponse> updateUserAddress(@AuthenticationPrincipal UserPrincipal principal, @PathVariable int addressId, @Valid @RequestBody UserAddressRequest request) {
+        return ResponseEntity.ok(service.updateUserAddress(principal.getId(), addressId, request));
     }
 
     @DeleteMapping("/{addressId}")
-    public ResponseEntity<Void> deleteUserAddressById(@RequestHeader("X-User-Id") int userId, @PathVariable int addressId) {
-        service.deleteUserAddressById(userId, addressId);
+    public ResponseEntity<Void> deleteUserAddressById(@AuthenticationPrincipal UserPrincipal principal, @PathVariable int addressId) {
+        service.deleteUserAddressById(principal.getId(), addressId);
         return ResponseEntity.noContent().build();
     }
 }

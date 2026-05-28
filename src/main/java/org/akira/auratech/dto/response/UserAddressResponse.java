@@ -3,6 +3,7 @@ package org.akira.auratech.dto.response;
 import org.akira.auratech.model.UserAddress;
 
 public record UserAddressResponse(
+        Integer id,
         Integer userId,
         String receiverName,
         String phone,
@@ -17,6 +18,7 @@ public record UserAddressResponse(
         }
         return new UserAddressResponse(
                 address.getId(),
+                address.getUser() == null ? null : address.getUser().getId(),
                 address.getReceiverName(),
                 address.getPhone(),
                 address.getStreet(),

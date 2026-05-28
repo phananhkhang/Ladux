@@ -23,7 +23,7 @@ public class BrandServiceImpl implements BrandService {
     public List<BrandResponse> getAllBrands() {
         List<Brand> brands = repo.findAll();
         return brands.stream()
-                .map(brand -> BrandResponse.fromEntity(brand))
+                .map(BrandResponse::fromEntity)
                 .toList();
     }
 

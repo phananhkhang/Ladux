@@ -2,13 +2,16 @@ package org.akira.auratech.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.ReviewRequest;
+import org.akira.auratech.dto.request.ReviewCreateRequest;
+import org.akira.auratech.dto.request.ReviewUpdateRequest;
 import org.akira.auratech.dto.response.ReviewResponse;
+import org.akira.auratech.model.UserPrincipal;
 import org.akira.auratech.service.ReviewService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -38,18 +41,18 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<ReviewResponse> createReview(@Valid @RequestBody ReviewRequest request) {
-        return new ResponseEntity<>(service.createReview(request), HttpStatus.CREATED);
+    public ResponseEntity<ReviewResponse> createReview(@AuthenticationPrincipal UserPrincipal principal, @Valid @RequestBody ReviewCreateRequest request) {
+        return new ResponseEntity<>(service.createReview(principal.getId(), request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{reviewId}")
-    public ResponseEntity<ReviewResponse> updateReview(@RequestHeader("X-User-Id") int userId, @PathVariable int reviewId, @RequestBody ReviewRequest request) {
-        return ResponseEntity.ok(service.updateReview(userId, reviewId, request));
+    public ResponseEntity<ReviewResponse> updateReview(@AuthenticationPrincipal UserPrincipal principal, @PathVariable int reviewId, @Valid @RequestBody ReviewUpdateRequest request) {
+        return ResponseEntity.ok(service.updateReview(principal.getId(), reviewId, request));
     }
 
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<Void> deleteReviewById(@RequestHeader("X-User-Id") int userId, @PathVariable int reviewId) {
-        service.deleteReviewById(userId, reviewId);
+    public ResponseEntity<Void> deleteReviewById(@AuthenticationPrincipal UserPrincipal principal, @PathVariable int reviewId) {
+        service.deleteReviewById(principal.getId(), reviewId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
