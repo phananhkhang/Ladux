@@ -1,0 +1,146 @@
+{
+  "project_name": "AuraTech",
+  "theme": {
+    "mode": "dark",
+    "archetype": "Luxury & Electric Neon Fusion",
+    "description": "Premium laptop e-commerce blending Apple's refined minimalism with Asus ROG's high-performance neon aesthetics. Dark mode dominant with striking emerald/neon green accents."
+  },
+  "colors": {
+    "background": "#050505",
+    "surface": "#0F0F0F",
+    "surface_hover": "#1A1A1A",
+    "surface_glass": "rgba(10, 10, 10, 0.7)",
+    "primary_accent": "#00FF66",
+    "primary_accent_hover": "#00CC52",
+    "text_primary": "#FFFFFF",
+    "text_secondary": "#A1A1AA",
+    "border_subtle": "rgba(255, 255, 255, 0.08)",
+    "border_focus": "#00FF66",
+    "border_glass": "rgba(255, 255, 255, 0.12)",
+    "error": "#FF3366",
+    "success": "#00FF66"
+  },
+  "typography": {
+    "heading_font": "Outfit",
+    "body_font": "Manrope",
+    "rules": {
+      "h1": "text-5xl md:text-6xl+ tracking-tighter font-medium text-white",
+      "h2": "text-3xl md:text-4xl tracking-tight font-medium text-white",
+      "h3": "text-xl md:text-2xl tracking-tight font-medium text-white",
+      "body": "text-base md:text-lg leading-relaxed text-zinc-400",
+      "labels": "text-xs uppercase tracking-[0.2em] text-zinc-500 font-bold"
+    }
+  },
+  "spacing_and_layout": {
+    "container_padding": "px-6 md:px-12 lg:px-24",
+    "section_gap": "py-24 md:py-32",
+    "grid_system": "Bento grid for categories and features. Asymmetrical layouts for marketing sections. Use gap-8 or gap-12 for breathing room.",
+    "card_padding": "p-8 md:p-10",
+    "border_radius": "rounded-2xl"
+  },
+  "surfaces_and_components": {
+    "nav_header": "Crystal glassmorphism: fixed top-0 w-full z-50 bg-black/60 backdrop-blur-2xl border-b border-white/10. Do not use fully transparent.",
+    "product_card": "Solid dark surface (#0F0F0F) with 1px border-white/5, rounded-2xl. Hover state: border-white/20, subtle green glow drop-shadow-[0_0_15px_rgba(0,255,102,0.1)], transform -translate-y-1 transition-all duration-300.",
+    "buttons": {
+      "primary": "bg-[#00FF66] text-black font-semibold rounded-full px-8 py-3 hover:bg-[#00CC52] transition-colors focus:ring-2 focus:ring-[#00FF66] focus:ring-offset-2 focus:ring-offset-black",
+      "secondary": "bg-transparent border border-white/20 text-white rounded-full px-8 py-3 hover:border-[#00FF66] hover:text-[#00FF66] transition-colors",
+      "ghost": "text-zinc-400 hover:text-white transition-colors"
+    },
+    "forms": "Use Shadcn components heavily customized: Inputs use bg-[#0A0A0A] border-white/10 text-white focus:border-[#00FF66] focus:ring-1 focus:ring-[#00FF66] rounded-xl. Remove default Shadcn blue rings.",
+    "badges": "bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/20 px-3 py-1 text-xs rounded-full font-medium tracking-wide"
+  },
+  "motion_and_interactions": {
+    "hover_states": "All cards and buttons must have smooth 0.3s ease transitions. Laptops in cards should slightly scale up on hover (scale-105).",
+    "page_transitions": "Fade in and subtle slide up using framer-motion.",
+    "scroll_reveal": "Use framer-motion to reveal sections on scroll (opacity 0 to 1, y: 20 to 0).",
+    "micro_interactions": "Neon border tracing on premium featured product cards on hover (Aceternity style)."
+  },
+  "testing_rules": {
+    "data_testid": "MANDATORY. All interactive elements (buttons, links, inputs, product cards) must have a descriptive kebab-case data-testid attribute (e.g., data-testid='add-to-cart-button', data-testid='product-card-123', data-testid='login-submit-button')."
+  },
+  "pages_blueprint": {
+    "homepage": {
+      "hero": "Cinematic dark section. Split layout or full width. Large 3D laptop render (use hero_laptop_neon image). Neon green accent text for key value props. Heavy glassmorphism nav.",
+      "brand_strip": "Slow marquee (react-fast-marquee) of partner logos (Intel, Nvidia, Asus, Apple) in low opacity zinc-600 with large tracking.",
+      "featured_products": "Bento grid of premium laptops. The primary product takes up col-span-2 row-span-2.",
+      "deal_of_the_day": "Asymmetrical split layout: left side large laptop image with neon glowing background, right side specs, countdown, and glowing Add to Cart button.",
+      "testimonials": "Glassmorphism cards with subtle border-white/10, layered on a dark textural background."
+    },
+    "product_listing": {
+      "layout": "CSS Grid layout. Sidebar filters on left (sticky, col-span-1), product grid on right (col-span-3).",
+      "filters": "Brand, Category, Price Range. Active filter states use #00FF66 text and borders."
+    },
+    "product_detail": {
+      "layout": "Split screen on desktop. Sticky left gallery (min-h-[60vh]), right side scrolling details with generous p-12 padding.",
+      "gallery": "Large hero image, thumbnails below. Subtle dark vignette around images.",
+      "specs": "Clean bento-style grid for specs, parsing JSON beautifully into individual cards (CPU, RAM, GPU) with small Phosphor icons.",
+      "actions": "Massive primary neon green 'Add to Cart' button. 'Add to Wishlist' secondary icon button.",
+      "reviews": "Clean list layout with star ratings in #00FF66."
+    },
+    "cart_checkout": {
+      "cart": "Drawer or dedicated page. Dark minimal line items, neon green total highlight.",
+      "checkout": "Clean single-page form or multi-step. COD and VNPAY selection as premium radio cards (border-white/10, selected state border-[#00FF66])."
+    },
+    "auth": {
+      "layout": "Split screen: left side atmospheric dark tech image, right side glassmorphic login/register form.",
+      "form": "Customized Shadcn forms, solid dark inputs, green primary CTA."
+    },
+    "profile_orders": {
+      "layout": "Sidebar navigation (Profile, Orders, Addresses). Main content area with flat dark cards.",
+      "orders": "List of past orders with status badges (Green for delivered, Zinc for processing)."
+    }
+  },
+  "media": {
+    "instructions_to_main_agent": "Use these exact image URLs in the components and seed data. DO NOT USE placeholders like via.placeholder.com. Ensure images fit within the high-contrast dark theme.",
+    "images": [
+      {
+        "category": "hero_background",
+        "url": "https://static.prod-images.emergentagent.com/jobs/ba30fb8d-5141-4139-8761-f77bcbe4cb08/images/5ca1105e896057191ff6853e0248dfab5006537aaee5b16c717ecaeff04f1eec.png",
+        "description": "Abstract dark glassmorphism neon background for hero section"
+      },
+      {
+        "category": "hero_laptop",
+        "url": "https://static.prod-images.emergentagent.com/jobs/ba30fb8d-5141-4139-8761-f77bcbe4cb08/images/055574190896c106f6242293b2465b63e3a0a850946cf483e2f8127badb8db62.png",
+        "description": "Premium 3D render of a futuristic laptop floating in a dark studio"
+      },
+      {
+        "category": "product_laptop_1",
+        "url": "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHwxfHxzbGVlayUyMHNpbHZlciUyMGxhcHRvcCUyMGRhcmslMjBzdHVkaW8lMjBsaWdodGluZ3xlbnwwfHx8fDE3Nzk5NTczNjV8MA&ixlib=rb-4.1.0&q=85",
+        "description": "MacBook Pro turned on, sleek silver"
+      },
+      {
+        "category": "product_laptop_2",
+        "url": "https://images.pexels.com/photos/25839642/pexels-photo-25839642.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Sleek laptop placed against a black background"
+      },
+      {
+        "category": "product_laptop_3",
+        "url": "https://images.unsplash.com/photo-1771014846919-3a1cf73aeea1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHw0fHxwcmVtaXVtJTIwZ2FtaW5nJTIwbGFwdG9wJTIwZGFyayUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzc5OTU3MzY0fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Black laptop with colorful rgb lighting in dark room"
+      },
+      {
+        "category": "product_laptop_4",
+        "url": "https://images.unsplash.com/photo-1615788189819-bee84874da4b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwyfHxwcmVtaXVtJTIwZ2FtaW5nJTIwbGFwdG9wJTIwZGFyayUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzc5OTU3MzY0fDA&ixlib=rb-4.1.0&q=85",
+        "description": "black and silver laptop computer"
+      },
+      {
+        "category": "detail_keyboard_rgb",
+        "url": "https://images.pexels.com/photos/5548042/pexels-photo-5548042.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Detailed view of a stylish laptop keyboard featuring customizable RGB backlighting"
+      },
+      {
+        "category": "detail_keyboard_macro",
+        "url": "https://images.unsplash.com/photo-1560762484-813fc97650a0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MTN8MHwxfHNlYXJjaHwxfHxsYXB0b3AlMjBrZXlib2FyZCUyMHJnYiUyMG1hY3JvfGVufDB8fHx8MTc3OTk1NzM2NHww&ixlib=rb-4.1.0&q=85",
+        "description": "close up of a laptop keyboard with red and blue keys"
+      }
+    ]
+  },
+  "tech_stack": {
+    "framework": "React.js (JavaScript, NOT TSX)",
+    "styling": "Tailwind CSS + shadcn/ui",
+    "state_management": "Zustand",
+    "api_client": "Axios",
+    "icons": "lucide-react or @phosphor-icons/react",
+    "animations": "framer-motion"
+  }
+}
