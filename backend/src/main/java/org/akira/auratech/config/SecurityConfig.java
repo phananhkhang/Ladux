@@ -25,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final MyUserDetailsService userDetailsService;
     private final JwtFilter jwtFilter;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
@@ -54,6 +55,7 @@ public class SecurityConfig {
                         .permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2Login(oauth2 -> oauth2.successHandler(oAuth2SuccessHandler))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Them JwtFilter vao truoc UsernamePasswordAuthenticationFilter de xu ly xac thuc JWT truoc khi den filter xac thuc mac dinh
 
         return http.build();
