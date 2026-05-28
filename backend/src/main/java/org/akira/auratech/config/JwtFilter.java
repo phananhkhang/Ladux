@@ -39,7 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
         // 2. Chốt chặn 1: Nếu Header trống hoặc không bắt đầu bằng chữ "Bearer ", cho qua trạm gác này luôn vì nó khách vãng lai
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response); // Cho phép request đi tiếp sang các filter sau
-            return; // Thoát khỏi hàm hiện tại
+            return; //   Thoát khỏi hàm hiện tại
         }
 
         // 3. Bốc tách chuỗi Token (Cắt bỏ chữ "Bearer " lấy phần mã phía sau)
