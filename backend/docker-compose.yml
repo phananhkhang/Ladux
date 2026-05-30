@@ -1,0 +1,27 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    networks:
+      - s-network
+
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: akira
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: aura_tech
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    networks:
+      - s-network
+
+volumes:
+  postgres-data:
+
+networks:
+  s-network:
+    driver: bridge
