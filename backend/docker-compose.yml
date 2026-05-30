@@ -4,7 +4,14 @@ services:
     ports:
       - "8080:8080"
     environment:
+      - SPRING_PROFILES_ACTIVE=prod# 🎯 ÉP ỨNG DỤNG CHẠY FILE PRODUCTION AN TOÀN
       - DB_HOST=postgres
+      - DB_USERNAME=akira
+      - DB_PASSWORD=1234
+      # BƠM CÁC CHUỖI MẬT THẬT VÀO ĐÂY KHI DEPLOY PROD
+      - JWT_SECRET=YOTyMfKxFu4G4Xov9WiA8YK9Z7UQz9hnZRrAywS+bP8=
+      - GOOGLE_CLIENT_ID=405748760225-613mkg03dds24di44e7vpigi62ed06r0.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=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
     volumes:
       - ./database:/database
     depends_on:
