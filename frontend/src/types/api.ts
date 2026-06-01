@@ -109,7 +109,7 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  accessToken: string;
+  message: string;
 }
 
 export interface RegisterRequest {

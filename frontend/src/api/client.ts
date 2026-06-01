@@ -38,12 +38,40 @@ interface ApiErrorBody {
 const api = axios.create({
   baseURL: apiBaseURL,
   timeout: 20000,
+  withCredentials: true,
 });
 
-api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = localStorage.getItem("auratech_token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+const readCookie = (name: string) => {
+  const encodedName = `${encodeURIComponent(name)}=`;
+  return document.cookie
+    .split(";")
+    .map((value) => value.trim())
+    .find((value) => value.startsWith(encodedName))
+    ?.slice(encodedName.length);
+};
+
+const unsafeMethods = new Set(["post", "put", "patch", "delete"]);
+let csrfRequest: Promise<void> | null = null;
+
+const ensureCsrfCookie = async () => {
+  if (readCookie("XSRF-TOKEN")) return;
+  csrfRequest ??= axios
+    .get(`${apiBaseURL}/auth/csrf`, { withCredentials: true })
+    .then(() => undefined)
+    .finally(() => {
+      csrfRequest = null;
+    });
+  await csrfRequest;
+};
+
+api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
+  const method = config.method?.toLowerCase();
+  if (method && unsafeMethods.has(method)) {
+    await ensureCsrfCookie();
+    const csrfToken = readCookie("XSRF-TOKEN");
+    if (csrfToken) {
+      config.headers["X-XSRF-TOKEN"] = decodeURIComponent(csrfToken);
+    }
   }
   return config;
 });
@@ -91,8 +119,9 @@ export const Reviews = {
 };
 
 export const Auth = {
-  login: (body: LoginRequest) => unwrap<LoginResponse>(api.post("/users/login", body)),
-  register: (body: RegisterRequest) => unwrap<UserResponse>(api.post("/users/register", body)),
+  login: (body: LoginRequest) => unwrap<LoginResponse>(api.post("/auth/login", body)),
+  register: (body: RegisterRequest) => unwrap<UserResponse>(api.post("/auth/register", body)),
+  logout: () => unwrap<void>(api.post("/auth/logout")),
   me: () => unwrap<UserResponse>(api.get("/users/me")),
 };
 

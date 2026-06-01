@@ -67,32 +67,20 @@ const saveUserSnapshot = (user: UserResponse) => {
   localStorage.setItem(USER_SNAPSHOT_KEY, JSON.stringify(user));
 };
 
-const readUserSnapshot = (): UserResponse | null => {
-  const raw = localStorage.getItem(USER_SNAPSHOT_KEY);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw) as UserResponse;
-  } catch {
-    localStorage.removeItem(USER_SNAPSHOT_KEY);
-    return null;
-  }
-};
-
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       token: null,
       user: null,
       login: async (username, password) => {
-        const { accessToken } = await Auth.login({ username, password });
-        localStorage.setItem("auratech_token", accessToken);
-        set({ token: accessToken });
+        await Auth.login({ username, password });
+        set({ token: "cookie" });
 
         let user = createSessionUser(username);
         try {
           user = await Auth.me();
         } catch {
-          // Current backend returns only a JWT; keep a typed local session snapshot for the UI.
+          // Keep a typed local session snapshot if the profile endpoint is temporarily unavailable.
         }
 
         saveUserSnapshot(user);
@@ -106,29 +94,23 @@ export const useAuthStore = create<AuthState>()(
         return get().login(body.username, body.password);
       },
       logout: () => {
-        localStorage.removeItem("auratech_token");
+        Auth.logout().catch(() => undefined);
         localStorage.removeItem(USER_SNAPSHOT_KEY);
         set({ token: null, user: null });
         useCartStore.getState().reset();
         useWishlistStore.getState().reset();
       },
       hydrate: async () => {
-        const token = localStorage.getItem("auratech_token");
-        if (!token) return;
-
-        let user = readUserSnapshot();
         try {
-          user = await Auth.me();
+          const user = await Auth.me();
           saveUserSnapshot(user);
+          set({ token: "cookie", user });
         } catch {
-          if (!user) {
-            localStorage.removeItem("auratech_token");
-            set({ token: null, user: null });
-            return;
-          }
+          localStorage.removeItem(USER_SNAPSHOT_KEY);
+          set({ token: null, user: null });
+          return;
         }
 
-        set({ token, user });
         await useCartStore.getState().refresh();
         await useWishlistStore.getState().refresh();
       },
