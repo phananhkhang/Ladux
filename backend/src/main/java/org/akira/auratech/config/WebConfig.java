@@ -4,6 +4,8 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.filter.UrlHandlerFilter;
@@ -21,7 +23,16 @@ public class WebConfig implements WebMvcConfigurer {
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return registration;
     }
+    @Bean
+    public PageableHandlerMethodArgumentResolverCustomizer customizePageable() {
+        return resolver -> {
+            // Nếu client không truyền size, mặc định chỉ lấy 12 sản phẩm
+            resolver.setFallbackPageable(PageRequest.of(0, 12));
 
+            // CHỐT CHẶN TỬ HUYỆT: Dù client truyền size to thế nào, tối đa cũng chỉ được lấy 50 dòng!
+            resolver.setMaxPageSize(50);
+        };
+    }
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Áp dụng cho TẤT CẢ các đường dẫn API trong hệ thống
