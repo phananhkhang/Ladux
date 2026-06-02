@@ -17,12 +17,9 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = repo.findByUsername(username);
-        if (user == null) {
-            System.out.println("User 404");
-            throw new UsernameNotFoundException("User 404");
-        }
+    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+        User user = repo.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return new UserPrincipal(user);
     }
 }

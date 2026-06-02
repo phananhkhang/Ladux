@@ -1,11 +1,12 @@
 package org.akira.auratech.config;
 
-import com.nimbusds.jwt.JWT;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -20,6 +22,7 @@ import java.util.List;
 // Trung tâm an ninh của auratech
 @Configuration
 @EnableWebSecurity // Bật spring security
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -37,13 +40,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 🛡️ Tiêm bộ lọc cấu hình CORS chính chủ doanh nghiệp
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                // API Stateless chạy bằng JWT Cookie có SameSite=Strict nên an tâm disable CSRF mặc định của Spring
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .ignoringRequestMatchers(
+                                "/api/v1/auth/login", "/api/v1/auth/login/",
+                                "/api/v1/auth/register", "/api/v1/auth/register/",
+                                "/api/v1/auth/logout", "/api/v1/auth/logout/",
+                                "/oauth2/**", "/login/oauth2/**"
+                        )
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**", "/login/oauth2/**", "/api/v1/brands/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/error", "/api/v1/auth/**", "/oauth2/**", "/login/oauth2/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/products/**",
+                                "/api/v1/brands/**",
+                                "/api/v1/categories/**",
+                                "/api/v1/reviews/**")
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
@@ -57,11 +73,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // ❌ TUYỆT ĐỐI CẤM dùng "*" trên Prod.
         configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://auratech.vn"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control", "Cookie"));
-        // 🎯 BẮT BUỘC: Cho phép truyền nhận Cookie chứa JWT qua lại giữa Front-end và Back-end
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control", "Cookie", "X-XSRF-TOKEN"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

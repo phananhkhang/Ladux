@@ -7,11 +7,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
+import org.akira.auratech.service.AuthCookieService;
 import org.akira.auratech.service.JwtService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -24,6 +27,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final AuthCookieService authCookieService;
 
     @Override
     protected void doFilterInternal(
@@ -37,7 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
         // 1. 🎯 THAY ĐỔI CỐT LÕI: Lội vào danh sách Cookie của Request để tìm cục AUTH_TOKEN
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if ("AUTH_TOKEN".equals(cookie.getName())) {
+                if (authCookieService.cookieName().equals(cookie.getName())) {
                     jwt = cookie.getValue(); // Bốc được chuỗi Token ra rồi!
                     break;
                 }
@@ -57,15 +61,24 @@ public class JwtFilter extends OncePerRequestFilter {
             username = jwtService.extractUsername(jwt);
         } catch (JwtException | IllegalArgumentException ex) {
             // Token hết hạn hoặc giả mạo -> Trả về 401 Unauthorized kèm Clear Cookie lỗi
+            SecurityContextHolder.clearContext();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.clearAuthCookie().toString());
             return;
         }
 
         // 4. Nếu bốc được Username và hệ thống chưa xác thực cho request này
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            // Vào DB tìm thông tin User thông qua UserDetailsService (Sẽ tìm bằng Email đồng bộ)
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails;
+            try {
+                userDetails = this.userDetailsService.loadUserByUsername(username);
+            } catch (UsernameNotFoundException ex) {
+                SecurityContextHolder.clearContext();
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.clearAuthCookie().toString());
+                return;
+            }
 
             // 5. Kiểm tra tính hợp lệ của Token
             if (jwtService.isTokenValid(jwt, userDetails)) {

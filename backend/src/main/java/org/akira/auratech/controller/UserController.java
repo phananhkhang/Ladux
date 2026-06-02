@@ -2,48 +2,33 @@ package org.akira.auratech.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.LoginRequest;
-import org.akira.auratech.dto.request.RegisterRequest;
 import org.akira.auratech.dto.request.UserAdminUpdateRequest;
 import org.akira.auratech.dto.response.UserResponse;
-import org.akira.auratech.service.JwtService;
+import org.akira.auratech.model.UserPrincipal;
 import org.akira.auratech.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService service;
-    private final AuthenticationManager authManager;
-    private final JwtService jwtService;
-
-    @PostMapping({"/register", "/register/"})
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
-        return new ResponseEntity<>(service.savedUser(request), HttpStatus.CREATED);
-    }
-
-    @PostMapping({"/login", "/login/"})
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
-        authManager.authenticate(new UsernamePasswordAuthenticationToken(request.username(), request.password()));
-
-        String token = jwtService.generateToken(request.username());
-        return ResponseEntity.ok(Map.of("accessToken", token));
-    }
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<UserResponse>> getAllUsers(Pageable pageable) {
         return ResponseEntity.ok(service.getAllUsers(pageable));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal UserPrincipal principal) {
+        return ResponseEntity.ok(service.getUserById(principal.getId()));
     }
 
     @GetMapping("/{id}")

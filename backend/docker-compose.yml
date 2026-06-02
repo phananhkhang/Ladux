@@ -4,14 +4,13 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-dev}
       - DB_HOST=postgres
-      - DB_USERNAME=akira
-      - DB_PASSWORD=1234
-      # BƠM CÁC CHUỖI MẬT THẬT VÀO ĐÂY KHI DEPLOY PROD
-      - JWT_SECRET=YOTyMfKxFu4G4Xov9WiA8YK9Z7UQz9hnZRrAywS+bP8=
-      - GOOGLE_CLIENT_ID=405748760225-613mkg03dds24di44e7vpigi62ed06r0.apps.googleusercontent.com
-      - GOOGLE_CLIENT_SECRET=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
+      - DB_USERNAME=${DB_USERNAME:-akira}
+      - DB_PASSWORD=${DB_PASSWORD:?Set DB_PASSWORD in your environment}
+      - JWT_SECRET=${JWT_SECRET:?Set JWT_SECRET in your environment}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID in your environment}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET in your environment}
     depends_on:
       postgres:
         condition: service_healthy
@@ -21,8 +20,8 @@ services:
   postgres:
     image: postgres:17-alpine
     environment:
-      POSTGRES_USER: akira
-      POSTGRES_PASSWORD: 1234
+      POSTGRES_USER: ${DB_USERNAME:-akira}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in your environment}
       POSTGRES_DB: aura_tech
     ports:
       - "5432:5432"
