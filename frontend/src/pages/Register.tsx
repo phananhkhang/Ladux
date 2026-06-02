@@ -29,7 +29,16 @@ export default function Register() {
     e.preventDefault();
     setLoading(true);
     try {
-      await register(form);
+      // Sanitize for backend: phone optional (omit if empty to avoid @Pattern fail on ""), auto username from email if blank (helps UX, BE requires username)
+      let body: RegisterRequest = { ...form };
+      if (!body.username?.trim() && body.email) {
+        body = { ...body, username: body.email.split("@")[0].replace(/[^a-zA-Z0-9_]/g, "_") };
+      }
+      if (!body.phone?.trim()) {
+        const { phone, ...rest } = body;
+        body = rest as RegisterRequest;
+      }
+      await register(body);
       toast.success("Tạo tài khoản thành công");
       navigate("/");
     } catch (err) {
@@ -96,8 +105,8 @@ export default function Register() {
               <Input type="password" value={form.password} onChange={handleChange("password")} required minLength={6} data-testid="register-password" />
             </div>
             <div>
-              <Label>Số điện thoại</Label>
-              <Input value={form.phone} onChange={handleChange("phone")} placeholder="09xxxxxxxx" data-testid="register-phone" />
+              <Label>Số điện thoại (không bắt buộc)</Label>
+              <Input value={form.phone || ""} onChange={handleChange("phone")} placeholder="09xxxxxxxx (bỏ trống được)" data-testid="register-phone" />
             </div>
           </div>
 

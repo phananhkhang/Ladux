@@ -3,6 +3,7 @@ package org.akira.auratech.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.CouponAdminRequest;
 import org.akira.auratech.dto.request.CouponApplyRequest;
+import org.akira.auratech.dto.response.CouponApplyResponse;
 import org.akira.auratech.dto.response.CouponResponse;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.model.Coupon;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -99,5 +102,39 @@ public class CouponServiceImpl implements CouponService {
                 && discountValue.compareTo(BigDecimal.valueOf(100)) > 0) {
             throw new BusinessRuleException("Coupon PERCENT khong duoc vuot qua 100%");
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CouponApplyResponse applyCoupon(CouponApplyRequest request) {
+        if (request == null || request.code() == null || request.code().isBlank()) {
+            throw new BusinessRuleException("Ma coupon khong hop le");
+        }
+        Coupon coupon = repo.findByCode(request.code());
+        if (coupon == null) {
+            throw new ResourceNotFoundException("Khong tim thay coupon voi code = " + request.code());
+        }
+        if (!coupon.getExpiresAt().isAfter(Instant.now())) {
+            throw new BusinessRuleException("Coupon da het han");
+        }
+        if (coupon.getUsageLimit() != null && coupon.getUsedCount() >= coupon.getUsageLimit()) {
+            throw new BusinessRuleException("Coupon da het luot su dung");
+        }
+        BigDecimal subTotal = request.subTotal() != null ? request.subTotal() : BigDecimal.ZERO;
+        BigDecimal minOrderValue = coupon.getMinOrderValue() == null ? BigDecimal.ZERO : coupon.getMinOrderValue();
+        if (subTotal.compareTo(minOrderValue) < 0) {
+            throw new BusinessRuleException("Don hang chua dat gia tri toi thieu cua coupon");
+        }
+        BigDecimal discountAmount = calculateDiscount(coupon, subTotal);
+        CouponResponse base = CouponResponse.fromEntity(coupon);
+        return CouponApplyResponse.from(base, discountAmount);
+    }
+
+    private BigDecimal calculateDiscount(Coupon coupon, BigDecimal subTotal) {
+        BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
+        BigDecimal discount = coupon.getDiscountType() == DiscountType.PERCENT
+                ? subTotal.multiply(coupon.getDiscountValue()).divide(ONE_HUNDRED, 2, RoundingMode.HALF_UP)
+                : coupon.getDiscountValue();
+        return discount.min(subTotal).setScale(2, RoundingMode.HALF_UP);
     }
 }

@@ -20,6 +20,8 @@ public interface ProductService {
 
     Page<ProductResponse> getActiveProducts(Pageable pageable);
 
+    Page<ProductResponse> searchProducts(String search, Integer brandId, Integer categoryId, Pageable pageable);
+
     ProductResponse createProduct(ProductRequest request);
 
     ProductResponse updateProduct(int id, ProductRequest request);

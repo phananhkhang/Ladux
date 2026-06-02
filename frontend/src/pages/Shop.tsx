@@ -34,14 +34,17 @@ export default function Shop() {
 
   useEffect(() => {
     setLoading(true);
-    Products.list({
-      page: 0,
-      size: 24,
-      search: q || undefined,
-      brandId: brandId || undefined,
-      categoryId: catId || undefined,
-      sort,
-    })
+    // Map UI sort...
+    let apiSort: string | undefined;
+    if (sort === "newest") apiSort = "createdAt,desc";
+    else if (sort === "price_asc") apiSort = "basePrice,asc";
+    else if (sort === "price_desc") apiSort = "basePrice,desc";
+    const hasFilter = !!(q || brandId || catId);
+    // Prefer listActive (simple path) when no filter to guarantee seed data from docker DB loads; use list (search) only when filters
+    const fetcher = hasFilter
+      ? Products.list({ page: 0, size: 24, search: q || undefined, brandId: brandId || undefined, categoryId: catId || undefined, sort: apiSort })
+      : Products.listActive({ page: 0, size: 24, sort: apiSort });
+    fetcher
       .then((d) => { setProducts(d.content || []); setTotal(d.totalElements || 0); })
       .catch(() => { setProducts([]); setTotal(0); })
       .finally(() => setLoading(false));
@@ -144,7 +147,7 @@ export default function Shop() {
           ) : products.length === 0 ? (
             <div className="text-center py-24 bg-surface border border-white/5 rounded-3xl" data-testid="no-results">
               <div className="text-zinc-500 mb-2 font-display text-lg">Không có sản phẩm phù hợp</div>
-              <p className="text-zinc-600 text-sm">Hãy thử thay đổi bộ lọc của bạn.</p>
+              <p className="text-zinc-600 text-sm">Hãy thử thay đổi bộ lọc. Nếu rỗng hoàn toàn: chạy docker-compose backend (profile=dev) + seed DB postgres để import dữ liệu mẫu.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6" data-testid="product-grid">

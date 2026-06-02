@@ -7,6 +7,7 @@ import { Badge } from "./ui/badge";
 import { useCartStore, useWishlistStore, useAuthStore } from "../lib/store";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { getApiErrorMessage } from "../api/client";
 import type { ProductResponse } from "../types/api";
 
 interface ProductCardProps {
@@ -30,8 +31,8 @@ export default function ProductCard({ p, featured = false }: ProductCardProps) {
     try {
       await add(p.id, 1);
       toast.success(`Đã thêm ${p.name}`);
-    } catch {
-      toast.error("Không thể thêm vào giỏ");
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, "Không thể thêm vào giỏ"));
     }
   };
 
@@ -41,8 +42,8 @@ export default function ProductCard({ p, featured = false }: ProductCardProps) {
     if (!user) { toast.error("Vui lòng đăng nhập"); navigate("/login"); return; }
     try {
       await toggleWish(p.id);
-    } catch {
-      toast.error("Lỗi");
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, "Lỗi wishlist"));
     }
   };
 

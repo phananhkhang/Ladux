@@ -7,9 +7,9 @@ import { Button } from "../components/ui/button";
 import { Input, Label } from "../components/ui/input";
 import { Badge } from "../components/ui/badge";
 import { fmtUSD, fmtVND, effPrice } from "../lib/utils";
-import { Coupons, getApiErrorMessage, Orders } from "../api/client";
+import { getApiErrorMessage, Orders } from "../api/client";
 import { toast } from "sonner";
-import type { CouponApplyResponse, PaymentProvider } from "../types/api";
+import type { PaymentProvider } from "../types/api";
 import type { LucideIcon } from "lucide-react";
 
 export default function Checkout() {
@@ -26,7 +26,6 @@ export default function Checkout() {
   const [city, setCity] = useState("Hà Nội");
   const [payment, setPayment] = useState<PaymentProvider>("COD");
   const [coupon, setCoupon] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState<CouponApplyResponse | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => { if (user) refresh(); }, [user, refresh]);
@@ -36,19 +35,8 @@ export default function Checkout() {
     return null;
   }
 
-  const applyCoupon = async () => {
-    if (!coupon.trim()) return;
-    try {
-      const c = await Coupons.apply(coupon.trim(), subTotal);
-      setAppliedCoupon(c);
-      toast.success(`Mã ${c.code} đã áp dụng — giảm ${fmtUSD(c.discountAmount)}`);
-    } catch (err) {
-      toast.error(getApiErrorMessage(err, "Mã không hợp lệ"));
-      setAppliedCoupon(null);
-    }
-  };
-
-  const discount = appliedCoupon?.discountAmount || 0;
+  // Coupon handled server-side in Order create (no client preview /apply to strictly fit base backend without extra endpoints)
+  const discount = 0;
   const total = Math.max(0, subTotal - discount);
 
   const handleOrder = async () => {
@@ -61,7 +49,7 @@ export default function Checkout() {
       const order = await Orders.create({
         shippingAddress: `${name} · ${phone} · ${address}, ${city}`,
         paymentProvider: payment,
-        couponId: appliedCoupon?.code ?? null,
+        couponId: coupon.trim() || null,
         items: items.map((item) => ({ productId: item.product.id, quantity: item.quantity })),
       });
       await clear();
@@ -133,15 +121,9 @@ export default function Checkout() {
 
           <Section title="Mã giảm giá" icon={Tag}>
             <div className="flex gap-2">
-              <Input value={coupon} onChange={(e) => setCoupon(e.target.value.toUpperCase())} placeholder="Nhập mã (vd. SAVE10)" data-testid="coupon-input" />
-              <Button variant="outline" onClick={applyCoupon} className="whitespace-nowrap px-6" data-testid="coupon-apply-btn">Áp dụng</Button>
+              <Input value={coupon} onChange={(e) => setCoupon(e.target.value.toUpperCase())} placeholder="Nhập mã (vd. GIAM10)" data-testid="coupon-input" />
             </div>
-            {appliedCoupon && (
-              <div className="mt-3 flex items-center gap-2 text-sm text-neon">
-                <Check size={14} /> Đã áp dụng {appliedCoupon.code} — giảm {fmtUSD(appliedCoupon.discountAmount)}
-              </div>
-            )}
-            <div className="mt-3 text-xs text-zinc-600">Thử: SAVE10 · SAVE15 · OFF100 · AURA200</div>
+            <div className="mt-2 text-xs text-zinc-500">Mã sẽ được backend tự động tính & áp dụng khi đặt hàng (hỗ trợ GIAM10, GIAM15, TRU500... từ DB). Không preview client-side để khớp backend.</div>
           </Section>
         </div>
 
@@ -173,7 +155,6 @@ export default function Checkout() {
             </div>
             <div className="p-6 border-t border-white/5 space-y-3 bg-black/40">
               <Row label="Tạm tính" value={fmtUSD(subTotal)} />
-              {discount > 0 && <Row label="Giảm giá" value={`- ${fmtUSD(discount)}`} valueClass="text-neon" />}
               <Row label="Giao hàng" value="Miễn phí" />
               <div className="border-t border-white/10 pt-3 flex items-baseline justify-between">
                 <span className="text-zinc-300 font-medium">Tổng cộng</span>
@@ -182,6 +163,7 @@ export default function Checkout() {
                   <div className="text-xs text-zinc-500">{fmtVND(total)}</div>
                 </div>
               </div>
+              <div className="text-[10px] text-zinc-500 text-center">* Mã giảm giá (nếu có) sẽ được tính bởi backend khi tạo đơn — xem chi tiết ở trang đơn hàng.</div>
               <Button size="lg" className="w-full mt-4" onClick={handleOrder} disabled={loading} data-testid="place-order-btn">
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <>Đặt hàng <ArrowRight size={16} /></>}
               </Button>

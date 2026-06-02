@@ -11,7 +11,7 @@ import { getApiErrorMessage } from "../api/client";
 const HERO = "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?crop=entropy&cs=srgb&fm=jpg&w=1600&q=85";
 
 export default function Login() {
-  const [username, setUsername] = useState("");
+  const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const login = useAuthStore((s) => s.login);
@@ -23,7 +23,7 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(username, password);
+      await login(emailOrUsername, password);
       toast.success("Đăng nhập thành công");
       navigate(redirect);
     } catch (err) {
@@ -69,13 +69,13 @@ export default function Login() {
           </p>
 
           <div className="mb-5">
-            <Label>Username</Label>
+            <Label>Email (hoặc Username)</Label>
             <div className="relative">
               <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
               <Input
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="customer"
+                value={emailOrUsername}
+                onChange={(e) => setEmailOrUsername(e.target.value)}
+                placeholder="email@auratech.vn hoặc username"
                 className="pl-11"
                 required
                 data-testid="login-username-input"
@@ -100,7 +100,7 @@ export default function Login() {
           </div>
 
           <div className="text-xs text-zinc-500 mb-6">
-            Demo: <span className="text-zinc-300 font-mono">customer / customer1234</span>
+            Dùng <Link to="/register" className="text-neon underline">Register</Link> để tạo tài khoản thật (password được hash). Dữ liệu mẫu DB có password placeholder (không login được trực tiếp).
           </div>
 
           <Button size="lg" type="submit" className="w-full" disabled={loading} data-testid="login-submit-btn">

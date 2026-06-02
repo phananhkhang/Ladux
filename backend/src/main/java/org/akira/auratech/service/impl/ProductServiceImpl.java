@@ -76,6 +76,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<ProductResponse> searchProducts(String search, Integer brandId, Integer categoryId, Pageable pageable) {
+        return repo.search(search, brandId, categoryId, pageable)
+                .map(ProductResponse::summaryFromEntity);
+    }
+
+    @Override
     @Transactional
     public ProductResponse createProduct(ProductRequest request) {
         Brand brand = brandRepository.findById(request.brandId())

@@ -23,7 +23,8 @@ export default function Home() {
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
 
   useEffect(() => {
-    Products.list({ page: 0, size: 12 })
+    // Use listActive (simple backend path backed by findByIsActiveTrue) to reliably load seeded data from docker postgres
+    Products.listActive({ page: 0, size: 12 })
       .then((data) => setProducts(data.content || []))
       .catch(() => setProducts([]));
     Categories.list()

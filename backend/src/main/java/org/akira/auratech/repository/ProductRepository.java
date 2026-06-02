@@ -41,5 +41,20 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Product p where p.id = :id")
     Optional<Product> findByIdForUpdate(@Param("id") Integer id);
+
+    @EntityGraph(attributePaths = {"brand", "category"})
+    @Query("""
+        SELECT p FROM Product p
+        WHERE (:search IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :search, '%')))
+          AND (:brandId IS NULL OR p.brand.id = :brandId)
+          AND (:categoryId IS NULL OR p.category.id = :categoryId)
+        """)
+    Page<Product> search(
+            @Param("search") String search,
+            @Param("brandId") Integer brandId,
+            @Param("categoryId") Integer categoryId,
+            Pageable pageable
+    );
 }
 

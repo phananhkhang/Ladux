@@ -117,7 +117,7 @@ export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
-  phone: string;
+  phone?: string; // optional to match backend (no @NotBlank, only pattern if present)
 }
 
 export interface CouponResponse {
@@ -192,4 +192,64 @@ export interface ReviewQuery {
 export interface PageQuery {
   page?: number;
   size?: number;
+}
+
+// ============ Additional request/response types for full integration ============
+
+export interface ReviewCreateRequest {
+  productId: Id;
+  rating: number;
+  comment: string;
+}
+
+export interface ReviewUpdateRequest {
+  rating?: number;
+  comment?: string;
+}
+
+export interface UserAddressRequest {
+  recipientName: string;
+  phone: string;
+  line1: string;
+  line2?: string | null;
+  ward?: string | null;
+  district?: string | null;
+  city: string;
+  postalCode?: string | null;
+  country?: string;
+  isDefault?: boolean;
+}
+
+export interface UserAddressResponse {
+  id: Id;
+  recipientName: string;
+  phone: string;
+  line1: string;
+  line2?: string | null;
+  ward?: string | null;
+  district?: string | null;
+  city: string;
+  postalCode?: string | null;
+  country: string;
+  isDefault: boolean;
+  createdAt: ISODateTime;
+}
+
+export interface ProductRequest {
+  brandId: Id;
+  categoryId: Id;
+  sku: string;
+  name: string;
+  basePrice: number;
+  discountPrice?: number | null;
+  stockQuantity?: number;
+  specs?: string | null;
+  thumbnail?: string | null;
+  isActive?: boolean;
+  imageUrls?: string[];
+}
+
+// For admin order status update (backend uses OrderStatusUpdateRequest { status })
+export interface OrderStatusUpdateRequest {
+  status: OrderStatus;
 }

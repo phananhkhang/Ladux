@@ -18,25 +18,25 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
-    @EntityGraph(attributePaths = {"user", "coupon"})
+    @EntityGraph(attributePaths = {"user", "coupon", "payments"})
     Page<Order> findAll(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"user", "coupon"})
+    @EntityGraph(attributePaths = {"user", "coupon", "payments"})
     Page<Order> findByUserId(Integer userId, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"user", "coupon"})
+    @EntityGraph(attributePaths = {"user", "coupon", "payments"})
     Page<Order> findByStatus(OrderStatus status, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"user", "items", "items.product", "coupon"})
+    @EntityGraph(attributePaths = {"user", "items", "items.product", "coupon", "payments"})
     @Query("select o from Order o where o.id = :id")
     Optional<Order> findWithItemsById(@Param("id") Integer id);
 
-    @EntityGraph(attributePaths = {"user", "items", "items.product", "coupon"})
+    @EntityGraph(attributePaths = {"user", "items", "items.product", "coupon", "payments"})
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select o from Order o where o.id = :id")
     Optional<Order> findByIdForUpdate(@Param("id") Integer id);
 
-    @EntityGraph(attributePaths = {"user", "items", "items.product", "coupon"})
+    @EntityGraph(attributePaths = {"user", "items", "items.product", "coupon", "payments"})
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select o from Order o where o.id = :id")
     Optional<Order> findWithItemsByIdForUpdate(@Param("id") Integer id);
@@ -56,12 +56,12 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     Optional<Order> findByUserIdAndId(int userId, int orderId);
 
-    @EntityGraph(attributePaths = {"user", "items", "items.product", "coupon"})
+    @EntityGraph(attributePaths = {"user", "items", "items.product", "coupon", "payments"})
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT o FROM Order o WHERE o.id = :orderId AND o.user.id = :userId")
     Optional<Order> findOwnedWithItemsForUpdate(@Param("userId") int userId, @Param("orderId") int orderId);
 
-    @EntityGraph(attributePaths = {"user", "items", "items.product", "coupon"})
+    @EntityGraph(attributePaths = {"user", "items", "items.product", "coupon", "payments"})
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
             select o

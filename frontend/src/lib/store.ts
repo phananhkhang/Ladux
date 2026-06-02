@@ -16,7 +16,7 @@ type WishlistLine = WishlistResponse;
 interface AuthState {
   token: string | null;
   user: UserResponse | null;
-  login: (username: string, password: string) => Promise<UserResponse>;
+  login: (emailOrUsername: string, password: string) => Promise<UserResponse>;
   register: (body: RegisterRequest) => Promise<UserResponse>;
   logout: () => void;
   hydrate: () => Promise<void>;
@@ -72,11 +72,12 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       token: null,
       user: null,
-      login: async (username, password) => {
-        await Auth.login({ username, password });
+      login: async (emailOrUsername, password) => {
+        // Send as 'username' field per backend LoginRequest DTO, but value can be email (supported by UserDetailsService)
+        await Auth.login({ username: emailOrUsername, password });
         set({ token: "cookie" });
 
-        let user = createSessionUser(username);
+        let user = createSessionUser(emailOrUsername);
         try {
           user = await Auth.me();
         } catch {
@@ -91,7 +92,9 @@ export const useAuthStore = create<AuthState>()(
       },
       register: async (body) => {
         await Auth.register(body);
-        return get().login(body.username, body.password);
+        // After register, login using email (preferred per requirements) or username
+        const loginId = body.email || body.username;
+        return get().login(loginId, body.password);
       },
       logout: () => {
         Auth.logout().catch(() => undefined);

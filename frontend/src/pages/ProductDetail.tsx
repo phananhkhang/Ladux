@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Heart, ShoppingBag, Star, Cpu, MemoryStick, HardDrive, Monitor, Check, Truck, Shield, RefreshCcw } from "lucide-react";
-import { Products, Reviews } from "../api/client";
+import { Products, Reviews, getApiErrorMessage } from "../api/client";
 import { fmtUSD, fmtVND, effPrice, discountPct, parseSpecs } from "../lib/utils";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
@@ -18,6 +18,10 @@ export default function ProductDetail() {
   const [reviews, setReviews] = useState<ReviewResponse[]>([]);
   const [activeImg, setActiveImg] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
+  // Review form state (full integration)
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
   const add = useCartStore((s) => s.add);
   const user = useAuthStore((s) => s.user);
   const setCartOpen = useUIStore((s) => s.setCartOpen);
@@ -32,7 +36,7 @@ export default function ProductDetail() {
         setActiveImg(d.thumbnail);
         Reviews.byProduct(d.id, { page: 0, size: 10 }).then((r) => setReviews(r.content || []));
       })
-      .catch(() => toast.error("Không tìm thấy sản phẩm"));
+      .catch((err) => toast.error(getApiErrorMessage(err, "Không tìm thấy sản phẩm")));
   }, [slug]);
 
   if (!p) {
@@ -61,8 +65,8 @@ export default function ProductDetail() {
       await add(p.id, qty);
       toast.success(`Đã thêm ${qty} × ${p.name}`);
       setCartOpen(true);
-    } catch {
-      toast.error("Không thể thêm");
+    } catch (err) {
+      toast.error(getApiErrorMessage(err as any, "Không thể thêm"));
     }
   };
 
@@ -75,6 +79,26 @@ export default function ProductDetail() {
     if (!user) { toast.error("Vui lòng đăng nhập"); navigate("/login?redirect=/checkout"); return; }
     await add(p.id, qty);
     navigate("/checkout");
+  };
+
+  const submitReview = async () => {
+    if (!user) { toast.error("Vui lòng đăng nhập để đánh giá"); navigate("/login"); return; }
+    if (!reviewComment.trim()) { toast.error("Vui lòng nhập nội dung đánh giá"); return; }
+    if (!p) return;
+    setSubmittingReview(true);
+    try {
+      await Reviews.create({ productId: p.id, rating: reviewRating, comment: reviewComment.trim() });
+      toast.success("Cảm ơn bạn đã đánh giá!");
+      setReviewComment("");
+      setReviewRating(5);
+      // refetch reviews
+      const r = await Reviews.byProduct(p.id, { page: 0, size: 10 });
+      setReviews(r.content || []);
+    } catch (err) {
+      toast.error(getApiErrorMessage(err as any, "Gửi đánh giá thất bại"));
+    } finally {
+      setSubmittingReview(false);
+    }
   };
 
   return (
@@ -210,6 +234,30 @@ export default function ProductDetail() {
       <section className="mt-24 max-w-4xl mx-auto" data-testid="reviews-section">
         <div className="label-eyebrow mb-3">Đánh giá khách hàng</div>
         <h2 className="font-display text-3xl md:text-4xl text-white mb-10">Sự công nhận từ cộng đồng</h2>
+
+        {/* Submit review form - full FE-BE integration */}
+        {user && (
+          <div className="mb-8 bg-surface border border-white/5 rounded-2xl p-6">
+            <div className="text-sm text-white mb-3">Viết đánh giá của bạn</div>
+            <div className="flex items-center gap-2 mb-3">
+              {[1,2,3,4,5].map((r) => (
+                <button key={r} type="button" onClick={() => setReviewRating(r)} className="text-neon">
+                  <Star size={18} className={r <= reviewRating ? "fill-current" : "opacity-30"} />
+                </button>
+              ))}
+              <span className="text-xs text-zinc-500 ml-2">{reviewRating}/5</span>
+            </div>
+            <textarea
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+              placeholder="Sản phẩm có tốt không? Chia sẻ trải nghiệm..."
+              className="w-full min-h-[80px] rounded-xl bg-black/40 border border-white/10 p-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-neon/60"
+            />
+            <Button onClick={submitReview} disabled={submittingReview || !reviewComment.trim()} className="mt-3">
+              {submittingReview ? "Đang gửi..." : "Gửi đánh giá"}
+            </Button>
+          </div>
+        )}
 
         <div className="space-y-6">
           {reviews.map((r) => (

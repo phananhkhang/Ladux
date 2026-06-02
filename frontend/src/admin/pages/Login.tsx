@@ -113,8 +113,8 @@ export default function AdminLogin() {
           </Button>
 
           <p className="mt-5 text-center text-[11px] text-zinc-600">
-            Demo: <span className="text-zinc-400">admin@auratech.io</span> /{" "}
-            <span className="text-zinc-400">admin123</span>
+            Demo: admin@auratech.io / admin123 (mock, cho test UI admin).<br />
+            Thực: dùng user từ DB seed (cần set password BCrypt thật) hoặc register + update role.
           </p>
         </form>
       </div>
