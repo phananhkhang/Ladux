@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.akira.auratech.model.enums.PaymentProvider;
 import org.akira.auratech.model.enums.PaymentStatus;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -41,6 +42,6 @@ public class Payment {
     private PaymentStatus status = PaymentStatus.PENDING;
 
     @Column(nullable = false, updatable = false)
-    @Builder.Default
-    private Instant createdAt = Instant.now();
+    @CreatedDate
+    private Instant createdAt;
 }

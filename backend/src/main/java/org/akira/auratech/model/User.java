@@ -2,6 +2,7 @@ package org.akira.auratech.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -37,13 +38,13 @@ public class User {
 
     private String avatar;
 
-    @Builder.Default
+    @Builder.Default // Mặc định là true khi tạo mới user, có thể set false để khóa tài khoản
     @Column(nullable = false)
     private boolean isActive = true;
 
     @Column(nullable = false, updatable = false)
-    @Builder.Default
-    private Instant createdAt = Instant.now();
+    @CreatedDate
+    private Instant createdAt;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -55,7 +56,7 @@ public class User {
     @Builder.Default
     private Set<Role> roles = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // orphanRemoval là nếu xóa user thì xóa luôn địa chỉ của user đó, tránh rác dữ liệu
     @ToString.Exclude
     @Builder.Default
     private List<UserAddress> addresses = new ArrayList<>();
@@ -78,4 +79,11 @@ public class User {
     @ToString.Exclude
     @Builder.Default
     private List<Review> reviews = new ArrayList<>();
+
+    @PrePersist
+    void prePersist() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+    }
 }

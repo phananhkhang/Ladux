@@ -27,7 +27,7 @@ public class UserAddress {
     @Column(length = 20)
     private String phone;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String street;
 
     @Column(nullable = false, length = 100)

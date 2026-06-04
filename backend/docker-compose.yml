@@ -8,7 +8,7 @@ services:
       - DB_HOST=postgres
       - DB_USERNAME=${DB_USERNAME:-akira}
       - DB_PASSWORD=${DB_PASSWORD:?Set DB_PASSWORD in your environment}
-      - JWT_SECRET=${JWT_SECRET:?Set JWT_SECRET in your environment}
+      - JWT_SECRET=${JWT_SECRET:-5/ne3ZpC3uVErWJwKCirEZmBt2VxC4GFzNh2olODU4Y=}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID in your environment}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET in your environment}
     depends_on:

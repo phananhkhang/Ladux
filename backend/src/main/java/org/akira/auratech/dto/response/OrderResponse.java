@@ -1,7 +1,6 @@
 package org.akira.auratech.dto.response;
 
 import org.akira.auratech.model.Order;
-import org.akira.auratech.model.Payment;
 import org.akira.auratech.model.enums.OrderStatus;
 import org.akira.auratech.model.enums.PaymentProvider;
 import java.math.BigDecimal;

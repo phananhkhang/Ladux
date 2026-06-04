@@ -6,16 +6,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Pattern NULL_COLUMN_PATTERN = Pattern.compile("null value in column \"([^\"]+)\"");
+    private static final Pattern UNIQUE_CONSTRAINT_PATTERN = Pattern.compile("unique constraint \"([^\"]+)\"");
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
@@ -68,6 +73,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUsernameNotFound() {
+        ErrorResponse error = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                .message("Username hoac password khong dung")
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentials() {
         ErrorResponse error = ErrorResponse.builder()
@@ -118,12 +134,36 @@ public class GlobalExceptionHandler {
             return "Du lieu vi pham rang buoc";
         }
         return switch (sqlException.getSQLState()) {
-            case "23505" -> "Du lieu bi trung voi rang buoc unique";
+            case "23505" -> resolveUniqueConstraintMessage(sqlException);
             case "23503" -> "Du lieu dang duoc tham chieu boi ban ghi khac";
-            case "23502" -> "Thieu truong bat buoc";
+            case "23502" -> resolveNotNullMessage(sqlException);
             case "23514" -> "Du lieu khong thoa man rang buoc kiem tra";
             default -> "Du lieu vi pham rang buoc";
         };
+    }
+
+    private String resolveNotNullMessage(SQLException sqlException) {
+        Matcher matcher = NULL_COLUMN_PATTERN.matcher(sqlException.getMessage());
+        if (!matcher.find()) {
+            return "Thieu truong bat buoc trong DB";
+        }
+        String column = matcher.group(1);
+        return "Backend dang gui thieu cot bat buoc '" + column + "' khi luu vao DB.";
+    }
+
+    private String resolveUniqueConstraintMessage(SQLException sqlException) {
+        Matcher matcher = UNIQUE_CONSTRAINT_PATTERN.matcher(sqlException.getMessage());
+        if (!matcher.find()) {
+            return "Du lieu bi trung voi rang buoc unique";
+        }
+        String constraint = matcher.group(1);
+        if (constraint.contains("email")) {
+            return "Email nay da ton tai trong DB. Hay dung email khac.";
+        }
+        if (constraint.contains("username")) {
+            return "Username nay da ton tai trong DB. Hay dung username khac.";
+        }
+        return "Du lieu bi trung voi rang buoc unique: " + constraint;
     }
 
     private SQLException findSqlException(Throwable throwable) {

@@ -54,18 +54,18 @@ INSERT INTO categories (id, name, slug, parent_id) VALUES
 
 -- users (12 rows)
 INSERT INTO users (id, email, username, password, full_name, phone, avatar, is_active, created_at) VALUES
-                                                                                                       (1, 'admin@auratech.vn', 'admin', 'hash_admin', 'Quản Trị Hệ Thống', '0901000001', 'https://img.example.com/u01.png', true, '2026-05-01 08:00:00+00'),
-                                                                                                       (2, 'quanghuy@auratech.vn', 'quang_huy', 'hash_quanghuy', 'Trần Quang Huy', '0901000002', 'https://img.example.com/u02.png', true, '2026-05-01 08:05:00+00'),
-                                                                                                       (3, 'thuha@auratech.vn', 'thu_ha', 'hash_thuha', 'Lê Thu Hà', '0901000003', 'https://img.example.com/u03.png', true, '2026-05-01 08:10:00+00'),
-                                                                                                       (4, 'giabao@auratech.vn', 'gia_bao', 'hash_giabao', 'Phạm Gia Bảo', '0901000004', 'https://img.example.com/u04.png', true, '2026-05-01 08:15:00+00'),
-                                                                                                       (5, 'nhatnam@auratech.vn', 'nhat_nam', 'hash_nhatnam', 'Võ Nhật Nam', '0901000005', 'https://img.example.com/u05.png', true, '2026-05-01 08:20:00+00'),
-                                                                                                       (6, 'khanhlinh@auratech.vn', 'khanh_linh', 'hash_khanhlinh', 'Đỗ Khánh Linh', '0901000006', 'https://img.example.com/u06.png', true, '2026-05-01 08:25:00+00'),
-                                                                                                       (7, 'anhtuan@auratech.vn', 'anh_tuan', 'hash_anhtuan', 'Bùi Anh Tuấn', '0901000007', 'https://img.example.com/u07.png', true, '2026-05-01 08:30:00+00'),
-                                                                                                       (8, 'thaovy@auratech.vn', 'thao_vy', 'hash_thaovy', 'Hồ Thảo Vy', '0901000008', 'https://img.example.com/u08.png', true, '2026-05-01 08:35:00+00'),
-                                                                                                       (9, 'duclong@auratech.vn', 'duc_long', 'hash_duclong', 'Vũ Đức Long', '0901000009', 'https://img.example.com/u09.png', true, '2026-05-01 08:40:00+00'),
-                                                                                                       (10, 'thimai@auratech.vn', 'thi_mai', 'hash_thimai', 'Nguyễn Thị Mai', '0901000010', 'https://img.example.com/u10.png', true, '2026-05-01 08:45:00+00'),
-                                                                                                       (11, 'haidang@auratech.vn', 'hai_dang', 'hash_haidang', 'Trịnh Hải Đăng', '0901000011', 'https://img.example.com/u11.png', false, '2026-05-01 08:50:00+00'),
-                                                                                                       (12, 'ngocanh@auratech.vn', 'ngoc_anh', 'hash_ngocanh', 'Phan Ngọc Ánh', '0901000012', 'https://img.example.com/u12.png', false, '2026-05-01 08:55:00+00');
+                                                                                                       (1, 'admin@auratech.vn', 'admin', 'seed-disabled-' || md5(random()::text || clock_timestamp()::text || 'admin'), 'Quản Trị Hệ Thống', '0901000001', 'https://img.example.com/u01.png', true, '2026-05-01 08:00:00+00'),
+                                                                                                       (2, 'quanghuy@auratech.vn', 'quang_huy', 'seed-disabled-' || md5(random()::text || clock_timestamp()::text || 'quang_huy'), 'Trần Quang Huy', '0901000002', 'https://img.example.com/u02.png', true, '2026-05-01 08:05:00+00'),
+                                                                                                       (3, 'thuha@auratech.vn', 'thu_ha', 'seed-disabled-' || md5(random()::text || clock_timestamp()::text || 'thu_ha'), 'Lê Thu Hà', '0901000003', 'https://img.example.com/u03.png', true, '2026-05-01 08:10:00+00'),
+                                                                                                       (4, 'giabao@auratech.vn', 'gia_bao', 'seed-disabled-' || md5(random()::text || clock_timestamp()::text || 'gia_bao'), 'Phạm Gia Bảo', '0901000004', 'https://img.example.com/u04.png', true, '2026-05-01 08:15:00+00'),
+                                                                                                       (5, 'nhatnam@auratech.vn', 'nhat_nam', 'seed-disabled-' || md5(random()::text || clock_timestamp()::text || 'nhat_nam'), 'Võ Nhật Nam', '0901000005', 'https://img.example.com/u05.png', true, '2026-05-01 08:20:00+00'),
+                                                                                                       (6, 'khanhlinh@auratech.vn', 'khanh_linh', 'seed-disabled-' || md5(random()::text || clock_timestamp()::text || 'khanh_linh'), 'Đỗ Khánh Linh', '0901000006', 'https://img.example.com/u06.png', true, '2026-05-01 08:25:00+00'),
+                                                                                                       (7, 'anhtuan@auratech.vn', 'anh_tuan', 'seed-disabled-' || md5(random()::text || clock_timestamp()::text || 'anh_tuan'), 'Bùi Anh Tuấn', '0901000007', 'https://img.example.com/u07.png', true, '2026-05-01 08:30:00+00'),
+                                                                                                       (8, 'thaovy@auratech.vn', 'thao_vy', 'seed-disabled-' || md5(random()::text || clock_timestamp()::text || 'thao_vy'), 'Hồ Thảo Vy', '0901000008', 'https://img.example.com/u08.png', true, '2026-05-01 08:35:00+00'),
+                                                                                                       (9, 'duclong@auratech.vn', 'duc_long', 'seed-disabled-' || md5(random()::text || clock_timestamp()::text || 'duc_long'), 'Vũ Đức Long', '0901000009', 'https://img.example.com/u09.png', true, '2026-05-01 08:40:00+00'),
+                                                                                                       (10, 'thimai@auratech.vn', 'thi_mai', 'seed-disabled-' || md5(random()::text || clock_timestamp()::text || 'thi_mai'), 'Nguyễn Thị Mai', '0901000010', 'https://img.example.com/u10.png', true, '2026-05-01 08:45:00+00'),
+                                                                                                       (11, 'haidang@auratech.vn', 'hai_dang', 'seed-disabled-' || md5(random()::text || clock_timestamp()::text || 'hai_dang'), 'Trịnh Hải Đăng', '0901000011', 'https://img.example.com/u11.png', false, '2026-05-01 08:50:00+00'),
+                                                                                                       (12, 'ngocanh@auratech.vn', 'ngoc_anh', 'seed-disabled-' || md5(random()::text || clock_timestamp()::text || 'ngoc_anh'), 'Phan Ngọc Ánh', '0901000012', 'https://img.example.com/u12.png', false, '2026-05-01 08:55:00+00');
 
 -- user_roles (12 rows)
 INSERT INTO user_roles (user_id, role_id) VALUES
@@ -263,4 +263,8 @@ INSERT INTO wishlists (id, user_id, product_id, added_at) VALUES
                                                               (10, 10, 11, '2026-05-03 11:45:00+00'),
                                                               (11, 11, 12, '2026-05-03 11:50:00+00'),
                                                               (12, 12, 4, '2026-05-03 11:55:00+00');
+
+-- Resync identity sequences after explicit-ID seed inserts
+SELECT setval(pg_get_serial_sequence('users', 'id'), COALESCE((SELECT MAX(id) FROM users), 1));
+SELECT setval(pg_get_serial_sequence('carts', 'id'), COALESCE((SELECT MAX(id) FROM carts), 1));
 

@@ -8,6 +8,8 @@ import org.akira.auratech.dto.response.UserResponse;
 import org.akira.auratech.model.Role;
 import org.akira.auratech.model.User;
 import org.akira.auratech.model.enums.RoleName;
+import org.akira.auratech.model.Cart;
+import org.akira.auratech.repository.CartRepository;
 import org.akira.auratech.repository.RoleRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.UserService;
@@ -26,26 +28,39 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository repo;
+    private final CartRepository cartRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
 
     @Override
     @Transactional
     public UserResponse savedUser(RegisterRequest request) {
+        String email = request.email().trim();
+        String username = request.username().trim();
+
+        if (repo.existsByEmail(email)) {
+            throw new BusinessRuleException("Email nay da ton tai trong DB. Hay dung email khac.");
+        }
+        if (repo.existsByUsername(username)) {
+            throw new BusinessRuleException("Username nay da ton tai trong DB. Hay dung username khac.");
+        }
+
         Role customerRole = roleRepository.findByName(RoleName.CUSTOMER);
         if (customerRole == null) {
             throw new ResourceNotFoundException("Khong tim thay role CUSTOMER");
         }
         User user = User.builder()
-                .email(request.email())
-                .username(request.username())
+                .email(email)
+                .username(username)
                 .password(encoder.encode(request.password()))
-                .fullName(request.fullName())
+                .fullName(request.fullName().trim())
                 .phone(request.phone())
                 .isActive(true)
                 .roles(Set.of(customerRole))
                 .build();
-        return UserResponse.fromEntity(repo.save(user));
+        User saved = repo.save(user);
+        cartRepository.save(Cart.builder().user(saved).build());
+        return UserResponse.fromEntity(saved);
     }
 
     @Override

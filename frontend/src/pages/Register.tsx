@@ -30,8 +30,13 @@ export default function Register() {
     setLoading(true);
     try {
       // Sanitize for backend: phone optional (omit if empty to avoid @Pattern fail on ""), auto username from email if blank (helps UX, BE requires username)
-      let body: RegisterRequest = { ...form };
-      if (!body.username?.trim() && body.email) {
+      let body: RegisterRequest = {
+        ...form,
+        fullName: form.fullName.trim(),
+        username: form.username.trim(),
+        email: form.email.trim().toLowerCase(),
+      };
+      if (!body.username && body.email) {
         body = { ...body, username: body.email.split("@")[0].replace(/[^a-zA-Z0-9_]/g, "_") };
       }
       if (!body.phone?.trim()) {

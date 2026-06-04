@@ -16,7 +16,7 @@ type WishlistLine = WishlistResponse;
 interface AuthState {
   token: string | null;
   user: UserResponse | null;
-  login: (emailOrUsername: string, password: string) => Promise<UserResponse>;
+  login: (username: string, password: string) => Promise<UserResponse>;
   register: (body: RegisterRequest) => Promise<UserResponse>;
   logout: () => void;
   hydrate: () => Promise<void>;
@@ -72,12 +72,11 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       token: null,
       user: null,
-      login: async (emailOrUsername, password) => {
-        // Send as 'username' field per backend LoginRequest DTO, but value can be email (supported by UserDetailsService)
-        await Auth.login({ username: emailOrUsername, password });
+      login: async (username, password) => {
+        await Auth.login({ username, password });
         set({ token: "cookie" });
 
-        let user = createSessionUser(emailOrUsername);
+        let user = createSessionUser(username);
         try {
           user = await Auth.me();
         } catch {
@@ -91,10 +90,18 @@ export const useAuthStore = create<AuthState>()(
         return user;
       },
       register: async (body) => {
-        await Auth.register(body);
-        // After register, login using email (preferred per requirements) or username
-        const loginId = body.email || body.username;
-        return get().login(loginId, body.password);
+        const user = await Auth.register(body);
+        try {
+          await Auth.login({ username: body.username, password: body.password });
+          set({ token: "cookie" });
+        } catch {
+          set({ token: null });
+        }
+        saveUserSnapshot(user);
+        set({ user });
+        await useCartStore.getState().refresh();
+        await useWishlistStore.getState().refresh();
+        return user;
       },
       logout: () => {
         Auth.logout().catch(() => undefined);

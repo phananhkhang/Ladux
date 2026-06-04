@@ -4,11 +4,16 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.akira.auratech.exception.BusinessRuleException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,8 +34,23 @@ public class JwtService {
                .compact();
     }
     private SecretKey getKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
-        return Keys.hmacShaKeyFor(keyBytes);
+        return Keys.hmacShaKeyFor(resolveKeyBytes());
+    }
+
+    private byte[] resolveKeyBytes() {
+        try {
+            byte[] decoded = Decoders.BASE64.decode(secret);
+            if (decoded.length >= 32) {
+                return decoded;
+            }
+        } catch (RuntimeException ignored) {
+            // Fall back to hashing plain-text secrets (common in local .env files).
+        }
+        try {
+            return MessageDigest.getInstance("SHA-256").digest(secret.getBytes(StandardCharsets.UTF_8));
+        } catch (NoSuchAlgorithmException ex) {
+            throw new BusinessRuleException("Khong the khoi tao JWT secret");
+        }
     }
     public String extractUsername(String jwt) {
         Claims claims = Jwts.parser()

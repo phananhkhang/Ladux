@@ -8,8 +8,8 @@ import { useAdminAuth } from "../store";
 export default function AdminLogin() {
   const { isAuthed, login } = useAdminAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("admin@auratech.io");
-  const [password, setPassword] = useState("admin123");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,7 +19,7 @@ export default function AdminLogin() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    const res = await login(email, password);
+    const res = await login(username, password);
     setLoading(false);
     if (res.ok) navigate("/admin", { replace: true });
     else setError(res.message ?? "Đăng nhập thất bại");
@@ -67,15 +67,14 @@ export default function AdminLogin() {
 
           <div className="mt-6 space-y-5">
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@auratech.io"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Nhập username admin"
                 required
-                data-testid="admin-login-email"
+                data-testid="admin-login-username"
               />
             </div>
             <div>
@@ -113,8 +112,7 @@ export default function AdminLogin() {
           </Button>
 
           <p className="mt-5 text-center text-[11px] text-zinc-600">
-            Demo: admin@auratech.io / admin123 (mock, cho test UI admin).<br />
-            Thực: dùng user từ DB seed (cần set password BCrypt thật) hoặc register + update role.
+            Chỉ tài khoản có role ADMIN mới được vào console.
           </p>
         </form>
       </div>

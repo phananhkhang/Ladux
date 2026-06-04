@@ -34,8 +34,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByIdForUpdate(@Param("id") Integer id);
 
     @EntityGraph(attributePaths = {"roles"})
-    User findByUsername(String username);
+    Optional<User> findByUsername(String username);
 
-    @EntityGraph(attributePaths = {"roles"})
-    Optional<User> findByUsernameOrEmail(String username, String email);
+    boolean existsByEmail(String email);
+
+    boolean existsByUsername(String username);
 }

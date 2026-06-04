@@ -28,5 +28,4 @@ public class Cart {
     @ToString.Exclude
     @Builder.Default
     private List<CartItem> items = new ArrayList<>();
-
  }

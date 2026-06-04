@@ -27,7 +27,7 @@ public class OrderStateMachineImpl implements OrderStateMachine {
     @Override
     @Transactional
     public OrderResponse updateOrderStatus(int orderId, OrderStatusUpdateRequest request) {
-        Order order = orderRepository.findByIdForUpdate(orderId)
+        Order order = orderRepository.findWithItemsByIdForUpdate(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng"));
 
         OrderStatus current = order.getStatus();

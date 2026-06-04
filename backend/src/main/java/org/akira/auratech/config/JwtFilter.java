@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-
+//Lọc mọi request, lấy token từ cookie, xác thực JWT, nạp Authentication vào SecurityContext; xóa cookie và trả 401 nếu token không hợp lệ.
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {

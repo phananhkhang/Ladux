@@ -2,6 +2,7 @@ package org.akira.auratech.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.Instant;
 
@@ -30,6 +31,6 @@ public class OrderHistory {
     private String description;
 
     @Column(nullable = false, updatable = false)
-    @Builder.Default
-    private Instant createdAt = Instant.now();
+    @CreatedDate
+    private Instant createdAt;
 }

@@ -8,7 +8,7 @@ interface AdminAuthState {
   isAuthed: boolean;
   email: string | null;
   name: string | null;
-  login: (email: string, password: string) => Promise<{ ok: boolean; message?: string }>;
+  login: (username: string, password: string) => Promise<{ ok: boolean; message?: string }>;
   logout: () => void;
   hydrateFromMainAuth: () => Promise<void>;
 }
@@ -24,15 +24,10 @@ export const useAdminAuth = create<AdminAuthState>()(
       isAuthed: false,
       email: null,
       name: null,
-      login: async (email, password) => {
-        const e = email.trim().toLowerCase();
-        // Demo fallback for admin UI testing (when seed DB passwords are placeholders, not real BCrypt)
-        if (e === "admin@auratech.io" && password === "admin123") {
-          set({ isAuthed: true, email, name: "Aura Admin (demo)" });
-          return { ok: true };
-        }
+      login: async (username, password) => {
+        const normalizedUsername = username.trim();
         try {
-          await Auth.login({ username: email, password });
+          await Auth.login({ username: normalizedUsername, password });
           // Verify admin role via profile
           const user: UserResponse = await Auth.me();
           const roles = (user.roles || []).map((r) => r.toUpperCase());
@@ -44,7 +39,7 @@ export const useAdminAuth = create<AdminAuthState>()(
           set({ isAuthed: true, email: user.email, name: user.fullName || "Admin" });
           return { ok: true };
         } catch (err) {
-          const msg = getApiErrorMessage(err, "Sai email hoặc mật khẩu.");
+          const msg = getApiErrorMessage(err, "Sai username hoặc mật khẩu.");
           return { ok: false, message: msg };
         }
       },

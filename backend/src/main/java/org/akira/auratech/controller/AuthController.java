@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.LoginRequest;
 import org.akira.auratech.dto.request.RegisterRequest;
 import org.akira.auratech.dto.response.UserResponse;
+import org.akira.auratech.exception.BusinessRuleException;
+import org.akira.auratech.model.User;
+import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.AuthCookieService;
 import org.akira.auratech.service.JwtService;
 import org.akira.auratech.service.UserService;
@@ -29,6 +32,7 @@ public class AuthController {
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
     private final AuthCookieService authCookieService;
+    private final UserRepository userRepository;
 
     @PostMapping({"/register", "/register/"})
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
@@ -37,9 +41,18 @@ public class AuthController {
 
     @PostMapping({"/login", "/login/"})
     public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginRequest request) {
-        authManager.authenticate(new UsernamePasswordAuthenticationToken(request.username(), request.password()));
+        String username = request.username().trim();
+        User user = userRepository.findByUsername(username).orElse(null);
+        if (user != null && !isBcryptHash(user.getPassword())) {
+            throw new BusinessRuleException(
+                    "Username '" + username + "' la user seed khong co mat khau dang nhap hop le. "
+                            + "Hay dang ky tai khoan moi hoac cap nhat password BCrypt tu cong cu quan tri."
+            );
+        }
 
-        String token = jwtService.generateToken(request.username());
+        authManager.authenticate(new UsernamePasswordAuthenticationToken(username, request.password()));
+
+        String token = jwtService.generateToken(username);
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, authCookieService.createAuthCookie(token).toString())
                 .body(Map.of("message", "Login successful"));
@@ -59,5 +72,9 @@ public class AuthController {
                 "parameterName", csrfToken.getParameterName(),
                 "token", csrfToken.getToken()
         ));
+    }
+
+    private boolean isBcryptHash(String password) {
+        return password != null && password.matches("^\\$2[aby]\\$\\d{2}\\$.{53}$");
     }
 }

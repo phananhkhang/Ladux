@@ -263,7 +263,7 @@ Store cũng có demo fallback:
 
 ```text
 email: admin@auratech.io
-password: admin123
+password: <mat khau admin da cau hinh rieng>
 ```
 
 Fallback này chỉ phục vụ test UI khi seed DB password không phải BCrypt thật.

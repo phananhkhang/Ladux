@@ -183,7 +183,7 @@ public class PaymentServiceImpl implements PaymentService {
             Order order = orderRepository.findById(Integer.parseInt(orderId))
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
 
-            // Mã "00" tức là khách đã thực sự thanh toán thành công chuyển tiền thật vào ví Khang
+            // Mã "00" tức là khách đã thực sự thanh toán thành công chuyển tiền thật vào ví
             if ("00".equals(responseCode)) {
                 order.setStatus(OrderStatus.CONFIRMED);
             } else {

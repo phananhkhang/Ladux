@@ -3,6 +3,7 @@ package org.akira.auratech.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.akira.auratech.model.enums.OrderStatus;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -53,8 +54,8 @@ public class Order {
     private String trackingNumber;
 
     @Column(nullable = false, updatable = false)
-    @Builder.Default
-    private Instant createdAt = Instant.now();
+    @CreatedDate
+    private Instant createdAt;
 
     private Instant paymentExpiresAt;
 

@@ -2,6 +2,7 @@ package org.akira.auratech.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.Instant;
 
@@ -31,6 +32,6 @@ public class Wishlist {
     private Product product;
 
     @Column(nullable = false, updatable = false)
-    @Builder.Default
-    private Instant addedAt = Instant.now();
+    @CreatedDate
+    private Instant addedAt;
 }
