@@ -5,6 +5,7 @@ import org.akira.auratech.dto.request.UserAdminUpdateRequest;
 import org.akira.auratech.dto.response.UserResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
     Page<UserResponse> getAllUsers(Pageable pageable);
@@ -16,6 +17,8 @@ public interface UserService {
     Page<UserResponse> getActiveUsers(Pageable pageable);
 
     UserResponse updateUser(int id, UserAdminUpdateRequest request);
+
+    UserResponse updateAvatar(int id, MultipartFile file);
 
     void deleteUserById(int id);
 

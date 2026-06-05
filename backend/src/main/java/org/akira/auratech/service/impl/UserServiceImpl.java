@@ -14,15 +14,24 @@ import org.akira.auratech.repository.RoleRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.UserService;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +40,19 @@ public class UserServiceImpl implements UserService {
     private final CartRepository cartRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
+
+    @Value("${app.upload.root:uploads}")
+    private String uploadRoot;
+
+    @Value("${app.upload.avatar-dir:avatars}")
+    private String avatarUploadDir;
+
+    private static final Map<String, String> ALLOWED_IMAGE_TYPES = Map.of(
+            "image/jpeg", ".jpg",
+            "image/png", ".png",
+            "image/webp", ".webp",
+            "image/gif", ".gif"
+    );
 
     @Override
     @Transactional
@@ -128,6 +150,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public UserResponse updateAvatar(int id, MultipartFile file) {
+        User user = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id));
+        user.setAvatar(storeAvatar(file));
+        return UserResponse.fromEntity(user);
+    }
+
+    @Override
+    @Transactional
     public void deleteUserById(int id) {
         repo.deleteById(id);
     }
@@ -143,5 +174,35 @@ public class UserServiceImpl implements UserService {
             roles.add(role);
         }
         return roles;
+    }
+
+    private String storeAvatar(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new BusinessRuleException("File avatar khong duoc de trong");
+        }
+
+        String contentType = file.getContentType() == null
+                ? ""
+                : file.getContentType().toLowerCase(Locale.ROOT);
+        String extension = ALLOWED_IMAGE_TYPES.get(contentType);
+        if (extension == null) {
+            throw new BusinessRuleException("Chi ho tro avatar JPG, PNG, WEBP hoac GIF");
+        }
+
+        String filename = UUID.randomUUID() + extension;
+        Path avatarDirectory = Path.of(uploadRoot, avatarUploadDir).toAbsolutePath().normalize();
+        Path target = avatarDirectory.resolve(filename).normalize();
+        if (!target.startsWith(avatarDirectory)) {
+            throw new BusinessRuleException("Duong dan upload avatar khong hop le");
+        }
+
+        try {
+            Files.createDirectories(avatarDirectory);
+            Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException ex) {
+            throw new BusinessRuleException("Khong the luu file avatar");
+        }
+
+        return "/uploads/" + avatarUploadDir + "/" + filename;
     }
 }

@@ -6,12 +6,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.filter.UrlHandlerFilter;
 
+import java.nio.file.Path;
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Value("${app.upload.root:uploads}")
+    private String uploadRoot;
 
     @Bean
     public FilterRegistrationBean<UrlHandlerFilter> trailingSlashHandlerFilter() {
@@ -41,5 +48,16 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*") // Chấp nhận mọi loại định dạng Header truyền lên
                 .allowCredentials(true) // Cho phép truyền Cookie / Token kèm theo nếu sau này cần
                 .maxAge(3600); // Lưu cấu hình này vào cache trình duyệt trong 1 tiếng để tăng tốc độ
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String uploadLocation = Path.of(uploadRoot)
+                .toAbsolutePath()
+                .normalize()
+                .toUri()
+                .toString();
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations(uploadLocation);
     }
 }

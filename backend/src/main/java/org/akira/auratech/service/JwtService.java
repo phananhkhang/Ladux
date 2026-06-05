@@ -13,7 +13,6 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +51,7 @@ public class JwtService {
             throw new BusinessRuleException("Khong the khoi tao JWT secret");
         }
     }
-    public String extractUsername(String jwt) {
+    public String extractUsername(String jwt) { // Hàm này nó sẽ kiểm tra jwt hợp lệ hay không luôn.
         Claims claims = Jwts.parser()
                 .verifyWith(getKey()) // Nhét khóa vào để xác thực chữ ký của token
                 .build()
