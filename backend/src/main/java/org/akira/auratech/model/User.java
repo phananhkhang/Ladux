@@ -2,6 +2,8 @@ package org.akira.auratech.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.Instant;
@@ -45,6 +47,10 @@ public class User {
     @Column(nullable = false, updatable = false)
     @CreatedDate
     private Instant createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "update_at")
+    private Instant updateAt;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

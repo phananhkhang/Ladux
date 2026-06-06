@@ -20,4 +20,6 @@ public interface ReviewService {
     ReviewResponse updateReview(int userId, int reviewId, ReviewUpdateRequest request);
 
     void deleteReviewById(int userId, int reviewId);
+
+    boolean validateReviewRating(int rating);
 }

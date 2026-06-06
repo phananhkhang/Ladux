@@ -3,7 +3,6 @@ package org.akira.auratech.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.UserAddressRequest;
 import org.akira.auratech.dto.response.UserAddressResponse;
-import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.model.User;
 import org.akira.auratech.model.UserAddress;
 import org.akira.auratech.repository.UserAddressRepository;
