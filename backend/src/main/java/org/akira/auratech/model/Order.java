@@ -3,6 +3,7 @@ package org.akira.auratech.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.akira.auratech.model.enums.OrderStatus;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
@@ -56,6 +57,10 @@ public class Order {
     @Column(nullable = false, updatable = false)
     @CreatedDate
     private Instant createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "update_at")
+    private Instant updateAt;
 
     private Instant paymentExpiresAt;
 

@@ -1,18 +1,19 @@
 package org.akira.auratech.repository;
 
+import java.util.Optional;
+
 import org.akira.auratech.model.Product;
-import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import jakarta.persistence.LockModeType;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
@@ -45,16 +46,21 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @EntityGraph(attributePaths = {"brand", "category"})
     @Query("""
         SELECT p FROM Product p
-        WHERE (:search IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%'))
-            OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :search, '%')))
-          AND (:brandId IS NULL OR p.brand.id = :brandId)
-          AND (:categoryId IS NULL OR p.category.id = :categoryId)
+        WHERE p.name ILIKE %:search%
         """)
     Page<Product> search(
             @Param("search") String search,
-            @Param("brandId") Integer brandId,
-            @Param("categoryId") Integer categoryId,
             Pageable pageable
     );
+    @Modifying
+    @Query("""
+    UPDATE Product p 
+    SET p.stockQuantity = p.stockQuantity - :quantity 
+    WHERE p.id = :productId 
+      AND p.stockQuantity >= :quantity""")
+    int deductStockAtomically(@Param("productId") Integer productId, 
+                          @Param("quantity") int quantity);
+
+    boolean existsByCategoryId(int id);
 }
 

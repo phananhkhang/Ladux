@@ -69,6 +69,9 @@ public class ReviewServiceImpl implements ReviewService {
         if (!orderRepository.existsOrderContainingProductWithStatus(user.getId(), product.getId(), OrderStatus.DELIVERED)) {
             throw new BusinessRuleException("Chi co the danh gia san pham sau khi don hang da DELIVERED");
         }
+        if (!validateReviewRating(request.rating())) {
+            throw new BusinessRuleException("Rating phai tu 1 den 5");
+        }
         Review review = Review.builder()
                 .user(user)
                 .product(product)
@@ -83,8 +86,11 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewResponse updateReview(int userId, int reviewId, ReviewUpdateRequest request) {
         Review review = repo.findByUserIdAndId(userId, reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + reviewId + " va userId = " + userId));
-        if (request.rating() != null) {
+        if (request.rating() != null && validateReviewRating(request.rating())) {
             review.setRating(request.rating());
+        }
+        if (request.rating() != null && !validateReviewRating(request.rating())) {
+            throw new BusinessRuleException("Rating phai tu 1 den 5"); 
         }
         if (request.comment() != null) {
             review.setComment(request.comment());
@@ -98,5 +104,10 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = repo.findByUserIdAndId(userId, reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + reviewId + " va userId = " + userId));
         repo.delete(review);
+    }
+
+    @Override
+    public boolean validateReviewRating(int rating) {
+        return rating >= 1 && rating <= 5;
     }
 }

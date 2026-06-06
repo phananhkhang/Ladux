@@ -3,7 +3,6 @@ package org.akira.auratech.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.LineDraft;
 import org.akira.auratech.dto.request.OrderLineRequest;
-import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.akira.auratech.model.Product;
 import org.akira.auratech.repository.ProductRepository;
@@ -12,6 +11,7 @@ import org.akira.auratech.service.PricingService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.akira.auratech.exception.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -29,14 +29,15 @@ public class InventoryServiceImpl implements InventoryService {
         List<LineDraft> drafts = new ArrayList<>();
 
         for (OrderLineRequest item : items) {
-            Product product = productRepository.findByIdForUpdate(item.productId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm với id = " + item.productId()));
-
-            if (product.getStockQuantity() < item.quantity()) {
-                throw new BusinessRuleException("Sản phẩm " + product.getName() + " không đủ tồn kho");
+            // 1. Trừ kho atomic (không cần lock lâu)
+            int updated = productRepository.deductStockAtomically(item.productId(), item.quantity());
+            if (updated == 0) {
+                throw new InsufficientStockException("Không đủ hàng hoặc sản phẩm không tồn tại");
             }
 
-            product.setStockQuantity(product.getStockQuantity() - item.quantity());
+            // 2. Load product để lấy giá + thông tin (sau khi đã trừ thành công)
+            Product product = productRepository.findById(item.productId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
             BigDecimal price = pricingService.sellingPrice(product);
             BigDecimal lineTotal = price.multiply(BigDecimal.valueOf(item.quantity()));
@@ -46,4 +47,3 @@ public class InventoryServiceImpl implements InventoryService {
         return drafts;
     }
 }
-

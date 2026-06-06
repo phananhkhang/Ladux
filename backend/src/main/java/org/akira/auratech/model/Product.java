@@ -3,11 +3,13 @@ package org.akira.auratech.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,9 +65,13 @@ public class Product {
     @Column(nullable = false)
     private boolean isActive = true;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
     private Instant createdAt;
+
+    @Column(name = "update_at")
+    @UpdateTimestamp
+    private Instant updateAt;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
@@ -91,4 +97,5 @@ public class Product {
     @ToString.Exclude
     @Builder.Default
     private List<Wishlist> wishlists = new ArrayList<>();
+
 }

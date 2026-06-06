@@ -13,5 +13,7 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     Category findBySlug(String slug);
 
     List<Category> findByParentIsNull();
+
+    boolean existsByParentId(int id);
 }
 

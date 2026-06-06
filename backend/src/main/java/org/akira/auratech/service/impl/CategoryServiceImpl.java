@@ -5,6 +5,7 @@ import org.akira.auratech.dto.request.CategoryRequest;
 import org.akira.auratech.dto.response.CategoryResponse;
 import org.akira.auratech.model.Category;
 import org.akira.auratech.repository.CategoryRepository;
+import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.service.CategoryService;
 import org.akira.auratech.utils.SlugUtils;
 import org.akira.auratech.exception.BusinessRuleException;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository repo;
+    private final ProductRepository productRepo;
 
     @Override
     @Transactional(readOnly = true)
@@ -91,6 +93,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void deleteCategoryById(int id) {
+        if (!repo.existsByParentId(id)) {
+            throw new BusinessRuleException("Không thể xóa category này vì nó có category con");
+        }
+        if (productRepo.existsByCategoryId(id)) {
+            throw new BusinessRuleException("Không thể xóa category này vì nó có sản phẩm liên quan");
+        }
         repo.deleteById(id);
     }
 

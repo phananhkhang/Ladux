@@ -21,12 +21,10 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<Page<ProductResponse>> getAllProducts(
             @RequestParam(value = "search", required = false) String search,
-            @RequestParam(value = "brandId", required = false) Integer brandId,
-            @RequestParam(value = "categoryId", required = false) Integer categoryId,
             Pageable pageable
     ) {
         // Unified search supporting FE filters + sort (newest/price_asc/price_desc mapped by client sort or default)
-        return ResponseEntity.ok(service.searchProducts(search, brandId, categoryId, pageable));
+        return ResponseEntity.ok(service.searchProducts(search, pageable));
     }
 
     @GetMapping("/{id}")
