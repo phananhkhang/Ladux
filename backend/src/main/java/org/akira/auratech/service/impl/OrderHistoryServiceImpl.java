@@ -5,10 +5,10 @@ import org.akira.auratech.dto.response.OrderHistoryResponse;
 import org.akira.auratech.repository.OrderHistoryRepository;
 import org.akira.auratech.service.OrderHistoryService;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,10 +17,9 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrderHistoryResponse> getAllOrderHistories() {
-        return repo.findAll().stream()
-                .map(OrderHistoryResponse::fromEntity)
-                .toList();
+    public Page<OrderHistoryResponse> getAllOrderHistories(Pageable pageable) {
+        return repo.findAll(pageable)
+                .map(OrderHistoryResponse::fromEntity);
     }
 
     @Override
@@ -32,9 +31,8 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrderHistoryResponse> getOrderHistoriesByOrderId(int orderId) {
-        return repo.findByOrderId(orderId).stream()
-                .map(OrderHistoryResponse::fromEntity)
-                .toList();
+    public Page<OrderHistoryResponse> getOrderHistoriesByOrderId(int orderId, Pageable pageable) {
+        return repo.findByOrderId(orderId, pageable)
+                .map(OrderHistoryResponse::fromEntity);
     }
 }

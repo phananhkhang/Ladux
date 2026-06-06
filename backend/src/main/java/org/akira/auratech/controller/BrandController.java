@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.BrandRequest;
 import org.akira.auratech.dto.response.BrandResponse;
 import org.akira.auratech.service.BrandService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/brands")
@@ -20,8 +20,8 @@ public class BrandController {
     private final BrandService service;
 
     @GetMapping
-    public ResponseEntity<List<BrandResponse>> getAllBrands() {
-        return ResponseEntity.ok(service.getAllBrands()); // Giúp chuẩn restful hơn, ResponseEntity nó chứa 3 thành phần là status code, header và body
+    public ResponseEntity<Page<BrandResponse>> getAllBrands(Pageable pageable) {
+        return ResponseEntity.ok(service.getAllBrands(pageable));
     }
 
     @GetMapping("/{id}")

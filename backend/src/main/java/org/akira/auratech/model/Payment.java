@@ -32,6 +32,11 @@ public class Payment {
     @Column(nullable = false, length = 20)
     private PaymentProvider provider;
 
+    /**
+     * Ma giao dich tu Gateway (gateway_transaction_no), vi du vnp_TransactionNo.
+     * Luu de doi soat va CSKH tra cuu. Unique khi NOT NULL (xem migration V7).
+     */
+    @Column(name = "transaction_no")
     private String transactionNo;
 
     @Column(nullable = false, precision = 15, scale = 2)

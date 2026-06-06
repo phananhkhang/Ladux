@@ -47,12 +47,14 @@ public class SecurityConfig {
                                 "/api/v1/auth/login", "/api/v1/auth/login/",
                                 "/api/v1/auth/register", "/api/v1/auth/register/",
                                 "/api/v1/auth/logout", "/api/v1/auth/logout/",
+                                "/api/v1/payments/vnpay-webhook",
                                 "/oauth2/**", "/login/oauth2/**"
                         )
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/v1/payments/vnpay-webhook").permitAll()
                         .requestMatchers("/error", "/api/v1/auth/**", "/oauth2/**", "/login/oauth2/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET,

@@ -8,10 +8,10 @@ import org.akira.auratech.model.Brand;
 import org.akira.auratech.repository.BrandRepository;
 import org.akira.auratech.service.BrandService;
 import org.akira.auratech.utils.SlugUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,11 +20,9 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BrandResponse> getAllBrands() {
-        List<Brand> brands = repo.findAll();
-        return brands.stream()
-                .map(BrandResponse::fromEntity)
-                .toList();
+    public Page<BrandResponse> getAllBrands(Pageable pageable) {
+        return repo.findAll(pageable)
+                .map(BrandResponse::fromEntity);
     }
 
     @Override

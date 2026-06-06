@@ -30,6 +30,15 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
     @EntityGraph(attributePaths = {"order"})
     Optional<Payment> findFirstByOrderIdOrderByCreatedAtDesc(Integer orderId);
 
+    /** Tra cuu theo gateway_transaction_no (vnp_TransactionNo) — phuc vu idempotency va doi soat. */
+    @EntityGraph(attributePaths = {"order"})
+    Optional<Payment> findByTransactionNo(String transactionNo);
+
+    /** Lock payment moi nhat cua order — tranh race condition khi hai webhook dong thoi. */
+    @EntityGraph(attributePaths = {"order"})
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Payment> findTopByOrder_IdOrderByCreatedAtDesc(Integer orderId);
+
     @EntityGraph(attributePaths = {"order"})
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Payment p where p.id = :id")

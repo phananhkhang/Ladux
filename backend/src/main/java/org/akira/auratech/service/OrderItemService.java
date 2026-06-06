@@ -1,13 +1,13 @@
 package org.akira.auratech.service;
 
 import org.akira.auratech.dto.response.OrderItemResponse;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface OrderItemService {
-    List<OrderItemResponse> getAllOrderItems();
+    Page<OrderItemResponse> getAllOrderItems(Pageable pageable);
 
     OrderItemResponse getOrderItemById(int id);
 
-    List<OrderItemResponse> getOrderItemsByOrderId(int orderId);
+    Page<OrderItemResponse> getOrderItemsByOrderId(int orderId, Pageable pageable);
 }

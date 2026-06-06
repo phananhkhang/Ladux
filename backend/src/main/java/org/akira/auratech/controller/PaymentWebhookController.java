@@ -1,30 +1,62 @@
 package org.akira.auratech.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.service.PaymentService;
+import org.akira.auratech.service.PaymentWebhookResult;
+import org.akira.auratech.service.PaymentWebhookService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Map;
 
+/**
+ * Public webhook endpoint — KHONG yeu cau cookie/JWT auth.
+ * Bao mat duoc dam bao bang HMAC signature validation o tang Service (khong phai auth cookie).
+ */
 @RestController
 @RequestMapping("/api/v1/payments")
 @RequiredArgsConstructor
 public class PaymentWebhookController {
 
-    private final PaymentService paymentService;
+    private final PaymentWebhookService paymentWebhookService;
 
+    /**
+     * VNPay IPN (Instant Payment Notification).
+     * Ho tro ca GET va POST vi Gateway co the gui theo mot trong hai phuong thuc tuy cau hinh.
+     */
     @GetMapping("/vnpay-webhook")
+    @PostMapping("/vnpay-webhook")
     public ResponseEntity<String> handleVNPayWebhook(@RequestParam Map<String, String> params) {
-        // 🎯 Nhặt mã chữ ký bảo mật do VNPAY gửi sang
-        String vnp_SecureHash = params.get("vnp_SecureHash");
+        PaymentWebhookResult result = paymentWebhookService.processVNPayWebhook(params);
+        return toVNPayResponse(result);
+    }
 
-        // Gọi service xử lý thẩm định và duyệt tiền tự động
-        boolean isValid = paymentService.verifyAndProcessWebhook(params, vnp_SecureHash);
+    /**
+     * Map ket qua service sang HTTP status + body JSON chuan VNPay.
+     *
+     * - PROCESSED / IDEMPOTENT -> 200 OK (Gateway dung retry khi nhan 200)
+     * - INVALID_SIGNATURE      -> 403 Forbidden (fake request)
+     * - AMOUNT_MISMATCH        -> 400 Bad Request (du lieu bat thuong, can dieu tra)
+     * - ORDER_NOT_FOUND        -> 404 Not Found
+     */
+    private ResponseEntity<String> toVNPayResponse(PaymentWebhookResult result) {
+        String body = String.format(
+                "{\"RspCode\":\"%s\",\"Message\":\"%s\"}",
+                result.vnpResponseCode(),
+                result.message()
+        );
 
-        if (isValid) {
-            // Phản hồi đúng chuẩn format JSON của VNPAY để họ ngừng bắn nhắc nhở
-            return ResponseEntity.ok("{\"RspCode\":\"00\",\"Message\":\"Confirm Success\"}");
-        }
-        return ResponseEntity.badRequest().body("{\"RspCode\":\"97\",\"Message\":\"Invalid Checksum\"}");
+        HttpStatus httpStatus = switch (result.outcome()) {
+            case PROCESSED, IDEMPOTENT -> HttpStatus.OK;
+            case INVALID_SIGNATURE -> HttpStatus.FORBIDDEN;
+            case AMOUNT_MISMATCH -> HttpStatus.BAD_REQUEST;
+            case ORDER_NOT_FOUND -> HttpStatus.NOT_FOUND;
+        };
+
+        return ResponseEntity.status(httpStatus).body(body);
     }
 }

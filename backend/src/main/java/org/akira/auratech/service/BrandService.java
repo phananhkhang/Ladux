@@ -2,11 +2,11 @@ package org.akira.auratech.service;
 
 import org.akira.auratech.dto.request.BrandRequest;
 import org.akira.auratech.dto.response.BrandResponse;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface BrandService {
-    List<BrandResponse> getAllBrands();
+    Page<BrandResponse> getAllBrands(Pageable pageable);
 
     BrandResponse getBrandById(int id);
 

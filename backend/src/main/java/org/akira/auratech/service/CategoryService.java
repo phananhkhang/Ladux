@@ -2,11 +2,11 @@ package org.akira.auratech.service;
 
 import org.akira.auratech.dto.request.CategoryRequest;
 import org.akira.auratech.dto.response.CategoryResponse;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CategoryService {
-    List<CategoryResponse> getAllCategories();
+    Page<CategoryResponse> getAllCategories(Pageable pageable);
 
     CategoryResponse getCategoryById(int id);
 
@@ -14,7 +14,7 @@ public interface CategoryService {
 
     CategoryResponse getCategoryBySlug(String slug);
 
-    List<CategoryResponse> getRootCategories();
+    Page<CategoryResponse> getRootCategories(Pageable pageable);
 
     CategoryResponse createCategory(CategoryRequest request);
 
