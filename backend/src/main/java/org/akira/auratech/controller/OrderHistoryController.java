@@ -3,14 +3,14 @@ package org.akira.auratech.controller;
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.response.OrderHistoryResponse;
 import org.akira.auratech.service.OrderHistoryService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/order-histories")
@@ -20,8 +20,8 @@ public class OrderHistoryController {
     private final OrderHistoryService service;
 
     @GetMapping
-    public ResponseEntity<List<OrderHistoryResponse>> getAllOrderHistories() {
-        return ResponseEntity.ok(service.getAllOrderHistories());
+    public ResponseEntity<Page<OrderHistoryResponse>> getAllOrderHistories(Pageable pageable) {
+        return ResponseEntity.ok(service.getAllOrderHistories(pageable));
     }
 
     @GetMapping("/{id}")
@@ -30,7 +30,7 @@ public class OrderHistoryController {
     }
 
     @GetMapping("/order/{orderId}")
-    public ResponseEntity<List<OrderHistoryResponse>> getOrderHistoriesByOrderId(@PathVariable int orderId) {
-        return ResponseEntity.ok(service.getOrderHistoriesByOrderId(orderId));
+    public ResponseEntity<Page<OrderHistoryResponse>> getOrderHistoriesByOrderId(@PathVariable int orderId, Pageable pageable) {
+        return ResponseEntity.ok(service.getOrderHistoriesByOrderId(orderId, pageable));
     }
 }

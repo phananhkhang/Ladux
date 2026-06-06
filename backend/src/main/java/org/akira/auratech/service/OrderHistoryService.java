@@ -1,13 +1,13 @@
 package org.akira.auratech.service;
 
 import org.akira.auratech.dto.response.OrderHistoryResponse;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface OrderHistoryService {
-    List<OrderHistoryResponse> getAllOrderHistories();
+    Page<OrderHistoryResponse> getAllOrderHistories(Pageable pageable);
 
     OrderHistoryResponse getOrderHistoryById(int id);
 
-    List<OrderHistoryResponse> getOrderHistoriesByOrderId(int orderId);
+    Page<OrderHistoryResponse> getOrderHistoriesByOrderId(int orderId, Pageable pageable);
 }

@@ -7,8 +7,6 @@ import org.akira.auratech.model.enums.PaymentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Map;
-
 public interface PaymentService {
     Page<PaymentCallbackResponse> getAllPayments(Pageable pageable);
 
@@ -21,6 +19,4 @@ public interface PaymentService {
     PaymentCallbackResponse createPayment(int userId, PaymentCreateRequest request);
 
     PaymentCallbackResponse updatePayment(int id, PaymentCallbackRequest request);
-
-    public boolean verifyAndProcessWebhook(Map<String, String> params, String secureHash);
 }

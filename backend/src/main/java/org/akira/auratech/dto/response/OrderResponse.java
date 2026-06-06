@@ -10,7 +10,7 @@ import java.util.List;
 public record OrderResponse(
         Integer id,
         Integer userId,
-        Integer couponId,
+        Integer couponCode,
         BigDecimal subTotal,
         BigDecimal discountAmount,
         BigDecimal finalAmount,

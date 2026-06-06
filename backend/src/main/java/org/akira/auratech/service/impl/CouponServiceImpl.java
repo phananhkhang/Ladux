@@ -11,13 +11,14 @@ import org.akira.auratech.model.enums.DiscountType;
 import org.akira.auratech.repository.CouponRepository;
 import org.akira.auratech.service.CouponService;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,10 +27,9 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CouponResponse> getAllCoupons() {
-        return repo.findAll().stream()
-                .map(CouponResponse::fromEntity)
-                .toList();
+    public Page<CouponResponse> getAllCoupons(Pageable pageable) {
+        return repo.findAll(pageable)
+                .map(CouponResponse::fromEntity);
     }
 
     @Override

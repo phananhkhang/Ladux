@@ -4,11 +4,11 @@ import org.akira.auratech.dto.request.CouponAdminRequest;
 import org.akira.auratech.dto.request.CouponApplyRequest;
 import org.akira.auratech.dto.response.CouponApplyResponse;
 import org.akira.auratech.dto.response.CouponResponse;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CouponService {
-    List<CouponResponse> getAllCoupons();
+    Page<CouponResponse> getAllCoupons(Pageable pageable);
 
     CouponResponse getCouponById(int id);
 

@@ -10,6 +10,8 @@ import org.akira.auratech.repository.UserAddressRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.UserAddressService;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +25,9 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserAddressResponse> getAllUserAddresses() {
-        return repo.findAll().stream()
-                .map(UserAddressResponse::fromEntity)
-                .toList();
+    public Page<UserAddressResponse> getAllUserAddresses(Pageable pageable) {
+        return repo.findAll(pageable)
+                .map(UserAddressResponse::fromEntity);
     }
 
     @Override

@@ -96,7 +96,7 @@ public class OrderServiceImpl implements OrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .setScale(2, RoundingMode.HALF_UP);
 
-        CouponRedemptionResult redemption = couponRedemptionService.redeem(request.couponId(), subTotal);
+        CouponRedemptionResult redemption = couponRedemptionService.redeem(request.couponCode(), subTotal);
         Coupon coupon = redemption.coupon();
         BigDecimal discountAmount = redemption.discountAmount();
 

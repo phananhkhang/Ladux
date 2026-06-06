@@ -9,10 +9,10 @@ import org.akira.auratech.service.CategoryService;
 import org.akira.auratech.utils.SlugUtils;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,10 +21,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategoryResponse> getAllCategories() {
-        return repo.findAll().stream()
-                .map(CategoryResponse::fromEntity)
-                .toList();
+    public Page<CategoryResponse> getAllCategories(Pageable pageable) {
+        return repo.findAll(pageable)
+                .map(CategoryResponse::fromEntity);
     }
 
     @Override
@@ -48,10 +47,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategoryResponse> getRootCategories() {
-        return repo.findByParentIsNull().stream()
-                .map(CategoryResponse::fromEntity)
-                .toList();
+    public Page<CategoryResponse> getRootCategories(Pageable pageable) {
+        return repo.findByParentIsNull(pageable)
+                .map(CategoryResponse::fromEntity);
     }
 
     @Override
