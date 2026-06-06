@@ -3,6 +3,8 @@ package org.akira.auratech.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.akira.auratech.model.enums.DiscountType;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -49,4 +51,12 @@ public class Coupon {
     @ToString.Exclude
     @Builder.Default
     private List<Order> orders = new ArrayList<>();
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "update_at")
+    private Instant updateAt;
 }

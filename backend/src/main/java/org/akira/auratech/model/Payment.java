@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.akira.auratech.model.enums.PaymentProvider;
 import org.akira.auratech.model.enums.PaymentStatus;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
@@ -49,4 +50,8 @@ public class Payment {
     @Column(nullable = false, updatable = false)
     @CreatedDate
     private Instant createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "update_at")
+    private Instant updateAt;
 }

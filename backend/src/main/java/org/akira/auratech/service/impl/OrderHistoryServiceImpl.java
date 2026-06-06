@@ -2,10 +2,7 @@ package org.akira.auratech.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.response.OrderHistoryResponse;
-import org.akira.auratech.model.Order;
-import org.akira.auratech.model.OrderHistory;
 import org.akira.auratech.repository.OrderHistoryRepository;
-import org.akira.auratech.repository.OrderRepository;
 import org.akira.auratech.service.OrderHistoryService;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
