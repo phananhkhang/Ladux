@@ -14,6 +14,8 @@ import org.akira.auratech.service.ProductService;
 import org.akira.auratech.utils.SlugUtils;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "products", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<ProductResponse> getAllProducts(Pageable pageable) {
         return repo.findAll(pageable)
                 .map(ProductResponse::summaryFromEntity);
@@ -37,6 +40,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "products", key = "'id:' + #id")
     public ProductResponse getProductById(int id) {
         return ProductResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + id)));
@@ -44,18 +48,21 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "products", key = "'slug:' + #slug")
     public ProductResponse getProductBySlug(String slug) {
         return ProductResponse.fromEntity(repo.findBySlug(slug));
     }
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "products", key = "'sku:' + #sku")
     public ProductResponse getProductBySku(String sku) {
         return ProductResponse.fromEntity(repo.findBySku(sku));
     }
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "products", key = "'brand:' + #brandId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<ProductResponse> getProductsByBrandId(int brandId, Pageable pageable) {
         return repo.findByBrandId(brandId, pageable)
                 .map(ProductResponse::summaryFromEntity);
@@ -63,6 +70,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "products", key = "'category:' + #categoryId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<ProductResponse> getProductsByCategoryId(int categoryId, Pageable pageable) {
         return repo.findByCategoryId(categoryId, pageable)
                 .map(ProductResponse::summaryFromEntity);
@@ -70,6 +78,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "products", key = "'active:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<ProductResponse> getActiveProducts(Pageable pageable) {
         return repo.findByIsActiveTrue(pageable)
                 .map(ProductResponse::summaryFromEntity);
@@ -77,6 +86,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "products", key = "'search:' + #search + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<ProductResponse> searchProducts(String search, Pageable pageable) {
         return repo.search(search, pageable)
                 .map(ProductResponse::summaryFromEntity);
@@ -84,6 +94,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public ProductResponse createProduct(ProductRequest request) {
         Brand brand = brandRepository.findById(request.brandId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay brand voi id = " + request.brandId()));
@@ -112,6 +123,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public ProductResponse updateProduct(int id, ProductRequest request) {
         Product product = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + id));
@@ -161,6 +173,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public void deleteProductById(int id) {
         repo.deleteById(id);
     }

@@ -18,6 +18,9 @@ import org.akira.auratech.service.InventoryService;
 import org.akira.auratech.service.OrderService;
 import org.akira.auratech.service.OrderStateMachine;
 import org.akira.auratech.service.PaymentAttemptService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,6 +42,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "orders", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<OrderResponse> getAllOrders(Pageable pageable) {
         // Lấy toàn bộ đơn hàng và chuyển sang DTO để trả về cho API.
         return repo.findAll(pageable)
@@ -47,6 +51,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "orders", key = "'user:' + #userId + ':order:' + #orderId")
     public OrderResponse getOrderById(int userId, int orderId) {
         // Lấy đơn hàng kèm danh sách item để phục vụ kiểm tra quyền và hiển thị chi tiết.
         Order order = repo.findWithItemsById(orderId)
@@ -61,6 +66,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "orders", key = "'user:' + #userId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<OrderResponse> getOrdersByUserId(int userId, Pageable pageable) {
         // Trả về danh sách đơn hàng của đúng người dùng được yêu cầu.
         return repo.findByUserId(userId, pageable)
@@ -69,6 +75,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "orders", key = "'status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<OrderResponse> getOrdersByStatus(OrderStatus status, Pageable pageable) {
         // Lọc đơn hàng theo trạng thái để phục vụ thống kê hoặc tra cứu.
         return repo.findByStatus(status, pageable)
@@ -77,6 +84,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "orders", allEntries = true),
+            @CacheEvict(value = "orderItems", allEntries = true),
+            @CacheEvict(value = "orderHistories", allEntries = true),
+            @CacheEvict(value = "products", allEntries = true),
+            @CacheEvict(value = "coupons", allEntries = true)
+    })
     public OrderResponse createOrder(int userId, OrderRequest request) {
         // B1: kiểm tra user tồn tại hay không.
         User user = userRepository.findById(userId)
@@ -140,18 +154,32 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "orders", allEntries = true),
+            @CacheEvict(value = "orderHistories", allEntries = true)
+    })
     public OrderResponse updateOrderStatus(int orderId, OrderStatusUpdateRequest request) {
         return orderStateMachine.updateOrderStatus(orderId, request);
     }
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "orders", allEntries = true),
+            @CacheEvict(value = "orderHistories", allEntries = true),
+            @CacheEvict(value = "products", allEntries = true),
+            @CacheEvict(value = "coupons", allEntries = true)
+    })
     public int expirePendingOrders() {
         return orderStateMachine.expirePendingOrders();
     }
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "orders", allEntries = true),
+            @CacheEvict(value = "payments", allEntries = true)
+    })
     public PaymentCallbackResponse retryPayment(int userId, int orderId) {
         return paymentAttemptService.retryPayment(userId, orderId);
     }

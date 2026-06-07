@@ -10,6 +10,8 @@ import org.akira.auratech.service.CategoryService;
 import org.akira.auratech.utils.SlugUtils;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "categories", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<CategoryResponse> getAllCategories(Pageable pageable) {
         return repo.findAll(pageable)
                 .map(CategoryResponse::fromEntity);
@@ -30,6 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "categories", key = "'id:' + #id")
     public CategoryResponse getCategoryById(int id) {
         return CategoryResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + id)));
@@ -37,18 +41,21 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "categories", key = "'name:' + #name")
     public CategoryResponse getCategoryByName(String name) {
         return CategoryResponse.fromEntity(repo.findByName(name));
     }
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "categories", key = "'slug:' + #slug")
     public CategoryResponse getCategoryBySlug(String slug) {
         return CategoryResponse.fromEntity(repo.findBySlug(slug));
     }
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "categories", key = "'root:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<CategoryResponse> getRootCategories(Pageable pageable) {
         return repo.findByParentIsNull(pageable)
                 .map(CategoryResponse::fromEntity);
@@ -56,6 +63,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "categories", allEntries = true)
     public CategoryResponse createCategory(CategoryRequest request) {
         Category parent = null;
         if (request.parentId() != null) {
@@ -72,6 +80,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "categories", allEntries = true)
     public CategoryResponse updateCategory(int id, CategoryRequest request) {
         Category category = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + id));
@@ -90,6 +99,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "categories", allEntries = true)
     public void deleteCategoryById(int id) {
         if (!repo.existsByParentId(id)) {
             throw new BusinessRuleException("Không thể xóa category này vì nó có category con");

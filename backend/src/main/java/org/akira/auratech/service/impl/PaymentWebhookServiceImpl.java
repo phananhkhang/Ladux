@@ -12,6 +12,8 @@ import org.akira.auratech.service.PaymentWebhookResult;
 import org.akira.auratech.service.PaymentWebhookService;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +51,13 @@ public class PaymentWebhookServiceImpl implements PaymentWebhookService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "payments", allEntries = true),
+            @CacheEvict(value = "orders", allEntries = true),
+            @CacheEvict(value = "orderHistories", allEntries = true),
+            @CacheEvict(value = "products", allEntries = true),
+            @CacheEvict(value = "coupons", allEntries = true)
+    })
     public PaymentWebhookResult processVNPayWebhook(Map<String, String> params) {
         // --- BUOC 1: Validate Signature ---
         // Gateway webhook la public endpoint — chi tin tuong request co chu ky HMAC hop le.

@@ -15,6 +15,8 @@ import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.UserService;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,6 +58,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "users", allEntries = true)
     public UserResponse savedUser(RegisterRequest request) {
         String email = request.email().trim();
         String username = request.username().trim();
@@ -87,6 +90,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "users", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<UserResponse> getAllUsers(Pageable pageable) {
         return repo.findAll(pageable)
                 .map(UserResponse::fromEntity);
@@ -94,6 +98,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "users", key = "'id:' + #id")
     public UserResponse getUserById(int id) {
         return UserResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id)));
@@ -101,12 +106,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "users", key = "'email:' + #email")
     public UserResponse getUserByEmail(String email) {
         return UserResponse.fromEntity(repo.findByEmail(email));
     }
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "users", key = "'active:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<UserResponse> getActiveUsers(Pageable pageable) {
         return repo.findByIsActiveTrue(pageable)
                 .map(UserResponse::fromEntity);
@@ -114,6 +121,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "users", allEntries = true)
     public UserResponse updateUser(int id, UserAdminUpdateRequest request) {
         User user = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id));
@@ -150,6 +158,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "users", allEntries = true)
     public UserResponse updateAvatar(int id, MultipartFile file) {
         User user = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id));
@@ -159,6 +168,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "users", allEntries = true)
     public void deleteUserById(int id) {
         repo.deleteById(id);
     }

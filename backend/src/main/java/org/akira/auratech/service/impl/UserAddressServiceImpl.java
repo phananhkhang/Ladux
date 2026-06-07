@@ -9,6 +9,8 @@ import org.akira.auratech.repository.UserAddressRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.UserAddressService;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "userAddresses", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<UserAddressResponse> getAllUserAddresses(Pageable pageable) {
         return repo.findAll(pageable)
                 .map(UserAddressResponse::fromEntity);
@@ -31,6 +34,7 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "userAddresses", key = "'user:' + #userId + ':id:' + #addressId")
     public UserAddressResponse getUserAddressById(int userId, int addressId) {
         return UserAddressResponse.fromEntity(repo.findByUserIdAndId(userId, addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user address voi id = " + addressId)));
@@ -38,6 +42,7 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "userAddresses", key = "'user:' + #userId + ':list'")
     public List<UserAddressResponse> getUserAddressesByUserId(int userId) {
         return repo.findByUserId(userId).stream()
                 .map(UserAddressResponse::fromEntity)
@@ -46,6 +51,7 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "userAddresses", key = "'user:' + #userId + ':default'")
     public List<UserAddressResponse> getDefaultUserAddressesByUserId(int userId) {
         return repo.findByUserIdAndIsDefaultTrue(userId).stream()
                 .map(UserAddressResponse::fromEntity)
@@ -54,6 +60,7 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "userAddresses", allEntries = true)
     public UserAddressResponse createUserAddress(int userId, UserAddressRequest request) {
         User user = userRepository.findByIdForUpdate(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));
@@ -79,6 +86,7 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "userAddresses", allEntries = true)
     public UserAddressResponse updateUserAddress(int userId, int addressId, UserAddressRequest request) { // 💡 Nhận cả userId và addressId
         userRepository.findByIdForUpdate(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));
@@ -104,6 +112,7 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "userAddresses", allEntries = true)
     public void deleteUserAddressById(int userId, int addressId) {
         UserAddress address = repo.findByUserIdAndIdForUpdate(userId, addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user address voi id = " + addressId));

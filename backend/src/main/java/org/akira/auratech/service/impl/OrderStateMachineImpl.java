@@ -11,6 +11,8 @@ import org.akira.auratech.model.enums.OrderStatus;
 import org.akira.auratech.repository.OrderRepository;
 import org.akira.auratech.service.OrderLifecycleService;
 import org.akira.auratech.service.OrderStateMachine;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,10 @@ public class OrderStateMachineImpl implements OrderStateMachine {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "orders", allEntries = true),
+            @CacheEvict(value = "orderHistories", allEntries = true)
+    })
     public OrderResponse updateOrderStatus(int orderId, OrderStatusUpdateRequest request) {
         Order order = orderRepository.findWithItemsByIdForUpdate(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng"));
@@ -60,6 +66,12 @@ public class OrderStateMachineImpl implements OrderStateMachine {
     @Override
     @Scheduled(fixedDelayString = "${auratech.order-expiration.fixed-delay-ms:60000}")
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "orders", allEntries = true),
+            @CacheEvict(value = "orderHistories", allEntries = true),
+            @CacheEvict(value = "products", allEntries = true),
+            @CacheEvict(value = "coupons", allEntries = true)
+    })
     public int expirePendingOrders() {
         List<Order> expiredOrders = orderRepository.findExpiredOrdersForUpdate(OrderStatus.PENDING, Instant.now());
         for (Order order : expiredOrders) {

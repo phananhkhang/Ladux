@@ -11,6 +11,8 @@ import org.akira.auratech.model.enums.DiscountType;
 import org.akira.auratech.repository.CouponRepository;
 import org.akira.auratech.service.CouponService;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "coupons", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<CouponResponse> getAllCoupons(Pageable pageable) {
         return repo.findAll(pageable)
                 .map(CouponResponse::fromEntity);
@@ -34,6 +37,7 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "coupons", key = "'id:' + #id")
     public CouponResponse getCouponById(int id) {
         return CouponResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + id)));
@@ -41,12 +45,14 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "coupons", key = "'code:' + #code")
     public CouponResponse getCouponByCode(String code) {
         return CouponResponse.fromEntity(repo.findByCode(code));
     }
 
     @Override
     @Transactional
+    @CacheEvict(value = "coupons", allEntries = true)
     public CouponResponse createCoupon(CouponAdminRequest request) {
         validateCouponDefinition(request.discountType(), request.discountValue());
         Coupon coupon = Coupon.builder()
@@ -63,6 +69,7 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "coupons", allEntries = true)
     public CouponResponse updateCoupon(int id, CouponAdminRequest request) {
         Coupon coupon = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + id));
@@ -92,6 +99,7 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "coupons", allEntries = true)
     public void deleteCouponById(int id) {
         repo.deleteById(id);
     }
@@ -106,6 +114,7 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "coupons", key = "'apply:' + #request.code + ':' + #request.subTotal")
     public CouponApplyResponse applyCoupon(CouponApplyRequest request) {
         if (request == null || request.code() == null || request.code().isBlank()) {
             throw new BusinessRuleException("Ma coupon khong hop le");

@@ -8,6 +8,7 @@ import org.akira.auratech.model.Product;
 import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.service.InventoryService;
 import org.akira.auratech.service.PricingService;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
+    @CacheEvict(value = "products", allEntries = true)
     public List<LineDraft> reserveStockAndPriceLines(List<OrderLineRequest> items) {
         List<LineDraft> drafts = new ArrayList<>();
 

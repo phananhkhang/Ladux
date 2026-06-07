@@ -11,6 +11,8 @@ import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.repository.WishlistRepository;
 import org.akira.auratech.service.WishlistService;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "wishlists", allEntries = true)
     public void addItemToWishlist(int userId, int productId) {
         // 1. Check xem User và Product có tồn tại không
         User user = userRepository.findById(userId)
@@ -49,6 +52,7 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "wishlists", key = "'user:' + #userId")
     public List<WishlistResponse> getWishlistsByUserId(int userId) {
         return repo.findByUserId(userId).stream()
                 .map(WishlistResponse::fromEntity)
@@ -57,6 +61,7 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "wishlists", allEntries = true)
     public void removeItemFromWishlist(int userId, int productId) {
         Wishlist wishlist = repo.findByUserIdAndProductId(userId, productId);
         if (wishlist == null) {

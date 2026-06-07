@@ -15,6 +15,8 @@ import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.ReviewService;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "reviews", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<ReviewResponse> getAllReviews(Pageable pageable) {
         return repo.findAll(pageable)
                 .map(ReviewResponse::fromEntity);
@@ -37,6 +40,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "reviews", key = "'id:' + #id")
     public ReviewResponse getReviewById(int id) {
         return ReviewResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + id)));
@@ -44,6 +48,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "reviews", key = "'product:' + #productId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<ReviewResponse> getReviewsByProductId(int productId, Pageable pageable) {
         return repo.findByProductId(productId, pageable)
                 .map(ReviewResponse::fromEntity);
@@ -51,6 +56,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "reviews", key = "'user:' + #userId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<ReviewResponse> getReviewsByUserId(int userId, Pageable pageable) {
         return repo.findByUserId(userId, pageable)
                 .map(ReviewResponse::fromEntity);
@@ -58,6 +64,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "reviews", allEntries = true)
     public ReviewResponse createReview(int userId, ReviewCreateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));
@@ -83,6 +90,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "reviews", allEntries = true)
     public ReviewResponse updateReview(int userId, int reviewId, ReviewUpdateRequest request) {
         Review review = repo.findByUserIdAndId(userId, reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + reviewId + " va userId = " + userId));
@@ -100,6 +108,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "reviews", allEntries = true)
     public void deleteReviewById(int userId, int reviewId) {
         Review review = repo.findByUserIdAndId(userId, reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + reviewId + " va userId = " + userId));

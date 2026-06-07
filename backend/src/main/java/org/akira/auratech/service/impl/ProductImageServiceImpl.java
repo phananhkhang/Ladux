@@ -10,6 +10,9 @@ import org.akira.auratech.repository.ProductImageRepository;
 import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.service.ProductImageService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,6 +47,7 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "productImages", key = "'product:' + #productId")
     public List<ProductImageResponse> getProductImagesByProductId(int productId) {
         return repo.findByProductId(productId).stream()
                 .map(ProductImageResponse::fromEntity)
@@ -52,6 +56,10 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "productImages", allEntries = true),
+            @CacheEvict(value = "products", allEntries = true)
+    })
     public List<ProductImageResponse> addImages(int productId, List<String> imageUrls) {
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham voi id = " + productId));
@@ -71,6 +79,10 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "productImages", allEntries = true),
+            @CacheEvict(value = "products", allEntries = true)
+    })
     public ProductImageResponse uploadImage(int productId, MultipartFile file) {
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham voi id = " + productId));
@@ -85,6 +97,10 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "productImages", allEntries = true),
+            @CacheEvict(value = "products", allEntries = true)
+    })
     public void deleteProductImageById(int productId, int imageId) {
         ProductImage image = repo.findById(imageId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product image voi id = " + imageId));

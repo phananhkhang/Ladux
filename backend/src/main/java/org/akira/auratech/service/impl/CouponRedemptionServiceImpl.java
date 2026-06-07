@@ -8,6 +8,7 @@ import org.akira.auratech.model.Coupon;
 import org.akira.auratech.model.enums.DiscountType;
 import org.akira.auratech.repository.CouponRepository;
 import org.akira.auratech.service.CouponRedemptionService;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class CouponRedemptionServiceImpl implements CouponRedemptionService {
 
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
+    @CacheEvict(value = "coupons", allEntries = true)
     public CouponRedemptionResult redeem(String couponCode, BigDecimal subTotal) {
         if (couponCode == null || couponCode.isBlank()) {
             return CouponRedemptionResult.empty();

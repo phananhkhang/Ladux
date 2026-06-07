@@ -14,6 +14,9 @@ import org.akira.auratech.repository.OrderRepository;
 import org.akira.auratech.repository.PaymentRepository;
 import org.akira.auratech.service.OrderLifecycleService;
 import org.akira.auratech.service.PaymentService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "payments", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<PaymentCallbackResponse> getAllPayments(Pageable pageable) {
         return repo.findAll(pageable)
                 .map(PaymentCallbackResponse::fromEntity);
@@ -37,6 +41,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "payments", key = "'id:' + #id")
     public PaymentCallbackResponse getPaymentById(int id) {
         return PaymentCallbackResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay payment voi id = " + id)));
@@ -44,6 +49,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "payments", key = "'user:' + #userId + ':order:' + #orderId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<PaymentCallbackResponse> getPaymentsByOrderId(int userId, int orderId, Pageable pageable) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order"));
@@ -58,6 +64,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "payments", key = "'status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<PaymentCallbackResponse> getPaymentsByStatus(PaymentStatus status, Pageable pageable) {
         return repo.findByStatus(status, pageable)
                 .map(PaymentCallbackResponse::fromEntity);
@@ -65,6 +72,10 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "payments", allEntries = true),
+            @CacheEvict(value = "orders", allEntries = true)
+    })
     public PaymentCallbackResponse createPayment(int userId, PaymentCreateRequest request) {
         Order order = orderRepository.findByIdForUpdate(request.orderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.orderId()));
@@ -92,6 +103,11 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "payments", allEntries = true),
+            @CacheEvict(value = "orders", allEntries = true),
+            @CacheEvict(value = "orderHistories", allEntries = true)
+    })
     public PaymentCallbackResponse updatePayment(int id, PaymentCallbackRequest request) {
         Payment payment = repo.findByIdForUpdate(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay payment voi id = " + id));

@@ -5,6 +5,7 @@ import org.akira.auratech.dto.response.OrderItemResponse;
 import org.akira.auratech.repository.OrderItemRepository;
 import org.akira.auratech.service.OrderItemService;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "orderItems", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<OrderItemResponse> getAllOrderItems(Pageable pageable) {
         return repo.findAll(pageable)
                 .map(OrderItemResponse::fromEntity);
@@ -24,6 +26,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "orderItems", key = "'id:' + #id")
     public OrderItemResponse getOrderItemById(int id) {
         return OrderItemResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order item voi id = " + id)));
@@ -31,6 +34,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "orderItems", key = "'order:' + #orderId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<OrderItemResponse> getOrderItemsByOrderId(int orderId, Pageable pageable) {
         return repo.findByOrderId(orderId, pageable)
                 .map(OrderItemResponse::fromEntity);

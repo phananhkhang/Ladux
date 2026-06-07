@@ -11,6 +11,8 @@ import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.CartService;
 import org.akira.auratech.exception.ResourceNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,7 @@ public class CartServiceImpl implements CartService {
     private final ProductRepository productRepository;
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "carts", key = "'user:' + #userId")
     public CartResponse getCartByUserId(int userId) {
         Cart cart = repo.findByUserId(userId);
         if (cart == null) {
@@ -33,6 +36,7 @@ public class CartServiceImpl implements CartService {
     }
     @Override
     @Transactional
+    @CacheEvict(value = "carts", allEntries = true)
     public void addItemToCart(int userId, int productId, int quantity) {
         User user = userRepository.findByIdForUpdate(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));
@@ -66,6 +70,7 @@ public class CartServiceImpl implements CartService {
     }
     @Override
     @Transactional
+    @CacheEvict(value = "carts", allEntries = true)
     public void updateQuantity(int userId, int productId, int quantity) {
         userRepository.findByIdForUpdate(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));
@@ -84,6 +89,7 @@ public class CartServiceImpl implements CartService {
     }
     @Override
     @Transactional
+    @CacheEvict(value = "carts", allEntries = true)
     public void removeItemFromCart(int userId, int productId) {
         userRepository.findByIdForUpdate(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));
@@ -97,6 +103,7 @@ public class CartServiceImpl implements CartService {
     }
     @Override
     @Transactional
+    @CacheEvict(value = "carts", allEntries = true)
     public void clearCart(int userId) {
         userRepository.findByIdForUpdate(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));

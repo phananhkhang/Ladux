@@ -8,6 +8,8 @@ import org.akira.auratech.model.Brand;
 import org.akira.auratech.repository.BrandRepository;
 import org.akira.auratech.service.BrandService;
 import org.akira.auratech.utils.SlugUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "brands", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<BrandResponse> getAllBrands(Pageable pageable) {
         return repo.findAll(pageable)
                 .map(BrandResponse::fromEntity);
@@ -27,24 +30,28 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "brands", key = "'id:' + #id")
     public BrandResponse getBrandById(int id) {
         return BrandResponse.fromEntity(repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thương hiệu với id = " + id)));
     }
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "brands", key = "'name:' + #name")
     public BrandResponse getBrandByName(String name) {
         return BrandResponse.fromEntity(repo.findByName(name));
     }
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "brands", key = "'slug:' + #slug")
     public BrandResponse getBrandBySlug(String slug) {
         return BrandResponse.fromEntity(repo.findBySlug(slug));
     }
 
     @Override
     @Transactional
+    @CacheEvict(value = "brands", allEntries = true)
     public BrandResponse createBrand(BrandRequest request) {
         String slug = SlugUtils.toSlug(request.name());
         Brand brand = Brand.builder()
@@ -60,6 +67,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "brands", allEntries = true)
     public BrandResponse updateBrand(int id, BrandRequest brand) {
         Brand b = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thương hiệu với id = " + id));
         if (b == null) return null;
@@ -71,6 +79,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "brands", allEntries = true)
     public void deleteBrandById(int id) {
         repo.deleteById(id);
     }

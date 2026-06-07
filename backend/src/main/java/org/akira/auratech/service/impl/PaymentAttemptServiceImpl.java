@@ -12,6 +12,8 @@ import org.akira.auratech.model.enums.PaymentStatus;
 import org.akira.auratech.repository.OrderRepository;
 import org.akira.auratech.repository.PaymentRepository;
 import org.akira.auratech.service.PaymentAttemptService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +42,10 @@ public class PaymentAttemptServiceImpl implements PaymentAttemptService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "payments", allEntries = true),
+            @CacheEvict(value = "orders", allEntries = true)
+    })
     public PaymentCallbackResponse retryPayment(int userId, int orderId) {
         Order order = orderRepository.findByIdForUpdate(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + orderId));
