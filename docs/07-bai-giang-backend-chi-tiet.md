@@ -78,7 +78,7 @@ File cấu hình chính:
 
 | File | Vai trò |
 | --- | --- |
-| `application.properties` | Cấu hình chung, chọn profile, DB, JWT, OAuth2, cookie, upload |
+| `application.properties` | Cấu hình chung, chọn profile, DB, JWT, OAuth2, cookie, upload (`app.upload.*`, multipart limit) |
 | `application-dev.properties` | Dev: Flyway chạy migration và devdata, show SQL, JWT fallback |
 | `application-prod.properties` | Prod: validate schema, secure cookie, không show SQL |
 
@@ -92,8 +92,10 @@ Controller là cửa vào HTTP. Ví dụ:
 
 ```text
 ProductController
+ProductImageController
 OrderController
 PaymentController
+PaymentWebhookController
 CartController
 AuthController
 ```
@@ -101,8 +103,8 @@ AuthController
 Controller làm các việc:
 
 - Định nghĩa route bằng `@RequestMapping`, `@GetMapping`, `@PostMapping`.
-- Nhận `@PathVariable`, `@RequestParam`, `@RequestBody`.
-- Gắn `@Valid` để validate request DTO.
+- Nhận `@PathVariable`, `@RequestParam`, `@RequestBody`, `@RequestPart`.
+- Gắn `@Valid` để validate request DTO, hoặc `@Validated` khi validate trực tiếp trên tham số (ví dụ `List<String>` trong `ProductImageController`).
 - Lấy user hiện tại bằng `@AuthenticationPrincipal UserPrincipal`.
 - Chặn quyền bằng `@PreAuthorize`.
 - Gọi service và trả `ResponseEntity`.
@@ -133,6 +135,7 @@ Response DTO giúp backend không trả entity trực tiếp. Ví dụ:
 | DTO | Ý nghĩa |
 | --- | --- |
 | `ProductResponse` | Dữ liệu product trả về client |
+| `ProductImageResponse` | Một ảnh phụ trong gallery (`id`, `imageUrl`) |
 | `OrderResponse` | Dữ liệu order |
 | `CartResponse` | Dữ liệu cart kèm tổng tiền |
 | `PaymentCallbackResponse` | Dữ liệu payment |
@@ -148,7 +151,9 @@ Service là nơi chứa nghiệp vụ thật. Ví dụ:
 | `InventoryServiceImpl` | Lock product, kiểm tra và trừ tồn kho |
 | `CouponRedemptionServiceImpl` | Lock coupon, kiểm tra hạn/lượt, tăng used count |
 | `OrderLifecycleService` | Confirm/cancel order, hoàn kho, rollback coupon |
-| `PaymentServiceImpl` | Tạo/cập nhật payment, xử lý webhook |
+| `PaymentServiceImpl` | Tạo/cập nhật payment |
+| `PaymentWebhookServiceImpl` | Xử lý VNPay IPN: verify HMAC, idempotency, lifecycle |
+| `ProductImageServiceImpl` | Thêm/xóa/upload ảnh phụ của product |
 | `CartServiceImpl` | Sửa giỏ hàng của user |
 
 Service dùng `@Transactional` để đảm bảo nhiều thao tác DB nằm trong một transaction.
@@ -185,6 +190,7 @@ Mỗi entity map với một bảng:
 | `User` | `users` |
 | `Role` | `roles` |
 | `Product` | `products` |
+| `ProductImage` | `product_images` |
 | `Cart` | `carts` |
 | `Order` | `orders` |
 | `Payment` | `payments` |
@@ -348,10 +354,21 @@ User n-n Role qua user_roles
 | `uk_cart_items_cart_product` | Một product chỉ có một dòng trong cart |
 | `uk_reviews_user_product` | Một user review một product tối đa một lần |
 | `uk_wishlists_user_product` | Một user wishlist một product tối đa một lần |
+| `chk_reviews_rating` | Rating chỉ từ 1 đến 5 (`V16`) |
+| `chk_stock_quantity_non_negative` | `stock_quantity >= 0` (`V9`) |
+| `uk_payments_transaction_no` | Mã giao dịch gateway duy nhất khi không null (`V7`) |
+
+Rule xóa category (`CategoryServiceImpl`):
+
+```text
+Không xóa nếu category còn category con
+Không xóa nếu category còn product liên quan
+DB cũng chặn xóa cha khi còn con/product qua ON DELETE RESTRICT (V10)
+```
 
 ### 5.4 Index hot path
 
-`V2__add_hot_path_indexes.sql` thêm index cho các đường truy vấn nóng:
+`V2__add_hot_path_indexes.sql` và các migration sau thêm index cho các đường truy vấn nóng:
 
 | Index | Phục vụ |
 | --- | --- |
@@ -363,6 +380,9 @@ User n-n Role qua user_roles
 | `payments(order_id, created_at DESC)` | Lấy payment mới nhất |
 | `reviews(product_id, created_at DESC)` | Review theo product |
 | `wishlists.product_id` | Tra wishlist theo product |
+| `product_images(product_id)` | Lấy gallery ảnh theo product |
+| `products.name` trigram GIN (`V12`, `V13`) | Tăng tốc search tên sản phẩm |
+| `categories.parent_id` (`V10`) | Kiểm tra category con khi xóa |
 
 ## 6. Bản Đồ Toàn Bộ API
 
@@ -434,7 +454,7 @@ Nếu request.isDefault = true
 
 | Method | Endpoint | Quyền | Ý nghĩa |
 | --- | --- | --- | --- |
-| `GET` | `/brands` | Public | Lấy tất cả brand |
+| `GET` | `/brands` | Public | Lấy page brand |
 | `GET` | `/brands/{id}` | Public | Lấy brand theo id |
 | `GET` | `/brands/name/{name}` | Public | Lấy brand theo name |
 | `GET` | `/brands/slug/{slug}` | Public | Lấy brand theo slug |
@@ -448,22 +468,27 @@ Brand service tự tạo slug từ name bằng `SlugUtils.toSlug`.
 
 | Method | Endpoint | Quyền | Ý nghĩa |
 | --- | --- | --- | --- |
-| `GET` | `/categories` | Public | Lấy tất cả category |
+| `GET` | `/categories` | Public | Lấy page category |
 | `GET` | `/categories/{id}` | Public | Lấy category theo id |
 | `GET` | `/categories/name/{name}` | Public | Lấy category theo name |
 | `GET` | `/categories/slug/{slug}` | Public | Lấy category theo slug |
-| `GET` | `/categories/roots` | Public | Lấy category gốc |
+| `GET` | `/categories/roots` | Public | Lấy page category gốc (không có parent) |
 | `POST` | `/categories` | ADMIN | Tạo category |
 | `PUT` | `/categories/{id}` | ADMIN | Sửa category |
 | `DELETE` | `/categories/{id}` | ADMIN | Xóa category |
 
-Rule quan trọng: khi update parent, service kiểm tra không tạo vòng lặp category tree.
+Rule quan trọng:
+
+```text
+Khi update parent: service kiểm tra không tạo vòng lặp category tree
+Khi delete: chặn nếu còn category con hoặc còn product thuộc category
+```
 
 ### 6.6 Product API
 
 | Method | Endpoint | Quyền | Ý nghĩa |
 | --- | --- | --- | --- |
-| `GET` | `/products` | Public | Search/list product theo `search`, `brandId`, `categoryId`, pageable |
+| `GET` | `/products` | Public | Search/list product theo `search` và `Pageable` |
 | `GET` | `/products/{id}` | Public | Lấy product theo id |
 | `GET` | `/products/slug/{slug}` | Public | Lấy product theo slug |
 | `GET` | `/products/sku/{sku}` | Public | Lấy product theo sku |
@@ -480,43 +505,139 @@ Workflow create product:
 ProductRequest
   -> tìm brand/category
   -> validate discountPrice <= basePrice
-  -> tạo Product
+  -> tạo Product (gồm thumbnail nếu có)
   -> generate slug từ name
-  -> nếu có imageUrls, tạo ProductImage con
-  -> save
+  -> nếu có imageUrls, replace toàn bộ gallery ProductImage
+  -> save (cascade images)
 ```
 
-Ghi chú: `ProductRequest` có nhiều field `@NotNull`, nên dù service update hỗ trợ field nullable, controller `PUT` hiện vẫn yêu cầu payload đầy đủ theo validation DTO.
+Ghi chú:
+
+| Điểm | Chi tiết |
+| --- | --- |
+| `thumbnail` | Ảnh đại diện chính, lưu trực tiếp trên bảng `products` |
+| `imageUrls` | Danh sách ảnh gallery phụ, lưu ở bảng `product_images` |
+| `PUT` validation | `ProductRequest` có nhiều field `@NotNull`, nên dù service update hỗ trợ field nullable, controller `PUT` hiện vẫn yêu cầu payload đầy đủ theo validation DTO |
+| List/search response | `ProductResponse.summaryFromEntity` không trả gallery (`image = []`), chỉ detail mới có đủ ảnh |
 
 ### 6.7 Product Image API
 
-| Method | Endpoint | Quyền | Ý nghĩa |
-| --- | --- | --- | --- |
-| `GET` | `/products/{productId}/images` | Public | Lấy ảnh của product |
-| `POST` | `/products/{productId}/images` | ADMIN | Thêm danh sách URL ảnh |
-| `POST` | `/products/{productId}/images/upload` | ADMIN | Upload file ảnh |
-| `DELETE` | `/products/{productId}/images/{imageId}` | ADMIN | Xóa ảnh |
-
-Upload image chỉ nhận:
+Module ảnh tách riêng controller `ProductImageController`, base path:
 
 ```text
-image/jpeg
-image/png
-image/webp
-image/gif
+/api/v1/products/{productId}/images
 ```
 
-File được lưu vào:
+| Method | Endpoint | Quyền | Service method | Ý nghĩa |
+| --- | --- | --- | --- | --- |
+| `GET` | `/products/{productId}/images` | Public | `getProductImagesByProductId` | Lấy gallery ảnh phụ của product |
+| `POST` | `/products/{productId}/images` | ADMIN | `addImages` | Thêm danh sách URL ảnh phụ (append, không xóa ảnh cũ) |
+| `POST` | `/products/{productId}/images/upload` | ADMIN | `uploadImage` | Upload một file ảnh, lưu disk và tạo bản ghi DB |
+| `DELETE` | `/products/{productId}/images/{imageId}` | ADMIN | `deleteProductImageById` | Xóa một ảnh phụ theo id |
+
+#### Mô hình dữ liệu ảnh
+
+```text
+products.thumbnail          -> ảnh đại diện chính (set qua ProductRequest hoặc PUT /products)
+product_images.image_url    -> ảnh gallery phụ
+product_images.is_primary   -> cột tồn tại nhưng entity luôn ép false (@PrePersist/@PreUpdate)
+```
+
+Hiện tại backend coi mọi bản ghi `product_images` là ảnh phụ. Ảnh chính hiển thị ở listing/detail là `thumbnail`, không phải `is_primary`.
+
+#### Hai cách quản lý gallery
+
+| Cách | Endpoint | Hành vi |
+| --- | --- | --- |
+| Gộp trong product | `POST/PUT /products` với `imageUrls` | `replaceProductImages`: xóa sạch gallery cũ, thay bằng list mới |
+| Quản lý riêng | `ProductImageController` | Thêm từng URL, upload file, hoặc xóa từng ảnh mà không đụng các ảnh còn lại |
+
+#### Validation ở controller
+
+`ProductImageController` dùng `@Validated` thay vì DTO riêng:
+
+```text
+POST /images body: List<String>
+  @NotEmpty trên list
+  @NotBlank + @Size(max=255) trên từng URL
+```
+
+Upload dùng `@RequestPart("file") MultipartFile file` với `consumes = MULTIPART_FORM_DATA`.
+
+#### Workflow thêm URL ảnh phụ
+
+```text
+POST /products/{productId}/images
+  -> ProductImageServiceImpl.addImages
+  -> kiểm tra product tồn tại
+  -> map từng URL thành ProductImage (isPrimary=false)
+  -> saveAll
+  -> trả List<ProductImageResponse> (201 Created)
+```
+
+#### Workflow upload file
+
+```text
+POST /products/{productId}/images/upload
+  -> kiểm tra product tồn tại
+  -> storeProductImage(file)
+       -> reject nếu file null/empty
+       -> chỉ nhận content-type:
+            image/jpeg, image/png, image/webp, image/gif
+       -> tạo tên UUID + extension (.jpg/.png/.webp/.gif)
+       -> lưu vào {app.upload.root}/{app.upload.product-dir}/
+       -> chống path traversal (target phải nằm trong thư mục upload)
+  -> tạo ProductImage với imageUrl = /uploads/products/<filename>
+  -> save
+  -> trả ProductImageResponse (201 Created)
+```
+
+Cấu hình upload (`application.properties`):
+
+```text
+app.upload.root=${UPLOAD_ROOT:uploads}
+app.upload.product-dir=products
+spring.servlet.multipart.max-file-size=5MB
+spring.servlet.multipart.max-request-size=20MB
+```
+
+File vật lý:
 
 ```text
 uploads/products/<uuid>.<ext>
 ```
 
-API trả URL dạng:
+URL public (serve qua `WebConfig.addResourceHandlers`):
 
 ```text
-/uploads/products/<filename>
+GET /uploads/products/<filename>
 ```
+
+Route này public trong `SecurityConfig`, không cần JWT.
+
+#### Workflow xóa ảnh
+
+```text
+DELETE /products/{productId}/images/{imageId}
+  -> tìm ProductImage theo imageId
+  -> kiểm tra image.product.id == productId
+  -> nếu không khớp: BusinessRuleException 400
+  -> repo.delete(image)
+  -> trả 204 No Content
+```
+
+Ghi chú: xóa bản ghi DB hiện chưa xóa file vật lý trên disk.
+
+#### Response DTO
+
+`ProductImageResponse` chỉ gồm:
+
+```text
+id
+imageUrl
+```
+
+Không trả `isPrimary` vì field này hiện không có ý nghĩa nghiệp vụ ở API.
 
 ### 6.8 Cart API
 
@@ -670,7 +791,7 @@ Các API này là admin-only vì chứa dữ liệu vận hành.
 | `GET` | `/payments/status/{status}` | ADMIN | Lấy payment theo status |
 | `POST` | `/payments` | Owner | Tạo payment attempt mới |
 | `PUT` | `/payments/{id}` | ADMIN | Cập nhật payment status/provider/transaction |
-| `GET` | `/payments/vnpay-webhook` | Hiện bị authenticated bởi SecurityConfig | Xử lý webhook VNPay |
+| `GET/POST` | `/payments/vnpay-webhook` | Public (controller riêng) | Xử lý VNPay IPN qua `PaymentWebhookController` |
 
 Payment provider:
 
@@ -740,7 +861,7 @@ sequenceDiagram
     OC->>OS: "createOrder(userId, request)"
     OS->>DB: "load user"
     OS->>INV: "reserveStockAndPriceLines(items)"
-    INV->>DB: "lock product, check stock, decrement"
+    INV->>DB: "deductStockAtomically, load product, chot gia"
     OS->>CO: "redeem(couponCode, subTotal)"
     CO->>DB: "lock coupon, validate, usedCount + 1"
     OS->>PAY: "initializePayment(order, provider, finalAmount)"
@@ -753,9 +874,9 @@ Chi tiết từng bước:
 
 1. Controller lấy `principal.getId()`. Client không được tự chọn userId.
 2. Service kiểm tra user tồn tại và `isActive=true`.
-3. Inventory service khóa từng product bằng `findByIdForUpdate`.
-4. Nếu stock không đủ, ném `BusinessRuleException` và toàn bộ transaction rollback.
-5. Nếu stock đủ, trừ `stockQuantity`.
+3. Inventory service trừ tồn bằng `ProductRepository.deductStockAtomically` (UPDATE có điều kiện `stock_quantity >= quantity`).
+4. Nếu `updated == 0` (không đủ hàng hoặc product không tồn tại), ném `InsufficientStockException` và toàn bộ transaction rollback.
+5. Nếu trừ thành công, load product để lấy giá bán hiện tại.
 6. Pricing service chọn giá bán: `discountPrice` nếu có, nếu không thì `basePrice`.
 7. Tạo `LineDraft` gồm product, quantity, priceAtPurchase, lineTotal.
 8. Cộng tất cả line total thành `subTotal`.
@@ -874,29 +995,50 @@ Payment(order, finalAmount, PENDING, same provider as last payment)
 
 ### 9.5 VNPay webhook
 
-Webhook hiện làm:
+Webhook tách riêng ở `PaymentWebhookController`, public và bỏ qua CSRF:
 
 ```text
-GET /api/v1/payments/vnpay-webhook
-  -> lấy params
-  -> bỏ vnp_SecureHash và vnp_SecureHashType
-  -> sort key
-  -> nối key=value bằng &
-  -> HMAC SHA-512 bằng secret
-  -> so sánh secureHash
-  -> nếu responseCode = 00: set order CONFIRMED
-  -> ngược lại: set order CANCELLED
+GET/POST /api/v1/payments/vnpay-webhook
+  -> PaymentWebhookServiceImpl.processVNPayWebhook
 ```
 
-Điểm cần chú ý trước production:
+Luồng xử lý:
 
-| Vấn đề | Vì sao quan trọng |
+```text
+1. Validate HMAC SHA-512 (vnp_SecureHash) TRUOC khi mo transaction DB
+2. Trich xuat vnp_TransactionNo, vnp_TxnRef (orderId), vnp_Amount, vnp_ResponseCode
+3. Idempotency:
+     -> neu payment da SUCCESS voi cung gateway_transaction_no: tra 200 (IDEMPOTENT)
+     -> unique index uk_payments_transaction_no chan trung ma giao dich
+4. Lock order kem items/coupon
+5. Kiem tra vnp_Amount khop order.finalAmount (VNPay gui theo don vi xu = VND * 100)
+6. Luu gateway_transaction_no vao payment.transaction_no
+7. Neu responseCode = 00:
+     -> payment.status = SUCCESS
+     -> OrderLifecycleService.confirmAfterSuccessfulPayment
+   Nguoc lai:
+     -> payment.status = FAILED
+     -> OrderLifecycleService.cancelOrder (hoan kho, rollback coupon, history)
+8. Tra JSON chuan VNPay: RspCode + Message
+```
+
+HTTP status mapping:
+
+| Ket qua | HTTP |
 | --- | --- |
-| Route webhook hiện chưa được permit public trong `SecurityConfig` | Gateway thật thường không có cookie auth |
-| Webhook set order status trực tiếp | Có thể bỏ qua history, payment status, hoàn kho/coupon khi failed |
-| Chưa verify amount | Cần chắc tiền gateway báo khớp `order.finalAmount` |
-| Chưa idempotent rõ ràng | Gateway có thể gọi callback nhiều lần |
-| Chưa lưu transactionNo qua webhook | Khó đối soát giao dịch |
+| PROCESSED / IDEMPOTENT | 200 OK |
+| INVALID_SIGNATURE | 403 Forbidden |
+| AMOUNT_MISMATCH | 400 Bad Request |
+| ORDER_NOT_FOUND | 404 Not Found |
+
+Điểm thiết kế đáng học:
+
+| Nguyen tac | Ly do |
+| --- | --- |
+| Khong set `order.status` truc tiep trong webhook | Gom side effects vao lifecycle service |
+| Verify amount | Chan callback gia tien sai |
+| Idempotency bang state check + unique transaction_no | Gateway co the goi lai nhieu lan |
+| Public endpoint nhung bao mat bang HMAC | Gateway khong co cookie JWT |
 
 ## 10. Workflow Scheduled Job Hủy Order Quá Hạn
 
@@ -920,7 +1062,7 @@ Với mỗi order:
 
 COD không bị job này hủy vì `paymentExpiresAt = null`.
 
-Khi chạy nhiều instance backend, job này cần distributed lock để tránh nhiều instance cùng xử lý.
+Hạ tầng ShedLock đã có sẵn (`ShedLockConfig`, bảng `shedlock` qua `V11`), nhưng method `expirePendingOrders` hiện chưa gắn `@SchedulerLock`. Khi scale nhiều instance, cần bổ sung annotation lock cho job này.
 
 ## 11. Workflow Catalog Public Và Admin
 
@@ -937,13 +1079,12 @@ GET /api/v1/products?search=...&brandId=...&categoryId=...
 Search hiện dùng:
 
 ```text
-LOWER(p.name) LIKE LOWER('%keyword%')
-OR LOWER(p.sku) LIKE LOWER('%keyword%')
+p.name ILIKE %:search%
 ```
 
-Ưu điểm: dễ hiểu, đủ cho MVP.
+Chỉ tìm theo tên, không tìm theo SKU trên endpoint `GET /products`. Lọc theo brand/category dùng endpoint riêng `/products/brand/{brandId}` và `/products/category/{categoryId}`.
 
-Hạn chế: catalog lớn cần full-text search, trigram index hoặc search engine.
+Đã có hỗ trợ tăng tốc search tên bằng PostgreSQL trigram (`V12` bật `pg_trgm`, `V13` tạo GIN index trên `products.name`).
 
 ### 11.2 Product detail
 
@@ -954,9 +1095,11 @@ GET /api/v1/products/slug/{slug}
   -> ProductResponse.fromEntity
 ```
 
-Detail trả ảnh, specs, brand, category đầy đủ.
+Detail (`ProductResponse.fromEntity`) trả đủ `thumbnail`, gallery `image`, specs, brand, category.
 
-### 11.3 Admin product
+List/search (`summaryFromEntity`) chỉ trả `thumbnail`, không load gallery để giảm payload.
+
+### 11.3 Admin product và ảnh
 
 Admin tạo/sửa/xóa product:
 
@@ -964,14 +1107,25 @@ Admin tạo/sửa/xóa product:
 @PreAuthorize("hasRole('ADMIN')")
 ```
 
-Khi tạo/sửa:
+Khi tạo/sửa product:
 
 ```text
 validate brand/category tồn tại
 validate discountPrice <= basePrice
 generate slug
-replace image list nếu request có imageUrls
+set thumbnail neu request co
+replace toan bo gallery neu request.imageUrls != null
 ```
+
+Khi quản lý ảnh phụ sau khi product đã tồn tại, dùng `ProductImageController`:
+
+```text
+Them URL       -> POST /products/{id}/images
+Upload file    -> POST /products/{id}/images/upload
+Xoa tung anh   -> DELETE /products/{id}/images/{imageId}
+```
+
+Pattern upload ảnh product tương tự upload avatar user (`UserServiceImpl.storeAvatar`), cùng dùng `app.upload.root` và serve static qua `/uploads/**`.
 
 ## 12. Workflow Review
 
@@ -1021,7 +1175,8 @@ Các điểm lock:
 
 | Repository method | Dùng cho |
 | --- | --- |
-| `ProductRepository.findByIdForUpdate` | Trừ/hoàn tồn kho |
+| `ProductRepository.deductStockAtomically` | Trừ tồn kho khi checkout (UPDATE có điều kiện) |
+| `ProductRepository.findByIdForUpdate` | Hoàn tồn kho khi hủy đơn |
 | `CouponRepository.findByCodeForUpdate` | Redeem coupon |
 | `CouponRepository.findByIdForUpdate` | Rollback coupon |
 | `CartRepository.findByUserIdForUpdate` | Sửa cart |
@@ -1093,9 +1248,10 @@ coupons
 order-items
 order-histories
 user-addresses admin
-brands
-categories
+product images (GET /products/{id}/images)
 ```
+
+`brands` và `categories` đã trả `Page`.
 
 Khi dữ liệu tăng lớn, nên chuyển các endpoint này sang `Page`.
 
@@ -1177,7 +1333,11 @@ Order, payment, review, user nên trả `Page`, không nên trả toàn bộ `Li
 
 ### 17.5 Webhook payment cần idempotency
 
-Payment gateway thường gọi lại nhiều lần. Nếu backend xử lý cùng một callback nhiều lần, có thể sai trạng thái hoặc sai rollback. Production cần kiểm tra transaction reference, amount, provider, payment status hiện tại và idempotency key.
+Payment gateway thường gọi lại nhiều lần. AuraTech đã xử lý ở `PaymentWebhookServiceImpl` bằng state check + unique `transaction_no`. Bài học chung: luôn verify chữ ký, khớp số tiền, và không update order trực tiếp ngoài lifecycle service.
+
+### 17.6 Tách thumbnail và gallery ảnh phụ
+
+`thumbnail` phục vụ hiển thị nhanh ở list/card. `product_images` phục vụ gallery chi tiết. Upload file và URL external có thể cùng tồn tại miễn là `imageUrl` trỏ đúng nguồn (path `/uploads/...` hoặc CDN URL).
 
 ## 18. Những Điểm Cần Chú Ý Trong Code Hiện Tại
 
@@ -1189,10 +1349,11 @@ Payment gateway thường gọi lại nhiều lần. Nếu backend xử lý cùn
 | `OrderRequest.couponId` thực chất là coupon code | Nên đổi tên thành `couponCode` để tránh nhầm |
 | `PUT /products/{id}` dùng DTO create | Validation yêu cầu nhiều field bắt buộc, dù service có logic partial |
 | Một số find by slug/name trả null | Một vài service map null thành response null thay vì 404 |
-| VNPay webhook chưa public theo SecurityConfig | Gateway thật có thể bị 401 |
-| VNPay webhook set order status trực tiếp | Nên dùng lifecycle service và update payment |
-| Search product dùng LIKE | Đủ MVP, chưa tối ưu catalog lớn |
-| Scheduled job cần distributed lock khi scale | Tránh nhiều instance xử lý cùng order |
+| `product_images.is_primary` chưa dùng | Entity luôn ép `false`; ảnh chính thực tế là `products.thumbnail` |
+| Xóa `ProductImage` chưa xóa file disk | Chỉ xóa bản ghi DB |
+| Search `GET /products` chỉ theo tên | Không search SKU; dùng `/products/sku/{sku}` nếu cần |
+| ShedLock chưa gắn vào `expirePendingOrders` | Hạ tầng có sẵn nhưng job chưa có `@SchedulerLock` |
+| `CategoryServiceImpl.deleteCategoryById` | Message lỗi nói chặn khi có category con, nhưng điều kiện `!existsByParentId` trong code có vẻ ngược logic |
 
 ## 19. Lộ Trình Đọc Code Khuyến Nghị
 
@@ -1201,7 +1362,7 @@ Nếu muốn tự đọc lại backend theo thứ tự hiệu quả:
 1. `AuraTechApplication.java`
 2. `application.properties`, `application-dev.properties`, `application-prod.properties`
 3. `SecurityConfig`, `JwtFilter`, `AuthCookieService`, `JwtService`
-4. `V1__init_schema.sql`, `V2__add_hot_path_indexes.sql`
+4. `V1__init_schema.sql`, `V2__add_hot_path_indexes.sql`, rồi đọc tiếp `V7`–`V16` (constraint, trigram, shedlock, rating check...)
 5. Entity trong `model`
 6. Repository trong `repository`
 7. Request DTO và Response DTO
@@ -1222,21 +1383,34 @@ Table
   -> Frontend API wrapper
 ```
 
+Ví dụ đọc module Product Image:
+
+```text
+product_images
+  -> ProductImage
+  -> ProductImageRepository
+  -> (validate inline List<String> hoac MultipartFile)
+  -> ProductImageResponse
+  -> ProductImageServiceImpl
+  -> ProductImageController
+  -> WebConfig (/uploads/** static)
+```
+
 ## 20. Tóm Tắt Một Mạch Toàn Backend
 
 AuraTech backend là một monolith Spring Boot cho ecommerce. Public user có thể đọc catalog và review. Khi đăng ký, backend tạo user CUSTOMER và cart. Khi đăng nhập, backend xác thực username/password, tạo JWT và set vào cookie HttpOnly. Các request protected đi qua JwtFilter để nạp UserPrincipal vào SecurityContext.
 
 User có thể quản lý cart, wishlist, address và tạo order. Tạo order là workflow transaction lớn: backend khóa product, kiểm tra và trừ tồn kho, chốt giá, redeem coupon, tạo order PENDING, order item, history và payment PENDING. Nếu payment thành công, order được confirm. Nếu payment fail, hủy hoặc quá hạn, lifecycle service hoàn kho, rollback coupon, set status CANCELLED và ghi history.
 
-Admin quản lý catalog, coupon, user, order, payment, order item, order history và review. Order status đi qua state machine để tránh nhảy trạng thái sai. Review chỉ được tạo khi user đã có order DELIVERED chứa product. Database được kiểm soát bằng Flyway, JPA validate schema, EntityGraph để load quan hệ cần thiết, và pessimistic lock ở các điểm có cạnh tranh dữ liệu.
+Admin quản lý catalog (gồm product, thumbnail, gallery ảnh qua `ProductImageController`), coupon, user, order, payment, order item, order history và review. Order status đi qua state machine để tránh nhảy trạng thái sai. Review chỉ được tạo khi user đã có order DELIVERED chứa product, rating bị ràng buộc 1–5 ở DB. Database được kiểm soát bằng Flyway, JPA validate schema, EntityGraph để load quan hệ cần thiết, atomic stock update khi checkout, và pessimistic lock ở các điểm còn lại có cạnh tranh dữ liệu.
 
 Nếu hiểu được 5 luồng này, bạn đã nắm phần lớn backend:
 
 ```text
 Auth/JWT/CSRF
-Catalog search/detail
+Catalog search/detail + Product Image upload
 Cart/Wishlist/Address
 Checkout/Order/Inventory/Coupon
-Payment/Cancel/Review
+Payment/Webhook/Cancel/Review
 ```
 
