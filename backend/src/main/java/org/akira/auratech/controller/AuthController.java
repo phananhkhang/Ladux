@@ -50,7 +50,7 @@ public class AuthController {
             );
         }
 
-        authManager.authenticate(new UsernamePasswordAuthenticationToken(username, request.password()));
+        authManager.authenticate(new UsernamePasswordAuthenticationToken(username, request.password())); // Xác thực tên người dùng mật khẩu
 
         String token = jwtService.generateToken(username);
         return ResponseEntity.ok()
@@ -65,7 +65,7 @@ public class AuthController {
                 .build();
     }
 
-    @GetMapping("/csrf")
+    @GetMapping("/csrf") // lấy CSRF Token từ Spring Security và trả về cho client (frontend)
     public ResponseEntity<Map<String, String>> csrf(CsrfToken csrfToken) {
         return ResponseEntity.ok(Map.of(
                 "headerName", csrfToken.getHeaderName(),
