@@ -10,4 +10,6 @@ public interface OrderHistoryService {
     OrderHistoryResponse getOrderHistoryById(int id);
 
     Page<OrderHistoryResponse> getOrderHistoriesByOrderId(int orderId, Pageable pageable);
+
+    Page<OrderHistoryResponse> getOrdersHistoryByUser(Integer userId, Pageable pageable);
 }

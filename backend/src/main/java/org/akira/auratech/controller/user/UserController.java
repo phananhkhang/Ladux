@@ -1,4 +1,4 @@
-package org.akira.auratech.controller;
+package org.akira.auratech.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,18 +28,6 @@ public class UserController {
         return ResponseEntity.ok(service.getAllUsers(pageable));
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal UserPrincipal principal) {
-        return ResponseEntity.ok(service.getUserById(principal.getId()));
-    }
-
-    @PostMapping(value = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UserResponse> updateCurrentUserAvatar(
-            @AuthenticationPrincipal UserPrincipal principal,
-            @RequestPart("file") MultipartFile file
-    ) {
-        return ResponseEntity.ok(service.updateAvatar(principal.getId(), file));
-    }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
@@ -59,12 +47,14 @@ public class UserController {
         return ResponseEntity.ok(service.getActiveUsers(pageable));
     }
 
+    // Admin update thông tin user khác
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable int id, @Valid @RequestBody UserAdminUpdateRequest request) {
-        return ResponseEntity.ok(service.updateUser(id, request));
-    }
-
+    public ResponseEntity<UserResponse> updateUserByAdmin(
+        @PathVariable int id,
+        @Valid @RequestBody UserAdminUpdateRequest request) {
+            return ResponseEntity.ok(service.updateUser(id, request));
+        }
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUserById(@PathVariable int id) {

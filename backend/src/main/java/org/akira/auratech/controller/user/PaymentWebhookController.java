@@ -1,4 +1,4 @@
-package org.akira.auratech.controller;
+package org.akira.auratech.controller.user;
 
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.service.PaymentWebhookResult;

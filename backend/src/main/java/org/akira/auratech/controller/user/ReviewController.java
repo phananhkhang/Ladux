@@ -1,4 +1,4 @@
-package org.akira.auratech.controller;
+package org.akira.auratech.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,21 +20,17 @@ import org.springframework.web.bind.annotation.*;
 public class ReviewController {
     private final ReviewService service;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<Page<ReviewResponse>> getAllReviews(Pageable pageable) {
         return ResponseEntity.ok(service.getAllReviews(pageable));
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ReviewResponse> getReviewById(@PathVariable int id) {
-        return ResponseEntity.ok(service.getReviewById(id));
-    }
-
     @GetMapping("/product/{productId}")
     public ResponseEntity<Page<ReviewResponse>> getReviewsByProductId(@PathVariable int productId, Pageable pageable) {
         return ResponseEntity.ok(service.getReviewsByProductId(productId, pageable));
-    }
+    } 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/{userId}")
     public ResponseEntity<Page<ReviewResponse>> getReviewsByUserId(@PathVariable int userId, Pageable pageable) {
         return ResponseEntity.ok(service.getReviewsByUserId(userId, pageable));

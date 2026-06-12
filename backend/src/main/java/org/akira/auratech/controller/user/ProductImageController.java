@@ -1,4 +1,4 @@
-package org.akira.auratech.controller;
+package org.akira.auratech.controller.user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;

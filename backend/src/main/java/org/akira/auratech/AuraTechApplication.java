@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 @SpringBootApplication
 @EnableScheduling
+@EnableCaching
 public class AuraTechApplication {
 
     public static void main(String[] args) {

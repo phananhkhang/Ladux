@@ -1,4 +1,4 @@
-package org.akira.auratech.controller;
+package org.akira.auratech.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,6 @@ public class ProductController {
             @RequestParam(value = "search", required = false) String search,
             Pageable pageable
     ) {
-        // Unified search supporting FE filters + sort (newest/price_asc/price_desc mapped by client sort or default)
         return ResponseEntity.ok(service.searchProducts(search, pageable));
     }
 
@@ -31,17 +30,7 @@ public class ProductController {
     public ResponseEntity<ProductResponse> getProductById(@PathVariable int id) {
         return ResponseEntity.ok(service.getProductById(id));
     }
-
-    @GetMapping("/slug/{slug}")
-    public ResponseEntity<ProductResponse> getProductBySlug(@PathVariable String slug) {
-        return ResponseEntity.ok(service.getProductBySlug(slug));
-    }
-
-    @GetMapping("/sku/{sku}")
-    public ResponseEntity<ProductResponse> getProductBySku(@PathVariable String sku) {
-        return ResponseEntity.ok(service.getProductBySku(sku));
-    }
-
+    
     @GetMapping("/brand/{brandId}")
     public ResponseEntity<Page<ProductResponse>> getProductsByBrandId(@PathVariable int brandId, Pageable pageable) {
         return ResponseEntity.ok(service.getProductsByBrandId(brandId, pageable));

@@ -1,4 +1,4 @@
-package org.akira.auratech.controller;
+package org.akira.auratech.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

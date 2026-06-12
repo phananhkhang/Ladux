@@ -1,4 +1,4 @@
-package org.akira.auratech.controller;
+package org.akira.auratech.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,39 +20,40 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/payments")
 @RequiredArgsConstructor
 public class PaymentController {
+
     private final PaymentService service;
 
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<PaymentCallbackResponse>> getAllPayments(Pageable pageable) {   // Chặn lại vì user không thể xem payment của các user khác được.
-        return ResponseEntity.ok(service.getAllPayments(pageable));
+    /** Xem danh sách payment của chính mình */
+    @GetMapping("/my")
+    public ResponseEntity<Page<PaymentCallbackResponse>> getMyPayments(
+            @AuthenticationPrincipal UserPrincipal principal,
+            Pageable pageable) {
+        return ResponseEntity.ok(service.getMyPayments(principal.getId(), pageable));
     }
 
-    @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PaymentCallbackResponse> getPaymentById(@PathVariable int id) {
-        return ResponseEntity.ok(service.getPaymentById(id));
+    /** Xem payment theo đơn hàng của chính mình */
+    @GetMapping("/my/order/{orderId}")
+    public ResponseEntity<Page<PaymentCallbackResponse>> getMyPaymentsByOrderId(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable int orderId,
+            Pageable pageable) {
+        return ResponseEntity.ok(service.getMyPaymentsByOrderId(principal.getId(), orderId, pageable));
     }
 
-    @GetMapping("/order/{orderId}")
-    public ResponseEntity<Page<PaymentCallbackResponse>> getPaymentsByOrderId(@AuthenticationPrincipal UserPrincipal principal, @PathVariable int orderId, Pageable pageable) {
-        return ResponseEntity.ok(service.getPaymentsByOrderId(principal.getId(), orderId, pageable));
+    /** Xem payment của chính mình theo trạng thái */
+    @GetMapping("/my/status/{status}")
+    public ResponseEntity<Page<PaymentCallbackResponse>> getMyPaymentsByStatus(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable PaymentStatus status,
+            Pageable pageable) {
+        return ResponseEntity.ok(service.getMyPaymentsByStatus(principal.getId(), status, pageable));
     }
 
-    @GetMapping("/status/{status}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<PaymentCallbackResponse>> getPaymentsByStatus(@PathVariable PaymentStatus status, Pageable pageable) {
-        return ResponseEntity.ok(service.getPaymentsByStatus(status, pageable));
-    }
-
+    /** Tạo payment mới */
     @PostMapping
-    public ResponseEntity<PaymentCallbackResponse> createPayment(@AuthenticationPrincipal UserPrincipal principal, @Valid @RequestBody PaymentCreateRequest request) {
+    public ResponseEntity<PaymentCallbackResponse> createPayment(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @Valid @RequestBody PaymentCreateRequest request) {
         return new ResponseEntity<>(service.createPayment(principal.getId(), request), HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PaymentCallbackResponse> updatePayment(@PathVariable int id, @Valid @RequestBody PaymentCallbackRequest request) {
-        return ResponseEntity.ok(service.updatePayment(id, request));
     }
 }

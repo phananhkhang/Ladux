@@ -1,4 +1,4 @@
-package org.akira.auratech.controller;
+package org.akira.auratech.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,11 +31,6 @@ public class CategoryController {
     @GetMapping("/name/{name}")
     public ResponseEntity<CategoryResponse> getCategoryByName(@PathVariable String name) {
         return ResponseEntity.ok(service.getCategoryByName(name));
-    }
-
-    @GetMapping("/slug/{slug}")
-    public ResponseEntity<CategoryResponse> getCategoryBySlug(@PathVariable String slug) {
-        return ResponseEntity.ok(service.getCategoryBySlug(slug));
     }
 
     @GetMapping("/roots")
