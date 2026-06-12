@@ -97,5 +97,4 @@ public class Product {
     @ToString.Exclude
     @Builder.Default
     private List<Wishlist> wishlists = new ArrayList<>();
-
 }

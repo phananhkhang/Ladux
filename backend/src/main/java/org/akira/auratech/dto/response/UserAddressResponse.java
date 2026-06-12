@@ -2,6 +2,8 @@ package org.akira.auratech.dto.response;
 
 import org.akira.auratech.model.UserAddress;
 
+import java.io.Serializable;
+
 public record UserAddressResponse(
         Integer id,
         Integer userId,
@@ -11,7 +13,7 @@ public record UserAddressResponse(
         String district,
         String city,
         boolean isDefault
-) {
+) implements Serializable {
     public static UserAddressResponse fromEntity(UserAddress address) {
         if (address == null) {
             return null;

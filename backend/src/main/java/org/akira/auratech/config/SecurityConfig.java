@@ -14,10 +14,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.InvalidCsrfTokenException;
+import org.springframework.http.MediaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.akira.auratech.exception.ErrorResponse;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 import java.util.List;
 // Trung tâm an ninh của auratech
 @Configuration
@@ -25,6 +34,11 @@ import java.util.List;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private static final RequestMatcher BEARER_AUTH_REQUEST = request -> {
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        return authHeader != null && authHeader.regionMatches(true, 0, "Bearer ", 0, 7);
+    };
 
     private final JwtFilter jwtFilter;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
@@ -39,10 +53,17 @@ public class SecurityConfig {
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        csrfTokenRepository.setCookiePath("/");
+
+        CsrfTokenRequestAttributeHandler csrfRequestHandler = new CsrfTokenRequestAttributeHandler();
+        csrfRequestHandler.setCsrfRequestAttributeName(null);
+
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRepository(csrfTokenRepository)
+                        .csrfTokenRequestHandler(csrfRequestHandler)
                         .ignoringRequestMatchers(
                                 "/api/v1/auth/login", "/api/v1/auth/login/",
                                 "/api/v1/auth/register", "/api/v1/auth/register/",
@@ -50,6 +71,7 @@ public class SecurityConfig {
                                 "/api/v1/payments/vnpay-webhook",
                                 "/oauth2/**", "/login/oauth2/**"
                         )
+                        .ignoringRequestMatchers(BEARER_AUTH_REQUEST)
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
@@ -63,11 +85,27 @@ public class SecurityConfig {
                                 "/api/v1/categories/**",
                                 "/api/v1/reviews/**")
                         .permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2SuccessHandler)
-                );
+                )
+                .exceptionHandling(exceptions -> exceptions.accessDeniedHandler((request, response, ex) -> {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                    String message = ex instanceof InvalidCsrfTokenException
+                            ? "CSRF token khong hop le. Hay goi GET /api/v1/auth/csrf, bat Postman gui cookies, "
+                            + "roi gui header X-XSRF-TOKEN (gia tri trung voi cookie XSRF-TOKEN)."
+                            : "Ban khong co quyen thuc hien thao tac nay";
+                    ErrorResponse body = ErrorResponse.builder()
+                            .timestamp(LocalDateTime.now())
+                            .status(HttpServletResponse.SC_FORBIDDEN)
+                            .error("Forbidden")
+                            .message(message)
+                            .build();
+                    new ObjectMapper().writeValue(response.getOutputStream(), body);
+                }));
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

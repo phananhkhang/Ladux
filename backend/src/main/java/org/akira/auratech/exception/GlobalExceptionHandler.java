@@ -17,8 +17,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     private static final Pattern NULL_COLUMN_PATTERN = Pattern.compile("null value in column \"([^\"]+)\"");
     private static final Pattern UNIQUE_CONSTRAINT_PATTERN = Pattern.compile("unique constraint \"([^\"]+)\"");
 
@@ -119,6 +123,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex) {
+        log.error("Unhandled exception in request", ex);
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())

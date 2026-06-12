@@ -2,12 +2,14 @@ package org.akira.auratech.dto.response;
 
 import org.akira.auratech.model.Category;
 
+import java.io.Serializable;
+
 public record CategoryResponse(
         Integer id,
         String name,
         String slug,
         Integer parentId
-) {
+) implements Serializable {
     public static CategoryResponse fromEntity(Category category) {
         if (category == null) {
             return null;

@@ -15,6 +15,9 @@ RUN addgroup -S auratech && adduser -S auratech -G auratech \
 
 COPY --from=builder /build/target/aura-tech.jar /app/aura-tech.jar
 
+# Đảm bảo non-root user có quyền đọc jar và ghi uploads (volume có thể override owner)
+RUN chown auratech:auratech /app/aura-tech.jar && chmod 755 /app/uploads
+
 USER auratech
 EXPOSE 8080
 

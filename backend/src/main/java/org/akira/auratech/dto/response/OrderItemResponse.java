@@ -1,6 +1,7 @@
 package org.akira.auratech.dto.response;
 
 import org.akira.auratech.model.OrderItem;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 public record OrderItemResponse(
@@ -9,7 +10,7 @@ public record OrderItemResponse(
         Integer productId,
         int quantity,
         BigDecimal priceAtPurchase
-) {
+) implements Serializable {
     public static OrderItemResponse fromEntity(OrderItem item) {
         if (item == null) {
             return null;

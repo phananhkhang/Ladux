@@ -1,6 +1,7 @@
 package org.akira.auratech.dto.response;
 
 import org.akira.auratech.model.Review;
+import java.io.Serializable;
 import java.time.Instant;
 
 public record ReviewResponse(
@@ -10,7 +11,7 @@ public record ReviewResponse(
         int rating,
         String comment,
         Instant createdAt
-) {
+) implements Serializable {
     public static ReviewResponse fromEntity(Review review) {
         if (review == null) {
             return null;

@@ -1,6 +1,7 @@
 package org.akira.auratech.dto.response;
 
 import org.akira.auratech.model.User;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public record UserResponse(
         boolean isActive,
         Instant createdAt,
         List<String> roles
-) {
+) implements Serializable {
     public static UserResponse fromEntity(User user) {
         if (user == null) {
             return null;

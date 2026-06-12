@@ -3,6 +3,7 @@ package org.akira.auratech.dto.response;
 import org.akira.auratech.model.Order;
 import org.akira.auratech.model.enums.OrderStatus;
 import org.akira.auratech.model.enums.PaymentProvider;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -21,7 +22,7 @@ public record OrderResponse(
         Instant paymentExpiresAt,
         List<OrderItemResponse> orderItems,
         PaymentProvider paymentProvider
-) {
+) implements Serializable {
     public static OrderResponse fromEntity(Order order) {
         if (order == null) {
             return null;

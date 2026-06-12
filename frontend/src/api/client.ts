@@ -88,6 +88,8 @@ api.interceptors.response.use(
 );
 
 const unwrap = <T>(request: Promise<{ data: T }>) => request.then((response) => response.data);
+const unwrapList = <T>(request: Promise<{ data: T[] | ApiPage<T> }>) =>
+  request.then((response) => (Array.isArray(response.data) ? response.data : response.data.content ?? []));
 
 const normalizeOrder = (order: OrderResponse): OrderResponse => ({
   ...order,
@@ -125,7 +127,7 @@ export const Products = {
 };
 
 export const Brands = {
-  list: () => unwrap<BrandResponse[]>(api.get("/brands")),
+  list: () => unwrapList<BrandResponse>(api.get("/brands")),
   // Admin
   create: (body: any) => unwrap<BrandResponse>(api.post("/brands", body)),
   update: (id: Id, body: any) => unwrap<BrandResponse>(api.put(`/brands/${id}`, body)),
@@ -133,7 +135,7 @@ export const Brands = {
 };
 
 export const Categories = {
-  list: () => unwrap<CategoryResponse[]>(api.get("/categories")),
+  list: () => unwrapList<CategoryResponse>(api.get("/categories")),
   // Admin
   create: (body: any) => unwrap<CategoryResponse>(api.post("/categories", body)),
   update: (id: Id, body: any) => unwrap<CategoryResponse>(api.put(`/categories/${id}`, body)),

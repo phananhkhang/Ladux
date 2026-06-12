@@ -50,14 +50,22 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     @Cacheable(value = "products", key = "'slug:' + #slug")
     public ProductResponse getProductBySlug(String slug) {
-        return ProductResponse.fromEntity(repo.findBySlug(slug));
+        Product p = repo.findBySlug(slug);
+        if (p == null) {
+            throw new ResourceNotFoundException("Khong tim thay product voi slug = " + slug);
+        }
+        return ProductResponse.fromEntity(p);
     }
 
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "products", key = "'sku:' + #sku")
     public ProductResponse getProductBySku(String sku) {
-        return ProductResponse.fromEntity(repo.findBySku(sku));
+        Product p = repo.findBySku(sku);
+        if (p == null) {
+            throw new ResourceNotFoundException("Khong tim thay product voi sku = " + sku);
+        }
+        return ProductResponse.fromEntity(p);
     }
 
     @Override
@@ -88,7 +96,10 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     @Cacheable(value = "products", key = "'search:' + #search + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<ProductResponse> searchProducts(String search, Pageable pageable) {
-        return repo.search(search, pageable)
+        if (search == null || search.isBlank()) {
+            return getAllProducts(pageable);
+        }
+        return repo.search(search.trim(), pageable)
                 .map(ProductResponse::summaryFromEntity);
     }
 
@@ -100,9 +111,6 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay brand voi id = " + request.brandId()));
         Category category = categoryRepository.findById(request.categoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.categoryId()));
-        if (brand == null || category == null) {
-            return null;
-        }
         validateProductPricing(request.basePrice(), request.discountPrice());
         Product product = Product.builder()
                 .brand(brand)

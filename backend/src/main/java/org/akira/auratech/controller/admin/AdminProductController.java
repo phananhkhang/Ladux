@@ -5,8 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.ProductRequest;
 import org.akira.auratech.dto.response.ProductResponse;
 import org.akira.auratech.service.ProductService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/admin/products")
 @RequiredArgsConstructor
-public class ProductController {
+public class AdminProductController {
     private final ProductService service;
 
     @PostMapping

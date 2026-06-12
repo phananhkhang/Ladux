@@ -3,6 +3,7 @@ package org.akira.auratech.dto.response;
 import org.akira.auratech.model.Payment;
 import org.akira.auratech.model.enums.PaymentProvider;
 import org.akira.auratech.model.enums.PaymentStatus;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
 
@@ -14,7 +15,7 @@ public record PaymentCallbackResponse(
         BigDecimal amount,
         PaymentStatus status,
         Instant createdAt
-) {
+) implements Serializable {
     public static PaymentCallbackResponse fromEntity(Payment payment) {
         if (payment == null) {
             return null;

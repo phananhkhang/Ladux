@@ -55,7 +55,10 @@ public class AuthController {
         String token = jwtService.generateToken(username);
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, authCookieService.createAuthCookie(token).toString())
-                .body(Map.of("message", "Login successful"));
+                .body(Map.of(
+                        "message", "Login successful",
+                        "token", token
+                ));
     }
 
     @PostMapping({"/logout", "/logout/"})

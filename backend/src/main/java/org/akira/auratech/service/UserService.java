@@ -2,6 +2,7 @@ package org.akira.auratech.service;
 
 import org.akira.auratech.dto.request.RegisterRequest;
 import org.akira.auratech.dto.request.UserAdminUpdateRequest;
+import org.akira.auratech.dto.request.UserProfileUpdateRequest;
 import org.akira.auratech.dto.response.UserResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,9 +19,13 @@ public interface UserService {
 
     UserResponse updateUser(int id, UserAdminUpdateRequest request);
 
+    UserResponse updateProfile(int id, UserProfileUpdateRequest request);
+
     UserResponse updateAvatar(int id, MultipartFile file);
 
     void deleteUserById(int id);
 
     UserResponse savedUser(RegisterRequest request);
+
+    UserResponse uploadAvatar(Integer id, MultipartFile file);
 }

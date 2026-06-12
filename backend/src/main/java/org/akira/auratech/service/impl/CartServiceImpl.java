@@ -86,6 +86,7 @@ public class CartServiceImpl implements CartService {
         } else {
             item.setQuantity(quantity);
         }
+        repo.save(cart);
     }
     @Override
     @Transactional
@@ -100,6 +101,7 @@ public class CartServiceImpl implements CartService {
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham trong giỏ"));
         cart.getItems().remove(item);
+        repo.save(cart);
     }
     @Override
     @Transactional
@@ -110,5 +112,6 @@ public class CartServiceImpl implements CartService {
         Cart cart = repo.findByUserIdForUpdate(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart voi userId = " + userId));
         cart.getItems().clear();
+        repo.save(cart);
     }
 }

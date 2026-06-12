@@ -46,5 +46,12 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 
     @EntityGraph(attributePaths = {"order"})
     Page<Payment> findByStatus(PaymentStatus status, Pageable pageable);
+
+    /** For user-scoped "my payments" lists */
+    @EntityGraph(attributePaths = {"order"})
+    Page<Payment> findByOrder_User_Id(Integer userId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"order"})
+    Page<Payment> findByOrder_User_IdAndStatus(Integer userId, PaymentStatus status, Pageable pageable);
 }
 

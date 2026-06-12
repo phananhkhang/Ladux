@@ -1,6 +1,7 @@
 package org.akira.auratech.dto.response;
 
 import org.akira.auratech.model.OrderHistory;
+import java.io.Serializable;
 import java.time.Instant;
 
 public record OrderHistoryResponse(
@@ -9,7 +10,7 @@ public record OrderHistoryResponse(
         String status,
         String description,
         Instant createdAt
-) {
+) implements Serializable {
     public static OrderHistoryResponse fromEntity(OrderHistory history) {
         if (history == null) {
             return null;

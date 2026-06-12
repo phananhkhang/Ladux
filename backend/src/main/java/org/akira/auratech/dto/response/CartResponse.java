@@ -2,6 +2,7 @@ package org.akira.auratech.dto.response;
 
 import org.akira.auratech.model.Cart;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -10,7 +11,7 @@ public record CartResponse(
         Integer userId,
         List<CartItemResponse> items,
         BigDecimal totalPrice
-) {
+) implements Serializable {
     public static CartResponse fromEntity(Cart cart) {
         if (cart == null) {
             return null;

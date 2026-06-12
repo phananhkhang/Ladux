@@ -32,7 +32,7 @@ public class CouponRedemptionServiceImpl implements CouponRedemptionService {
         }
 
         Coupon coupon = couponRepository.findByCodeForUpdate(couponCode)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + couponCode));
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi code = " + couponCode));
 
         validateCoupon(coupon, subTotal);
 

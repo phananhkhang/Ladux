@@ -142,6 +142,7 @@ public class OrderServiceImpl implements OrderService {
         // B9: ghi lại lịch sử khởi tạo đơn để audit sau này.
         order.getHistories().add(OrderHistory.builder()
                 .order(order)
+                .user(order.getUser())
                 .status(OrderStatus.PENDING.name())
                 .description("Order created")
                 .build());

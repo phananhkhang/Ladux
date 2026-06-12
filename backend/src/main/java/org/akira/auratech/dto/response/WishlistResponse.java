@@ -1,13 +1,14 @@
 package org.akira.auratech.dto.response;
 
 import org.akira.auratech.model.Wishlist;
+import java.io.Serializable;
 import java.time.Instant;
 
 public record WishlistResponse(
         Integer id,
         ProductResponse product,
         Instant addedAt
-) {
+) implements Serializable {
     public static WishlistResponse fromEntity(Wishlist wishlist) {
         if (wishlist == null) {
             return null;

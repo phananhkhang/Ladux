@@ -9,7 +9,7 @@ node_modules/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-
+mcps/
 ### STS ###
 .apt_generated
 .classpath
@@ -37,4 +37,3 @@ build/
 
 ### VS Code ###
 .vscode/
-mcps/

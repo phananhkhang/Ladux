@@ -1,4 +1,4 @@
-package org.akira.auratech.controller.user;
+package org.akira.auratech.controller.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.response.OrderItemResponse;
@@ -13,23 +13,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/order-items")
+@RequestMapping("/api/v1/admin/order-items")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
-public class OrderItemController {
+public class AdminOrderItemController {
     private final OrderItemService service;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<OrderItemResponse>> getAllOrderItems(Pageable pageable) {
         return ResponseEntity.ok(service.getAllOrderItems(pageable));
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<OrderItemResponse> getOrderItemById(@PathVariable int id) {
         return ResponseEntity.ok(service.getOrderItemById(id));
     }
 
     @GetMapping("/order/{orderId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<OrderItemResponse>> getOrderItemsByOrderId(@PathVariable int orderId, Pageable pageable) {
         return ResponseEntity.ok(service.getOrderItemsByOrderId(orderId, pageable));
     }

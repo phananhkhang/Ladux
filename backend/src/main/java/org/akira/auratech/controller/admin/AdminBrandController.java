@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 public class AdminBrandController {
 
     private final BrandService service;
+
+    @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BrandResponse> createBrand(@Valid @RequestBody BrandRequest request) {
         BrandResponse response = service.createBrand(request);

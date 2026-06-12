@@ -57,6 +57,7 @@ public class OrderStateMachineImpl implements OrderStateMachine {
         order.setStatus(target);
         order.getHistories().add(OrderHistory.builder()
                 .order(order)
+                .user(order.getUser())
                 .status(target.name())
                 .description("Order status changed from " + current.name() + " to " + target.name())
                 .build());

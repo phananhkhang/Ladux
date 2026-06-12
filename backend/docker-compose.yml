@@ -16,8 +16,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - s-network
+    volumes:
+      - uploads-data:/app/uploads
 
   postgres:
     image: postgres:17-alpine
@@ -37,14 +41,20 @@ services:
     networks:
       - s-network
   redis:
-      image: redis:alpine
-      ports:
-        - "6379:6379"
-      networks:
-        - s-network
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - s-network
 
 volumes:
   postgres-data:
+  uploads-data:
 
 networks:
   s-network:

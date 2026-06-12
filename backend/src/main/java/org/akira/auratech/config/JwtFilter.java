@@ -36,19 +36,9 @@ public class JwtFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String jwt = null;
+        String jwt = resolveJwt(request);
+        boolean fromCookie = readJwtFromCookie(request) != null;
 
-        // 1. 🎯 THAY ĐỔI CỐT LÕI: Lội vào danh sách Cookie của Request để tìm cục AUTH_TOKEN
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if (authCookieService.cookieName().equals(cookie.getName())) {
-                    jwt = cookie.getValue(); // Bốc được chuỗi Token ra rồi!
-                    break;
-                }
-            }
-        }
-
-        // 2. Chốt chặn 1: Nếu không tìm thấy Cookie chứa Token, cho qua làm khách vãng lai (Ẩn danh)
         if (jwt == null) {
             filterChain.doFilter(request, response);
             return;
@@ -60,10 +50,11 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             username = jwtService.extractUsername(jwt);
         } catch (JwtException | IllegalArgumentException ex) {
-            // Token hết hạn hoặc giả mạo -> Trả về 401 Unauthorized kèm Clear Cookie lỗi
             SecurityContextHolder.clearContext();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.clearAuthCookie().toString());
+            if (fromCookie) {
+                response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.clearAuthCookie().toString());
+            }
             return;
         }
 
@@ -76,7 +67,9 @@ public class JwtFilter extends OncePerRequestFilter {
             } catch (UsernameNotFoundException ex) {
                 SecurityContextHolder.clearContext();
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.clearAuthCookie().toString());
+                if (fromCookie) {
+                    response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.clearAuthCookie().toString());
+                }
                 return;
             }
 
@@ -99,5 +92,34 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // 6. Đẩy request đi tiếp vào Controller nghiệp vụ
         filterChain.doFilter(request, response);
+    }
+
+    private String resolveJwt(HttpServletRequest request) {
+        String cookieToken = readJwtFromCookie(request);
+        if (cookieToken != null) {
+            return cookieToken;
+        }
+        return readJwtFromAuthorizationHeader(request);
+    }
+
+    private String readJwtFromCookie(HttpServletRequest request) {
+        if (request.getCookies() == null) {
+            return null;
+        }
+        for (Cookie cookie : request.getCookies()) {
+            if (authCookieService.cookieName().equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
+
+    private String readJwtFromAuthorizationHeader(HttpServletRequest request) {
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null || !authHeader.regionMatches(true, 0, "Bearer ", 0, 7)) {
+            return null;
+        }
+        String token = authHeader.substring(7).trim();
+        return token.isEmpty() ? null : token;
     }
 }

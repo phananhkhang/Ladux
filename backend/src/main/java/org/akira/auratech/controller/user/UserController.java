@@ -2,16 +2,12 @@ package org.akira.auratech.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.UserAdminUpdateRequest;
+import org.akira.auratech.dto.request.UserProfileUpdateRequest;
 import org.akira.auratech.dto.response.UserResponse;
 import org.akira.auratech.model.UserPrincipal;
 import org.akira.auratech.service.UserService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,43 +18,24 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
     private final UserService service;
 
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<UserResponse>> getAllUsers(Pageable pageable) {
-        return ResponseEntity.ok(service.getAllUsers(pageable));
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal UserPrincipal principal) {
+        return ResponseEntity.ok(service.getUserById(principal.getId()));
     }
 
-
-    @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable int id) {
-        return ResponseEntity.ok(service.getUserById(id));
+    @PostMapping(value = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponse> uploadAvatar(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestPart("file") MultipartFile file
+    ) {
+        return ResponseEntity.ok(service.uploadAvatar(principal.getId(), file));
     }
 
-    @GetMapping("/email/{email}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponse> getUserByEmail(@PathVariable String email) {
-        return ResponseEntity.ok(service.getUserByEmail(email));
-    }
-
-    @GetMapping("/active")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<UserResponse>> getActiveUsers(Pageable pageable) {
-        return ResponseEntity.ok(service.getActiveUsers(pageable));
-    }
-
-    // Admin update thông tin user khác
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponse> updateUserByAdmin(
-        @PathVariable int id,
-        @Valid @RequestBody UserAdminUpdateRequest request) {
-            return ResponseEntity.ok(service.updateUser(id, request));
-        }
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteUserById(@PathVariable int id) {
-        service.deleteUserById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @PutMapping("/me")
+    public ResponseEntity<UserResponse> updateCurrentUser(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @Valid @RequestBody UserProfileUpdateRequest request
+    ) {
+        return ResponseEntity.ok(service.updateProfile(principal.getId(), request));
     }
 }

@@ -1,6 +1,7 @@
 package org.akira.auratech.dto.response;
 
 import org.akira.auratech.model.Product;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -20,7 +21,7 @@ public record ProductResponse(
         boolean isActive,
         Instant createdAt,
         List<ProductImageResponse> image
-) {
+) implements Serializable {
     public static ProductResponse fromEntity(Product product) {
         if (product == null) {
             return null;

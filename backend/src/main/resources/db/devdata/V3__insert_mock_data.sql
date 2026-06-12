@@ -265,6 +265,21 @@ INSERT INTO wishlists (id, user_id, product_id, added_at) VALUES
                                                               (12, 12, 4, '2026-05-03 11:55:00+00');
 
 -- Resync identity sequences after explicit-ID seed inserts
+-- (prevents duplicate key / nextval conflicts when creating new entities after seed)
+SELECT setval(pg_get_serial_sequence('roles', 'id'), COALESCE((SELECT MAX(id) FROM roles), 1));
+SELECT setval(pg_get_serial_sequence('brands', 'id'), COALESCE((SELECT MAX(id) FROM brands), 1));
+SELECT setval(pg_get_serial_sequence('categories', 'id'), COALESCE((SELECT MAX(id) FROM categories), 1));
 SELECT setval(pg_get_serial_sequence('users', 'id'), COALESCE((SELECT MAX(id) FROM users), 1));
+SELECT setval(pg_get_serial_sequence('products', 'id'), COALESCE((SELECT MAX(id) FROM products), 1));
+SELECT setval(pg_get_serial_sequence('product_images', 'id'), COALESCE((SELECT MAX(id) FROM product_images), 1));
+SELECT setval(pg_get_serial_sequence('coupons', 'id'), COALESCE((SELECT MAX(id) FROM coupons), 1));
 SELECT setval(pg_get_serial_sequence('carts', 'id'), COALESCE((SELECT MAX(id) FROM carts), 1));
+SELECT setval(pg_get_serial_sequence('cart_items', 'id'), COALESCE((SELECT MAX(id) FROM cart_items), 1));
+SELECT setval(pg_get_serial_sequence('orders', 'id'), COALESCE((SELECT MAX(id) FROM orders), 1));
+SELECT setval(pg_get_serial_sequence('order_items', 'id'), COALESCE((SELECT MAX(id) FROM order_items), 1));
+SELECT setval(pg_get_serial_sequence('order_histories', 'id'), COALESCE((SELECT MAX(id) FROM order_histories), 1));
+SELECT setval(pg_get_serial_sequence('payments', 'id'), COALESCE((SELECT MAX(id) FROM payments), 1));
+SELECT setval(pg_get_serial_sequence('user_addresses', 'id'), COALESCE((SELECT MAX(id) FROM user_addresses), 1));
+SELECT setval(pg_get_serial_sequence('reviews', 'id'), COALESCE((SELECT MAX(id) FROM reviews), 1));
+SELECT setval(pg_get_serial_sequence('wishlists', 'id'), COALESCE((SELECT MAX(id) FROM wishlists), 1));
 

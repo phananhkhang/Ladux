@@ -49,12 +49,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "payments", key = "'user:' + #userId + ':order:' + #orderId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
-    public Page<PaymentCallbackResponse> getPaymentsByOrderId(int userId, int orderId, Pageable pageable) {
+    @Cacheable(value = "payments", key = "'my:' + #userId + ':order:' + #orderId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    public Page<PaymentCallbackResponse> getMyPaymentsByOrderId(int userId, int orderId, Pageable pageable) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order"));
 
-        if (order.getUser().getId() != userId) {
+        if (!order.getUser().getId().equals(userId)) {
             throw new BusinessRuleException("Ban khong co quyen xem thong tin thanh toan cua don hang nay");
         }
 
@@ -64,9 +64,33 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "payments", key = "'my:' + #userId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    public Page<PaymentCallbackResponse> getMyPayments(int userId, Pageable pageable) {
+        return repo.findByOrder_User_Id(userId, pageable)
+                .map(PaymentCallbackResponse::fromEntity);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "payments", key = "'my:' + #userId + ':status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    public Page<PaymentCallbackResponse> getMyPaymentsByStatus(int userId, PaymentStatus status, Pageable pageable) {
+        return repo.findByOrder_User_IdAndStatus(userId, status, pageable)
+                .map(PaymentCallbackResponse::fromEntity);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     @Cacheable(value = "payments", key = "'status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<PaymentCallbackResponse> getPaymentsByStatus(PaymentStatus status, Pageable pageable) {
         return repo.findByStatus(status, pageable)
+                .map(PaymentCallbackResponse::fromEntity);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "payments", key = "'order:' + #orderId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    public Page<PaymentCallbackResponse> getPaymentsByOrderId(int orderId, Pageable pageable) {
+        return repo.findByOrderId(orderId, pageable)
                 .map(PaymentCallbackResponse::fromEntity);
     }
 

@@ -37,6 +37,7 @@ public class OrderLifecycleService {
         order.setPaymentExpiresAt(null);
         order.getHistories().add(OrderHistory.builder()
                 .order(order)
+                .user(order.getUser())
                 .status(OrderStatus.CONFIRMED.name())
                 .description("Payment succeeded")
                 .build());
@@ -57,6 +58,7 @@ public class OrderLifecycleService {
         order.setPaymentExpiresAt(null);
         order.getHistories().add(OrderHistory.builder()
                 .order(order)
+                .user(order.getUser())
                 .status(OrderStatus.CANCELLED.name())
                 .description(description)
                 .build());

@@ -2,11 +2,13 @@ package org.akira.auratech.dto.response;
 
 import org.akira.auratech.model.CartItem;
 
+import java.io.Serializable;
+
 public record CartItemResponse(
         Integer id,
         ProductResponse product,
         int quantity
-) {
+) implements Serializable {
     public static CartItemResponse fromEntity(CartItem item) {
         if (item == null) {
             return null;

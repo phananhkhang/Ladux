@@ -2,6 +2,7 @@ package org.akira.auratech.dto.response;
 
 import org.akira.auratech.model.enums.DiscountType;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
 
@@ -15,7 +16,7 @@ public record CouponApplyResponse(
         int usedCount,
         Instant expiresAt,
         BigDecimal discountAmount
-) {
+) implements Serializable {
     public static CouponApplyResponse from(CouponResponse coupon, BigDecimal discountAmount) {
         if (coupon == null) {
             return null;

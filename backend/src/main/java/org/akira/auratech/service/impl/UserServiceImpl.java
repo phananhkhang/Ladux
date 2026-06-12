@@ -3,6 +3,7 @@ package org.akira.auratech.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.RegisterRequest;
 import org.akira.auratech.dto.request.UserAdminUpdateRequest;
+import org.akira.auratech.dto.request.UserProfileUpdateRequest;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.dto.response.UserResponse;
 import org.akira.auratech.model.Role;
@@ -159,11 +160,55 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @CacheEvict(value = "users", allEntries = true)
+    public UserResponse updateProfile(int id, UserProfileUpdateRequest request) {
+        User user = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id));
+
+        if (request.email() != null) {
+            String email = request.email().trim();
+            if (repo.existsByEmailAndIdNot(email, id)) {
+                throw new BusinessRuleException("Email nay da ton tai trong DB. Hay dung email khac.");
+            }
+            user.setEmail(email);
+        }
+        if (request.username() != null) {
+            String username = request.username().trim();
+            if (repo.existsByUsernameAndIdNot(username, id)) {
+                throw new BusinessRuleException("Username nay da ton tai trong DB. Hay dung username khac.");
+            }
+            user.setUsername(username);
+        }
+        if (request.password() != null) {
+            user.setPassword(encoder.encode(request.password()));
+        }
+        if (request.fullName() != null) {
+            user.setFullName(request.fullName().trim());
+        }
+        if (request.phone() != null) {
+            user.setPhone(request.phone());
+        }
+        return UserResponse.fromEntity(user);
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "users", allEntries = true)
     public UserResponse updateAvatar(int id, MultipartFile file) {
         User user = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id));
+        deleteStoredAvatarIfLocal(user.getAvatar());
         user.setAvatar(storeAvatar(file));
         return UserResponse.fromEntity(user);
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "users", allEntries = true)
+    public UserResponse uploadAvatar(Integer id, MultipartFile file) {
+        if (id == null) {
+            throw new BusinessRuleException("User id khong duoc de trong");
+        }
+        return updateAvatar(id, file);
     }
 
     @Override
@@ -214,5 +259,22 @@ public class UserServiceImpl implements UserService {
         }
 
         return "/uploads/" + avatarUploadDir + "/" + filename;
+    }
+
+    private void deleteStoredAvatarIfLocal(String avatarUrl) {
+        if (avatarUrl == null || avatarUrl.isBlank() || !avatarUrl.startsWith("/uploads/")) {
+            return;
+        }
+        String relativePath = avatarUrl.substring("/uploads/".length());
+        Path storedFile = Path.of(uploadRoot).toAbsolutePath().normalize().resolve(relativePath).normalize();
+        Path uploadDirectory = Path.of(uploadRoot).toAbsolutePath().normalize();
+        if (!storedFile.startsWith(uploadDirectory)) {
+            return;
+        }
+        try {
+            Files.deleteIfExists(storedFile);
+        } catch (IOException ignored) {
+            // Khong chan upload moi neu file cu khong xoa duoc
+        }
     }
 }
