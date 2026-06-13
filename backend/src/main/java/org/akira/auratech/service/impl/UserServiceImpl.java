@@ -137,8 +137,9 @@ public class UserServiceImpl implements UserService {
         }
         if (request.password() != null) {
             user.setPassword(encoder.encode(request.password()));
-            // Doi mat khau -> thu hoi toan bo phien (refresh token) hien co cua user.
-            refreshTokenService.revokeAllForUser(id);
+            // Doi mat khau -> bump tokenVersion (tren entity managed) + thu hoi refresh token.
+            user.setTokenVersion(user.getTokenVersion() + 1);
+            refreshTokenService.revokeAllRefreshTokens(id);
         }
         if (request.fullName() != null) {
             user.setFullName(request.fullName());
@@ -151,9 +152,10 @@ public class UserServiceImpl implements UserService {
         }
         if (request.isActive() != null) {
             user.setActive(request.isActive());
-            // Khoa tai khoan -> thu hoi phien de user bi da ra ngay khi access token het han.
+            // Khoa tai khoan -> bump tokenVersion + thu hoi refresh token de da user ra ngay.
             if (!request.isActive()) {
-                refreshTokenService.revokeAllForUser(id);
+                user.setTokenVersion(user.getTokenVersion() + 1);
+                refreshTokenService.revokeAllRefreshTokens(id);
             }
         }
         if (request.roleIds() != null) {
@@ -189,8 +191,9 @@ public class UserServiceImpl implements UserService {
         }
         if (request.password() != null) {
             user.setPassword(encoder.encode(request.password()));
-            // Doi mat khau -> thu hoi toan bo phien hien co.
-            refreshTokenService.revokeAllForUser(id);
+            // Doi mat khau -> bump tokenVersion (tren entity managed) + thu hoi refresh token.
+            user.setTokenVersion(user.getTokenVersion() + 1);
+            refreshTokenService.revokeAllRefreshTokens(id);
         }
         if (request.fullName() != null) {
             user.setFullName(request.fullName().trim());

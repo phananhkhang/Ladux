@@ -8,6 +8,7 @@ import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.model.RefreshToken;
 import org.akira.auratech.model.User;
 import org.akira.auratech.repository.RefreshTokenRepository;
+import org.akira.auratech.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,8 @@ import lombok.RequiredArgsConstructor;
  * - create: phat hanh moi.
  * - verifyAndRotate: xac thuc + xoay vong (revoke cu, phat hanh moi) -> chong replay.
  * - revoke / revokeAllForUser: thu hoi.
+ *
+ * Phoi hop voi User.tokenVersion de vo hieu hoa TUC THI access token cu.
  */
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class RefreshTokenService {
 
     private static final SecureRandom RANDOM = new SecureRandom();
     private final RefreshTokenRepository repo;
+    private final UserRepository userRepository;
 
     @Value("${app.jwt.refresh-expiration:604800000}") // mac dinh 7 ngay
     private long refreshExpirationMs;
@@ -67,8 +71,29 @@ public class RefreshTokenService {
         repo.findByToken(rawToken).ifPresent(token -> token.setRevoked(true));
     }
 
+    /**
+     * Logout: thu hoi refresh token cua phien hien tai VA tang tokenVersion cua user
+     * de access token cu chet ngay lap tuc (luu y: dieu nay dang xuat tat ca thiet bi cua user).
+     * An toan vi transaction nay khong co User entity nao bi "dirty".
+     */
     @Transactional
-    public void revokeAllForUser(Integer userId) {
+    public void revokeSessionAndBump(String rawToken) {
+        if (rawToken == null || rawToken.isBlank()) {
+            return;
+        }
+        repo.findByToken(rawToken).ifPresent(token -> {
+            token.setRevoked(true);
+            userRepository.incrementTokenVersion(token.getUser().getId());
+        });
+    }
+
+    /**
+     * Thu hoi toan bo refresh token cua user (KHONG tu bump tokenVersion).
+     * Goi tu cac luong dang co User entity managed (updateUser/updateProfile):
+     * o do caller tu tang user.tokenVersion truc tiep tren entity de tranh bi flush ghi de.
+     */
+    @Transactional
+    public void revokeAllRefreshTokens(Integer userId) {
         repo.revokeAllByUserId(userId);
     }
 

@@ -98,7 +98,7 @@ public class AuthController {
     @PostMapping({"/logout", "/logout/"})
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         String rawRefresh = readCookie(request, authCookieService.refreshCookieName());
-        refreshTokenService.revoke(rawRefresh);
+        refreshTokenService.revokeSessionAndBump(rawRefresh);
 
         return ResponseEntity.noContent()
                 .header(HttpHeaders.SET_COOKIE, authCookieService.clearAccessCookie().toString())

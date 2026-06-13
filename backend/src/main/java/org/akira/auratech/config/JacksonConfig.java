@@ -41,7 +41,7 @@ public class JacksonConfig {
             module.addDeserializer(Instant.class, new ValueDeserializer<>() {
                 @Override
                 public Instant deserialize(JsonParser parser, DeserializationContext context) throws JacksonException {
-                    String value = parser.getText();
+                    String value = parser.getString();
                     if (value == null || value.isBlank()) {
                         return null;
                     }
@@ -67,7 +67,7 @@ public class JacksonConfig {
                 @Override
                 public LocalDateTime deserialize(JsonParser parser, DeserializationContext context)
                         throws JacksonException {
-                    return LocalDateTime.parse(parser.getText().trim(), DATE_TIME_FORMATTER);
+                    return LocalDateTime.parse(parser.getString().trim(), DATE_TIME_FORMATTER);
                 }
             });
 

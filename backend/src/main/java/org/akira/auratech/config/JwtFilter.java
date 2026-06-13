@@ -2,6 +2,7 @@ package org.akira.auratech.config;
 
 import java.io.IOException;
 
+import org.akira.auratech.model.UserPrincipal;
 import org.akira.auratech.service.AuthCookieService;
 import org.akira.auratech.service.JwtService;
 import org.springframework.http.HttpHeaders;
@@ -66,16 +67,27 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 userDetails = this.userDetailsService.loadUserByUsername(username);
             } catch (UsernameNotFoundException ex) {
-                SecurityContextHolder.clearContext();
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                if (fromCookie) {
-                    response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.clearAccessCookie().toString());
-                }
+                rejectUnauthorized(response, fromCookie);
+                return;
+            }
+
+            // (A) User bi khoa / vo hieu hoa -> tu choi NGAY, khong cho access token cu di qua.
+            if (!userDetails.isEnabled()) {
+                rejectUnauthorized(response, fromCookie);
                 return;
             }
 
             // 5. Kiểm tra tính hợp lệ của Token
             if (jwtService.isTokenValid(jwt, userDetails)) {
+
+                // (B) So khop tokenVersion: sau logout / doi mat khau / khoa tai khoan,
+                // tokenVersion cua user da tang -> access token cu bi tu choi tuc thi.
+                Integer tokenVersion = jwtService.extractTokenVersion(jwt);
+                int currentVersion = (userDetails instanceof UserPrincipal up) ? up.getTokenVersion() : -1;
+                if (tokenVersion == null || tokenVersion != currentVersion) {
+                    rejectUnauthorized(response, fromCookie);
+                    return;
+                }
 
                 // Tạo thẻ thông hành hợp lệ
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -101,6 +113,14 @@ public class JwtFilter extends OncePerRequestFilter {
             return cookieToken;
         }
         return readJwtFromAuthorizationHeader(request);
+    }
+
+    private void rejectUnauthorized(HttpServletResponse response, boolean fromCookie) {
+        SecurityContextHolder.clearContext();
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        if (fromCookie) {
+            response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.clearAccessCookie().toString());
+        }
     }
 
     private String readJwtFromCookie(HttpServletRequest request) {

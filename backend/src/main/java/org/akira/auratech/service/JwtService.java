@@ -40,6 +40,7 @@ public class JwtService {
                         .map(r -> r.getName().name())
                         .toList())
                 .claim("type", "access")
+                .claim("tokenVersion", user.getTokenVersion())
                 .id(UUID.randomUUID().toString()) // jti
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessExpirationMs))
@@ -49,6 +50,11 @@ public class JwtService {
 
     public String extractUsername(String jwt) {
         return parseClaims(jwt).getSubject();
+    }
+
+    /** Doc claim tokenVersion (co the null neu token cu phat hanh truoc khi co tinh nang nay). */
+    public Integer extractTokenVersion(String jwt) {
+        return parseClaims(jwt).get("tokenVersion", Integer.class);
     }
 
     public boolean isTokenValid(String jwt, UserDetails userDetails) {
