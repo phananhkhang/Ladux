@@ -60,7 +60,7 @@ public class JacksonConfig {
                 public void serialize(LocalDateTime value, JsonGenerator gen, SerializationContext context)
                         throws JacksonException {
                     gen.writeString(DATE_TIME_FORMATTER.format(value));
-                }
+                } 
             });
 
             module.addDeserializer(LocalDateTime.class, new ValueDeserializer<>() {

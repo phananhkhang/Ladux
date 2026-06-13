@@ -39,7 +39,6 @@ public class ProductController {
     public ResponseEntity<Page<ProductResponse>> getProductsByCategoryId(@PathVariable int categoryId, Pageable pageable) {
         return ResponseEntity.ok(service.getProductsByCategoryId(categoryId, pageable));
     }
-
     @GetMapping("/active")
     public ResponseEntity<Page<ProductResponse>> getActiveProducts(Pageable pageable) {
         return ResponseEntity.ok(service.getActiveProducts(pageable));

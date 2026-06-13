@@ -1,5 +1,7 @@
 package org.akira.auratech.service;
 
+import org.akira.auratech.dto.PaymentWebhookResult;
+
 import java.util.Map;
 
 /**

@@ -12,6 +12,9 @@ public interface UserAddressService {
 
     UserAddressResponse getUserAddressById(int userId, int addressId);
 
+    /** For admin use: fetch any address by ID without ownership restriction */
+    UserAddressResponse getUserAddressByIdForAdmin(int addressId);
+
     List<UserAddressResponse> getUserAddressesByUserId(int userId);
 
     List<UserAddressResponse> getDefaultUserAddressesByUserId(int userId);

@@ -1,18 +1,29 @@
 package org.akira.auratech.service.impl;
 
 
-import lombok.RequiredArgsConstructor;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
+
 import org.akira.auratech.dto.CouponRedemptionResult;
 import org.akira.auratech.dto.LineDraft;
+import org.akira.auratech.dto.request.OrderLineRequest;
 import org.akira.auratech.dto.request.OrderRequest;
 import org.akira.auratech.dto.request.OrderStatusUpdateRequest;
 import org.akira.auratech.dto.response.OrderResponse;
 import org.akira.auratech.dto.response.PaymentCallbackResponse;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
-import org.akira.auratech.model.*;
+import org.akira.auratech.model.Cart;
+import org.akira.auratech.model.Coupon;
+import org.akira.auratech.model.Order;
+import org.akira.auratech.model.OrderHistory;
+import org.akira.auratech.model.OrderItem;
+import org.akira.auratech.model.User;
 import org.akira.auratech.model.enums.OrderStatus;
-import org.akira.auratech.repository.*;
+import org.akira.auratech.repository.CartRepository;
+import org.akira.auratech.repository.OrderRepository;
+import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.CouponRedemptionService;
 import org.akira.auratech.service.InventoryService;
 import org.akira.auratech.service.OrderService;
@@ -26,15 +37,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository repo;
     private final UserRepository userRepository;
+    private final CartRepository cartRepository;
     private final InventoryService inventoryService;
     private final CouponRedemptionService couponRedemptionService;
     private final PaymentAttemptService paymentAttemptService;
@@ -89,7 +99,8 @@ public class OrderServiceImpl implements OrderService {
             @CacheEvict(value = "orderItems", allEntries = true),
             @CacheEvict(value = "orderHistories", allEntries = true),
             @CacheEvict(value = "products", allEntries = true),
-            @CacheEvict(value = "coupons", allEntries = true)
+            @CacheEvict(value = "coupons", allEntries = true),
+            @CacheEvict(value = "carts", allEntries = true)
     })
     public OrderResponse createOrder(int userId, OrderRequest request) {
         // B1: kiểm tra user tồn tại hay không.
@@ -101,10 +112,22 @@ public class OrderServiceImpl implements OrderService {
             throw new BusinessRuleException("Tai khoan dang bi khoa, khong the dat hang");
         }
 
-        // B3: khóa tồn kho từng sản phẩm, kiểm tra đủ số lượng, đồng thời tính giá tại thời điểm mua.
-        List<LineDraft> lineDrafts = inventoryService.reserveStockAndPriceLines(request.items());
+        // B3: lấy giỏ hàng của user (kèm khóa để tránh race), bắt buộc phải có hàng.
+        Cart cart = cartRepository.findByUserIdForUpdate(userId)
+                .orElseThrow(() -> new BusinessRuleException("Gio hang trong, khong the tao don hang"));
+        if (cart.getItems().isEmpty()) {
+            throw new BusinessRuleException("Gio hang trong, khong the tao don hang");
+        }
 
-        // B4: cộng tổng tiền trước khi giảm giá.
+        // B4: ánh xạ từng item trong giỏ thành dòng đặt hàng (user không cần nhập tay).
+        List<OrderLineRequest> lineRequests = cart.getItems().stream()
+                .map(item -> new OrderLineRequest(item.getProduct().getId(), item.getQuantity()))
+                .toList();
+
+        // B5: khóa tồn kho từng sản phẩm, kiểm tra đủ số lượng, đồng thời tính giá tại thời điểm mua.
+        List<LineDraft> lineDrafts = inventoryService.reserveStockAndPriceLines(lineRequests);
+
+        // B6: cộng tổng tiền trước khi giảm giá.
         BigDecimal subTotal = lineDrafts.stream()
                 .map(LineDraft::lineTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
@@ -114,7 +137,7 @@ public class OrderServiceImpl implements OrderService {
         Coupon coupon = redemption.coupon();
         BigDecimal discountAmount = redemption.discountAmount();
 
-        // B6: tính số tiền cuối cùng sau khi trừ giảm giá, đảm bảo không âm.
+        // B7: tính số tiền cuối cùng sau khi trừ giảm giá, đảm bảo không âm.
         BigDecimal finalAmount = subTotal.subtract(discountAmount)
                 .max(BigDecimal.ZERO)
                 .setScale(2, RoundingMode.HALF_UP);
@@ -150,7 +173,12 @@ public class OrderServiceImpl implements OrderService {
         // B10: tạo payment ban đầu và set hạn thanh toán.
         paymentAttemptService.initializePayment(order, request.paymentProvider(), finalAmount);
 
-        return OrderResponse.fromEntity(repo.save(order));
+        OrderResponse response = OrderResponse.fromEntity(repo.save(order));
+
+        // B11: đặt hàng thành công thì dọn sạch giỏ (orphanRemoval sẽ xóa cart_items khi flush).
+        cart.getItems().clear();
+
+        return response;
     }
 
     @Override

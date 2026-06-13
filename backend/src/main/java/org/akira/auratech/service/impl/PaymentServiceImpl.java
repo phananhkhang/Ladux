@@ -1,6 +1,8 @@
 package org.akira.auratech.service.impl;
 
-import lombok.RequiredArgsConstructor;
+import java.time.Instant;
+import java.util.Optional;
+
 import org.akira.auratech.dto.request.PaymentCallbackRequest;
 import org.akira.auratech.dto.request.PaymentCreateRequest;
 import org.akira.auratech.dto.response.PaymentCallbackResponse;
@@ -22,7 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -109,11 +111,23 @@ public class PaymentServiceImpl implements PaymentService {
 
         ensureOrderCanAcceptPayment(order);
 
-        repo.findFirstByOrderIdOrderByCreatedAtDesc(order.getId()).ifPresent(lastPayment -> {
-            if (lastPayment.getStatus() != PaymentStatus.FAILED) {
-                throw new BusinessRuleException("Chi tao payment attempt moi khi lan truoc FAILED");
+        Optional<Payment> lastPaymentOpt = repo.findFirstByOrderIdOrderByCreatedAtDesc(order.getId());
+        if (lastPaymentOpt.isPresent()) {
+            Payment lastPayment = lastPaymentOpt.get();
+            // Don hang da thanh toan thanh cong -> khong tao payment moi.
+            if (lastPayment.getStatus() == PaymentStatus.SUCCESS) {
+                throw new BusinessRuleException("Don hang da thanh toan thanh cong, khong the tao payment moi");
             }
-        });
+            // Da co payment dang cho thanh toan (duoc tao san luc tao order) -> tra ve chinh no (idempotent).
+            // Neu client chon provider khac thi cap nhat lai provider cho lan thanh toan dang cho.
+            if (lastPayment.getStatus() == PaymentStatus.PENDING) {
+                if (request.provider() != null && request.provider() != lastPayment.getProvider()) {
+                    lastPayment.setProvider(request.provider());
+                }
+                return PaymentCallbackResponse.fromEntity(lastPayment);
+            }
+            // Con lai: lastPayment FAILED -> cho phep tao attempt moi ben duoi.
+        }
 
         Payment payment = Payment.builder()
                 .order(order)

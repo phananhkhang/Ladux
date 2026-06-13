@@ -1,10 +1,10 @@
 package org.akira.auratech.dto.response;
 
-import org.akira.auratech.model.enums.DiscountType;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
+
+import org.akira.auratech.model.enums.DiscountType;
 
 public record CouponApplyResponse(
         Integer id,
@@ -14,10 +14,9 @@ public record CouponApplyResponse(
         BigDecimal minOrderValue,
         Integer usageLimit,
         int usedCount,
-        Instant expiresAt,
-        BigDecimal discountAmount
+        Instant expiresAt
 ) implements Serializable {
-    public static CouponApplyResponse from(CouponResponse coupon, BigDecimal discountAmount) {
+    public static CouponApplyResponse from(CouponResponse coupon) {
         if (coupon == null) {
             return null;
         }
@@ -29,8 +28,7 @@ public record CouponApplyResponse(
                 coupon.minOrderValue(),
                 coupon.usageLimit(),
                 coupon.usedCount(),
-                coupon.expiresAt(),
-                discountAmount
+                coupon.expiresAt()
         );
     }
 }

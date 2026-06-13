@@ -1,15 +1,22 @@
 package org.akira.auratech.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.akira.auratech.dto.PaymentWebhookResult;
 import org.akira.auratech.model.Order;
 import org.akira.auratech.model.Payment;
 import org.akira.auratech.model.enums.PaymentStatus;
 import org.akira.auratech.repository.OrderRepository;
 import org.akira.auratech.repository.PaymentRepository;
 import org.akira.auratech.service.OrderLifecycleService;
-import org.akira.auratech.service.PaymentWebhookResult;
 import org.akira.auratech.service.PaymentWebhookService;
+import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -18,13 +25,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Production-ready webhook handler cho VNPay IPN.
@@ -208,7 +210,8 @@ public class PaymentWebhookServiceImpl implements PaymentWebhookService {
             signData.setLength(signData.length() - 1);
         }
 
-        String computedChecksum = HmacUtils.hmacSha512Hex(vnpaySecretKey, signData.toString());
+        String computedChecksum = new HmacUtils(HmacAlgorithms.HMAC_SHA_512, vnpaySecretKey)
+                .hmacHex(signData.toString());
         return computedChecksum.equalsIgnoreCase(secureHash);
     }
 

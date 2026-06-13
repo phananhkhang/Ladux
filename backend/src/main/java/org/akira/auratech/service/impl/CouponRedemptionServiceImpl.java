@@ -1,11 +1,11 @@
 package org.akira.auratech.service.impl;
 
-import lombok.RequiredArgsConstructor;
+import java.math.BigDecimal;
+
 import org.akira.auratech.dto.CouponRedemptionResult;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.akira.auratech.model.Coupon;
-import org.akira.auratech.model.enums.DiscountType;
 import org.akira.auratech.repository.CouponRepository;
 import org.akira.auratech.service.CouponRedemptionService;
 import org.springframework.cache.annotation.CacheEvict;
@@ -13,14 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.Instant;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class CouponRedemptionServiceImpl implements CouponRedemptionService {
-    private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
     private final CouponRepository couponRepository;
 
     @Override
@@ -36,30 +33,22 @@ public class CouponRedemptionServiceImpl implements CouponRedemptionService {
 
         validateCoupon(coupon, subTotal);
 
-        BigDecimal discountAmount = calculateDiscount(coupon, subTotal);
+        BigDecimal discountAmount = coupon.calculateDiscount(subTotal);
         coupon.setUsedCount(coupon.getUsedCount() + 1);
 
         return new CouponRedemptionResult(coupon, discountAmount);
     }
 
     private void validateCoupon(Coupon coupon, BigDecimal subTotal) {
-        if (!coupon.getExpiresAt().isAfter(Instant.now())) {
+        if (coupon.isExpired()) {
             throw new BusinessRuleException("Coupon da het han");
         }
-        if (coupon.getUsageLimit() != null && coupon.getUsedCount() >= coupon.getUsageLimit()) {
+        if (coupon.isUsageLimitReached()) {
             throw new BusinessRuleException("Coupon da het luot su dung");
         }
-        BigDecimal minOrderValue = coupon.getMinOrderValue() == null ? BigDecimal.ZERO : coupon.getMinOrderValue();
-        if (subTotal.compareTo(minOrderValue) < 0) {
+        if (coupon.isBelowMinOrderValue(subTotal)) {
             throw new BusinessRuleException("Don hang chua dat gia tri toi thieu cua coupon");
         }
-    }
-
-    private BigDecimal calculateDiscount(Coupon coupon, BigDecimal subTotal) {
-        BigDecimal discount = coupon.getDiscountType() == DiscountType.PERCENT
-                ? subTotal.multiply(coupon.getDiscountValue()).divide(ONE_HUNDRED, 2, RoundingMode.HALF_UP)
-                : coupon.getDiscountValue();
-        return discount.min(subTotal).setScale(2, RoundingMode.HALF_UP);
     }
 }
 

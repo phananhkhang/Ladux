@@ -88,7 +88,6 @@ export interface CartResponse {
 export interface WishlistResponse {
   id: Id;
   product: ProductResponse | null;
-  addedAt: ISODateTime;
 }
 
 export interface UserResponse {

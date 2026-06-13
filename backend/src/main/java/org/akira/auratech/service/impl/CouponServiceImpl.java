@@ -1,16 +1,17 @@
 package org.akira.auratech.service.impl;
 
-import lombok.RequiredArgsConstructor;
+import java.math.BigDecimal;
+
 import org.akira.auratech.dto.request.CouponAdminRequest;
 import org.akira.auratech.dto.request.CouponApplyRequest;
 import org.akira.auratech.dto.response.CouponApplyResponse;
 import org.akira.auratech.dto.response.CouponResponse;
 import org.akira.auratech.exception.BusinessRuleException;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.akira.auratech.model.Coupon;
 import org.akira.auratech.model.enums.DiscountType;
 import org.akira.auratech.repository.CouponRepository;
 import org.akira.auratech.service.CouponService;
-import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -18,9 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.Instant;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -114,7 +113,6 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "coupons", key = "'apply:' + #request.code + ':' + #request.subTotal")
     public CouponApplyResponse applyCoupon(CouponApplyRequest request) {
         if (request == null || request.code() == null || request.code().isBlank()) {
             throw new BusinessRuleException("Ma coupon khong hop le");
@@ -123,27 +121,12 @@ public class CouponServiceImpl implements CouponService {
         if (coupon == null) {
             throw new ResourceNotFoundException("Khong tim thay coupon voi code = " + request.code());
         }
-        if (!coupon.getExpiresAt().isAfter(Instant.now())) {
+        if (coupon.isExpired()) {
             throw new BusinessRuleException("Coupon da het han");
         }
-        if (coupon.getUsageLimit() != null && coupon.getUsedCount() >= coupon.getUsageLimit()) {
+        if (coupon.isUsageLimitReached()) {
             throw new BusinessRuleException("Coupon da het luot su dung");
         }
-        BigDecimal subTotal = request.subTotal() != null ? request.subTotal() : BigDecimal.ZERO;
-        BigDecimal minOrderValue = coupon.getMinOrderValue() == null ? BigDecimal.ZERO : coupon.getMinOrderValue();
-        if (subTotal.compareTo(minOrderValue) < 0) {
-            throw new BusinessRuleException("Don hang chua dat gia tri toi thieu cua coupon");
-        }
-        BigDecimal discountAmount = calculateDiscount(coupon, subTotal);
-        CouponResponse base = CouponResponse.fromEntity(coupon);
-        return CouponApplyResponse.from(base, discountAmount);
-    }
-
-    private BigDecimal calculateDiscount(Coupon coupon, BigDecimal subTotal) {
-        BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
-        BigDecimal discount = coupon.getDiscountType() == DiscountType.PERCENT
-                ? subTotal.multiply(coupon.getDiscountValue()).divide(ONE_HUNDRED, 2, RoundingMode.HALF_UP)
-                : coupon.getDiscountValue();
-        return discount.min(subTotal).setScale(2, RoundingMode.HALF_UP);
+        return CouponApplyResponse.from(CouponResponse.fromEntity(coupon));
     }
 }

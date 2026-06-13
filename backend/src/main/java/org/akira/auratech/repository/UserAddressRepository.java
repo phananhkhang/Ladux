@@ -40,6 +40,10 @@ public interface UserAddressRepository extends JpaRepository<UserAddress, Intege
     @Query("select a from UserAddress a where a.user.id = :userId and a.id = :addressId")
     Optional<UserAddress> findByUserIdAndIdForUpdate(@Param("userId") int userId, @Param("addressId") int addressId);
 
+    @EntityGraph(attributePaths = {"user"})
+    @Query("select a from UserAddress a where a.id = :id")
+    Optional<UserAddress> findByIdWithUser(@Param("id") int id);
+
     @Modifying(flushAutomatically = true)
     @Query("update UserAddress a set a.isDefault = false where a.user.id = :userId and a.isDefault = true")
     int clearDefaultByUserId(@Param("userId") Integer userId);

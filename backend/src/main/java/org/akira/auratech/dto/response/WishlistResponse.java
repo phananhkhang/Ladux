@@ -6,8 +6,7 @@ import java.time.Instant;
 
 public record WishlistResponse(
         Integer id,
-        ProductResponse product,
-        Instant addedAt
+        ProductResponse product
 ) implements Serializable {
     public static WishlistResponse fromEntity(Wishlist wishlist) {
         if (wishlist == null) {
@@ -15,8 +14,7 @@ public record WishlistResponse(
         }
         return new WishlistResponse(
                 wishlist.getId(),
-                wishlist.getProduct() == null ? null : ProductResponse.fromEntity(wishlist.getProduct()),
-                wishlist.getAddedAt()
+                wishlist.getProduct() == null ? null : ProductResponse.fromEntity(wishlist.getProduct())
         );
     }
 }

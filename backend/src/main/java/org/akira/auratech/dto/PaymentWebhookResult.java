@@ -1,4 +1,4 @@
-package org.akira.auratech.service;
+package org.akira.auratech.dto;
 
 /**
  * Ket qua xu ly webhook, dung de Controller map sang HTTP status + body VNPay.

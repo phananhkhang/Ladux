@@ -1,7 +1,7 @@
 package org.akira.auratech.controller.user;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.auratech.service.PaymentWebhookResult;
+import org.akira.auratech.dto.PaymentWebhookResult;
 import org.akira.auratech.service.PaymentWebhookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

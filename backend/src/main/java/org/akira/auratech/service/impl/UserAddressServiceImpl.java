@@ -8,6 +8,7 @@ import org.akira.auratech.model.UserAddress;
 import org.akira.auratech.repository.UserAddressRepository;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.UserAddressService;
+import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -36,7 +37,21 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Transactional(readOnly = true)
     @Cacheable(value = "userAddresses", key = "'user:' + #userId + ':id:' + #addressId")
     public UserAddressResponse getUserAddressById(int userId, int addressId) {
-        return UserAddressResponse.fromEntity(repo.findByUserIdAndId(userId, addressId)
+        UserAddress address = repo.findByIdWithUser(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user address voi id = " + addressId));
+
+        if (!address.getUser().getId().equals(userId)) {
+            throw new BusinessRuleException("Bạn không có quyền xem địa chỉ này!");
+        }
+
+        return UserAddressResponse.fromEntity(address);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "userAddresses", key = "'admin:id:' + #addressId")
+    public UserAddressResponse getUserAddressByIdForAdmin(int addressId) {
+        return UserAddressResponse.fromEntity(repo.findByIdWithUser(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user address voi id = " + addressId)));
     }
 

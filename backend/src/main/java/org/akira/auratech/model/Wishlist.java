@@ -2,9 +2,6 @@ package org.akira.auratech.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-
-import java.time.Instant;
 
 @Entity
 @Table(name = "wishlists", uniqueConstraints = {
@@ -30,8 +27,4 @@ public class Wishlist {
     @JoinColumn(name = "product_id", nullable = false)
     @ToString.Exclude
     private Product product;
-
-    @Column(nullable = false, updatable = false)
-    @CreatedDate
-    private Instant addedAt;
 }

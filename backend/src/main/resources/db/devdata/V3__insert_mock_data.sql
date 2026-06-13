@@ -250,19 +250,19 @@ INSERT INTO reviews (id, user_id, product_id, rating, comment, created_at) VALUE
                                                                                (12, 12, 12, 3, 'Chuột dùng ổn, kết nối nhanh.', '2026-05-03 09:55:00+00');
 
 -- wishlists (12 rows)
-INSERT INTO wishlists (id, user_id, product_id, added_at) VALUES
-                                                              (1, 1, 2, '2026-05-03 11:00:00+00'),
-                                                              (2, 2, 1, '2026-05-03 11:05:00+00'),
-                                                              (3, 3, 5, '2026-05-03 11:10:00+00'),
-                                                              (4, 4, 6, '2026-05-03 11:15:00+00'),
-                                                              (5, 5, 3, '2026-05-03 11:20:00+00'),
-                                                              (6, 6, 8, '2026-05-03 11:25:00+00'),
-                                                              (7, 7, 9, '2026-05-03 11:30:00+00'),
-                                                              (8, 8, 7, '2026-05-03 11:35:00+00'),
-                                                              (9, 9, 10, '2026-05-03 11:40:00+00'),
-                                                              (10, 10, 11, '2026-05-03 11:45:00+00'),
-                                                              (11, 11, 12, '2026-05-03 11:50:00+00'),
-                                                              (12, 12, 4, '2026-05-03 11:55:00+00');
+INSERT INTO wishlists (id, user_id, product_id) VALUES
+                                                    (1, 1, 2),
+                                                    (2, 2, 1),
+                                                    (3, 3, 5),
+                                                    (4, 4, 6),
+                                                    (5, 5, 3),
+                                                    (6, 6, 8),
+                                                    (7, 7, 9),
+                                                    (8, 8, 7),
+                                                    (9, 9, 10),
+                                                    (10, 10, 11),
+                                                    (11, 11, 12),
+                                                    (12, 12, 4);
 
 -- Resync identity sequences after explicit-ID seed inserts
 -- (prevents duplicate key / nextval conflicts when creating new entities after seed)
