@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
 public interface CartRepository extends JpaRepository<Cart, Integer> {
     @EntityGraph(attributePaths = {"items", "items.product", "items.product.brand", "items.product.category"})
     Cart findByUserId(Integer userId);

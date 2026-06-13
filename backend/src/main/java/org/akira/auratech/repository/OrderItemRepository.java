@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
     @EntityGraph(attributePaths = {"order", "product"})
     @Override

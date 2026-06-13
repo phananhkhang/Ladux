@@ -1,21 +1,22 @@
 package org.akira.auratech.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.akira.auratech.dto.request.CategoryRequest;
 import org.akira.auratech.dto.response.CategoryResponse;
+import org.akira.auratech.exception.BusinessRuleException;
+import org.akira.auratech.exception.ResourceNotFoundException;
 import org.akira.auratech.model.Category;
 import org.akira.auratech.repository.CategoryRepository;
 import org.akira.auratech.repository.ProductRepository;
 import org.akira.auratech.service.CategoryService;
 import org.akira.auratech.utils.SlugUtils;
-import org.akira.auratech.exception.BusinessRuleException;
-import org.akira.auratech.exception.ResourceNotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -101,7 +102,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     @CacheEvict(value = "categories", allEntries = true)
     public void deleteCategoryById(int id) {
-        if (!repo.existsByParentId(id)) {
+        if (repo.existsByParentId(id)) {
             throw new BusinessRuleException("Không thể xóa category này vì nó có category con");
         }
         if (productRepo.existsByCategoryId(id)) {

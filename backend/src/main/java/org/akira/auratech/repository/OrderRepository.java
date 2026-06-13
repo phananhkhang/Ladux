@@ -16,7 +16,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
     @EntityGraph(attributePaths = {"user", "coupon", "payments"})
     Page<Order> findAll(Pageable pageable);

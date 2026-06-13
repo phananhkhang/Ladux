@@ -1,13 +1,11 @@
 package org.akira.auratech.repository;
 
+import java.util.List;
+
 import org.akira.auratech.model.Wishlist;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
-@Repository
 public interface WishlistRepository extends JpaRepository<Wishlist, Integer> {
     @EntityGraph(attributePaths = {"product", "product.brand", "product.category", "product.images"})
     List<Wishlist> findByUserId(Integer userId);
