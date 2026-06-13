@@ -1,30 +1,5 @@
 package org.akira.auratech.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import org.akira.auratech.dto.request.RegisterRequest;
-import org.akira.auratech.dto.request.UserAdminUpdateRequest;
-import org.akira.auratech.dto.request.UserProfileUpdateRequest;
-import org.akira.auratech.exception.BusinessRuleException;
-import org.akira.auratech.dto.response.UserResponse;
-import org.akira.auratech.model.Role;
-import org.akira.auratech.model.User;
-import org.akira.auratech.model.enums.RoleName;
-import org.akira.auratech.model.Cart;
-import org.akira.auratech.repository.CartRepository;
-import org.akira.auratech.repository.RoleRepository;
-import org.akira.auratech.repository.UserRepository;
-import org.akira.auratech.service.UserService;
-import org.akira.auratech.exception.ResourceNotFoundException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +11,33 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.akira.auratech.dto.request.RegisterRequest;
+import org.akira.auratech.dto.request.UserAdminUpdateRequest;
+import org.akira.auratech.dto.request.UserProfileUpdateRequest;
+import org.akira.auratech.dto.response.UserResponse;
+import org.akira.auratech.exception.BusinessRuleException;
+import org.akira.auratech.exception.ResourceNotFoundException;
+import org.akira.auratech.model.Cart;
+import org.akira.auratech.model.Role;
+import org.akira.auratech.model.User;
+import org.akira.auratech.model.enums.RoleName;
+import org.akira.auratech.repository.CartRepository;
+import org.akira.auratech.repository.RoleRepository;
+import org.akira.auratech.repository.UserRepository;
+import org.akira.auratech.service.RefreshTokenService;
+import org.akira.auratech.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import lombok.RequiredArgsConstructor;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -43,6 +45,7 @@ public class UserServiceImpl implements UserService {
     private final CartRepository cartRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
+    private final RefreshTokenService refreshTokenService;
 
     @Value("${app.upload.root:uploads}")
     private String uploadRoot;
@@ -134,6 +137,8 @@ public class UserServiceImpl implements UserService {
         }
         if (request.password() != null) {
             user.setPassword(encoder.encode(request.password()));
+            // Doi mat khau -> thu hoi toan bo phien (refresh token) hien co cua user.
+            refreshTokenService.revokeAllForUser(id);
         }
         if (request.fullName() != null) {
             user.setFullName(request.fullName());
@@ -146,6 +151,10 @@ public class UserServiceImpl implements UserService {
         }
         if (request.isActive() != null) {
             user.setActive(request.isActive());
+            // Khoa tai khoan -> thu hoi phien de user bi da ra ngay khi access token het han.
+            if (!request.isActive()) {
+                refreshTokenService.revokeAllForUser(id);
+            }
         }
         if (request.roleIds() != null) {
             if (request.roleIds().isEmpty()) {
@@ -180,6 +189,8 @@ public class UserServiceImpl implements UserService {
         }
         if (request.password() != null) {
             user.setPassword(encoder.encode(request.password()));
+            // Doi mat khau -> thu hoi toan bo phien hien co.
+            refreshTokenService.revokeAllForUser(id);
         }
         if (request.fullName() != null) {
             user.setFullName(request.fullName().trim());

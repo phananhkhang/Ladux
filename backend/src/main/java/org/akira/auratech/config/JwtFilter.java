@@ -1,12 +1,7 @@
 package org.akira.auratech.config;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import io.jsonwebtoken.JwtException;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+
 import org.akira.auratech.service.AuthCookieService;
 import org.akira.auratech.service.JwtService;
 import org.springframework.http.HttpHeaders;
@@ -19,7 +14,13 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
+import io.jsonwebtoken.JwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 //Lọc mọi request, lấy token từ cookie, xác thực JWT, nạp Authentication vào SecurityContext; xóa cookie và trả 401 nếu token không hợp lệ.
 @Component
 @RequiredArgsConstructor
@@ -53,7 +54,7 @@ public class JwtFilter extends OncePerRequestFilter {
             SecurityContextHolder.clearContext();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             if (fromCookie) {
-                response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.clearAuthCookie().toString());
+                response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.clearAccessCookie().toString());
             }
             return;
         }
@@ -68,7 +69,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.clearContext();
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 if (fromCookie) {
-                    response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.clearAuthCookie().toString());
+                    response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.clearAccessCookie().toString());
                 }
                 return;
             }
@@ -107,7 +108,7 @@ public class JwtFilter extends OncePerRequestFilter {
             return null;
         }
         for (Cookie cookie : request.getCookies()) {
-            if (authCookieService.cookieName().equals(cookie.getName())) {
+            if (authCookieService.accessCookieName().equals(cookie.getName())) {
                 return cookie.getValue();
             }
         }
@@ -123,3 +124,4 @@ public class JwtFilter extends OncePerRequestFilter {
         return token.isEmpty() ? null : token;
     }
 }
+

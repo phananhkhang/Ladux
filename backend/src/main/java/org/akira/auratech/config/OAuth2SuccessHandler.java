@@ -1,12 +1,12 @@
 package org.akira.auratech.config;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 import org.akira.auratech.model.User;
 import org.akira.auratech.repository.UserRepository;
 import org.akira.auratech.service.AuthCookieService;
 import org.akira.auratech.service.JwtService;
+import org.akira.auratech.service.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
@@ -14,7 +14,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 //User
 // ↓
@@ -35,6 +37,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final JwtService jwtService;
     private final AuthCookieService authCookieService;
+    private final RefreshTokenService refreshTokenService;
     private final UserRepository userRepository;
 
     @Value("${app.oauth2.success-redirect:http://localhost:3000/checkout/success}")
@@ -43,10 +46,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public OAuth2SuccessHandler(
             JwtService jwtService,
             AuthCookieService authCookieService,
+            RefreshTokenService refreshTokenService,
             UserRepository userRepository
     ) {
         this.jwtService = jwtService;
         this.authCookieService = authCookieService;
+        this.refreshTokenService = refreshTokenService;
         this.userRepository = userRepository;
     }
 
@@ -71,8 +76,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             return;
         }
 
-        String token = jwtService.generateToken(user.getUsername());
-        response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.createAuthCookie(token).toString());
+        String accessToken = jwtService.generateAccessToken(user);
+        org.akira.auratech.model.RefreshToken refreshToken = refreshTokenService.create(user);
+        response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.createAccessCookie(accessToken).toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.createRefreshCookie(refreshToken.getToken()).toString());
 
         getRedirectStrategy().sendRedirect(request, response, successRedirectUrl);
     }

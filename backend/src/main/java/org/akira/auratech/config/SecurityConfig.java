@@ -70,6 +70,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers(
                                 "/api/v1/auth/login", "/api/v1/auth/login/",
                                 "/api/v1/auth/register", "/api/v1/auth/register/",
+                                "/api/v1/auth/refresh", "/api/v1/auth/refresh/",
                                 "/api/v1/auth/logout", "/api/v1/auth/logout/",
                                 "/api/v1/payments/vnpay-webhook",
                                 "/oauth2/**", "/login/oauth2/**"
