@@ -24,12 +24,15 @@ class SeedDataPersistenceTest extends AbstractIntegrationTest {
     @Autowired ProductRepository productRepository;
     @Autowired CouponRepository couponRepository;
     @Autowired UserRepository userRepository;
+    @Autowired CustomerRepository customerRepository;
     @Autowired OrderRepository orderRepository;
     @Autowired OrderItemRepository orderItemRepository;
     @Autowired PaymentRepository paymentRepository;
     @Autowired ReviewRepository reviewRepository;
     @Autowired UserAddressRepository userAddressRepository;
     @Autowired CartRepository cartRepository;
+    @Autowired SupplierRepository supplierRepository;
+    @Autowired ProductSupplierRepository productSupplierRepository;
 
     @Test
     void seedDataIsLoadedForAllKeyEntities() {
@@ -39,6 +42,8 @@ class SeedDataPersistenceTest extends AbstractIntegrationTest {
         assertEquals(12, productRepository.count(), "devdata co 12 product");
         assertEquals(12, couponRepository.count(), "devdata co 12 coupon");
         assertEquals(12, userRepository.count(), "devdata co 12 user");
+        assertEquals(12, customerRepository.count(),
+                "V22 di tru moi user seed -> 1 customer (shared PK), nen phai co 12 customer");
         assertEquals(12, orderRepository.count(), "devdata co 12 order");
         assertEquals(12, paymentRepository.count(), "devdata co 12 payment");
 
@@ -47,6 +52,11 @@ class SeedDataPersistenceTest extends AbstractIntegrationTest {
         assertTrue(reviewRepository.count() > 0, "Phai co review seed");
         assertTrue(userAddressRepository.count() > 0, "Phai co dia chi seed");
         assertTrue(cartRepository.count() > 0, "Phai co cart seed");
+
+        // Chuoi cung ung (V23 devdata).
+        assertEquals(3, supplierRepository.count(), "V23 seed 3 nha cung cap");
+        assertEquals(13, productSupplierRepository.count(),
+                "V23 seed 13 lien ket product-supplier");
     }
 
     @Test

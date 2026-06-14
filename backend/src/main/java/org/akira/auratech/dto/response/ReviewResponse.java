@@ -1,8 +1,9 @@
 package org.akira.auratech.dto.response;
 
-import org.akira.auratech.model.Review;
 import java.io.Serializable;
 import java.time.Instant;
+
+import org.akira.auratech.model.Review;
 
 public record ReviewResponse(
         Integer id,
@@ -16,10 +17,21 @@ public record ReviewResponse(
         if (review == null) {
             return null;
         }
+        // Ten/avatar nguoi danh gia lay tu Customer (ho so), fallback ve username roi "Anonymous".
+        var user = review.getUser();
+        var customer = user == null ? null : user.getCustomer();
+        String reviewerName = "Anonymous";
+        String reviewerAvatar = null;
+        if (customer != null && customer.getFullName() != null) {
+            reviewerName = customer.getFullName();
+            reviewerAvatar = customer.getAvatarUrl();
+        } else if (user != null) {
+            reviewerName = user.getUsername();
+        }
         return new ReviewResponse(
                 review.getId(),
-                review.getUser() == null ? "Anonymous" : review.getUser().getFullName(),
-                review.getUser() == null ? null : review.getUser().getAvatar(),
+                reviewerName,
+                reviewerAvatar,
                 review.getRating(),
                 review.getComment(),
                 review.getCreatedAt()

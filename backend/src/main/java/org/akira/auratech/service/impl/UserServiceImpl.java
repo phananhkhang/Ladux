@@ -1,6 +1,7 @@
 package org.akira.auratech.service.impl;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -18,8 +19,10 @@ import org.akira.auratech.dto.response.UserResponse;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.akira.auratech.model.Cart;
+import org.akira.auratech.model.Customer;
 import org.akira.auratech.model.Role;
 import org.akira.auratech.model.User;
+import org.akira.auratech.model.enums.CustomerLevel;
 import org.akira.auratech.model.enums.RoleName;
 import org.akira.auratech.repository.CartRepository;
 import org.akira.auratech.repository.RoleRepository;
@@ -82,12 +85,20 @@ public class UserServiceImpl implements UserService {
                 .email(email)
                 .username(username)
                 .password(encoder.encode(request.password()))
-                .fullName(request.fullName().trim())
-                .phone(request.phone())
                 .isActive(true)
                 .roles(Set.of(customerRole))
                 .build();
-        User saved = repo.save(user);
+        // Ho so khach hang (shared PK voi User) — luu ten/sdt.
+        Customer customer = Customer.builder()
+                .user(user)
+                .fullName(request.fullName().trim())
+                .phone(request.phone())
+                .level(CustomerLevel.BROWSER)
+                .loyaltyPoints(0L)
+                .totalSpent(BigDecimal.ZERO)
+                .build();
+        user.setCustomer(customer);
+        User saved = repo.save(user); // cascade ALL -> luu luon Customer (MapsId)
         cartRepository.save(Cart.builder().user(saved).build());
         return UserResponse.fromEntity(saved);
     }
@@ -142,13 +153,13 @@ public class UserServiceImpl implements UserService {
             refreshTokenService.revokeAllRefreshTokens(id);
         }
         if (request.fullName() != null) {
-            user.setFullName(request.fullName());
+            getOrCreateCustomer(user).setFullName(request.fullName());
         }
         if (request.phone() != null) {
-            user.setPhone(request.phone());
+            getOrCreateCustomer(user).setPhone(request.phone());
         }
         if (request.avatar() != null) {
-            user.setAvatar(request.avatar());
+            getOrCreateCustomer(user).setAvatarUrl(request.avatar());
         }
         if (request.isActive() != null) {
             user.setActive(request.isActive());
@@ -196,10 +207,10 @@ public class UserServiceImpl implements UserService {
             refreshTokenService.revokeAllRefreshTokens(id);
         }
         if (request.fullName() != null) {
-            user.setFullName(request.fullName().trim());
+            getOrCreateCustomer(user).setFullName(request.fullName().trim());
         }
         if (request.phone() != null) {
-            user.setPhone(request.phone());
+            getOrCreateCustomer(user).setPhone(request.phone());
         }
         return UserResponse.fromEntity(user);
     }
@@ -210,8 +221,9 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateAvatar(int id, MultipartFile file) {
         User user = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id));
-        deleteStoredAvatarIfLocal(user.getAvatar());
-        user.setAvatar(storeAvatar(file));
+        Customer customer = getOrCreateCustomer(user);
+        deleteStoredAvatarIfLocal(customer.getAvatarUrl());
+        customer.setAvatarUrl(storeAvatar(file));
         return UserResponse.fromEntity(user);
     }
 
@@ -232,8 +244,22 @@ public class UserServiceImpl implements UserService {
         repo.deleteById(id);
     }
 
-    private Set<Role> resolveRoles(List<Integer> roleIds) {
-        if (roleIds == null) {
+    /** Lay ho so Customer cua user, tao moi (gan vao user, cascade) neu chua co. */
+    private Customer getOrCreateCustomer(User user) {
+        Customer customer = user.getCustomer();
+        if (customer == null) {
+            customer = Customer.builder()
+                    .user(user)
+                    .level(CustomerLevel.BROWSER)
+                    .loyaltyPoints(0L)
+                    .totalSpent(BigDecimal.ZERO)
+                    .build();
+            user.setCustomer(customer);
+        }
+        return customer;
+    }
+
+    private Set<Role> resolveRoles(List<Integer> roleIds) {        if (roleIds == null) {
             return null;
         }
         Set<Role> roles = new LinkedHashSet<>();

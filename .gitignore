@@ -25,3 +25,7 @@ backend/.mvn/
 # Logs and local caches
 *.log
 .DS_Store
+
+.vscode/
+mcps
+.kiro

@@ -1,6 +1,5 @@
 package org.akira.auratech.service;
 
-import lombok.RequiredArgsConstructor;
 import org.akira.auratech.exception.BusinessRuleException;
 import org.akira.auratech.exception.ResourceNotFoundException;
 import org.akira.auratech.model.Coupon;
@@ -9,17 +8,22 @@ import org.akira.auratech.model.OrderHistory;
 import org.akira.auratech.model.OrderItem;
 import org.akira.auratech.model.Product;
 import org.akira.auratech.model.enums.OrderStatus;
+import org.akira.auratech.model.enums.StockMovementType;
+import org.akira.auratech.model.enums.StockReferenceType;
 import org.akira.auratech.repository.CouponRepository;
 import org.akira.auratech.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
 @RequiredArgsConstructor
 public class OrderLifecycleService {
     private final ProductRepository productRepository;
     private final CouponRepository couponRepository;
+    private final StockMovementService stockMovementService;
 
     @Transactional(propagation = Propagation.MANDATORY)
     public void confirmAfterSuccessfulPayment(Order order) {
@@ -65,11 +69,21 @@ public class OrderLifecycleService {
     }
 
     private void releaseReservedInventory(Order order) {
+        Long orderRef = order.getId() == null ? null : order.getId().longValue();
         for (OrderItem item : order.getItems()) {
             Integer productId = item.getProduct().getId();
             Product product = productRepository.findByIdForUpdate(productId)
                     .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + productId));
             product.setStockQuantity(product.getStockQuantity() + item.getQuantity());
+            // Ton kho da duoc cong lai o tren -> chi GHI SO (RETURN_IN), tranh cong kep.
+            stockMovementService.recordLedgerEntry(
+                    product,
+                    item.getQuantity(),
+                    StockMovementType.RETURN_IN,
+                    StockReferenceType.ORDER,
+                    orderRef,
+                    "Hoan kho do huy/het han don #" + order.getId(),
+                    order.getUser());
         }
     }
 

@@ -21,6 +21,8 @@ import org.akira.auratech.model.OrderHistory;
 import org.akira.auratech.model.OrderItem;
 import org.akira.auratech.model.User;
 import org.akira.auratech.model.enums.OrderStatus;
+import org.akira.auratech.model.enums.StockMovementType;
+import org.akira.auratech.model.enums.StockReferenceType;
 import org.akira.auratech.repository.CartRepository;
 import org.akira.auratech.repository.OrderRepository;
 import org.akira.auratech.repository.UserRepository;
@@ -29,6 +31,7 @@ import org.akira.auratech.service.InventoryService;
 import org.akira.auratech.service.OrderService;
 import org.akira.auratech.service.OrderStateMachine;
 import org.akira.auratech.service.PaymentAttemptService;
+import org.akira.auratech.service.StockMovementService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -49,6 +52,7 @@ public class OrderServiceImpl implements OrderService {
     private final CouponRedemptionService couponRedemptionService;
     private final PaymentAttemptService paymentAttemptService;
     private final OrderStateMachine orderStateMachine;
+    private final StockMovementService stockMovementService;
 
     @Override
     @Transactional(readOnly = true)
@@ -175,7 +179,21 @@ public class OrderServiceImpl implements OrderService {
 
         OrderResponse response = OrderResponse.fromEntity(repo.save(order));
 
-        // B11: đặt hàng thành công thì dọn sạch giỏ (orphanRemoval sẽ xóa cart_items khi flush).
+        // B11: ghi so cai bien dong kho (SALE_OUT) cho tung dong — ton kho da bi tru atomic o B5,
+        // nen chi GHI SO (recordLedgerEntry) de tranh tru kep. Tham chieu ve don hang vua tao.
+        Long orderRef = order.getId().longValue();
+        for (LineDraft draft : lineDrafts) {
+            stockMovementService.recordLedgerEntry(
+                    draft.product(),
+                    -draft.quantity(),
+                    StockMovementType.SALE_OUT,
+                    StockReferenceType.ORDER,
+                    orderRef,
+                    "Ban hang tu don #" + order.getId(),
+                    user);
+        }
+
+        // B12: dat hang thanh cong thi don sach gio (orphanRemoval se xoa cart_items khi flush).
         cart.getItems().clear();
 
         return response;

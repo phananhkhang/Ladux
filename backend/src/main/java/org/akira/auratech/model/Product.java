@@ -63,6 +63,9 @@ public class Product {
     @Column(nullable = false, unique = true, length = 255)
     private String slug;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;                    // ← Thêm mới
+
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal basePrice;
 
@@ -72,6 +75,10 @@ public class Product {
     @Column(nullable = false)
     @Builder.Default
     private int stockQuantity = 0;
+
+    @Column(name = "low_stock_threshold")
+    @Builder.Default
+    private Integer lowStockThreshold = 5;  // Cảnh báo hết hàng
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "specs", columnDefinition = "jsonb")
@@ -87,15 +94,23 @@ public class Product {
     @CreatedDate
     private Instant createdAt;
 
-    @Column(name = "update_at")
+    @Column(name = "updated_at")
     @UpdateTimestamp
-    private Instant updateAt;
+    private Instant updatedAt;
+
+    // ==================== RELATIONSHIPS ====================
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default
     private List<ProductImage> images = new ArrayList<>();
 
+    @OneToMany(mappedBy = "product")
+    @ToString.Exclude
+    @Builder.Default
+    private List<Review> reviews = new ArrayList<>();
+
+    // Các quan hệ dưới đây KHÔNG nên có cascade
     @OneToMany(mappedBy = "product")
     @ToString.Exclude
     @Builder.Default
@@ -106,12 +121,7 @@ public class Product {
     @Builder.Default
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    @Builder.Default
-    private List<Review> reviews = new ArrayList<>();
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product")
     @ToString.Exclude
     @Builder.Default
     private List<Wishlist> wishlists = new ArrayList<>();
