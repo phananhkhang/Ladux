@@ -1,4 +1,4 @@
-# AuraTech - Đặc tả giao diện cho Figma / AI Design
+# Ladux - Đặc tả giao diện cho Figma / AI Design
 
 Tài liệu đã được chuẩn hóa về vị trí canonical:
 

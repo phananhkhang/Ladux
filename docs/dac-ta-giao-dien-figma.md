@@ -1,6 +1,6 @@
-# AuraTech - Đặc tả giao diện cho Figma / AI Design
+# Ladux - Đặc tả giao diện cho Figma / AI Design
 
-> Tài liệu canonical cho UI/UX AuraTech. Dùng file này làm context cho Figma,
+> Tài liệu canonical cho UI/UX Ladux. Dùng file này làm context cho Figma,
 > FigJam, Figma AI hoặc designer/frontend dev để tạo giao diện đúng nghiệp vụ,
 > đúng API backend và đúng hướng visual của dự án.
 
@@ -8,20 +8,20 @@
 
 ## 0. Nguyên tắc bắt buộc
 
-AuraTech là sàn thương mại điện tử **chỉ bán laptop**. Mọi sản phẩm, danh mục,
+Ladux là sàn thương mại điện tử **chỉ bán laptop**. Mọi sản phẩm, danh mục,
 ảnh minh họa, alt text, nội dung marketing và dữ liệu mẫu trong Figma phải xoay
 quanh laptop. Không tạo điện thoại, tablet, màn hình, chuột, bàn phím rời, tai
 nghe, linh kiện PC hay phụ kiện.
 
 Tài liệu này đã đối chiếu với:
 
-- Backend Spring Boot REST API trong `backend/src/main/java/org/akira/auratech`.
-- DTO request/response và enum trong `backend/src/main/java/org/akira/auratech/dto`
-  và `backend/src/main/java/org/akira/auratech/model/enums`.
+- Backend Spring Boot REST API trong `backend/src/main/java/org/akira/ladux`.
+- DTO request/response và enum trong `backend/src/main/java/org/akira/ladux/dto`
+  và `backend/src/main/java/org/akira/ladux/model/enums`.
 - Frontend React/Vite hiện tại trong `frontend/src`, đang dùng state mock ở
   `context.tsx` và `mockData.ts`, chưa đấu nối API thật.
 - Design direction trong `design_guidelines.json` và
-  `frontend/imports/pasted_text/aura-tech-ds.md`.
+  `frontend/imports/pasted_text/ladux-ds.md`.
 
 Figma cần thiết kế trải nghiệm production, nhưng phải ghi chú rõ các điểm backend
 hoặc frontend hiện tại chưa có endpoint/chưa implement.
@@ -30,7 +30,7 @@ hoặc frontend hiện tại chưa có endpoint/chưa implement.
 
 ## 1. Tóm tắt sản phẩm
 
-**AuraTech** là e-commerce laptop cao cấp, có 2 không gian chính:
+**Ladux** là e-commerce laptop cao cấp, có 2 không gian chính:
 
 1. **Storefront**: khách hàng tìm laptop, lọc theo nhu cầu, xem cấu hình, thêm
    giỏ hàng, checkout, thanh toán, theo dõi đơn, đánh giá, wishlist, quản lý tài
@@ -887,7 +887,7 @@ Micro-copy gợi ý:
 
 Tạo một Figma file có cấu trúc:
 
-1. **Cover / Product Context**: AuraTech laptop-only, personas, constraints.
+1. **Cover / Product Context**: Ladux laptop-only, personas, constraints.
 2. **Design System**: color tokens, typography, spacing, components, variants
    light/dark.
 3. **Storefront**: desktop + mobile key screens, prototype purchase flow.
@@ -911,7 +911,7 @@ Rules khi generate:
 Prompt ngắn để đưa vào Figma AI:
 
 ```text
-Design AuraTech, a laptop-only premium e-commerce and admin operations platform.
+Design Ladux, a laptop-only premium e-commerce and admin operations platform.
 Use this UI spec as the source of truth. Create a complete Figma file with a
 Design System page, Storefront screens, Admin screens, API notes, light/dark
 variants, loading/empty/error/data states, and laptop-only realistic data.

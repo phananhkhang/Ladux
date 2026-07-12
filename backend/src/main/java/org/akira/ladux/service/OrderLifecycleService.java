@@ -1,0 +1,114 @@
+package org.akira.ladux.service;
+
+import org.akira.ladux.exception.BusinessRuleException;
+import org.akira.ladux.exception.ResourceNotFoundException;
+import org.akira.ladux.model.Coupon;
+import org.akira.ladux.model.Order;
+import org.akira.ladux.model.OrderHistory;
+import org.akira.ladux.model.OrderItem;
+import org.akira.ladux.model.Product;
+import org.akira.ladux.model.enums.OrderStatus;
+import org.akira.ladux.model.enums.StockMovementType;
+import org.akira.ladux.model.enums.StockReferenceType;
+import org.akira.ladux.repository.CouponRepository;
+import org.akira.ladux.repository.ProductRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+
+// Tach side-effect khoi state machine — xu ly hau qua khi don hang doi trang thai do thanh toan.
+// Transaction propagation = MANDATORY: bat buoc chay trong transaction cua caller (PaymentWebhook,
+// PaymentService, OrderStateMachine). Hoan kho + huy coupon + doi status cung commit hoac cung rollback.
+// Khong goi truc tiep tu Controller — chi tu luong thanh toan hoac huy don.
+// Idempotent: goi lai khi da CONFIRMED/CANCELLED khong gay side-effect trung lap.
+// Luong huy don (cancelOrder): hoan kho -> ghi so cai RETURN_IN -> hoan coupon -> set CANCELLED -> ghi OrderHistory.
+@Service
+@RequiredArgsConstructor
+public class OrderLifecycleService {
+    private final ProductRepository productRepository;
+    private final CouponRepository couponRepository;
+    private final StockMovementService stockMovementService;
+
+    // Xac nhan don sau thanh toan thanh cong: PENDING -> CONFIRMED, xoa han thanh toan, ghi audit trail.
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void confirmAfterSuccessfulPayment(Order order) {
+        // Đơn đã hủy không thể quay lại — tránh race giữa webhook và job hết hạn.
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            throw new BusinessRuleException("Don hang da bi huy, khong the xac nhan thanh toan");
+        }
+        if (order.getStatus() == OrderStatus.SHIPPED || order.getStatus() == OrderStatus.DELIVERED) {
+            throw new BusinessRuleException("Don hang da duoc van chuyen, khong the cap nhat thanh toan");
+        }
+        // Idempotent: webhook VNPay có thể gọi lại nhiều lần khi payment đã SUCCESS.
+        if (order.getStatus() == OrderStatus.CONFIRMED) {
+            order.setPaymentExpiresAt(null);
+            return;
+        }
+        order.setStatus(OrderStatus.CONFIRMED);
+        order.setPaymentExpiresAt(null);
+        order.getHistories().add(OrderHistory.builder()
+                .order(order)
+                .user(order.getUser())
+                .status(OrderStatus.CONFIRMED.name())
+                .description("Payment succeeded")
+                .build());
+    }
+
+    // Huy don kem hoan tac: tra kho, hoan coupon, ghi lich su. description = ly do huy.
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void cancelOrder(Order order, String description) {
+        // Idempotent: đã CANCELLED thì bỏ qua, không hoàn kho lần hai.
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            return;
+        }
+        if (order.getStatus() == OrderStatus.DELIVERED || order.getStatus() == OrderStatus.SHIPPED) {
+            throw new BusinessRuleException("Don hang da duoc van chuyen, khong the huy");
+        }
+
+        releaseReservedInventory(order);
+        rollbackCouponUsage(order);
+        order.setStatus(OrderStatus.CANCELLED);
+        order.setPaymentExpiresAt(null);
+        order.getHistories().add(OrderHistory.builder()
+                .order(order)
+                .user(order.getUser())
+                .status(OrderStatus.CANCELLED.name())
+                .description(description)
+                .build());
+    }
+
+    // Hoan ton kho khi huy don: cong lai so luong da tru luc checkout, ghi so cai RETURN_IN (chi ghi so).
+    private void releaseReservedInventory(Order order) {
+        Long orderRef = order.getId() == null ? null : order.getId().longValue();
+        for (OrderItem item : order.getItems()) {
+            Integer productId = item.getProduct().getId();
+            Product product = productRepository.findByIdForUpdate(productId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + productId));
+            product.setStockQuantity(product.getStockQuantity() + item.getQuantity());
+            // Ton kho da duoc cong lai o tren -> chi GHI SO (RETURN_IN), tranh cong kep.
+            stockMovementService.recordLedgerEntry(
+                    product,
+                    item.getQuantity(),
+                    StockMovementType.RETURN_IN,
+                    StockReferenceType.ORDER,
+                    orderRef,
+                    "Hoan kho do huy/het han don #" + order.getId(),
+                    order.getUser());
+        }
+    }
+
+    // Giam usedCount cua coupon khi don bi huy — doi xung voi redeem luc tao don.
+    private void rollbackCouponUsage(Order order) {
+        if (order.getCoupon() == null) {
+            return;
+        }
+        Integer couponId = order.getCoupon().getId();
+        Coupon coupon = couponRepository.findByIdForUpdate(couponId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi id = " + couponId));
+        if (coupon.getUsedCount() > 0) {
+            coupon.setUsedCount(coupon.getUsedCount() - 1);
+        }
+    }
+}

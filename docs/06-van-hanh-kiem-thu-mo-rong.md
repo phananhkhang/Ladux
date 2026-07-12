@@ -1,6 +1,6 @@
 # Vận Hành, Kiểm Thử Và Mở Rộng
 
-Tài liệu này ghi lại cách build/test hiện tại và các việc cần làm nếu muốn đưa AuraTech gần production hơn.
+Tài liệu này ghi lại cách build/test hiện tại và các việc cần làm nếu muốn đưa Ladux gần production hơn.
 
 ## 1. Build Backend
 
@@ -21,13 +21,13 @@ mvn -q -DskipTests package
 Artifact backend:
 
 ```text
-backend/target/aura-tech.jar
+backend/target/ladux.jar
 ```
 
 Dockerfile hiện copy đúng file này:
 
 ```text
-COPY target/aura-tech.jar /app/aura-tech.jar
+COPY target/ladux.jar /app/ladux.jar
 ```
 
 ## 2. Test Backend
@@ -44,7 +44,7 @@ Hiện test chính là `@SpringBootTest`, nghĩa là test boot cả Spring appli
 Vì backend profile dev kết nối PostgreSQL thật, test cần:
 
 - PostgreSQL đang chạy.
-- Database `aura_tech`.
+- Database `ladux`.
 - Credential đúng.
 - `JWT_SECRET`.
 - `GOOGLE_CLIENT_ID`.

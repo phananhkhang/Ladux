@@ -1,6 +1,6 @@
-# Bài giảng: Access Token & Refresh Token trong AuraTech
+# Bài giảng: Access Token & Refresh Token trong Ladux
 
-> Mục tiêu: hiểu **tận gốc** cơ chế xác thực hai token của AuraTech — từ lý thuyết đến từng dòng code.
+> Mục tiêu: hiểu **tận gốc** cơ chế xác thực hai token của Ladux — từ lý thuyết đến từng dòng code.
 > Sau bài này bạn sẽ trả lời được: token là gì, tại sao cần *hai* loại, mỗi file đóng vai trò gì,
 > và các luồng login / gọi API / refresh / logout / đổi mật khẩu / khóa tài khoản chạy ra sao.
 
@@ -20,13 +20,13 @@ Bài này tập trung vào **authentication** và cách *duy trì trạng thái 
 HTTP là **stateless** — server không nhớ request trước. Sau khi đăng nhập, mỗi request tiếp theo
 phải tự chứng minh "tôi đã đăng nhập rồi". Có 2 trường phái:
 
-| | Session (cổ điển) | Token/JWT (AuraTech dùng) |
+| | Session (cổ điển) | Token/JWT (Ladux dùng) |
 |---|---|---|
 | Trạng thái | Server lưu session trong RAM/Redis | Token tự chứa thông tin, server **không cần lưu** |
 | Mở rộng | Khó scale (sticky session) | Dễ scale ngang (stateless) |
 | Thu hồi | Dễ (xóa session) | **Khó** (token đã phát thì sống tới khi hết hạn) |
 
-AuraTech chọn JWT stateless để dễ scale, nhưng dùng thêm 2 kỹ thuật để **bù lại nhược điểm khó thu hồi**:
+Ladux chọn JWT stateless để dễ scale, nhưng dùng thêm 2 kỹ thuật để **bù lại nhược điểm khó thu hồi**:
 **refresh token lưu DB** + **tokenVersion**. Đây là điểm tinh tế nhất của hệ thống.
 
 ### 0.3 Hai loại token và lý do tồn tại

@@ -1,0 +1,190 @@
+package org.akira.ladux.service;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+import org.akira.ladux.AbstractIntegrationTest;
+import org.akira.ladux.dto.request.OrderRequest;
+import org.akira.ladux.dto.request.OrderStatusUpdateRequest;
+import org.akira.ladux.exception.BusinessRuleException;
+import org.akira.ladux.model.Cart;
+import org.akira.ladux.model.CartItem;
+import org.akira.ladux.model.Order;
+import org.akira.ladux.model.Product;
+import org.akira.ladux.model.enums.OrderStatus;
+import org.akira.ladux.model.enums.PaymentProvider;
+import org.akira.ladux.repository.BrandRepository;
+import org.akira.ladux.repository.CartRepository;
+import org.akira.ladux.repository.CategoryRepository;
+import org.akira.ladux.repository.CouponRepository;
+import org.akira.ladux.repository.OrderRepository;
+import org.akira.ladux.repository.ProductRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
+/**
+ * Integration test cho luong nghiep vu trong tam (luong tien): checkout / coupon / huy don.
+ *
+ * <p>@Transactional o cap class -> moi test ROLLBACK sau khi chay, du lieu seed khong bi thay doi
+ * (cac test doc lap voi nhau). Vi cau lenh tru kho la JPQL bulk-update (bo qua persistence context),
+ * ta goi {@code em.flush(); em.clear();} truoc khi doc lai de tranh doc phai entity cache cu (stale).
+ */
+@Transactional
+class OrderServiceTest extends AbstractIntegrationTest {
+
+    @Autowired OrderService orderService;
+    @Autowired CartRepository cartRepository;
+    @Autowired ProductRepository productRepository;
+    @Autowired CouponRepository couponRepository;
+    @Autowired OrderRepository orderRepository;
+    @Autowired BrandRepository brandRepository;
+    @Autowired CategoryRepository categoryRepository;
+
+    @PersistenceContext
+    EntityManager em;
+
+    private static final int USER_ID = 2; // user seed: quang_huy
+
+    private Product newProduct(int stock, String price) {
+        String unique = UUID.randomUUID().toString().substring(0, 8);
+        return productRepository.save(Product.builder()
+                .brand(brandRepository.findAll().get(0))
+                .category(categoryRepository.findAll().get(0))
+                .sku("IT-" + unique)
+                .name("IT Product " + unique)
+                .slug("it-product-" + unique)
+                .basePrice(new BigDecimal(price))
+                .stockQuantity(stock)
+                .isActive(true)
+                .build());
+    }
+
+    private void setCartSingleItem(int userId, Product product, int qty) {
+        Cart cart = cartRepository.findByUserIdForUpdate(userId).orElseThrow();
+        cart.getItems().clear();
+        cart.getItems().add(CartItem.builder().cart(cart).product(product).quantity(qty).build());
+        cartRepository.save(cart);
+    }
+
+    private Order newestOrderOf(int userId) {
+        return orderRepository
+                .findByUserId(userId, PageRequest.of(0, 1, Sort.by("id").descending()))
+                .getContent()
+                .get(0);
+    }
+
+    private int stockOf(int productId) {
+        return productRepository.findById(productId).orElseThrow().getStockQuantity();
+    }
+
+    @Test
+    void checkout_deductsStock_clearsCart_andCreatesPendingOrder() {
+        Product product = newProduct(10, "500.00");
+        setCartSingleItem(USER_ID, product, 3);
+
+        orderService.createOrder(USER_ID,
+                new OrderRequest(null, PaymentProvider.COD, "123 Test Street"));
+
+        em.flush();
+        em.clear();
+
+        // 1. Ton kho giam dung 3.
+        assertEquals(7, stockOf(product.getId()), "Checkout phai tru kho theo so luong mua");
+        // 2. Gio hang duoc don sach sau khi dat hang.
+        assertTrue(cartRepository.findByUserId(USER_ID).getItems().isEmpty(), "Gio hang phai rong sau checkout");
+        // 3. Don moi o trang thai PENDING, subTotal = 3 * 500.
+        Order order = newestOrderOf(USER_ID);
+        assertEquals(OrderStatus.PENDING, order.getStatus());
+        assertEquals(0, new BigDecimal("1500.00").compareTo(order.getSubTotal()));
+    }
+
+    @Test
+    void checkout_withValidCoupon_appliesDiscount_andIncrementsUsedCount() {
+        Product product = newProduct(10, "1000.00");
+        setCartSingleItem(USER_ID, product, 1);
+        int usedBefore = couponRepository.findByCode("GIAM10").getUsedCount();
+
+        orderService.createOrder(USER_ID,
+                new OrderRequest("GIAM10", PaymentProvider.COD, "addr"));
+
+        em.flush();
+        em.clear();
+
+        Order order = newestOrderOf(USER_ID);
+        // GIAM10 = giam 10% -> 100 tien giam, final = 900.
+        assertEquals(0, new BigDecimal("100.00").compareTo(order.getDiscountAmount()));
+        assertEquals(0, new BigDecimal("900.00").compareTo(order.getFinalAmount()));
+        // Dung coupon -> usedCount tang 1.
+        assertEquals(usedBefore + 1, couponRepository.findByCode("GIAM10").getUsedCount());
+    }
+
+    @Test
+    void cancelOrder_restocksProduct_andRollsBackCouponUsage() {
+        Product product = newProduct(10, "1000.00");
+        setCartSingleItem(USER_ID, product, 4);
+        int usedBefore = couponRepository.findByCode("GIAM10").getUsedCount();
+
+        orderService.createOrder(USER_ID,
+                new OrderRequest("GIAM10", PaymentProvider.COD, "addr"));
+
+        em.flush();
+        em.clear();
+
+        Order order = newestOrderOf(USER_ID);
+        assertEquals(6, stockOf(product.getId()), "Sau checkout: 10 - 4 = 6");
+        assertEquals(usedBefore + 1, couponRepository.findByCode("GIAM10").getUsedCount());
+
+        orderService.updateOrderStatus(order.getId(),
+                new OrderStatusUpdateRequest(OrderStatus.CANCELLED, null));
+
+        em.flush();
+        em.clear();
+
+        assertEquals(10, stockOf(product.getId()), "Huy don -> hoan kho ve 10");
+        assertEquals(usedBefore, couponRepository.findByCode("GIAM10").getUsedCount(), "Huy don -> hoan luot coupon");
+        assertEquals(OrderStatus.CANCELLED, orderRepository.findById(order.getId()).orElseThrow().getStatus());
+    }
+
+    @Test
+    void checkout_withEmptyCart_throwsBusinessRuleException() {
+        Cart cart = cartRepository.findByUserIdForUpdate(USER_ID).orElseThrow();
+        cart.getItems().clear();
+        cartRepository.save(cart);
+        em.flush();
+
+        assertThrows(BusinessRuleException.class, () ->
+                orderService.createOrder(USER_ID, new OrderRequest(null, PaymentProvider.COD, "addr")));
+    }
+
+    @Test
+    void checkout_setsPaymentExpiry_forOnlineProvider_butNotForCod() {
+        Product product = newProduct(10, "500.00");
+
+        // COD: khong co han thanh toan.
+        setCartSingleItem(USER_ID, product, 1);
+        orderService.createOrder(USER_ID, new OrderRequest(null, PaymentProvider.COD, "addr"));
+        em.flush();
+        em.clear();
+        assertNotNull(newestOrderOf(USER_ID));
+        assertTrue(newestOrderOf(USER_ID).getPaymentExpiresAt() == null, "COD khong dat han thanh toan");
+
+        // VNPAY: co han thanh toan.
+        Product product2 = newProduct(10, "500.00");
+        setCartSingleItem(USER_ID, product2, 1);
+        orderService.createOrder(USER_ID, new OrderRequest(null, PaymentProvider.VNPAY, "addr"));
+        em.flush();
+        em.clear();
+        assertNotNull(newestOrderOf(USER_ID).getPaymentExpiresAt(), "VNPAY phai dat han thanh toan");
+    }
+}

@@ -1,4 +1,4 @@
-// Types matching backend DTOs under org.akira.auratech.dto.*
+// Types matching backend DTOs under org.akira.ladux.dto.*
 
 // ── Enums ────────────────────────────────────────────────────────────────────
 

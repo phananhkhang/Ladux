@@ -135,7 +135,7 @@ export function AdminDashboard() {
     <div>
       <AdminHeader
         title="Dashboard"
-        subtitle="Live data from AuraTech API"
+        subtitle="Live data from Ladux API"
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

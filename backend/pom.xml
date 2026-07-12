@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.akira</groupId>
-    <artifactId>AuraTech</artifactId>
+    <artifactId>Ladux</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>AuraTech</name>
-    <description>AuraTech</description>
+    <name>Ladux</name>
+    <description>Ladux</description>
     <url/>
     <licenses>
         <license/>
@@ -195,7 +195,7 @@
     </dependencyManagement>
 
     <build>
-        <finalName>aura-tech</finalName>
+        <finalName>ladux</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

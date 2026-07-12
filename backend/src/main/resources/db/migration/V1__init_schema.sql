@@ -1,4 +1,4 @@
--- Schema for AuraTech
+-- Schema for Ladux
 
 CREATE TABLE roles (
     id SERIAL PRIMARY KEY,

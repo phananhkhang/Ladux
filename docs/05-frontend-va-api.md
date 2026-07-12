@@ -262,7 +262,7 @@ Auth.login
 Store cũng có demo fallback:
 
 ```text
-email: admin@auratech.io
+email: admin@ladux.io
 password: <mat khau admin da cau hinh rieng>
 ```
 

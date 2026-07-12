@@ -5,7 +5,7 @@ Tài liệu này giải thích vai trò của từng thư mục/file quan trọn
 ## 1. Cấu Trúc Gốc
 
 ```text
-AuraTech/
+Ladux/
 ├── .github/
 ├── backend/
 ├── docs/
@@ -44,7 +44,7 @@ backend/
 | `pom.xml` | Khai báo Spring Boot, JPA, Security, JWT, Flyway, PostgreSQL |
 | `Dockerfile` | Đóng gói backend thành container |
 | `docker-compose.yml` | Chạy backend + PostgreSQL |
-| `database/auratech_erd.png` | Ảnh ERD |
+| `database/ladux_erd.png` | Ảnh ERD |
 | `src/main/java` | Source code Java |
 | `src/main/resources` | Config và migration |
 | `src/test/java` | Test backend |
@@ -52,8 +52,8 @@ backend/
 ## 3. Backend Java Packages
 
 ```text
-backend/src/main/java/org/akira/auratech/
-├── AuraTechApplication.java
+backend/src/main/java/org/akira/ladux/
+├── LaduxApplication.java
 ├── config/
 ├── controller/
 ├── dto/
@@ -68,7 +68,7 @@ backend/src/main/java/org/akira/auratech/
 └── utils/
 ```
 
-### `AuraTechApplication.java`
+### `LaduxApplication.java`
 
 Entry point của Spring Boot app. File này bật:
 

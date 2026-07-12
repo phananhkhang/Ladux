@@ -1,4 +1,4 @@
-# AuraTech Backend — Kế hoạch nâng cấp lên Production
+# Ladux Backend — Kế hoạch nâng cấp lên Production
 
 > Tài liệu sống (living doc). Cập nhật trạng thái khi hoàn thành từng mục.
 > Mục tiêu: đưa backend từ "MVP chạy được" lên "sản phẩm cấp production".

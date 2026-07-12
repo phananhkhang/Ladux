@@ -7,7 +7,7 @@ Tài liệu này mô tả các luồng hoạt động chính của toàn bộ d�
 ### Backend
 
 ```text
-AuraTechApplication.main
+LaduxApplication.main
   -> Spring Boot start
   -> Load application.properties
   -> Chọn profile dev/prod

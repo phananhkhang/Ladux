@@ -1,4 +1,4 @@
-# AuraTech Backend — Tài liệu Kiến trúc & Tri thức Hệ thống
+# Ladux Backend — Tài liệu Kiến trúc & Tri thức Hệ thống
 
 > Tài liệu kỹ thuật mô tả **chính xác hiện trạng** codebase `backend/`.
 > Mục đích: nguồn tham chiếu duy nhất (single source of truth) về kiến trúc, mô hình dữ liệu,
@@ -10,7 +10,7 @@
 
 ## 1. Tổng quan hệ thống
 
-AuraTech là backend **thương mại điện tử công nghệ** (B2C) kết hợp **quản lý chuỗi cung ứng** (procurement) theo kiến trúc **modular monolith** phân lớp truyền thống (Controller → Service → Repository).
+Ladux là backend **thương mại điện tử công nghệ** (B2C) kết hợp **quản lý chuỗi cung ứng** (procurement) theo kiến trúc **modular monolith** phân lớp truyền thống (Controller → Service → Repository).
 
 **Đối tượng người dùng:**
 - `CUSTOMER`: mua sắm, giỏ hàng, thanh toán VNPay/COD, review, wishlist.
@@ -52,12 +52,12 @@ Hệ thống ưu tiên **an toàn dữ liệu** (atomic deduct stock, pessimisti
 | Mã hóa | commons-codec | 1.22.0 (HMAC VNPay) |
 | API Docs | springdoc-openapi | 3.0.3 |
 | Observability | Spring Boot Actuator | health (liveness/readiness), info, metrics, prometheus |
-| Build | Maven + Lombok | finalName=aura-tech |
+| Build | Maven + Lombok | finalName=ladux |
 
 **Đóng gói & Deploy:**
-- Multi-stage Dockerfile: Temurin 21-jdk-alpine → jre-alpine, non-root `auratech` user, volume uploads.
+- Multi-stage Dockerfile: Temurin 21-jdk-alpine → jre-alpine, non-root `ladux` user, volume uploads.
 - docker-compose: app + postgres:17-alpine + redis:alpine, healthchecks đầy đủ (`/actuator/health/liveness`, pg_isready, redis ping).
-- Entry point: `AuraTechApplication` với `@SpringBootApplication`, `@EnableJpaAuditing`, `@EnableScheduling`, `@EnableCaching`.
+- Entry point: `LaduxApplication` với `@SpringBootApplication`, `@EnableJpaAuditing`, `@EnableScheduling`, `@EnableCaching`.
 
 **Biến môi trường then chốt:** JWT_SECRET, GOOGLE_*, VNPAY_SECRET_KEY, DB_*, AUTH_COOKIE_*, UPLOAD_ROOT, SPRING_PROFILES_ACTIVE.
 
@@ -93,8 +93,8 @@ HTTP Request
 ### 3.1 Cấu trúc package hiện tại (cập nhật)
 
 ```
-org.akira.auratech
-├── AuraTechApplication.java
+org.akira.ladux
+├── LaduxApplication.java
 ├── config/
 │   ├── JacksonConfig.java          # custom time format + zone
 │   ├── JwtFilter.java
@@ -248,7 +248,7 @@ Cấu hình: `app.rate-limit.login.capacity` / `refill-minutes`.
 
 - OAuth2: chỉ cho user đã tồn tại + active → set cookie → redirect frontend.
 - CSRF: CookieCsrf (HttpOnly=false), bỏ qua cho auth endpoints + webhook + Bearer.
-- CORS: localhost:3000 + auratech.vn, allowCredentials.
+- CORS: localhost:3000 + ladux.vn, allowCredentials.
 - Cookie: HttpOnly, configurable secure/sameSite (Strict mặc định), refresh path hẹp.
 
 ### 6.4 Phân quyền & Chống IDOR

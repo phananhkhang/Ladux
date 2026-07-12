@@ -10,15 +10,15 @@ RUN mvn -q -DskipTests package
 FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
-RUN addgroup -S auratech && adduser -S auratech -G auratech \
-    && mkdir -p /app/uploads && chown -R auratech:auratech /app
+RUN addgroup -S ladux && adduser -S ladux -G ladux \
+    && mkdir -p /app/uploads && chown -R ladux:ladux /app
 
-COPY --from=builder /build/target/aura-tech.jar /app/aura-tech.jar
+COPY --from=builder /build/target/ladux.jar /app/ladux.jar
 
 # Đảm bảo non-root user có quyền đọc jar và ghi uploads (volume có thể override owner)
-RUN chown auratech:auratech /app/aura-tech.jar && chmod 755 /app/uploads
+RUN chown ladux:ladux /app/ladux.jar && chmod 755 /app/uploads
 
-USER auratech
+USER ladux
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-jar", "/app/aura-tech.jar"]
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-jar", "/app/ladux.jar"]

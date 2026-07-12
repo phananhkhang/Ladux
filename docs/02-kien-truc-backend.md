@@ -1,6 +1,6 @@
 # Kiến Trúc Backend
 
-Backend AuraTech là một Spring Boot monolith được tổ chức theo kiến trúc phân tầng:
+Backend Ladux là một Spring Boot monolith được tổ chức theo kiến trúc phân tầng:
 
 ```text
 Controller -> Service -> Repository -> Database

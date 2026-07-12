@@ -1,10 +1,10 @@
-# Bài Giảng Backend AuraTech Từ Tổng Quan Đến Chi Tiết
+# Bài Giảng Backend Ladux Từ Tổng Quan Đến Chi Tiết
 
-Tài liệu này là một bài giảng đọc sâu backend AuraTech. Mục tiêu là giúp bạn không chỉ biết endpoint nào làm gì, mà còn hiểu request đi qua những tầng nào, nghiệp vụ được kiểm soát ở đâu, dữ liệu được lưu thế nào, và các workflow thương mại điện tử nối vào nhau ra sao.
+Tài liệu này là một bài giảng đọc sâu backend Ladux. Mục tiêu là giúp bạn không chỉ biết endpoint nào làm gì, mà còn hiểu request đi qua những tầng nào, nghiệp vụ được kiểm soát ở đâu, dữ liệu được lưu thế nào, và các workflow thương mại điện tử nối vào nhau ra sao.
 
 ## 1. Cách Nhìn Tổng Quan
 
-AuraTech backend là một Spring Boot monolith cho hệ thống bán hàng công nghệ. Nó không tách thành nhiều microservice, mà gom các module vào một ứng dụng duy nhất:
+Ladux backend là một Spring Boot monolith cho hệ thống bán hàng công nghệ. Nó không tách thành nhiều microservice, mà gom các module vào một ứng dụng duy nhất:
 
 ```text
 Client
@@ -55,7 +55,7 @@ Backend dùng:
 File khởi động:
 
 ```text
-backend/src/main/java/org/akira/auratech/AuraTechApplication.java
+backend/src/main/java/org/akira/ladux/LaduxApplication.java
 ```
 
 Ứng dụng bật:
@@ -116,8 +116,8 @@ Controller không chứa logic nghiệp vụ nặng. Nó chỉ điều phối re
 DTO nằm ở:
 
 ```text
-backend/src/main/java/org/akira/auratech/dto/request
-backend/src/main/java/org/akira/auratech/dto/response
+backend/src/main/java/org/akira/ladux/dto/request
+backend/src/main/java/org/akira/ladux/dto/response
 ```
 
 Request DTO giúp kiểm soát dữ liệu client gửi lên. Ví dụ:
@@ -180,7 +180,7 @@ Các kỹ thuật quan trọng:
 Entity nằm ở:
 
 ```text
-backend/src/main/java/org/akira/auratech/model
+backend/src/main/java/org/akira/ladux/model
 ```
 
 Mỗi entity map với một bảng:
@@ -1045,7 +1045,7 @@ HTTP status mapping:
 `OrderStateMachineImpl.expirePendingOrders` chạy định kỳ:
 
 ```text
-@Scheduled(fixedDelayString = "${auratech.order-expiration.fixed-delay-ms:60000}")
+@Scheduled(fixedDelayString = "${ladux.order-expiration.fixed-delay-ms:60000}")
 ```
 
 Mỗi 60 giây mặc định:
@@ -1333,7 +1333,7 @@ Order, payment, review, user nên trả `Page`, không nên trả toàn bộ `Li
 
 ### 17.5 Webhook payment cần idempotency
 
-Payment gateway thường gọi lại nhiều lần. AuraTech đã xử lý ở `PaymentWebhookServiceImpl` bằng state check + unique `transaction_no`. Bài học chung: luôn verify chữ ký, khớp số tiền, và không update order trực tiếp ngoài lifecycle service.
+Payment gateway thường gọi lại nhiều lần. Ladux đã xử lý ở `PaymentWebhookServiceImpl` bằng state check + unique `transaction_no`. Bài học chung: luôn verify chữ ký, khớp số tiền, và không update order trực tiếp ngoài lifecycle service.
 
 ### 17.6 Tách thumbnail và gallery ảnh phụ
 
@@ -1359,7 +1359,7 @@ Payment gateway thường gọi lại nhiều lần. AuraTech đã xử lý ở 
 
 Nếu muốn tự đọc lại backend theo thứ tự hiệu quả:
 
-1. `AuraTechApplication.java`
+1. `LaduxApplication.java`
 2. `application.properties`, `application-dev.properties`, `application-prod.properties`
 3. `SecurityConfig`, `JwtFilter`, `AuthCookieService`, `JwtService`
 4. `V1__init_schema.sql`, `V2__add_hot_path_indexes.sql`, rồi đọc tiếp `V7`–`V16` (constraint, trigram, shedlock, rating check...)
@@ -1398,7 +1398,7 @@ product_images
 
 ## 20. Tóm Tắt Một Mạch Toàn Backend
 
-AuraTech backend là một monolith Spring Boot cho ecommerce. Public user có thể đọc catalog và review. Khi đăng ký, backend tạo user CUSTOMER và cart. Khi đăng nhập, backend xác thực username/password, tạo JWT và set vào cookie HttpOnly. Các request protected đi qua JwtFilter để nạp UserPrincipal vào SecurityContext.
+Ladux backend là một monolith Spring Boot cho ecommerce. Public user có thể đọc catalog và review. Khi đăng ký, backend tạo user CUSTOMER và cart. Khi đăng nhập, backend xác thực username/password, tạo JWT và set vào cookie HttpOnly. Các request protected đi qua JwtFilter để nạp UserPrincipal vào SecurityContext.
 
 User có thể quản lý cart, wishlist, address và tạo order. Tạo order là workflow transaction lớn: backend khóa product, kiểm tra và trừ tồn kho, chốt giá, redeem coupon, tạo order PENDING, order item, history và payment PENDING. Nếu payment thành công, order được confirm. Nếu payment fail, hủy hoặc quá hạn, lifecycle service hoàn kho, rollback coupon, set status CANCELLED và ghi history.
 
