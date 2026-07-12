@@ -13,6 +13,8 @@ services:
       - JWT_SECRET=${JWT_SECRET:-5/ne3ZpC3uVErWJwKCirEZmBt2VxC4GFzNh2olODU4Y=}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID in your environment}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET in your environment}
+      # Serve seed product images from host ../uploads (bind-mounted below)
+      - UPLOAD_ROOT=/app/uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -21,7 +23,8 @@ services:
     networks:
       - s-network
     volumes:
-      - uploads-data:/app/uploads
+      # Project root uploads/ (products, avatars) — not an empty named volume
+      - ../uploads:/app/uploads
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/actuator/health/liveness"]
       interval: 15s
@@ -65,7 +68,6 @@ services:
 
 volumes:
   postgres-data:
-  uploads-data:
 
 networks:
   s-network:
