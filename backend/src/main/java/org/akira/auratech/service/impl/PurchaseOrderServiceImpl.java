@@ -30,6 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+// Quan ly don mua hang tu nha cung cap (luong nhap kho).
+// Vong doi: PENDING -> CONFIRMED -> PARTIALLY_RECEIVED -> RECEIVED (hoac CANCELLED).
+// receiveGoods: moi lan nhan hang -> cong ton kho + ghi PURCHASE_IN. Tu dong RECEIVED khi nhan du.
 @Service
 @RequiredArgsConstructor
 public class PurchaseOrderServiceImpl implements PurchaseOrderService {

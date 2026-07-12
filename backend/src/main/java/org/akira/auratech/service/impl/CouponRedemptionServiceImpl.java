@@ -15,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+// Ap dung coupon khi tao don (commit, khong chi preview).
+// Chong double-spend: findByCodeForUpdate khoa row coupon trong transaction.
+// Luat nghiep vu nam tren entity Coupon (het han, het luot, min order value, tinh discount).
 @Service
 @RequiredArgsConstructor
 public class CouponRedemptionServiceImpl implements CouponRedemptionService {
@@ -24,10 +27,12 @@ public class CouponRedemptionServiceImpl implements CouponRedemptionService {
     @Transactional(propagation = Propagation.MANDATORY)
     @CacheEvict(value = "coupons", allEntries = true)
     public CouponRedemptionResult redeem(String couponCode, BigDecimal subTotal) {
+        // Không nhập mã → không giảm giá, vẫn cho phép đặt hàng bình thường.
         if (couponCode == null || couponCode.isBlank()) {
             return CouponRedemptionResult.empty();
         }
 
+        // Khóa coupon để serialize các request redeem cùng mã.
         Coupon coupon = couponRepository.findByCodeForUpdate(couponCode)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay coupon voi code = " + couponCode));
 

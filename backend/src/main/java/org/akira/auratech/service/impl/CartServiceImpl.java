@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+// Quan ly gio hang — moi user co dung mot cart (1-1 voi User).
+// Moi thao tac ghi khoa cart (findByUserIdForUpdate) de tranh race voi checkout.
+// Checkout thanh cong se clear cart o OrderServiceImpl.createOrder.
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {

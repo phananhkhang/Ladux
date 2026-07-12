@@ -21,9 +21,13 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 
+// Quan ly vong doi payment attempt gan voi don hang.
+// initializePayment: goi tu createOrder — tao Payment PENDING + set paymentExpiresAt (15 phut, tru COD).
+// retryPayment: chi khi lan thanh toan gan nhat FAILED — tao attempt PENDING moi.
 @Service
 @RequiredArgsConstructor
 public class PaymentAttemptServiceImpl implements PaymentAttemptService {
+    // Thoi gian cho thanh toan truoc khi job tu huy don PENDING.
     private static final Duration PAYMENT_TIMEOUT = Duration.ofMinutes(15);
 
     private final OrderRepository orderRepository;
@@ -31,6 +35,7 @@ public class PaymentAttemptServiceImpl implements PaymentAttemptService {
 
     @Override
     public void initializePayment(Order order, PaymentProvider provider, BigDecimal amount) {
+        // COD không có hạn thanh toán — khách trả khi nhận hàng.
         order.setPaymentExpiresAt(paymentExpiresAt(provider));
         order.getPayments().add(Payment.builder()
                 .order(order)

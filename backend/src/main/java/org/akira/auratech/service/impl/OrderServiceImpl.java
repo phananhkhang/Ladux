@@ -42,6 +42,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+// Trung tam luong checkout — tao don tu gio hang.
+// Luong createOrder (mot transaction):
+//   1. Kiem tra user active
+//   2. Lay cart co khoa (FOR UPDATE)
+//   3. Tru kho atomic + chot gia (InventoryService)
+//   4. Redeem coupon (CouponRedemptionService)
+//   5. Tao Order PENDING + OrderItem + OrderHistory
+//   6. Khoi tao Payment PENDING (PaymentAttemptService)
+//   7. Ghi so cai SALE_OUT (StockMovementService.recordLedgerEntry)
+//   8. Don sach gio hang
+// Chong IDOR: getOrderById doi chieu order.user.id == userId.
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {

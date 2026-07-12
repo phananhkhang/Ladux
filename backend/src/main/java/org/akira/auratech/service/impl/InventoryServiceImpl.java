@@ -18,6 +18,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+// Quan ly ton kho tai thoi diem checkout — chong overselling bang UPDATE atomic.
+// Chien luoc: UPDATE co dieu kien stockQuantity >= :qty thay vi lock bi quan dai.
+// rowsAffected == 0 -> nem InsufficientStockException. CHECK constraint stock_quantity >= 0 (V9) lam luoi an toan.
+// propagation = MANDATORY: chay trong transaction cua OrderServiceImpl.createOrder.
 @Service
 @RequiredArgsConstructor
 public class InventoryServiceImpl implements InventoryService {
@@ -31,13 +35,16 @@ public class InventoryServiceImpl implements InventoryService {
         List<LineDraft> drafts = new ArrayList<>();
 
         for (OrderLineRequest item : items) {
-            // 1. Trừ kho atomic (không cần lock lâu)
+            // Bước 1: Trừ kho nguyên tử — một lệnh UPDATE, không cần giữ lock lâu.
+            // SQL: UPDATE products SET stock_quantity = stock_quantity - :qty
+            //      WHERE id = :id AND stock_quantity >= :qty
             int updated = productRepository.deductStockAtomically(item.productId(), item.quantity());
             if (updated == 0) {
                 throw new InsufficientStockException("Không đủ hàng hoặc sản phẩm không tồn tại");
             }
 
-            // 2. Load product để lấy giá + thông tin (sau khi đã trừ thành công)
+            // Bước 2: Load product sau khi trừ thành công để lấy giá bán hiện tại.
+            // Giá sẽ được chốt vào OrderItem.priceAtPurchase (snapshot — không đổi sau này).
             Product product = productRepository.findById(item.productId())
                     .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 

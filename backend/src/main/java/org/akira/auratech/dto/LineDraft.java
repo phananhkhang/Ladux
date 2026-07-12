@@ -3,7 +3,9 @@ package org.akira.auratech.dto;
 import org.akira.auratech.model.Product;
 import java.math.BigDecimal;
 
-public record LineDraft( // 1 dòng sản phẩm trong giỏ hàng
+// Dong dat hang tam sau khi tru kho va chot gia — dung noi bo trong createOrder.
+// product: da tru stock; priceAtPurchase: gia snapshot; lineTotal = priceAtPurchase * quantity.
+public record LineDraft(
         Product product,
         Integer quantity,
         BigDecimal priceAtPurchase,

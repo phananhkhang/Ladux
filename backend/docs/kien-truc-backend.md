@@ -1,26 +1,34 @@
 # AuraTech Backend — Tài liệu Kiến trúc & Tri thức Hệ thống
 
-> Tài liệu kỹ thuật mô tả chính xác hiện trạng codebase `backend/`.
+> Tài liệu kỹ thuật mô tả **chính xác hiện trạng** codebase `backend/`.
 > Mục đích: nguồn tham chiếu duy nhất (single source of truth) về kiến trúc, mô hình dữ liệu,
-> luồng nghiệp vụ, bảo mật và vận hành của backend AuraTech.
+> luồng nghiệp vụ, bảo mật, vận hành và hướng phát triển.
 >
-> Cập nhật lần cuối: 2026-06-13 · Phạm vi: toàn bộ `backend/src/main`
+> Cập nhật lần cuối: 2026-06-24 (cập nhật sâu từ 2026-06-13) · Phạm vi: toàn bộ `backend/src/main` + migration V22–V23 + tests.
 
 ---
 
 ## 1. Tổng quan hệ thống
 
-AuraTech là backend thương mại điện tử (e-commerce) cho mặt hàng công nghệ, xây dựng theo
-kiến trúc **modular monolith** phân lớp truyền thống. Hệ thống cung cấp REST API cho hai nhóm
-người dùng: khách hàng (`CUSTOMER`) và quản trị viên (`ADMIN`).
+AuraTech là backend **thương mại điện tử công nghệ** (B2C) kết hợp **quản lý chuỗi cung ứng** (procurement) theo kiến trúc **modular monolith** phân lớp truyền thống (Controller → Service → Repository).
 
-**Nghiệp vụ cốt lõi:**
-- Catalog: thương hiệu (brand), danh mục (category — phân cấp cây), sản phẩm (product), ảnh sản phẩm.
-- Mua hàng: giỏ hàng (cart), đặt hàng (order), vòng đời đơn (order state machine), lịch sử đơn.
-- Thanh toán: payment + webhook VNPay (IPN), retry, hết hạn thanh toán tự động.
-- Khuyến mãi: coupon (giảm theo % hoặc số tiền cố định) với giới hạn lượt dùng.
-- Tương tác: đánh giá (review), danh sách yêu thích (wishlist).
-- Định danh: đăng ký/đăng nhập, JWT cookie, refresh token, OAuth2 Google, địa chỉ giao hàng.
+**Đối tượng người dùng:**
+- `CUSTOMER`: mua sắm, giỏ hàng, thanh toán VNPay/COD, review, wishlist.
+- `ADMIN`: quản trị catalog, đơn hàng, người dùng, **khách hàng (CRM)**, **nhà cung cấp**, đơn mua hàng (PO), biến động kho.
+
+**Nghiệp vụ cốt lõi (đã mở rộng):**
+
+**B2C E-commerce:**
+- Catalog: Brand, Category (cây phân cấp), Product (+description, lowStockThreshold), ProductImage, specs JSONB.
+- Mua sắm: Cart → Checkout (Order state machine + atomic stock), OrderHistory, Payment + VNPay IPN webhook (production-grade).
+- Khuyến mãi & Tương tác: Coupon (domain logic rich), Review (1 user/product), Wishlist.
+- Định danh: Register/Login/Refresh/Logout (JWT cookie + opaque refresh + tokenVersion), OAuth2 Google, UserAddress.
+
+**Mở rộng quan trọng (từ V22):**
+- **CRM & Loyalty**: Tách biệt `Customer` (shared PK 1-1 với User) chứa fullName, phone, avatar, loyaltyPoints, level (BROWSER→SILVER→GOLD→RUBY), totalSpent.
+- **Supply Chain / Procurement**: Supplier, ProductSupplier (giá nhập + lead time), PurchaseOrder + PurchaseOrderItem (vòng đời PENDING→CONFIRMED→PARTIALLY_RECEIVED→RECEIVED / CANCELLED), StockMovement (toàn bộ audit trail biến động kho).
+
+Hệ thống ưu tiên **an toàn dữ liệu** (atomic deduct stock, pessimistic lock khi redeem coupon/PO receive, idempotency webhook, rollback khi hủy đơn).
 
 ---
 
@@ -28,471 +36,502 @@ người dùng: khách hàng (`CUSTOMER`) và quản trị viên (`ADMIN`).
 
 | Lớp | Công nghệ | Phiên bản / Ghi chú |
 |-----|-----------|---------------------|
-| Ngôn ngữ | Java | 21 |
-| Framework | Spring Boot | 4.0.6 (spring-boot-starter-parent) |
-| Web | Spring Web MVC (`spring-boot-starter-webmvc`) | REST, servlet stack |
-| Persistence | Spring Data JPA + Hibernate | `open-in-view=false` |
-| Database | PostgreSQL | 17 (alpine trong Docker), driver runtime |
-| Migration | Flyway + `flyway-database-postgresql` | versioned migration V1–V21 |
-| Cache | Spring Cache + Redis (`spring-boot-starter-data-redis`) | `@EnableCaching`, RedisCacheManager |
-| Bảo mật | Spring Security + OAuth2 Client | `@EnableWebSecurity`, `@EnableMethodSecurity` |
-| JWT | jjwt (io.jsonwebtoken) | 0.13.0, HMAC-SHA |
-| Lock phân tán | ShedLock (spring + jdbc-template) | 7.7.0, cho scheduled job |
-| Validation | `spring-boot-starter-validation` | Jakarta Bean Validation |
-| JSON | Jackson (databind) + jsr310 | tools.jackson API (Jackson 3 trên Boot 4) |
-| Mã hóa/Hash | commons-codec | 1.22.0, HMAC-SHA512 cho VNPay |
-| API Docs | springdoc-openapi (webmvc-ui) | 3.0.3, Swagger UI |
-| Observability | Spring Boot Actuator | health probes, metrics, prometheus |
-| Null-safety | JSpecify | 1.0.0 |
-| Tiện ích build | Lombok | 1.18.38, DevTools (runtime) |
+| Ngôn ngữ | Java | 21 (LTS) |
+| Framework | Spring Boot | 4.0.6 (Boot 4 + tools.jackson) |
+| Web | Spring Web MVC | REST + servlet |
+| Persistence | Spring Data JPA + Hibernate | open-in-view=false, @EntityGraph, pessimistic lock |
+| Database | PostgreSQL | 17-alpine |
+| Migration | Flyway | versioned V1–V23 (core + devdata) |
+| Cache | Spring Cache + Redis | `@EnableCaching`, RedisCacheManager, TTL 10 phút mặc định |
+| Rate Limit | Bucket4j (core + lettuce) | 8.14.0, distributed trên Redis, LoginRateLimitFilter |
+| Bảo mật | Spring Security + OAuth2 Client | JwtFilter, tokenVersion, CSRF cookie + Bearer exemption |
+| JWT | jjwt | 0.13.0 |
+| Lock phân tán | ShedLock (jdbc-template) | 7.7.0 |
+| Validation | Jakarta Bean Validation |  |
+| JSON | Jackson (databind 2.21.2) + jsr310 + tools.jackson | Custom Instant/LocalDateTime formatter (dd-MM-yyyy HH:mm:ss, Asia/Ho_Chi_Minh) |
+| Mã hóa | commons-codec | 1.22.0 (HMAC VNPay) |
+| API Docs | springdoc-openapi | 3.0.3 |
+| Observability | Spring Boot Actuator | health (liveness/readiness), info, metrics, prometheus |
+| Build | Maven + Lombok | finalName=aura-tech |
 
-**Đóng gói:** Maven, `finalName=aura-tech`, Docker multi-stage (Temurin 21 JDK build → JRE alpine runtime, chạy non-root).
+**Đóng gói & Deploy:**
+- Multi-stage Dockerfile: Temurin 21-jdk-alpine → jre-alpine, non-root `auratech` user, volume uploads.
+- docker-compose: app + postgres:17-alpine + redis:alpine, healthchecks đầy đủ (`/actuator/health/liveness`, pg_isready, redis ping).
+- Entry point: `AuraTechApplication` với `@SpringBootApplication`, `@EnableJpaAuditing`, `@EnableScheduling`, `@EnableCaching`.
 
-**Entry point:** `org.akira.auratech.AuraTechApplication` với các annotation kích hoạt:
-`@SpringBootApplication`, `@EnableJpaAuditing` (audit `@CreatedDate`), `@EnableScheduling` (job hết hạn đơn),
-`@EnableCaching` (Redis cache).
+**Biến môi trường then chốt:** JWT_SECRET, GOOGLE_*, VNPAY_SECRET_KEY, DB_*, AUTH_COOKIE_*, UPLOAD_ROOT, SPRING_PROFILES_ACTIVE.
 
 ---
 
-## 3. Kiến trúc phân lớp
+## 3. Kiến trúc phân lớp & Cấu trúc Package
 
 ```
 HTTP Request
    │
    ▼
-[ Filter chain ]  UrlHandlerFilter (trailing slash) → CORS → CSRF → JwtFilter → Spring Security
+[Filter chain]  LoginRateLimitFilter (HIGHEST) → UrlHandlerFilter → CORS → CSRF → JwtFilter → Spring Security
    │
    ▼
-[ Controller ]  controller/ (AuthController, user/*, admin/*)
-   │  ── nhận DTO request, trả DTO response, lấy principal qua @AuthenticationPrincipal
+[Controller]    (user/* + admin/*) — mỏng, chỉ map DTO + principal
    ▼
-[ Service ]     service/ (interface) + service/impl/ (triển khai)
-   │  ── chứa toàn bộ business logic, @Transactional, @Cacheable/@CacheEvict
+[Service]       (interface + impl) — business logic + @Transactional (thường MANDATORY cho side-effect)
+   │             InventoryService, PricingService, CouponRedemptionService, OrderLifecycleService,
+   │             OrderStateMachine, Payment*Service, StockMovementService, PurchaseOrderService...
    ▼
-[ Repository ]  repository/ (Spring Data JPA)
-   │  ── query, pessimistic lock, atomic update, @EntityGraph
+[Repository]    Spring Data JPA + custom @Lock, @Modifying, @EntityGraph, atomic update
    ▼
-[ Database ]    PostgreSQL (+ Redis cho cache, + shedlock table)
+[DB + Redis]    PostgreSQL (source of truth) + Redis (cache + bucket4j rate limit buckets)
 ```
 
-**Nguyên tắc tách lớp:**
-- **Controller** mỏng: chỉ điều phối, không chứa nghiệp vụ. Lấy `userId` từ `UserPrincipal` (không tin tham số client).
-- **Service** là nơi đặt transaction boundary và business rule. Nhiều service nhỏ chuyên trách
-  (single responsibility): `InventoryService`, `PricingService`, `CouponRedemptionService`,
-  `OrderLifecycleService`, `OrderStateMachine`, `PaymentAttemptService`...
-- **DTO** tách biệt request/response khỏi entity (`dto/request`, `dto/response`), entity không bao giờ lộ trực tiếp ra API.
-- **Mapping** entity → DTO qua static factory (vd `OrderResponse.fromEntity`, `summaryFromEntity`).
+**Nguyên tắc cốt lõi (Senior Architect view):**
+- **Controller cực mỏng**: không business rule. Lấy userId từ `@AuthenticationPrincipal UserPrincipal` (chống IDOR).
+- **Service là transaction boundary**: đặc biệt `@Transactional(propagation = Propagation.MANDATORY)` cho các service xử lý side-effect (OrderLifecycleService, InventoryService, CouponRedemptionService, StockMovement record).
+- **Atomic & Idempotent**: stock deduct bằng UPDATE điều kiện (không oversell), coupon lock khi redeem, webhook 2 lớp idempotency (state + unique constraint).
+- **Rich domain + Ledger**: Coupon có method calculate/isExpired; StockMovement tách rõ mutate (recordMovement) vs pure audit (recordLedgerEntry).
+- **Separation of concerns**: User = identity/auth + roles; Customer = CRM/loyalty; StockMovement = immutable ledger cho mọi biến động kho (không chỉ sale).
 
-### 3.1 Cấu trúc package
+### 3.1 Cấu trúc package hiện tại (cập nhật)
 
 ```
 org.akira.auratech
-├── AuraTechApplication.java         # main + enable annotations
-├── config/                          # JwtFilter, SecurityConfig, OAuth2SuccessHandler,
-│                                    #   ShedLockConfig, WebConfig, JacksonConfig
+├── AuraTechApplication.java
+├── config/
+│   ├── JacksonConfig.java          # custom time format + zone
+│   ├── JwtFilter.java
+│   ├── LoginRateLimitFilter.java   # mới: bucket4j + Redis, highest precedence
+│   ├── RateLimitConfig.java        # RedisClient + LettuceBasedProxyManager riêng
+│   ├── OAuth2SuccessHandler.java
+│   ├── SecurityConfig.java
+│   ├── ShedLockConfig.java
+│   └── WebConfig.java
 ├── controller/
-│   ├── AuthController.java          # /api/v1/auth (login, register, refresh, logout, csrf)
-│   ├── user/                        # API cho CUSTOMER (orders, cart, products, payments...)
-│   └── admin/                       # API quản trị (Admin*Controller)
-├── dto/
-│   ├── request/                     # *Request records
-│   ├── response/                    # *Response records
-│   ├── CouponRedemptionResult.java  # DTO nội bộ (coupon + discountAmount)
-│   ├── LineDraft.java               # dòng đặt hàng tạm (product, qty, price, lineTotal)
-│   └── PaymentWebhookResult.java    # kết quả xử lý webhook + mã trả VNPay
-├── exception/                       # GlobalExceptionHandler + custom exceptions + ErrorResponse
-├── model/                           # JPA entities
-│   └── enums/                       # OrderStatus, PaymentStatus, PaymentProvider, DiscountType, RoleName
-├── repository/                      # Spring Data JPA repositories
-├── service/ + service/impl/         # interface + triển khai
-└── utils/                           # SlugUtils
+│   ├── AuthController.java
+│   ├── user/                       # Customer-facing (order, cart, catalog, payment, review...)
+│   └── admin/                      # 17+ controllers
+│       ├── AdminBrand/Category/Coupon/Order/... 
+│       ├── AdminCustomerController.java
+│       ├── AdminSupplierController.java
+│       ├── AdminProductSupplierController.java
+│       ├── AdminPurchaseOrderController.java
+│       └── AdminStockMovementController.java
+├── dto/ (request + response + internal: LineDraft, CouponRedemptionResult, PaymentWebhookResult)
+├── exception/ (BusinessRule, InsufficientStock, ResourceNotFound, GlobalExceptionHandler)
+├── model/
+│   ├── User (auth + roles + tokenVersion + 1-1 Customer)
+│   ├── Customer (CRM profile, loyalty)
+│   ├── Supplier, ProductSupplier
+│   ├── PurchaseOrder, PurchaseOrderItem
+│   ├── StockMovement
+│   └── enums/ (RoleName, OrderStatus, PurchaseOrderStatus, StockMovementType, StockReferenceType, CustomerLevel, ...)
+├── repository/ (23 repos, nhiều có find...ForUpdate, search trigram, isActive filters)
+├── service/ + service/impl/ (55+ files)
+│   └── mới: CustomerService, SupplierService, ProductSupplierService, PurchaseOrderService, StockMovementService
+└── utils/SlugUtils.java
 ```
 
 ---
 
 ## 4. Mô hình dữ liệu (Domain Model)
 
-### 4.1 Sơ đồ quan hệ (ERD logic)
+### 4.1 ERD logic (cập nhật)
 
 ```
-User 1───* Order *───1 Coupon
- │           │
- │           ├──* OrderItem *──1 Product
- │           ├──* OrderHistory
- │           └──* Payment
- │
- ├──1 Cart 1───* CartItem *──1 Product
- ├──* UserAddress
- ├──* Review *──1 Product
- ├──* Wishlist *──1 Product
- ├──* RefreshToken
- └──* Role  (Many-to-Many qua user_roles)
+User 1───1 Customer (shared PK @MapsId, CRM profile + loyalty)
+User 1───* Order *───1 Coupon (optional)
+          │
+          ├──* OrderItem *──1 Product
+          ├──* OrderHistory (user_id từ V17)
+          └──* Payment
 
-Brand 1───* Product *───1 Category (Category tự tham chiếu: parent_id → cây phân cấp)
+User 1───1 Cart 1───* CartItem *──1 Product
+User *──* Role (user_roles)
+User *──* UserAddress
+User *──* RefreshToken
+
+Brand 1───* Product *───1 Category (self-ref parent_id)
 Product 1───* ProductImage
+Product 1───* Review (unique user+product)
+Product 1───* Wishlist
+
+# Supply Chain (V22+)
+Supplier 1───* ProductSupplier *───1 Product   (costPrice, leadTimeDays)
+Supplier 1───* PurchaseOrder 1───* PurchaseOrderItem *───1 Product
+Product 1───* StockMovement   (full immutable ledger: PURCHASE_IN / SALE_OUT / RETURN_IN / ADJUST / ...)
+
 ```
 
-### 4.2 Bảng thực thể chính
+### 4.2 Bảng thực thể chính (cập nhật chi tiết)
 
-| Entity | Bảng | Điểm đáng chú ý |
+| Entity | Bảng | Điểm quan trọng |
 |--------|------|-----------------|
-| `User` | `users` | `tokenVersion` (vô hiệu hóa access token tức thì), `isActive` (khóa tài khoản), Many-to-Many `roles`, OneToOne `cart`. `@PrePersist` set `createdAt`. |
-| `Role` | `roles` | enum `RoleName` (ADMIN, CUSTOMER). |
-| `Product` | `products` | `basePrice`/`discountPrice` (NUMERIC 15,2), `stockQuantity`, `specs` JSONB (`@JdbcTypeCode(JSON)`), `slug` unique, `isActive`. Audit `createdAt`/`updateAt`. |
-| `Brand` | `brands` | `slug` unique, `logoUrl`. |
-| `Category` | `categories` | tự tham chiếu `parent_id` (FK → categories.id) tạo cây danh mục. |
-| `Cart` / `CartItem` | `carts` / `cart_items` | mỗi user 1 cart (`user_id` unique); `cart_items` unique `(cart_id, product_id)`. |
-| `Order` | `orders` | `subTotal`, `discountAmount`, `finalAmount`, `status` (enum STRING), `paymentExpiresAt`, `trackingNumber`, `shippingAddress`. Cascade ALL + orphanRemoval cho items/histories/payments. |
-| `OrderItem` | `order_items` | `priceAtPurchase` (chốt giá tại thời điểm mua — immutable price snapshot). |
-| `OrderHistory` | `order_histories` | audit trail chuyển trạng thái, có `user_id` (V17). |
-| `Payment` | `payments` | `provider`, `transactionNo` (mã giao dịch gateway, unique khi NOT NULL), `amount`, `status`. |
-| `Coupon` | `coupons` | `discountType`, `discountValue`, `minOrderValue`, `usageLimit`, `usedCount`, `expiresAt`. **Domain logic ngay trên entity** (xem 4.3). |
-| `Review` | `reviews` | unique `(user_id, product_id)` (1 review/user/sản phẩm), `rating` có CHECK constraint (V16). |
-| `Wishlist` | `wishlists` | unique `(user_id, product_id)`. |
-| `RefreshToken` | `refresh_tokens` | opaque token (chuỗi random base64url 48 byte), `expiryDate`, `revoked`. FK `ON DELETE CASCADE`. |
-| `UserAddress` | `user_addresses` | `isDefault`, thông tin giao hàng. |
+| `User` | users | email + username unique, password BCrypt, isActive, tokenVersion, roles M2M. **Không còn** full_name/phone/avatar (đã migrate sang Customer V22). |
+| `Customer` | customers | **Shared PK** (id = user_id, @MapsId + @OneToOne). fullName, phone, avatarUrl, loyaltyPoints, level (enum), totalSpent. Tách biệt identity vs CRM. |
+| `Product` | products | basePrice/discountPrice, stockQuantity, lowStockThreshold (default 5), description TEXT, specs JSONB, slug, isActive, createdAt/updatedAt. |
+| `Supplier` | suppliers | name, contact, isActive, audit created/updated. |
+| `ProductSupplier` | product_suppliers | N-N + giá nhập (costPrice), lead_time_days. Unique (product,supplier). |
+| `PurchaseOrder` | purchase_orders | supplier, status (PENDING/CONFIRMED/PARTIALLY_RECEIVED/RECEIVED/CANCELLED), totalAmount, expectedDeliveryDate, createdBy (User), items. |
+| `PurchaseOrderItem` | purchase_order_items | product, quantity, costPrice, receivedQuantity (hỗ trợ nhận từng phần). |
+| `StockMovement` | stock_movements | product, signed quantity, movementType (6 loại), referenceType (ORDER/PURCHASE_ORDER/ADJUSTMENT...), referenceId, createdBy, createdAt. **Audit trail bất biến**. |
+| `Order` | orders | subTotal, discountAmount, finalAmount, status, shippingAddress, paymentExpiresAt, trackingNumber. Cascade ALL + orphanRemoval. update_at (legacy name). |
+| `OrderItem` | order_items | priceAtPurchase (immutable snapshot). |
+| `Coupon` | coupons | discountType/FIXED/PERCENT + domain logic (calculate, isExpired, isUsageLimitReached). |
+| `RefreshToken` | refresh_tokens | opaque, revoked, expiry, FK cascade. |
+| Khác | ... | reviews (unique + rating CHECK 1-5), wishlists, payments (transaction_no unique partial), categories (self-ref), brands. |
 
-### 4.3 Domain logic đặt trên entity (Rich Domain Model một phần)
+### 4.3 Domain logic & Inventory Ledger (sâu sắc)
 
-`Coupon` đóng gói luật nghiệp vụ ngay trong entity, dùng chung cho cả preview (`applyCoupon`) và commit (`redeem`):
-- `isExpired()` — hết hạn khi `expiresAt` không còn ở tương lai.
-- `isUsageLimitReached()` — `usageLimit != null && usedCount >= usageLimit`.
-- `isBelowMinOrderValue(subTotal)` — đơn chưa đạt giá trị tối thiểu.
-- `calculateDiscount(subTotal)` — tính giảm giá (PERCENT chia 100 làm tròn HALF_UP, hoặc FIXED_AMOUNT),
-  **không vượt quá subTotal**, làm tròn 2 chữ số.
+**Rich domain:**
+- `Coupon`: calculateDiscount + validation methods. Dùng chung preview & redeem.
+- `RefreshToken.isUsable()`.
 
-`RefreshToken.isUsable()` — `!revoked && expiryDate ở tương lai`.
+**StockMovement — Ledger pattern (rất quan trọng):**
+- `recordMovement(...)`: **mutate stock + ghi sổ** (dùng cho PO receive, manual adjustment). Dùng findForUpdate + set + save movement. Kiểm tra newStock >=0.
+- `recordLedgerEntry(...)`: **chỉ ghi sổ**, KHÔNG mutate (dùng khi stock đã thay đổi nguyên tử ở chỗ khác: checkout SALE_OUT, cancel RETURN_IN).
+- Tích hợp đầy đủ:
+  - Checkout (OrderServiceImpl): atomic deduct (Inventory) → save order → recordLedgerEntry SALE_OUT.
+  - PO receive (PurchaseOrderService): lock PO + lock product → recordMovement (PURCHASE_IN) → update receivedQty → advance status.
+  - Cancel/Expire (OrderLifecycleService): lock product → cộng stock → recordLedgerEntry RETURN_IN → rollback coupon.
+- Ưu điểm: audit đầy đủ, dễ trace, dễ báo cáo tồn kho, dễ reconcile.
 
-### 4.4 Kiểu dữ liệu & quy ước
-- **Tiền tệ:** luôn `NUMERIC(15,2)` / `BigDecimal`, làm tròn `RoundingMode.HALF_UP`. Không dùng float/double.
-- **Thời gian:** `Instant` (UTC) ở tầng entity mới; một số chỗ legacy dùng `LocalDateTime`.
-  Jackson serialize theo định dạng `dd-MM-yyyy HH:mm:ss` ở timezone `Asia/Ho_Chi_Minh` (xem `JacksonConfig`).
-- **Enum:** lưu dạng STRING (`@Enumerated(EnumType.STRING)`) để bền vững khi thêm giá trị.
-- **Audit:** `@CreatedDate` (Spring Data auditing) + `@UpdateTimestamp` (Hibernate). Cột `update_at` (lưu ý tên cột — đổi tên ở V14).
+**Order lifecycle tách biệt side-effect qua OrderLifecycleService (MANDATORY propagation).**
 
 ---
 
 ## 5. Schema & Flyway Migrations
 
-Migration nằm ở `resources/db/migration` (chạy mọi profile) và `resources/db/devdata` (chỉ dev — mock data).
-Quy ước forward-only, versioned (`V{n}__mô_tả.sql`).
+**Quy ước:** forward-only, versioned. Core migration luôn chạy; devdata chỉ dev.
 
-| Version | Nội dung |
-|---------|----------|
-| V1 | Schema khởi tạo: users, roles, brands, categories, coupons, products, carts, user_roles, user_addresses, orders, product_images, cart_items, order_items, order_histories, payments, reviews, wishlists. |
-| V2 | Index cho hot path. |
-| V3 (devdata) | Mock data (chỉ profile dev). |
-| V4–V6 | Sửa/vô hiệu hóa password user seed, set BCrypt cho dev admin. |
-| V7 | **Unique index `uk_payments_transaction_no`** trên `transaction_no` (partial: WHERE NOT NULL) — nền tảng idempotency webhook. |
-| V8 | Thêm `updated_at` cho core tables. |
-| V9 | CHECK constraint `stock_quantity >= 0`. |
-| V10 | Siết ràng buộc xóa category. |
-| V11 | Bảng `shedlock` cho ShedLock. |
-| V12–V13, V19 | `pg_trgm` extension + functional GIN trigram index trên `lower(name)` của products (tìm kiếm mờ). |
-| V14 | Đổi tên `updated_at` → `update_at`. |
-| V15 | Thêm `created_at` cho coupons. |
-| V16 | CHECK constraint `rating` (1–5) trên reviews. |
-| V17 | Thêm `user_id` vào order_histories. |
-| V18 | Bỏ `wishlists.added_at`. |
-| V20 | **Bảng `refresh_tokens`** (opaque token, FK cascade, index theo user_id). |
-| V21 | **Cột `users.token_version`** (vô hiệu hóa access token tức thì). |
+**Các migration quan trọng (cập nhật):**
 
-Cấu hình Flyway theo profile:
-- **dev**: `validate-on-migrate=false`, `baseline-on-migrate=true`, `repair-on-migrate=true`,
-  `clean-on-validation-error=true` (⚠️ **nguy hiểm** — tự xóa DB khi checksum lệch; chỉ tiện cho local).
-- **prod**: `ddl-auto=validate`, `sql.init.mode=never` (chỉ validate cấu trúc, tuyệt đối không tự sửa bảng).
+- V1: schema khởi tạo (legacy: full_name trong users, update_at trên products).
+- V2–V9: indexes hot path, seed, payment unique partial, stock CHECK >=0, updated_at, category constraints.
+- V10–V13, V19: harden delete, shedlock, pg_trgm + GIN trigram index `lower(name)` cho search mờ.
+- V14: rename updated_at → update_at (sau đó V22 đảo ngược trên products).
+- V15–V17: coupon created, review rating CHECK, order_histories user_id.
+- V20: refresh_tokens.
+- **V21**: users.token_version.
+- **V22 (lớn)**: 
+  - Tạo customers (di trú data từ users), drop full_name/phone/avatar/created_at khỏi users, widen username.
+  - Products: thêm description + low_stock_threshold, rename update_at → updated_at.
+  - Suppliers + product_suppliers + purchase_orders + purchase_order_items + stock_movements.
+- **V23**: dev mock data cho supply chain.
+
+**Cấu hình Flyway (vẫn còn rủi ro):**
+- dev: validate=false, baseline=true, repair=true, **clean-on-validation-error=true** (nguy hiểm — chỉ dev).
+- prod: ddl-auto=validate, sql.init=never, clean-disabled ngầm.
 
 ---
 
 ## 6. Bảo mật (Security)
 
-Trung tâm an ninh: `config/SecurityConfig`. Stateless (`SessionCreationPolicy.STATELESS`),
-filter `JwtFilter` chèn trước `UsernamePasswordAuthenticationFilter`.
+**Cấu hình trung tâm:** `SecurityConfig` (stateless, JwtFilter trước UsernamePassword).
 
-### 6.1 Mô hình xác thực hai token
+### 6.1 Hai token + Token Versioning (vẫn mạnh)
 
-| Loại token | Bản chất | Vòng đời | Lưu ở đâu | Quản lý |
-|-----------|----------|----------|-----------|---------|
-| **Access token** | JWT (HMAC-SHA), stateless | mặc định 15 phút (`access-expiration=900000ms`) | Cookie `AUTH_TOKEN` (HttpOnly) hoặc header `Bearer` | `JwtService` |
-| **Refresh token** | Opaque (random base64url 48 byte), lưu DB | mặc định 7 ngày (`refresh-expiration=604800000ms`) | Cookie `REFRESH_TOKEN` (HttpOnly, path `/api/v1/auth`) | `RefreshTokenService` + bảng `refresh_tokens` |
+- Access JWT (15 phút): chứa userId, roles, tokenVersion, jti.
+- Refresh opaque (7 ngày, rotation): lưu DB, path cookie hẹp.
+- `tokenVersion` trong User + claim → logout/đổi pass/khóa tài khoản → tăng version → mọi access token chết tức thì.
+- JwtFilter kiểm tra isEnabled() + tokenVersion khớp.
 
-**JWT claims** (`JwtService.generateAccessToken`): `sub`=username, `userId`, `roles`, `type=access`,
-`tokenVersion`, `jti` (UUID), `iat`, `exp`. Ký bằng `Keys.hmacShaKeyFor` — secret base64 ≥32 byte,
-fallback hash SHA-256 nếu secret là plain-text.
+### 6.2 Rate Limiting Login (mới, quan trọng)
 
-### 6.2 Token versioning — vô hiệu hóa tức thì
+`LoginRateLimitFilter` (@Order HIGHEST_PRECEDENCE, chạy trước mọi thứ):
+- Chỉ áp cho POST /api/v1/auth/login.
+- Bucket4j + Redis (Lettuce proxy manager riêng, expiration 10 phút).
+- Default: 5 lần / 1 phút theo IP (X-Forwarded-For ưu tiên).
+- Vượt → 429 + Retry-After.
+- Distributed: an toàn khi scale ngang.
 
-Vấn đề cố hữu của JWT stateless là không thu hồi được trước khi hết hạn. AuraTech giải quyết bằng
-`User.tokenVersion`:
-- Access token mang claim `tokenVersion` tại thời điểm phát hành.
-- `JwtFilter` so khớp `tokenVersion` trong token với `tokenVersion` hiện tại của user trong DB.
-  **Lệch → từ chối ngay (401)** và xóa cookie nếu token đến từ cookie.
-- Khi logout / đổi mật khẩu / khóa tài khoản → tăng `tokenVersion` → mọi access token cũ chết tức thì
-  (lưu ý: điều này đăng xuất tất cả thiết bị của user đó).
+Cấu hình: `app.rate-limit.login.capacity` / `refill-minutes`.
 
-`JwtFilter` còn kiểm tra `userDetails.isEnabled()` (= `user.isActive()`) — user bị khóa bị từ chối ngay,
-không chờ token hết hạn.
+### 6.3 OAuth2, CSRF, CORS, Cookie
 
-### 6.3 Luồng refresh token (chống replay)
+- OAuth2: chỉ cho user đã tồn tại + active → set cookie → redirect frontend.
+- CSRF: CookieCsrf (HttpOnly=false), bỏ qua cho auth endpoints + webhook + Bearer.
+- CORS: localhost:3000 + auratech.vn, allowCredentials.
+- Cookie: HttpOnly, configurable secure/sameSite (Strict mặc định), refresh path hẹp.
 
-`RefreshTokenService.verifyAndRotate(rawToken)` — **rotation**: xác thực token hiện tại → revoke nó →
-phát hành token mới. Token cũ dùng lại lần hai sẽ bị từ chối (đã revoked). Endpoint `POST /api/v1/auth/refresh`
-đọc refresh token từ cookie, xoay vòng, trả access token + refresh token mới qua `Set-Cookie`.
+### 6.4 Phân quyền & Chống IDOR
 
-Các thao tác thu hồi:
-- `revoke(token)` — thu hồi 1 token.
-- `revokeSessionAndBump(token)` — logout: revoke token phiên hiện tại + tăng `tokenVersion` (qua `incrementTokenVersion`).
-- `revokeAllRefreshTokens(userId)` — thu hồi toàn bộ (gọi từ luồng đang có User entity managed, caller tự bump tokenVersion).
+- Public: auth, catalog GET, webhook, health/info, swagger, uploads.
+- ADMIN: actuator đầy đủ + admin APIs.
+- `@PreAuthorize("hasRole('ADMIN')")` + service ownership check (order.user == principal).
+- User lấy từ principal, không tin client.
 
-### 6.4 OAuth2 Google
+### 6.5 Vấn đề còn tồn (cần fix)
 
-`OAuth2SuccessHandler` (kế thừa `SimpleUrlAuthenticationSuccessHandler`):
-1. Google xác thực → lấy `email` từ `OAuth2User`.
-2. Tìm user theo email; **chỉ chấp nhận user đã đăng ký** (không auto-provision) và đang active.
-3. Phát access token (JWT) + tạo refresh token, set cả hai vào cookie `Set-Cookie`.
-4. Redirect về frontend (`app.oauth2.success-redirect`, mặc định `http://localhost:3000/checkout/success`).
-
-Scope: `openid, profile, email`.
-
-### 6.5 Phân quyền (Authorization)
-
-- `@EnableMethodSecurity` cho phép `@PreAuthorize` ở tầng method.
-- Quy tắc URL trong `SecurityConfig`:
-  - Public: `OPTIONS /**`, `/api/v1/payments/vnpay-webhook`, `/error`, `/api/v1/auth/**`, `/oauth2/**`,
-    `/login/oauth2/**`, `GET /uploads/**`, `GET` của products/brands/categories/reviews, Swagger UI/api-docs,
-    `/actuator/health/**` + `/actuator/info`.
-  - `ADMIN`: `/actuator/**` còn lại.
-  - Còn lại: yêu cầu xác thực.
-- Authorities mapping: `UserPrincipal` map mỗi role thành `ROLE_<tên>` (vd `ROLE_ADMIN`, `ROLE_CUSTOMER`).
-- **Chống IDOR**: service luôn kiểm tra quyền sở hữu (vd `getOrderById` đối chiếu `order.user.id == principal.id`,
-  ném `BusinessRuleException` nếu không khớp). `userId` lấy từ `@AuthenticationPrincipal`, không nhận từ client.
-
-### 6.6 CSRF & CORS
-
-- **CSRF**: bật với `CookieCsrfTokenRepository` (HttpOnly=false để JS đọc cookie `XSRF-TOKEN`), gửi kèm header `X-XSRF-TOKEN`.
-  Bỏ qua CSRF cho: các endpoint auth (login/register/refresh/logout), webhook VNPay, OAuth2, và **mọi request mang `Authorization: Bearer`** (`BEARER_AUTH_REQUEST` matcher — token-based thì không cần CSRF). Endpoint `GET /api/v1/auth/csrf` cấp token cho frontend.
-- **CORS**: nguồn duy nhất ở `SecurityConfig` (đã bỏ trùng lặp ở WebConfig). Allowed origins: `http://localhost:3000`,
-  `https://auratech.vn`; methods GET/POST/PUT/DELETE/OPTIONS; `allowCredentials=true` (cần thiết cho cookie).
-
-### 6.7 Cookie (`AuthCookieService`)
-
-Sinh cookie HttpOnly cho cả access và refresh token. Thuộc tính cấu hình được:
-`secure` (false ở dev, true ở prod), `sameSite` (mặc định `Strict`), path riêng cho refresh (`/api/v1/auth`
-— chỉ gửi kèm cho endpoint auth, giảm bề mặt tấn công). Max-age = vòng đời token tương ứng.
-
-### 6.8 Mật khẩu
-
-- `BCryptPasswordEncoder`.
-- Login chặn user "seed" không có hash BCrypt hợp lệ (regex `^\$2[aby]\$\d{2}\$.{53}$`) — yêu cầu đăng ký mới.
+- Chưa có `AuthenticationEntryPoint` tùy chỉnh → một số request API chưa auth có thể bị xử lý theo oauth2 redirect thay vì 401 JSON thuần (mặc dù JwtFilter xử lý nhiều trường hợp).
+- Secret fallback vẫn tồn tại trong dev properties/docker (xem upgrade plan).
 
 ---
 
-## 7. Luồng nghiệp vụ trọng tâm
+## 7. Luồng nghiệp vụ trọng tâm (cập nhật)
 
-### 7.1 Checkout / Tạo đơn hàng (`OrderServiceImpl.createOrder`)
+### 7.1 Checkout (OrderServiceImpl.createOrder) — @Transactional
 
-Toàn bộ trong một transaction (`@Transactional`):
-1. Kiểm tra user tồn tại và `isActive` (tài khoản bị khóa không đặt được hàng).
-2. Lấy cart **có khóa** (`findByUserIdForUpdate`) — chống race; cart rỗng → lỗi.
-3. Ánh xạ mỗi cart item → `OrderLineRequest` (client không tự nhập dòng hàng).
-4. **Giữ kho + chốt giá** qua `InventoryService.reserveStockAndPriceLines` (xem 7.2) → trả `LineDraft`.
-5. Cộng `subTotal` (HALF_UP, scale 2).
-6. **Áp coupon** qua `CouponRedemptionService.redeem` (xem 7.4) → `discountAmount`, `coupon`.
-7. Tính `finalAmount = max(subTotal − discount, 0)`.
-8. Tạo `Order` (PENDING) + các `OrderItem` (kèm `priceAtPurchase` snapshot).
-9. Ghi `OrderHistory` "Order created".
-10. **Khởi tạo payment** + set `paymentExpiresAt` (`PaymentAttemptService.initializePayment`).
-11. Lưu order, **dọn sạch cart** (`cart.getItems().clear()` → orphanRemoval xóa cart_items khi flush).
+1. Validate user active.
+2. Lock cart (`findByUserIdForUpdate`).
+3. Reserve stock + giá: `InventoryService.reserveStockAndPriceLines` (atomic UPDATE stock >= qty).
+4. Coupon redeem (lock coupon).
+5. Build Order + OrderItem (priceAtPurchase snapshot) + OrderHistory.
+6. initializePayment + paymentExpiresAt.
+7. Save order (clear cart qua orphanRemoval).
+8. **Ghi ledger**: recordLedgerEntry SALE_OUT (không mutate lại stock).
 
-### 7.2 Quản lý tồn kho (`InventoryServiceImpl`) — chống overselling
+### 7.2 Hủy đơn & Hoàn tác (OrderLifecycleService + StateMachine)
 
-- `@Transactional(propagation = MANDATORY)` — **bắt buộc** chạy trong transaction của caller (không tự mở tx mới).
-- Với mỗi dòng: **trừ kho atomic** bằng UPDATE có điều kiện:
-  ```sql
-  UPDATE Product SET stockQuantity = stockQuantity - :qty
-  WHERE id = :id AND stockQuantity >= :qty
-  ```
-  Nếu `rowsAffected == 0` → `InsufficientStockException` (không đủ hàng hoặc sản phẩm không tồn tại).
-- Cách này **không cần lock bi quan dài**: điều kiện `>= :qty` trong câu UPDATE đảm bảo nguyên tử ở tầng DB,
-  ngăn hai đơn cùng lúc bán quá số lượng. Kết hợp CHECK constraint `stock_quantity >= 0` (V9) làm lưới an toàn.
-- Sau khi trừ thành công mới load product để lấy giá (`PricingService.sellingPrice`).
+- `cancelOrder`: chỉ khi PENDING/CONFIRMED.
+- releaseReservedInventory: lock product → +stock → recordLedgerEntry RETURN_IN.
+- rollbackCoupon.
+- Ghi history.
 
-### 7.3 Định giá (`PricingServiceImpl`)
+`expirePendingOrders` (scheduled + ShedLock) tự động cancel quá hạn.
 
-Đơn giản và tập trung: giá bán = `discountPrice` nếu có, ngược lại `basePrice`. Giá được **chốt vào `OrderItem.priceAtPurchase`**
-tại thời điểm mua nên thay đổi giá sau này không ảnh hưởng đơn cũ.
+### 7.3 Thanh toán + Webhook VNPay (vẫn production-grade)
 
-### 7.4 Áp coupon (`CouponRedemptionServiceImpl`)
+- Verify HMAC **trước** DB.
+- Idempotency 2 lớp (state + unique transaction_no).
+- Đối soát amount.
+- SUCCESS → OrderLifecycle.confirmAfterSuccessfulPayment (idempotent).
+- FAILED → cancel.
 
-- `@Transactional(propagation = MANDATORY)`.
-- Coupon code rỗng → `CouponRedemptionResult.empty()` (không giảm).
-- Lấy coupon **có khóa** (`findByCodeForUpdate`) — chống double-spend khi nhiều đơn dùng cùng coupon.
-- Validate qua domain method: hết hạn / hết lượt / chưa đạt min order → `BusinessRuleException`.
-- Tính `discountAmount` (`calculateDiscount`) và **tăng `usedCount`**.
+### 7.4 Supply Chain — Luồng nhập hàng (mới)
 
-### 7.5 Vòng đời đơn hàng (`OrderStateMachineImpl`) — State Machine
+**PurchaseOrderService:**
+- create: build PO + items, tính total, status PENDING.
+- updateStatus: validate transition, chỉ cho CANCEL ở PENDING/CONFIRMED.
+- **receiveGoods** (quan trọng):
+  - Lock PO (forUpdate).
+  - Với mỗi line nhận: lock Product, gọi `stockMovementService.recordMovement(..., PURCHASE_IN, ref=PO)` (cộng stock + ghi sổ).
+  - Cập nhật receivedQuantity.
+  - Tự động advance status: PARTIALLY_RECEIVED hoặc RECEIVED khi đủ.
+- Hỗ trợ nhận từng phần + note per item.
 
-Trạng thái: `PENDING → CONFIRMED → SHIPPED → DELIVERED`, và `CANCELLED` (nhánh hủy).
+**StockMovementService (admin):**
+- createAdjustment: recordMovement (có sign theo type).
+- Các query theo product / all.
 
-Ma trận chuyển trạng thái hợp lệ (`validateTransition`):
-- `PENDING → CONFIRMED`, `CONFIRMED → SHIPPED`, `SHIPPED → DELIVERED`.
-- Hủy (`→ CANCELLED`) chỉ khi đang `PENDING` hoặc `CONFIRMED`.
-- `CANCELLED` và `DELIVERED` là trạng thái cuối — không chuyển tiếp.
-- `→ SHIPPED` **bắt buộc** có `trackingNumber`.
-- Mọi chuyển trạng thái ghi `OrderHistory` (audit). Cập nhật dùng `findWithItemsByIdForUpdate` (khóa bi quan).
+Tích hợp chặt với inventory: không bao giờ mutate stock ngoài các đường dẫn được kiểm soát.
 
-### 7.6 Tách side-effect (`OrderLifecycleService`)
+### 7.5 Định giá & Kho
 
-`@Transactional(propagation = MANDATORY)` — chứa logic chuyển trạng thái **kèm side-effect**, được gọi từ
-payment flow và webhook (không set `order.status` trực tiếp ở các chỗ đó):
-- `confirmAfterSuccessfulPayment(order)` — chuyển sang CONFIRMED, xóa `paymentExpiresAt`, ghi history.
-  Idempotent: nếu đã CONFIRMED chỉ xóa hạn; chặn nếu đã CANCELLED/SHIPPED/DELIVERED.
-- `cancelOrder(order, lý do)` — **hoàn kho** (cộng lại `stockQuantity`, có khóa product) + **hoàn lượt coupon**
-  (giảm `usedCount`, có khóa coupon) + set CANCELLED + ghi history. Idempotent với CANCELLED; chặn nếu đã SHIPPED/DELIVERED.
-
-### 7.7 Thanh toán (`PaymentServiceImpl`, `PaymentAttemptServiceImpl`)
-
-- **Khởi tạo** (`initializePayment`): tạo Payment PENDING khi tạo order; set `paymentExpiresAt` = now + 15 phút
-  (riêng **COD → null**, không hết hạn).
-- **Tạo payment** (`createPayment`): khóa order, kiểm tra quyền sở hữu + order còn nhận thanh toán được.
-  **Idempotent**: nếu payment gần nhất SUCCESS → chặn; nếu PENDING → trả lại chính nó (cập nhật provider nếu đổi);
-  nếu FAILED → cho tạo attempt mới.
-- **Cập nhật payment** (`updatePayment`): chỉ xử lý khi payment đang PENDING; SUCCESS → `confirmAfterSuccessfulPayment`,
-  FAILED → `cancelOrder`. Đối chiếu `orderId` khớp.
-- **Retry** (`retryPayment`): chỉ khi đơn chưa CANCELLED/DELIVERED, đúng chủ đơn, và lần thanh toán gần nhất FAILED →
-  tạo Payment PENDING mới cùng provider.
-- `ensureOrderCanAcceptPayment`: nếu quá `paymentExpiresAt` → tự `cancelOrder("Payment window expired")` rồi báo lỗi.
-
-### 7.8 Webhook VNPay (`PaymentWebhookServiceImpl`) — Production-grade IPN
-
-Endpoint public `GET/POST /api/v1/payments/vnpay-webhook` (`PaymentWebhookController`), không cần auth cookie/JWT —
-**bảo mật bằng chữ ký HMAC** ở tầng service. Bốn nguyên tắc:
-
-1. **Validate signature TRƯỚC khi mở transaction DB**: sort params alphabet, nối `key=value&`, HMAC-SHA512 với secret,
-   so khớp `vnp_SecureHash` (case-insensitive). Sai/thiếu → `INVALID_SIGNATURE` (403), không chạm DB.
-2. **Idempotency hai tầng**:
-   - State check: tìm theo `gateway_transaction_no` (`vnp_TransactionNo`); nếu payment đã SUCCESS → trả 200 idempotent.
-   - Unique key DB: index `uk_payments_transaction_no` (V7) chặn race; bắt `DataIntegrityViolationException` → trả 200.
-3. **Đối soát số tiền**: `vnp_Amount` (đơn vị xu = VND×100) phải khớp `order.finalAmount × 100`. Lệch → log `[ALERT]` + `AMOUNT_MISMATCH` (400), **từ chối** cập nhật.
-4. **Không set order.status trực tiếp**: gọi `OrderLifecycleService` (`vnp_ResponseCode == "00"` → SUCCESS → confirm; ngược lại FAILED → cancel + hoàn kho/coupon). Lưu `gateway_transaction_no` để đối soát.
-
-Mapping kết quả → HTTP (body JSON `{"RspCode","Message"}` chuẩn VNPay):
-PROCESSED/IDEMPOTENT → 200, INVALID_SIGNATURE → 403, AMOUNT_MISMATCH → 400, ORDER_NOT_FOUND → 404.
-
-### 7.9 Hết hạn đơn tự động (Scheduled + ShedLock)
-
-`OrderStateMachineImpl.expirePendingOrders()`:
-- `@Scheduled(fixedDelayString = "${auratech.order-expiration.fixed-delay-ms:60000}")` — chạy mỗi 60s.
-- Tìm các đơn PENDING đã quá `paymentExpiresAt` (`findExpiredOrdersForUpdate`, khóa) → `cancelOrder("Payment window expired")`.
-- **ShedLock** (`@EnableSchedulerLock`, `JdbcTemplateLockProvider`, bảng `shedlock`, lock tối đa 30 phút) đảm bảo
-  chỉ một instance chạy job khi deploy nhiều bản (chống xử lý trùng).
+- Pricing: discountPrice || basePrice.
+- Inventory atomic + CHECK constraint làm lưới đôi.
 
 ---
 
 ## 8. Caching (Redis)
 
-- `@EnableCaching` + Redis làm cache provider (`spring.cache.type=redis` ở dev, TTL mặc định 600s).
-- Read: `@Cacheable` với key tường minh (vd `'user:' + #userId + ':order:' + #orderId`, `'all:' + page + size`).
-- Write: `@Caching(evict = {...})` — hiện đang **evict `allEntries=true`** trên nhiều cache (orders, products,
-  coupons, payments...) ở mọi thao tác ghi.
+Vẫn dùng `@Cacheable` + blanket `@CacheEvict(allEntries = true)` ở hầu hết write path (orders, products, users, coupons...).
 
-> ⚠️ **Hạn chế đã biết**: chiến lược `allEntries=true` blanket làm hit-rate thấp. Backlog (#19 trong
-> `BACKEND_UPGRADE_PLAN.md`) đề xuất evict theo key cụ thể + JSON serializer + TTL per-cache.
+**Hạn chế:** hit-rate thấp, không granular. Backlog vẫn còn (xem hướng đi).
 
 ---
 
-## 9. Xử lý lỗi (`GlobalExceptionHandler`)
+## 9. Xử lý lỗi
 
-`@RestControllerAdvice` trả `ErrorResponse` thống nhất (`timestamp, status, error, message`):
+GlobalExceptionHandler thống nhất ErrorResponse. Xử lý tốt:
+- ResourceNotFound → 404
+- Validation + BusinessRule → 400
+- Auth fail → 401 (không lộ chi tiết)
+- AccessDenied → 403
+- DataIntegrity (23505 unique, 23503 FK...) → 409 với message nghiệp vụ
+- Fallback 500 (log full)
 
-| Exception | HTTP | Ghi chú |
-|-----------|------|---------|
-| `ResourceNotFoundException` | 404 | Không tìm thấy tài nguyên |
-| `MethodArgumentNotValidException` / `ConstraintViolationException` | 400 | Gộp message lỗi validation |
-| `BusinessRuleException` | 400 | Vi phạm luật nghiệp vụ |
-| `UsernameNotFoundException` / `BadCredentialsException` | 401 | "Username hoặc password không đúng" (không lộ chi tiết) |
-| `AccessDeniedException` | 403 | Không đủ quyền |
-| `DataIntegrityViolationException` | 409 | Map theo SQLState: 23505 unique (dò email/username), 23503 FK, 23502 not-null, 23514 check |
-| `Exception` (fallback) | 500 | Log full stacktrace, trả message chung chung |
-
-`access-denied`/CSRF lỗi còn được xử lý trực tiếp trong `SecurityConfig` (trả `ErrorResponse` JSON 403).
+AccessDenied + CSRF xử lý custom JSON trong SecurityConfig.
 
 ---
 
 ## 10. Cấu hình & Profiles
 
-- **`application.properties`** (chung): datasource từ env, JPA `open-in-view=false`, JWT secret/expiration,
-  OAuth2 Google, cookie, upload (max file 5MB / request 20MB), Redis, Actuator (expose `health,info,metrics,prometheus`;
-  health show-details `when_authorized`; readiness gồm db+redis).
-- **`application-dev.properties`**: `ddl-auto=validate`, show-sql, Flyway gồm cả `db/devdata`, cache Redis,
-  VNPay secret dev, JWT secret dev fallback. ⚠️ `clean-on-validation-error=true`.
-- **`application-prod.properties`**: `ddl-auto=validate`, không show-sql, `sql.init.mode=never`, cookie `secure=true`.
-
-**Biến môi trường quan trọng**: `JWT_SECRET`, `GOOGLE_CLIENT_ID/SECRET`, `VNPAY_SECRET_KEY`, `DB_*`,
-`AUTH_COOKIE_*`, `OAUTH2_SUCCESS_REDIRECT`, `UPLOAD_ROOT`, `SPRING_PROFILES_ACTIVE`.
+- **application.properties**: env-driven, actuator health probes (liveness/readiness include db+redis), rate limit config.
+- **dev**: show-sql, flyway devdata + clean-on-validation-error (nguy hiểm), redis cache.
+- **prod**: secure cookie, no sql, validate only.
+- Jackson custom formatter + zone VN.
+- Upload: 5MB file / 20MB request, separate dirs (products, avatars).
 
 ---
 
-## 11. Triển khai (Deployment)
+## 11. Triển khai
 
-**Dockerfile** (multi-stage):
-- Build stage: `eclipse-temurin:21-jdk-alpine` + Maven → `mvn package -DskipTests` → `aura-tech.jar`.
-- Runtime stage: `eclipse-temurin:21-jre-alpine`, tạo user non-root `auratech`, volume `/app/uploads`,
-  `ENTRYPOINT java -XX:MaxRAMPercentage=75 -jar`.
+- Dockerfile non-root + health.
+- docker-compose đầy đủ health + volumes + network.
+- Static resources /uploads mapped.
 
-**docker-compose.yml** — 3 service trên network bridge `s-network`:
-- `app` (port 8080): build từ Dockerfile, env từ `.env`, `depends_on` postgres+redis healthy,
-  volume `uploads-data`, healthcheck `wget /actuator/health/liveness`.
-- `postgres` (postgres:17-alpine, port 5432): volume `postgres-data`, healthcheck `pg_isready`.
-- `redis` (redis:alpine, port 6379): healthcheck `redis-cli ping`.
-
-**Static/uploads**: `WebConfig` map `/uploads/**` → thư mục `app.upload.root` (mặc định `uploads`).
+Actuator health: liveness cho container, readiness cho K8s.
 
 ---
 
 ## 12. API Surface (tổng quan)
 
-Prefix chung: `/api/v1`. Phân nhóm:
+Prefix: `/api/v1`
 
-**Auth** (`/api/v1/auth`): `POST /register`, `POST /login`, `POST /refresh`, `POST /logout`, `GET /csrf`.
+**Auth:** register, login (rate-limited), refresh, logout, csrf.
 
-**User API** (`controller/user`, yêu cầu đăng nhập trừ GET catalog công khai):
-`orders`, `cart`, `products`, `product-images`, `categories`, `brands`, `coupons`, `payments`,
-`payments/vnpay-webhook` (public), `reviews`, `wishlist`, `user`, `user-addresses`, `order-histories`.
-Ví dụ `OrderController`: `GET /orders/{id}`, `GET /orders/user`, `POST /orders`, `POST /orders/{id}/payments/retry`.
+**User (CUSTOMER):**
+- products, brands, categories (public GET), cart, orders, payments (retry + webhook public), reviews, wishlist, user-addresses, user profile.
 
-**Admin API** (`controller/admin`, yêu cầu ADMIN): `AdminBrand/Category/Coupon/Order/OrderHistory/OrderItem/
-Payment/Product/ProductImage/Review/UserAddress/User` — CRUD quản trị các tài nguyên tương ứng.
+**Admin (ADMIN role):**
+- Full CRUD cho Brand, Category, Coupon, Order, Product, User, Review, UserAddress...
+- **Mới:** `/admin/customers` (get by level, update profile/loyalty), `/admin/suppliers`, `/admin/product-suppliers`, `/admin/purchase-orders` (create/receive/update status), `/admin/stock-movements` (adjustments + query).
 
-**Hạ tầng**: Swagger UI (`/swagger-ui.html`, `/v3/api-docs`), Actuator (`/actuator/health/**`, `/info` public;
-phần còn lại ADMIN).
-
-Phân trang: mặc định page size 12, **tối đa 50** (`WebConfig.customizePageable`). Trailing slash được chuẩn hóa
-bởi `UrlHandlerFilter`.
+Phân trang mặc định 12, max 50. Trailing slash chuẩn hóa.
 
 ---
 
-## 13. Điểm thiết kế nổi bật & rủi ro đã biết
+## 13. Điểm mạnh, Nợ kỹ thuật & Tiến độ Upgrade Plan
 
-**Điểm mạnh:**
-- Trừ kho atomic chống overselling; coupon redeem có khóa chống double-spend.
-- Order state machine tường minh + tách side-effect qua `OrderLifecycleService` (propagation MANDATORY).
-- Webhook VNPay chuẩn production: verify HMAC trước, idempotency 2 tầng (state + unique key), đối soát số tiền.
-- Auth hai token + `tokenVersion` cho phép thu hồi tức thì — khắc phục nhược điểm JWT stateless.
-- ShedLock cho scheduled job an toàn khi multi-instance.
-- Flyway versioned, tiền tệ `NUMERIC`/`BigDecimal`, enum dạng STRING.
+**Điểm mạnh (giữ vững):**
+- Atomic stock + ledger audit đầy đủ (không oversell, trace được mọi biến động).
+- Tách side-effect qua MANDATORY propagation (OrderLifecycle, PO receive).
+- Webhook VNPay: signature trước, idempotency, amount match.
+- TokenVersion + rotation refresh: thu hồi tức thì.
+- ShedLock + scheduled an toàn multi-instance.
+- Tách User/Customer rõ ràng (identity vs CRM).
+- Supply chain đã được xây dựng với receive partial + status machine.
 
-**Rủi ro / nợ kỹ thuật** (chi tiết & lộ trình ở `BACKEND_UPGRADE_PLAN.md`):
-- Cache `allEntries=true` blanket → hit-rate thấp.
-- `clean-on-validation-error=true` ở dev = nguy cơ xóa DB; cần khóa cứng, tuyệt đối cấm prod.
-- Secret fallback từng nằm trong repo (docker-compose / properties dev) — cần secret manager + rotate.
-- Chưa có rate limiting/lockout cho login (brute-force).
-- Hard-delete user có thể vi phạm FK — nên chuyển soft-delete.
-- API chưa auth có thể bị redirect 302 sang OAuth thay vì 401 JSON (cần `AuthenticationEntryPoint` cho REST).
-- `src/test` còn rỗng — thiếu lưới an toàn (unit/integration/concurrency).
-- Mâu thuẫn PUT vs PATCH ở các `update*` (request `@NotNull` nhưng service xử lý "if != null").
+**Tiến độ từ BACKEND_UPGRADE_PLAN (đến 2026-06-24):**
+- ✅ Actuator + health + docker healthcheck.
+- ✅ Rate limiting login (bucket4j).
+- ✅ Nhiều test (OrderServiceTest, StockMovementFlowTest, LoginRateLimitTest, Pricing..., integration, repo).
+- ✅ Supply chain (V22) + stock ledger.
+- ✅ Một số cache/redis, trigram, idempotency payment fix.
+- ⬜ AuthenticationEntryPoint REST 401 thuần.
+- ⬜ Soft delete (hiện chỉ dùng isActive + filter).
+- ⬜ Secret management thực thụ + rotate.
+- ⬜ Khóa flyway dev nguy hiểm.
+- ⬜ Cache granular (vẫn allEntries).
+- ⬜ Observability đầy đủ (metrics + log structured + tracing).
+- ⬜ Outbox/events.
+
+**Rủi ro còn lại:**
+- Column naming không nhất quán (update_at vs updated_at).
+- Loyalty/totalSpent chưa có logic accrual.
+- Test coverage còn mỏng ở một số flow phức hợp (concurrent PO receive + sale).
+- Secrets fallback trong repo.
+- Cache hit-rate thấp.
 
 ---
 
-> Tài liệu này phản ánh codebase tại thời điểm cập nhật. Khi thay đổi kiến trúc/luồng nghiệp vụ,
-> hãy cập nhật mục liên quan để giữ vai trò "single source of truth".
+## 14. Hướng đi tiếp theo (Roadmap chi tiết từ góc nhìn Senior System Architect)
+
+Dưới đây là phân tích sâu và lộ trình đề xuất, ưu tiên **an toàn dữ liệu + vận hành + scalability** trước khi mở rộng tính năng.
+
+### Giai đoạn Ngắn hạn (1–4 tuần — Production Hardening)
+
+1. **Authentication & Session**
+   - Thêm `AuthenticationEntryPoint` + `AccessDeniedHandler` chuẩn REST: luôn trả 401/403 JSON cho `/api/**`, chỉ cho phép redirect OAuth2 trên `/oauth2/**`.
+   - Xác nhận behavior hiện tại của JwtFilter + Security khi gọi API không token.
+
+2. **Soft Delete & Data Retention**
+   - Thêm cột `deleted_at` / `is_deleted` cho User, Product, Supplier, PurchaseOrder, Order (nếu cần).
+   - Cập nhật mọi query công khai + admin list dùng filter `deleted_at IS NULL`.
+   - Soft delete user phải cascade logic (vô hiệu hóa Customer, cart, address, không xóa order history).
+   - Migration + backfill.
+
+3. **Secret & Config Hardening**
+   - Loại bỏ **tất cả** fallback secret (JWT, VNPay, Google) khỏi `application-dev.properties`, `docker-compose.yml`, `.env.example`.
+   - Bắt buộc env trong compose (như đã làm một phần).
+   - Giới thiệu secret manager (Doppler / HashiCorp Vault / AWS SM) hoặc ít nhất external .env gitignored + CI secret.
+   - Rotate các secret đã từng commit.
+
+4. **Flyway & DB Discipline**
+   - Xóa `clean-on-validation-error=true` khỏi mọi cấu hình dùng chung. Chỉ giữ trong profile `local-destructive`.
+   - Thêm `flyway.clean-disabled=true` ở prod.
+   - Viết script migration repair khi cần (không tự động).
+
+5. **Loyalty & CRM Business Rules**
+   - Thiết kế + implement: sau khi đơn DELIVERED (hoặc CONFIRMED) → cộng loyaltyPoints + totalSpent (theo % finalAmount hoặc rule cứng).
+   - Rule thăng cấp level (BROWSER → SILVER sau N điểm / X chi tiêu).
+   - Trigger ở OrderLifecycleService (sau confirm) hoặc event sau.
+   - Admin có thể override/adjust điểm.
+
+6. **Mở rộng Test Pyramid (rất cấp thiết)**
+   - Concurrency test: nhiều thread cùng lúc checkout cùng sản phẩm (đảm bảo không oversell + ledger đúng).
+   - PO receive partial + concurrent sale.
+   - Webhook VNPay idempotency + amount mismatch cases.
+   - Integration full flow với Testcontainers (đã có AbstractIntegrationTest).
+   - Property-based test cho pricing/coupon nếu có thời gian.
+   - Tăng coverage các service mới (Customer, Supplier, PO, StockMovement).
+
+### Giai đoạn Trung hạn (1–3 tháng — Reliability & Efficiency)
+
+7. **Cache Strategy**
+   - Bỏ blanket `allEntries=true` → evict theo key cụ thể (`products:id:xx`, `orders:user:yy`).
+   - Dùng `GenericJackson2JsonRedisSerializer` + TTL per cache (hoặc @Cacheable với config riêng).
+   - Cân nhắc cache-aside chủ đích cho hot catalog (brand/category filter).
+
+8. **Observability 3 Trụ**
+   - Micrometer + Prometheus + `/actuator/prometheus` (đã expose).
+   - Logback JSON + MDC `X-Request-Id` / traceId (filter + interceptor).
+   - OpenTelemetry (nếu có collector) cho tracing qua service (dù monolith vẫn có ích khi sau này tách).
+   - Dashboard Grafana cơ bản (latency p50/p95/p99, error rate, DB pool, cache hit, stock low alerts).
+
+9. **DB Performance & Indexing**
+   - Partial index: `orders (payment_expires_at) WHERE status = 'PENDING'`.
+   - Index stock_movements (product_id, created_at), purchase_orders (expected_delivery_date, status).
+   - Analyze EXPLAIN ANALYZE cho search + report query.
+   - Tune Hikari: max pool, leak detection, connection timeout.
+
+10. **Idempotency & Resilience**
+    - Idempotency-Key header cho POST /orders và POST /admin/purchase-orders.
+    - Retry policy cho VNPay webhook (hiện đã idempotent).
+    - Circuit breaker (Resilience4j) cho external (nếu thêm email/SMS).
+
+11. **API & Contract**
+    - Dùng OpenAPI làm source of truth, sinh client cho frontend.
+    - Version API nếu breaking (v1 hiện tại ổn).
+
+### Giai đoạn Dài hạn (3–9 tháng — Growth & Evolution)
+
+12. **Domain Events + Outbox Pattern**
+    - Giới thiệu `ApplicationEventPublisher` + bảng `outbox`.
+    - Side-effect (gửi email xác nhận đơn, thông báo PO nhận hàng, cập nhật điểm loyalty) chạy async, đảm bảo consistency.
+    - Sau này thay bằng Kafka nếu cần event-driven.
+
+13. **Bounded Context & Modular Monolith**
+    - Tách rõ module/package: 
+      - identity (User + Refresh + Auth)
+      - catalog (Product/Brand/Category + search)
+      - ordering (Cart/Order/Payment + lifecycle)
+      - crm (Customer + loyalty)
+      - procurement (Supplier/PO/StockMovement)
+    - Dùng package-private + interface rõ ràng giữa module.
+    - Khi traffic lớn hoặc team tách: cân nhắc tách service (nhưng chỉ khi chi phí vận hành xứng đáng).
+
+14. **Advanced Inventory & Supply**
+    - Low stock alert (scheduled job + notification khi stock < lowStockThreshold).
+    - Suggested reorder: dựa lead_time + historical sale velocity.
+    - Wholesale pricing (giá khác cho level GOLD/RUBY hoặc bulk).
+    - Multi-warehouse nếu cần (mở rộng StockMovement + location).
+
+15. **Search & Analytics**
+    - Trigram hiện đủ cho catalog nhỏ. Khi > vài chục nghìn sản phẩm → OpenSearch/Elasticsearch (fulltext + facet + autocomplete).
+    - Analytics dashboard: top sellers, supplier performance (on-time delivery, cost variance), customer LTV, abandoned cart.
+
+16. **Security nâng cao**
+    - Thêm rate limit register, password reset.
+    - Account lockout tạm thời sau N lần login fail (dùng Redis).
+    - MFA (TOTP) cho admin.
+    - Security headers (HSTS, CSP...).
+    - OWASP dependency check + Trivy trong CI.
+
+17. **CI/CD & Ops**
+    - GitHub Actions: build → test (Testcontainers) → OWASP/Trivy scan → docker build & push → deploy (staging/prod).
+    - Image hardening: distroless hoặc alpine minimal, no devtools, sbom.
+    - Backup/restore DB định kỳ + restore test.
+    - Runbook sự cố (DB down, Redis full, VNPay outage, mass stock adjustment).
+
+**Nguyên tắc chỉ đạo (Senior Architect):**
+- An toàn dữ liệu và audit trail luôn thắng tính năng mới.
+- Mỗi thay đổi phải có test + migration + doc.
+- Tránh premature microservices. Modular monolith + rõ ràng context là lựa chọn tối ưu cho giai đoạn này.
+- Prefer idempotency, atomic DB operation, ledger thay vì distributed transaction khi có thể.
+- Luôn nghĩ "nếu scale gấp 10, ta sẽ đau ở đâu?" (cache, DB pool, search, stock race, observability).
+
+---
+
+> Tài liệu này là "living document". 
+> Mọi thay đổi kiến trúc, thêm domain mới (loyalty accrual, warehouse, events), hoặc refactor lớn **bắt buộc** phải cập nhật file này đồng thời.
+> 
+> "Good architecture is when you can add new features without reading the entire codebase." — Hãy giữ cho nó như vậy.

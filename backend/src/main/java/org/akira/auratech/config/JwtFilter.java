@@ -22,7 +22,11 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-//Lọc mọi request, lấy token từ cookie, xác thực JWT, nạp Authentication vào SecurityContext; xóa cookie và trả 401 nếu token không hợp lệ.
+
+// Filter xac thuc JWT tren moi HTTP request (chay truoc UsernamePasswordAuthenticationFilter).
+// Luong: doc token tu cookie AUTH_TOKEN hoac header Bearer -> parse JWT -> load UserDetails
+// -> kiem tra user active, token con han, tokenVersion khop DB -> nap Authentication vao SecurityContext.
+// Token khong hop le tu cookie -> xoa cookie + tra 401.
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {

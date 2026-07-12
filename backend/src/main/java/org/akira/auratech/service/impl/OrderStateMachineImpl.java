@@ -20,6 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 
+// State machine quan ly vong doi don hang.
+// Chuyen trang thai hop le:
+//   PENDING    -> CONFIRMED | CANCELLED
+//   CONFIRMED  -> SHIPPED   | CANCELLED
+//   SHIPPED    -> DELIVERED
+//   CANCELLED, DELIVERED -> trang thai cuoi, khong chuyen tiep
+// CONFIRMED thuong do confirmAfterSuccessfulPayment (luong thanh toan), khong qua updateOrderStatus.
+// Huy don (-> CANCELLED) luon qua OrderLifecycleService.cancelOrder de hoan kho/coupon.
 @Service
 @RequiredArgsConstructor
 public class OrderStateMachineImpl implements OrderStateMachine {
@@ -33,6 +41,7 @@ public class OrderStateMachineImpl implements OrderStateMachine {
             @CacheEvict(value = "orderHistories", allEntries = true)
     })
     public OrderResponse updateOrderStatus(int orderId, OrderStatusUpdateRequest request) {
+        // Khóa bi quan order + items để tránh hai admin cùng đổi trạng thái song song.
         Order order = orderRepository.findWithItemsByIdForUpdate(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng"));
 
@@ -73,6 +82,7 @@ public class OrderStateMachineImpl implements OrderStateMachine {
             @CacheEvict(value = "products", allEntries = true),
             @CacheEvict(value = "coupons", allEntries = true)
     })
+    // Job dinh ky (mac dinh 60s): huy don PENDING qua paymentExpiresAt. ShedLock chan chay trung khi scale ngang.
     public int expirePendingOrders() {
         List<Order> expiredOrders = orderRepository.findExpiredOrdersForUpdate(OrderStatus.PENDING, Instant.now());
         for (Order order : expiredOrders) {
@@ -81,6 +91,7 @@ public class OrderStateMachineImpl implements OrderStateMachine {
         return expiredOrders.size();
     }
 
+    // Kiem tra ma tran chuyen trang thai — nem BusinessRuleException neu khong hop le.
     private void validateTransition(OrderStatus current, OrderStatus target) {
         if (current == OrderStatus.CANCELLED || current == OrderStatus.DELIVERED) {
             throw new BusinessRuleException("Don hang o trang thai " + current + " khong the chuyen trang thai");

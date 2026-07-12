@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
-
+  
 import org.akira.auratech.AbstractIntegrationTest;
 import org.akira.auratech.dto.request.OrderRequest;
 import org.akira.auratech.dto.request.OrderStatusUpdateRequest;

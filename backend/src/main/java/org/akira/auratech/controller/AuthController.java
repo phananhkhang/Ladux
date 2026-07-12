@@ -30,6 +30,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+// API xac thuc — dang ky, dang nhap, refresh token, logout, CSRF.
+// Hai token: access JWT 15 phut (cookie AUTH_TOKEN), refresh opaque 7 ngay (cookie REFRESH_TOKEN, path /api/v1/auth).
+// Logout: revoke refresh token + tang tokenVersion -> access token cu chet tuc thi.
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor

@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+// Load user tu DB cho Spring Security — goi boi JwtFilter va AuthenticationManager khi login.
 @RequiredArgsConstructor
 @Service
 public class MyUserDetailsService implements UserDetailsService {

@@ -31,13 +31,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-// Trung tâm an ninh của auratech
+
+// Cau hinh bao mat toan he thong — stateless, JWT cookie, CSRF, CORS, OAuth2 Google.
+// Phan quyen URL: public (auth, catalog GET, webhook VNPay, Swagger, actuator health/info),
+// ADMIN (actuator con lai), con lai yeu cau dang nhap.
+// Luong OAuth2: User -> Google Login -> OAuth2SuccessHandler -> JWT + Set-Cookie -> JwtFilter -> Controller.
 @Configuration
-@EnableWebSecurity // Bật spring security
+@EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    // Request mang Bearer token duoc mien CSRF (token-based auth khong can CSRF).
     private static final RequestMatcher BEARER_AUTH_REQUEST = request -> {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         return authHeader != null && authHeader.regionMatches(true, 0, "Bearer ", 0, 7);
@@ -130,27 +135,3 @@ public class SecurityConfig {
         return source;
     }
 }
-// Luồng hoạt động
-//        User
-// ↓
-//        Google Login
-// ↓
-//        OAuth2SuccessHandler
-// ↓
-//        JWT
-// ↓
-//        Set-Cookie(AUTH_TOKEN)
-// ↓
-//        Browser lưu Cookie
-// ↓
-//        React gọi API
-// ↓
-//        Cookie AUTH_TOKEN gửi kèm
-// ↓
-//        JwtFilter
-// ↓
-//        Validate JWT
-// ↓
-//        SecurityContext
-// ↓
-//        Controller

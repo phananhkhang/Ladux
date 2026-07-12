@@ -26,6 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+// CRUD payment va dieu phoi trang thai thanh toan tu phia client/admin.
+// createPayment idempotent: SUCCESS -> chan tao moi; PENDING -> tra lai payment hien tai; FAILED -> tao attempt moi.
+// Khong set order.status truc tiep — luon goi OrderLifecycleService.
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
@@ -176,6 +179,7 @@ public class PaymentServiceImpl implements PaymentService {
         return PaymentCallbackResponse.fromEntity(payment);
     }
 
+    // Kiem tra don con nhan thanh toan duoc khong. Qua han -> tu huy don (hoan kho/coupon) roi nem loi.
     private void ensureOrderCanAcceptPayment(Order order) {
         if (order.getStatus() == OrderStatus.CANCELLED) {
             throw new BusinessRuleException("Don hang da bi huy, khong the cap nhat thanh toan");

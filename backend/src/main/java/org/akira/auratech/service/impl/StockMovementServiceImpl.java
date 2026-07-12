@@ -22,6 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+// So cai bien dong ton kho — audit trail moi thay doi stock.
+// recordMovement: cap nhat stockQuantity + ghi so (nhap hang PO, dieu chinh thu cong).
+// recordLedgerEntry: chi ghi so, KHONG doi stock (stock da thay doi boi caller: checkout, hoan kho).
 @Service
 @RequiredArgsConstructor
 public class StockMovementServiceImpl implements StockMovementService {

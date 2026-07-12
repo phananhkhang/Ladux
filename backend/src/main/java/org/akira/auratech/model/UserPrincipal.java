@@ -8,6 +8,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+// Wrapper Spring Security cho User — dung trong @AuthenticationPrincipal.
+// Map role -> ROLE_ADMIN / ROLE_CUSTOMER. isEnabled() = user.isActive().
+// getTokenVersion() so khop claim JWT de thu hoi access token tuc thi.
 public class UserPrincipal implements UserDetails {
     private final User user;
     private final List<GrantedAuthority> authorities;

@@ -31,6 +31,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+// Don hang — aggregate root cua luong checkout.
+// Tien te: subTotal (truoc giam), discountAmount, finalAmount (sau giam).
+// Gia tung dong snapshot tren OrderItem.priceAtPurchase.
+// paymentExpiresAt: han thanh toan (null voi COD). Cascade ALL + orphanRemoval cho items, histories, payments.
 @Entity
 @Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)

@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// Bat moi exception tu Controller va tra ErrorResponse JSON thong nhat.
+// Mapping: 404 not found, 400 validation/business rule, 401 auth, 403 access denied, 409 DB constraint, 500 fallback.
+// Bao mat: loi dang nhap tra message chung, khong lo user ton tai hay khong.
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);

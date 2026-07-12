@@ -18,6 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+// Tach side-effect khoi state machine — xu ly hau qua khi don hang doi trang thai do thanh toan.
+// Transaction propagation = MANDATORY: bat buoc chay trong transaction cua caller (PaymentWebhook,
+// PaymentService, OrderStateMachine). Hoan kho + huy coupon + doi status cung commit hoac cung rollback.
+// Khong goi truc tiep tu Controller — chi tu luong thanh toan hoac huy don.
+// Idempotent: goi lai khi da CONFIRMED/CANCELLED khong gay side-effect trung lap.
+// Luong huy don (cancelOrder): hoan kho -> ghi so cai RETURN_IN -> hoan coupon -> set CANCELLED -> ghi OrderHistory.
 @Service
 @RequiredArgsConstructor
 public class OrderLifecycleService {
@@ -25,14 +31,17 @@ public class OrderLifecycleService {
     private final CouponRepository couponRepository;
     private final StockMovementService stockMovementService;
 
+    // Xac nhan don sau thanh toan thanh cong: PENDING -> CONFIRMED, xoa han thanh toan, ghi audit trail.
     @Transactional(propagation = Propagation.MANDATORY)
     public void confirmAfterSuccessfulPayment(Order order) {
+        // Đơn đã hủy không thể quay lại — tránh race giữa webhook và job hết hạn.
         if (order.getStatus() == OrderStatus.CANCELLED) {
             throw new BusinessRuleException("Don hang da bi huy, khong the xac nhan thanh toan");
         }
         if (order.getStatus() == OrderStatus.SHIPPED || order.getStatus() == OrderStatus.DELIVERED) {
             throw new BusinessRuleException("Don hang da duoc van chuyen, khong the cap nhat thanh toan");
         }
+        // Idempotent: webhook VNPay có thể gọi lại nhiều lần khi payment đã SUCCESS.
         if (order.getStatus() == OrderStatus.CONFIRMED) {
             order.setPaymentExpiresAt(null);
             return;
@@ -47,8 +56,10 @@ public class OrderLifecycleService {
                 .build());
     }
 
+    // Huy don kem hoan tac: tra kho, hoan coupon, ghi lich su. description = ly do huy.
     @Transactional(propagation = Propagation.MANDATORY)
     public void cancelOrder(Order order, String description) {
+        // Idempotent: đã CANCELLED thì bỏ qua, không hoàn kho lần hai.
         if (order.getStatus() == OrderStatus.CANCELLED) {
             return;
         }
@@ -68,6 +79,7 @@ public class OrderLifecycleService {
                 .build());
     }
 
+    // Hoan ton kho khi huy don: cong lai so luong da tru luc checkout, ghi so cai RETURN_IN (chi ghi so).
     private void releaseReservedInventory(Order order) {
         Long orderRef = order.getId() == null ? null : order.getId().longValue();
         for (OrderItem item : order.getItems()) {
@@ -87,6 +99,7 @@ public class OrderLifecycleService {
         }
     }
 
+    // Giam usedCount cua coupon khi don bi huy — doi xung voi redeem luc tao don.
     private void rollbackCouponUsage(Order order) {
         if (order.getCoupon() == null) {
             return;
