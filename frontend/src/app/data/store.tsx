@@ -248,7 +248,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       },
       clearCart: async () => {
         await CartApi.clear();
-        setCart([]);
+        // clear() is 204 empty — reload so local state stays consistent
+        try {
+          const data = await CartApi.get();
+          setCart(mapCart(data));
+        } catch {
+          setCart([]);
+        }
       },
 
       wishlist,

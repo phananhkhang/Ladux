@@ -255,10 +255,10 @@ export function AdminLayout() {
                   {user?.fullName || user?.username || "Admin"}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/account">Profile</Link>
+                <DropdownMenuItem onSelect={() => navigate("/profile")}>
+                  Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => void handleLogout()}>
+                <DropdownMenuItem onSelect={() => void handleLogout()}>
                   <LogOut size={14} className="mr-2" />
                   Logout
                 </DropdownMenuItem>

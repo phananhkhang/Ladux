@@ -150,57 +150,77 @@ export function StorefrontLayout() {
                 <CountBubble n={cartCount} />
               </Link>
             </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" aria-label="Account">
+            {/* Primary click → profile (or login). Menu for secondary actions. */}
+            <div className="flex items-center">
+              <Button
+                asChild
+                variant="outline"
+                size="icon"
+                className="rounded-r-none border-r-0"
+                aria-label={isAuthenticated ? "My profile" : "Sign in"}
+              >
+                <Link to={isAuthenticated ? "/profile" : "/login?redirect=/profile"}>
                   <User size={16} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>
-                  {isAuthenticated
-                    ? user?.fullName || user?.username || "Account"
-                    : "Guest"}
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {isAuthenticated ? (
-                  <>
-                    <DropdownMenuItem asChild>
-                      <Link to="/account">My Account</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/orders">My Orders</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/wishlist">Wishlist</Link>
-                    </DropdownMenuItem>
-                    {isAdminUser && (
-                      <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                          <Link to="/admin">
+                </Link>
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-l-none size-9 w-7"
+                    aria-label="Account menu"
+                  >
+                    <span className="text-[10px] leading-none">▾</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>
+                    {isAuthenticated
+                      ? user?.fullName || user?.username || "Account"
+                      : "Guest"}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {isAuthenticated ? (
+                    <>
+                      <DropdownMenuItem onSelect={() => navigate("/profile")}>
+                        My Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => navigate("/account")}>
+                        Addresses
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => navigate("/orders")}>
+                        My Orders
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => navigate("/wishlist")}>
+                        Wishlist
+                      </DropdownMenuItem>
+                      {isAdminUser && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onSelect={() => navigate("/admin")}>
                             <LayoutDashboard size={14} className="mr-2" />
                             Admin Dashboard
-                          </Link>
-                        </DropdownMenuItem>
-                      </>
-                    )}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => void handleLogout()}>
-                      <LogOut size={14} className="mr-2" />
-                      Sign out
-                    </DropdownMenuItem>
-                  </>
-                ) : (
-                  <DropdownMenuItem asChild>
-                    <Link to="/login">
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onSelect={() => void handleLogout()}>
+                        <LogOut size={14} className="mr-2" />
+                        Sign out
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <DropdownMenuItem
+                      onSelect={() => navigate("/login?redirect=/profile")}
+                    >
                       <LogIn size={14} className="mr-2" />
                       Sign in
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </header>
@@ -251,11 +271,18 @@ export function StorefrontLayout() {
               {isAuthenticated ? (
                 <>
                   <Link
+                    to="/profile"
+                    onClick={() => setMobileOpen(false)}
+                    className="block rounded-md px-3 py-2 text-sm hover:bg-accent/50"
+                  >
+                    My Profile
+                  </Link>
+                  <Link
                     to="/account"
                     onClick={() => setMobileOpen(false)}
                     className="block rounded-md px-3 py-2 text-sm hover:bg-accent/50"
                   >
-                    My Account
+                    Addresses
                   </Link>
                   <Link
                     to="/orders"
@@ -319,6 +346,7 @@ export function StorefrontLayout() {
             title="Support"
             links={[
               { label: "My orders", to: "/orders" },
+              { label: "Profile", to: "/profile" },
               { label: "Account", to: "/account" },
               { label: "Wishlist", to: "/wishlist" },
             ]}

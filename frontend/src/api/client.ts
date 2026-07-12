@@ -378,19 +378,23 @@ export const Reviews = {
 };
 
 // ── Cart ─────────────────────────────────────────────────────────────────────
+// Backend mutations return empty bodies (201/204). Always re-GET cart after write.
 
 export const Cart = {
   get() {
     return get<CartResponse>("/cart");
   },
-  add(body: CartItemRequest) {
-    return post<CartResponse>("/cart/items", body);
+  async add(body: CartItemRequest) {
+    await post<void>("/cart/items", body);
+    return get<CartResponse>("/cart");
   },
-  updateQuantity(productId: number, body: CartQuantityRequest) {
-    return put<CartResponse>(`/cart/items/${productId}`, body);
+  async updateQuantity(productId: number, body: CartQuantityRequest) {
+    await put<void>(`/cart/items/${productId}`, body);
+    return get<CartResponse>("/cart");
   },
-  remove(productId: number) {
-    return del<CartResponse>(`/cart/items/${productId}`);
+  async remove(productId: number) {
+    await del<void>(`/cart/items/${productId}`);
+    return get<CartResponse>("/cart");
   },
   clear() {
     return del<void>("/cart");

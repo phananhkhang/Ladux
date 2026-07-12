@@ -13,6 +13,7 @@ import { PaymentPendingPage, PaymentSuccessPage, PaymentFailedPage } from "./pag
 import { OrdersPage } from "./pages/orders";
 import { WishlistPage } from "./pages/wishlist";
 import { AccountPage } from "./pages/account";
+import { ProfilePage } from "./pages/profile";
 import { LoginPage, RegisterPage } from "./pages/auth";
 
 import { AdminDashboard } from "./pages/admin/dashboard";
@@ -55,6 +56,7 @@ export default function App() {
             <Route path="/payment/failed" element={<PaymentFailedPage />} />
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/wishlist" element={<WishlistPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/account" element={<AccountPage />} />
           </Route>
 

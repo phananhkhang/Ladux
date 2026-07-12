@@ -68,6 +68,12 @@ export function AccountPage() {
         <Button asChild className="mt-4">
           <Link to="/login?redirect=/account">Sign in</Link>
         </Button>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Or open{" "}
+          <Link to="/profile" className="underline underline-offset-2">
+            My profile
+          </Link>
+        </p>
       </div>
     );
   }
@@ -134,8 +140,16 @@ export function AccountPage() {
   };
 
   return (
-    <PageShell title="My account">
-      <Tabs defaultValue="profile">
+    <PageShell
+      title="My account"
+      subtitle="Addresses & account settings — or open My profile for the full hub."
+      action={
+        <Button asChild variant="outline" size="sm">
+          <Link to="/profile">My profile</Link>
+        </Button>
+      }
+    >
+      <Tabs defaultValue="addresses">
         <TabsList className="mb-6">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="password">Password</TabsTrigger>

@@ -27,7 +27,7 @@ export function ProductCard({
   const requireAuth = (action: () => Promise<void>, successMsg: string) => {
     if (!isAuthenticated) {
       toast.error("Please sign in first");
-      navigate("/login");
+      navigate(`/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`);
       return;
     }
     void action()
