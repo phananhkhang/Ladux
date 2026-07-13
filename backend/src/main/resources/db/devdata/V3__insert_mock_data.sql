@@ -39,18 +39,14 @@ INSERT INTO brands (id, name, slug, logo_url) VALUES
                                                   (11, 'Microsoft', 'microsoft', 'https://img.example.com/brand-microsoft.png'),
                                                   (12, 'Huawei', 'huawei', 'https://img.example.com/brand-huawei.png');
 
--- categories (10 rows)
+-- categories (6 rows) — tat ca root de hien thi Shop by category
 INSERT INTO categories (id, name, slug, parent_id) VALUES
-                                                       (1, 'Laptop Gaming', 'laptop-gaming', NULL),
-                                                       (2, 'Laptop Văn Phòng', 'laptop-van-phong', NULL),
-                                                       (3, 'Ultrabook Mỏng Nhẹ', 'ultrabook-mong-nhe', NULL),
-                                                       (4, 'Laptop Đồ Họa', 'laptop-do-hoa', NULL),
-                                                       (5, 'Laptop Doanh Nhân', 'laptop-doanh-nhan', 2),
-                                                       (6, 'Laptop Sinh Viên', 'laptop-sinh-vien', 2),
-                                                       (7, 'Gaming Cao Cấp', 'gaming-cao-cap', 1),
-                                                       (8, 'Workstation Kỹ Thuật', 'workstation-ky-thuat', 4),
-                                                       (9, 'Phụ Kiện Laptop', 'phu-kien-laptop', NULL),
-                                                       (10, 'Màn Hình', 'man-hinh', NULL);
+    (1, 'Laptop Gaming',      'laptop-gaming',      NULL),
+    (2, 'Laptop Văn Phòng',   'laptop-van-phong',    NULL),
+    (3, 'Ultrabook Mỏng Nhẹ', 'ultrabook-mong-nhe',  NULL),
+    (4, 'Laptop Đồ Họa',      'laptop-do-hoa',       NULL),
+    (5, 'Laptop Doanh Nhân',  'laptop-doanh-nhan',   NULL),
+    (6, 'Laptop Sinh Viên',   'laptop-sinh-vien',    NULL);
 
 -- users (12 rows)
 INSERT INTO users (id, email, username, password, full_name, phone, avatar, is_active, created_at) VALUES
@@ -82,22 +78,22 @@ INSERT INTO user_roles (user_id, role_id) VALUES
                                               (11, 2),
                                               (12, 2);
 
--- products (12 rows)
+-- products (12 rows) — category_id chi nam trong 1..6
 -- thumbnail / product_images trỏ về file tĩnh do backend serve: GET /uploads/products/*
 INSERT INTO products
 (id, brand_id, category_id, sku, name, slug, base_price, discount_price, stock_quantity, specs, thumbnail, is_active, created_at) VALUES
-                                                                                                                                      (1, 1, 3, 'LAP-0001', 'Laptop Apple MacBook Air M3 13 inch', 'laptop-apple-macbook-air-m3-13', 2899.00, 2699.00, 25, '{"ram":"16GB","storage":"512GB","cpu":"Apple M3","man_hinh":"13.6 inch"}', '/uploads/products/laptop-apple-macbook-air-m3-13.webp', true, '2026-05-01 09:00:00+00'),
-                                                                                                                                      (2, 2, 1, 'LAP-0002', 'Laptop Gaming Lenovo Legion 5 Pro 16', 'laptop-gaming-lenovo-legion-5-pro-16', 2499.00, 2299.00, 18, '{"ram":"16GB","storage":"1TB","cpu":"Ryzen 7 7840H","man_hinh":"16 inch"}', '/uploads/products/laptop-gaming-lenovo-legion-5-pro-16.jpg', true, '2026-05-01 09:05:00+00'),
-                                                                                                                                      (3, 3, 4, 'LAP-0003', 'Laptop Đồ Họa Dell Precision 5680', 'laptop-do-hoa-dell-precision-5680', 3599.00, NULL, 10, '{"ram":"32GB","storage":"1TB","cpu":"Intel i7-13800H","gpu":"RTX 2000 Ada"}', '/uploads/products/laptop-do-hoa-dell-precision-5680.webp', true, '2026-05-01 09:10:00+00'),
-                                                                                                                                      (4, 4, 2, 'LAP-0004', 'Laptop Văn Phòng HP ProBook 450 G10', 'laptop-van-phong-hp-probook-450-g10', 1899.00, 1749.00, 30, '{"ram":"16GB","storage":"512GB","cpu":"Intel i5-1340P","man_hinh":"15.6 inch"}', '/uploads/products/laptop-van-phong-hp-probook-450-g10.jpg', true, '2026-05-01 09:15:00+00'),
-                                                                                                                                      (5, 5, 1, 'LAP-0005', 'Laptop Gaming ASUS TUF Gaming F15', 'laptop-gaming-asus-tuf-gaming-f15', 2199.00, 2099.00, 22, '{"ram":"16GB","storage":"512GB","cpu":"Intel i7-12700H","gpu":"RTX 4060"}', '/uploads/products/laptop-gaming-asus-tuf-gaming-f15.png', true, '2026-05-01 09:20:00+00'),
-                                                                                                                                      (6, 6, 6, 'LAP-0006', 'Laptop Sinh Viên Acer Aspire 7 A715', 'laptop-sinh-vien-acer-aspire-7-a715', 1599.00, NULL, 40, '{"ram":"8GB","storage":"512GB","cpu":"Ryzen 5 7535HS","man_hinh":"15.6 inch"}', '/uploads/products/laptop-sinh-vien-acer-aspire-7-a715.jpg', true, '2026-05-01 09:25:00+00'),
-                                                                                                                                      (7, 7, 8, 'LAP-0007', 'Workstation MSI Creator Z16', 'workstation-msi-creator-z16', 3299.00, 3099.00, 12, '{"ram":"32GB","storage":"1TB","cpu":"Intel i9-13900H","gpu":"RTX 4070"}', '/uploads/products/workstation-msi-creator-z16.jpg', true, '2026-05-01 09:30:00+00'),
-                                                                                                                                      (8, 8, 7, 'LAP-0008', 'Gaming Cao Cấp Razer Blade 16', 'gaming-cao-cap-razer-blade-16', 4899.00, NULL, 6, '{"ram":"32GB","storage":"2TB","cpu":"Intel i9-13950HX","gpu":"RTX 4080"}', '/uploads/products/gaming-cao-cap-razer-blade-16.jpg', true, '2026-05-01 09:35:00+00'),
-                                                                                                                                      (9, 9, 3, 'LAP-0009', 'Ultrabook Samsung Galaxy Book 4', 'ultrabook-samsung-galaxy-book-4', 2299.00, 2099.00, 16, '{"ram":"16GB","storage":"512GB","cpu":"Intel i7-1355U","man_hinh":"14 inch"}', '/uploads/products/ultrabook-samsung-galaxy-book-4.png', true, '2026-05-01 09:40:00+00'),
-                                                                                                                                      (10, 10, 10, 'MON-0010', 'MSI Thin 15 B13UC Thin 15 B13U', 'msi-thin-15-b13uc', 699.00, 649.00, 35, '{"kich_thuoc":"15.6 inch","cpu":"Intel i7-13700H","gpu":"RTX 3050"}', '/uploads/products/msi-thin-15-b13uc.webp', true, '2026-05-01 09:45:00+00'),
-                                                                                                                                      (11, 11, 5, 'LAP-0011', 'Laptop Doanh Nhân Microsoft Surface Laptop 6', 'laptop-doanh-nhan-microsoft-surface-laptop-6', 2599.00, 2399.00, 14, '{"ram":"16GB","storage":"512GB","cpu":"Intel Core Ultra 7","man_hinh":"13.5 inch"}', '/uploads/products/laptop-doanh-nhan-microsoft-surface-laptop-6.png', true, '2026-05-01 09:50:00+00'),
-                                                                                                                                      (12, 12, 9, 'PHU-0012', 'Acer Aspire 5', 'acer-aspire-5', 399.00, 349.00, 80, '{"ram":"8GB","storage":"512GB","cpu":"Intel i5","man_hinh":"15.6 inch"}', '/uploads/products/acer-aspire-5.jpg', true, '2026-05-01 09:55:00+00');
+    (1,  1,  3, 'LAP-0001', 'Laptop Apple MacBook Air M3 13 inch',              'laptop-apple-macbook-air-m3-13',                    2899.00, 2699.00, 25, '{"ram":"16GB","storage":"512GB","cpu":"Apple M3","man_hinh":"13.6 inch"}',            '/uploads/products/laptop-apple-macbook-air-m3-13.webp', true, '2026-05-01 09:00:00+00'),
+    (2,  2,  1, 'LAP-0002', 'Laptop Gaming Lenovo Legion 5 Pro 16',             'laptop-gaming-lenovo-legion-5-pro-16',               2499.00, 2299.00, 18, '{"ram":"16GB","storage":"1TB","cpu":"Ryzen 7 7840H","man_hinh":"16 inch"}',           '/uploads/products/laptop-gaming-lenovo-legion-5-pro-16.jpg', true, '2026-05-01 09:05:00+00'),
+    (3,  3,  4, 'LAP-0003', 'Laptop Đồ Họa Dell Precision 5680',                'laptop-do-hoa-dell-precision-5680',                  3599.00, NULL,    10, '{"ram":"32GB","storage":"1TB","cpu":"Intel i7-13800H","gpu":"RTX 2000 Ada"}',         '/uploads/products/laptop-do-hoa-dell-precision-5680.webp', true, '2026-05-01 09:10:00+00'),
+    (4,  4,  2, 'LAP-0004', 'Laptop Văn Phòng HP ProBook 450 G10',              'laptop-van-phong-hp-probook-450-g10',                1899.00, 1749.00, 30, '{"ram":"16GB","storage":"512GB","cpu":"Intel i5-1340P","man_hinh":"15.6 inch"}',      '/uploads/products/laptop-van-phong-hp-probook-450-g10.jpg', true, '2026-05-01 09:15:00+00'),
+    (5,  5,  1, 'LAP-0005', 'Laptop Gaming ASUS TUF Gaming F15',                'laptop-gaming-asus-tuf-gaming-f15',                  2199.00, 2099.00, 22, '{"ram":"16GB","storage":"512GB","cpu":"Intel i7-12700H","gpu":"RTX 4060"}',           '/uploads/products/laptop-gaming-asus-tuf-gaming-f15.png', true, '2026-05-01 09:20:00+00'),
+    (6,  6,  6, 'LAP-0006', 'Laptop Sinh Viên Acer Aspire 7 A715',              'laptop-sinh-vien-acer-aspire-7-a715',                1599.00, NULL,    40, '{"ram":"8GB","storage":"512GB","cpu":"Ryzen 5 7535HS","man_hinh":"15.6 inch"}',       '/uploads/products/laptop-sinh-vien-acer-aspire-7-a715.jpg', true, '2026-05-01 09:25:00+00'),
+    (7,  7,  4, 'LAP-0007', 'Workstation MSI Creator Z16',                      'workstation-msi-creator-z16',                        3299.00, 3099.00, 12, '{"ram":"32GB","storage":"1TB","cpu":"Intel i9-13900H","gpu":"RTX 4070"}',             '/uploads/products/workstation-msi-creator-z16.jpg', true, '2026-05-01 09:30:00+00'),
+    (8,  8,  1, 'LAP-0008', 'Gaming Cao Cấp Razer Blade 16',                    'gaming-cao-cap-razer-blade-16',                      4899.00, NULL,     6, '{"ram":"32GB","storage":"2TB","cpu":"Intel i9-13950HX","gpu":"RTX 4080"}',            '/uploads/products/gaming-cao-cap-razer-blade-16.jpg', true, '2026-05-01 09:35:00+00'),
+    (9,  9,  3, 'LAP-0009', 'Ultrabook Samsung Galaxy Book 4',                  'ultrabook-samsung-galaxy-book-4',                    2299.00, 2099.00, 16, '{"ram":"16GB","storage":"512GB","cpu":"Intel i7-1355U","man_hinh":"14 inch"}',        '/uploads/products/ultrabook-samsung-galaxy-book-4.png', true, '2026-05-01 09:40:00+00'),
+    (10, 10, 1, 'LAP-0010', 'MSI Thin 15 B13UC',                                'msi-thin-15-b13uc',                                  699.00,  649.00,  35, '{"ram":"16GB","storage":"512GB","cpu":"Intel i7-13700H","gpu":"RTX 3050"}',           '/uploads/products/msi-thin-15-b13uc.webp', true, '2026-05-01 09:45:00+00'),
+    (11, 11, 5, 'LAP-0011', 'Laptop Doanh Nhân Microsoft Surface Laptop 6',     'laptop-doanh-nhan-microsoft-surface-laptop-6',       2599.00, 2399.00, 14, '{"ram":"16GB","storage":"512GB","cpu":"Intel Core Ultra 7","man_hinh":"13.5 inch"}',  '/uploads/products/laptop-doanh-nhan-microsoft-surface-laptop-6.png', true, '2026-05-01 09:50:00+00'),
+    (12, 12, 6, 'LAP-0012', 'Acer Aspire 5',                                    'acer-aspire-5',                                      399.00,  349.00,  80, '{"ram":"8GB","storage":"512GB","cpu":"Intel i5","man_hinh":"15.6 inch"}',             '/uploads/products/acer-aspire-5.jpg', true, '2026-05-01 09:55:00+00');
 
 -- product_images (12 rows) — cùng file với thumbnail (primary)
 INSERT INTO product_images (id, product_id, image_url, is_primary) VALUES

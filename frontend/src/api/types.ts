@@ -83,6 +83,8 @@ export interface CategoryResponse {
   name: string;
   slug: string;
   parentId: number | null;
+  /** Relative path or absolute URL, e.g. /uploads/categories/categories_laptop_gaming.webp */
+  imageUrl?: string | null;
 }
 
 export interface ProductImageResponse {
@@ -355,6 +357,7 @@ export interface BrandRequest {
 export interface CategoryRequest {
   name: string;
   parentId?: number | null;
+  imageUrl?: string | null;
 }
 
 export interface ReviewCreateRequest {

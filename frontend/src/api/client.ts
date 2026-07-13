@@ -155,43 +155,83 @@ http.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
 http.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
-    const original = error.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
-    if (!original || error.response?.status !== 401 || original._retry) {
+    const original = error.config as
+      | (InternalAxiosRequestConfig & { _retry?: boolean; _retryAnonymous?: boolean })
+      | undefined;
+    if (!original || error.response?.status !== 401) {
       return Promise.reject(error);
     }
 
     // Avoid infinite loop on auth endpoints
     const url = original.url ?? "";
-    if (url.includes("/auth/login") || url.includes("/auth/refresh") || url.includes("/auth/register")) {
+    if (
+      url.includes("/auth/login") ||
+      url.includes("/auth/refresh") ||
+      url.includes("/auth/register") ||
+      url.includes("/auth/csrf")
+    ) {
       return Promise.reject(error);
     }
 
-    original._retry = true;
+    // Already tried refresh + anonymous — give up
+    if (original._retryAnonymous) {
+      return Promise.reject(error);
+    }
 
-    try {
-      if (!refreshPromise) {
-        refreshPromise = http
-          .post<LoginResponse>("/auth/refresh")
-          .then((res) => {
-            const t = res.data.accessToken;
-            setStoredAccessToken(t);
-            return t;
-          })
-          .catch(() => {
-            setStoredAccessToken(null);
-            return null;
-          })
-          .finally(() => {
-            refreshPromise = null;
-          });
+    // 1) Try refresh once (shared across concurrent 401s)
+    if (!original._retry) {
+      original._retry = true;
+      try {
+        if (!refreshPromise) {
+          refreshPromise = http
+            .post<LoginResponse>("/auth/refresh")
+            .then((res) => {
+              const t = res.data.accessToken;
+              setStoredAccessToken(t);
+              return t;
+            })
+            .catch(() => {
+              setStoredAccessToken(null);
+              return null;
+            })
+            .finally(() => {
+              refreshPromise = null;
+            });
+        }
+        const newToken = await refreshPromise;
+        if (newToken) {
+          original.headers.Authorization = `Bearer ${newToken}`;
+          return http(original);
+        }
+      } catch {
+        setStoredAccessToken(null);
       }
-      const newToken = await refreshPromise;
-      if (!newToken) return Promise.reject(error);
-      original.headers.Authorization = `Bearer ${newToken}`;
-      return http(original);
-    } catch {
+    }
+
+    // 2) Refresh failed: for public catalog GETs only, retry once without Authorization.
+    // Invalid AUTH_TOKEN cookie used to 401 even permitAll routes; backend clears the cookie
+    // on that response, so the retry succeeds as anonymous. Skip protected routes (/users/me, cart, …).
+    setStoredAccessToken(null);
+    const method = (original.method ?? "get").toLowerCase();
+    const isPublicCatalogGet =
+      method === "get" &&
+      (/\/products(?:\/|$|\?)/.test(url) ||
+        /\/categories(?:\/|$|\?)/.test(url) ||
+        /\/brands(?:\/|$|\?)/.test(url) ||
+        /\/reviews(?:\/|$|\?)/.test(url));
+
+    if (!isPublicCatalogGet) {
       return Promise.reject(error);
     }
+
+    original._retryAnonymous = true;
+    if (original.headers) {
+      delete original.headers.Authorization;
+      if (typeof original.headers.delete === "function") {
+        original.headers.delete("Authorization");
+      }
+    }
+    return http(original);
   },
 );
 

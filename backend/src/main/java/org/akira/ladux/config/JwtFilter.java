@@ -26,7 +26,8 @@ import lombok.RequiredArgsConstructor;
 // Filter xac thuc JWT tren moi HTTP request (chay truoc UsernamePasswordAuthenticationFilter).
 // Luong: doc token tu cookie AUTH_TOKEN hoac header Bearer -> parse JWT -> load UserDetails
 // -> kiem tra user active, token con han, tokenVersion khop DB -> nap Authentication vao SecurityContext.
-// Token khong hop le tu cookie -> xoa cookie + tra 401.
+// Token khong hop le: xoa cookie (neu co) va tiep tuc chain nhu anonymous — KHONG tra 401 o day.
+// Endpoint public (catalog GET) van phai hoat dong; endpoint can auth se bi Spring Security chan.
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
@@ -56,11 +57,9 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             username = jwtService.extractUsername(jwt);
         } catch (JwtException | IllegalArgumentException ex) {
-            SecurityContextHolder.clearContext();
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            if (fromCookie) {
-                response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.clearAccessCookie().toString());
-            }
+            // Token het han / sai chu ky / malform — bo qua auth, giu request public.
+            clearInvalidToken(response, fromCookie);
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -71,13 +70,15 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 userDetails = this.userDetailsService.loadUserByUsername(username);
             } catch (UsernameNotFoundException ex) {
-                rejectUnauthorized(response, fromCookie);
+                clearInvalidToken(response, fromCookie);
+                filterChain.doFilter(request, response);
                 return;
             }
 
-            // (A) User bi khoa / vo hieu hoa -> tu choi NGAY, khong cho access token cu di qua.
+            // (A) User bi khoa / vo hieu hoa — khong dung token do, van cho xem catalog public.
             if (!userDetails.isEnabled()) {
-                rejectUnauthorized(response, fromCookie);
+                clearInvalidToken(response, fromCookie);
+                filterChain.doFilter(request, response);
                 return;
             }
 
@@ -85,11 +86,12 @@ public class JwtFilter extends OncePerRequestFilter {
             if (jwtService.isTokenValid(jwt, userDetails)) {
 
                 // (B) So khop tokenVersion: sau logout / doi mat khau / khoa tai khoan,
-                // tokenVersion cua user da tang -> access token cu bi tu choi tuc thi.
+                // tokenVersion cua user da tang -> access token cu bi bo qua.
                 Integer tokenVersion = jwtService.extractTokenVersion(jwt);
                 int currentVersion = (userDetails instanceof UserPrincipal up) ? up.getTokenVersion() : -1;
                 if (tokenVersion == null || tokenVersion != currentVersion) {
-                    rejectUnauthorized(response, fromCookie);
+                    clearInvalidToken(response, fromCookie);
+                    filterChain.doFilter(request, response);
                     return;
                 }
 
@@ -104,6 +106,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 // 🚀 CHỐT HẠ: Nạp thẻ xác thực vào Spring Security context
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            } else if (fromCookie) {
+                // Token cookie het han / khong hop le — xoa de lan sau khong gui lai.
+                clearInvalidToken(response, true);
             }
         }
 
@@ -119,9 +124,9 @@ public class JwtFilter extends OncePerRequestFilter {
         return readJwtFromAuthorizationHeader(request);
     }
 
-    private void rejectUnauthorized(HttpServletResponse response, boolean fromCookie) {
+    /** Xoa SecurityContext + cookie access (neu co). Khong set status 401 — de authorization quyet dinh. */
+    private void clearInvalidToken(HttpServletResponse response, boolean fromCookie) {
         SecurityContextHolder.clearContext();
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         if (fromCookie) {
             response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.clearAccessCookie().toString());
         }

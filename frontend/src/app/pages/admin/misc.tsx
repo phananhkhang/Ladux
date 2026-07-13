@@ -21,7 +21,7 @@ import type {
   ReviewResponse,
   UserResponse,
 } from "@/api/types";
-import { formatPrice, formatDate } from "@/lib/format";
+import { formatPrice, formatDate, resolveMediaUrl } from "@/lib/format";
 import { AdminHeader } from "../../components/admin-layout";
 import { DataTable, Column } from "../../components/data-table";
 import { RatingStars, PaymentStatusBadge } from "../../components/shared";
@@ -117,13 +117,26 @@ export function AdminCategories() {
                 key={c.id}
                 className="flex items-center justify-between rounded-md px-3 py-2 text-sm hover:bg-accent/40"
               >
-                <span>
-                  {c.name}
-                  {c.parentId != null && (
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      parent #{c.parentId}
+                <span className="flex min-w-0 items-center gap-2">
+                  {c.imageUrl ? (
+                    <img
+                      src={resolveMediaUrl(c.imageUrl)}
+                      alt=""
+                      className="size-8 shrink-0 rounded object-cover"
+                    />
+                  ) : (
+                    <span className="flex size-8 shrink-0 items-center justify-center rounded bg-muted text-[10px] text-muted-foreground">
+                      —
                     </span>
                   )}
+                  <span className="min-w-0 truncate">
+                    {c.name}
+                    {c.parentId != null && (
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        parent #{c.parentId}
+                      </span>
+                    )}
+                  </span>
                 </span>
                 <div className="flex gap-1">
                   <Button

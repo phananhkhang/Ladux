@@ -75,6 +75,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .name(request.name())
                 .slug(SlugUtils.toSlug(request.name()))
                 .parent(parent)
+                .imageUrl(blankToNull(request.imageUrl()))
                 .build();
         return CategoryResponse.fromEntity(repo.save(category));
     }
@@ -95,7 +96,17 @@ public class CategoryServiceImpl implements CategoryService {
             validateParentDoesNotCreateCycle(category, parent);
             category.setParent(parent);
         }
+        // imageUrl optional: null/absent = keep current; empty string = clear
+        if (request.imageUrl() != null) {
+            category.setImageUrl(blankToNull(request.imageUrl()));
+        }
         return CategoryResponse.fromEntity(category);
+    }
+
+    private static String blankToNull(String value) {
+        if (value == null) return null;
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
     @Override

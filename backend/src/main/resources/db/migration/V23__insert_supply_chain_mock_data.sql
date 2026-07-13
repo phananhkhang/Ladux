@@ -1,5 +1,5 @@
 -- ============================================================================
--- V23 (devdata): Du lieu mau cho chuoi cung ung — chi chay o moi truong dev/test
+-- V25 (devdata): Du lieu mau cho chuoi cung ung — chi chay o moi truong dev/test
 -- (Flyway location db/devdata). Production KHONG nap file nay.
 --
 -- Phu thuoc: V22 da tao cac bang suppliers / product_suppliers va products da co

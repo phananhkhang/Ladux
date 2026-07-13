@@ -65,9 +65,13 @@ services:
       start_period: 10s
     networks:
       - s-network
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
 
 volumes:
   postgres-data:
+  redis-data:
 
 networks:
   s-network:

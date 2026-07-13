@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { ArrowRight, Truck, ShieldCheck, RefreshCw, Headphones } from "lucide-react";
 import { Products, Categories } from "@/api/client";
 import type { CategoryResponse, ProductResponse } from "@/api/types";
+import { resolveMediaUrl } from "@/lib/format";
 import { ProductCard } from "../components/product-card";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { Button } from "../components/ui/button";
@@ -10,6 +11,10 @@ import { Skeleton } from "../components/ui/skeleton";
 
 const FALLBACK_CAT_IMAGE =
   "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&q=80";
+
+function categoryImageSrc(c: CategoryResponse): string {
+  return resolveMediaUrl(c.imageUrl) || FALLBACK_CAT_IMAGE;
+}
 
 export function HomePage() {
   const [newArrivals, setNewArrivals] = useState<ProductResponse[]>([]);
@@ -128,7 +133,7 @@ export function HomePage() {
                 className="group relative overflow-hidden rounded-lg border"
               >
                 <ImageWithFallback
-                  src={FALLBACK_CAT_IMAGE}
+                  src={categoryImageSrc(c)}
                   alt={c.name}
                   className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />

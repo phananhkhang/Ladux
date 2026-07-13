@@ -25,6 +25,10 @@ public class Category {
     @Column(nullable = false, unique = true, length = 120)
     private String slug;
 
+    /** Đường dẫn ảnh đại diện, ví dụ /uploads/categories/categories_laptop_gaming.webp */
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
+
     // Self-reference: category cha
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
