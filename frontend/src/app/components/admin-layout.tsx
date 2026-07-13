@@ -12,7 +12,6 @@ import {
   Star,
   CreditCard,
   Truck,
-  Link2,
   ClipboardList,
   ArrowLeftRight,
   Search,
@@ -71,7 +70,6 @@ const NAV = [
     section: "Supply Chain",
     items: [
       { to: "/admin/suppliers", label: "Suppliers", icon: Truck },
-      { to: "/admin/product-suppliers", label: "Product Suppliers", icon: Link2 },
       { to: "/admin/purchase-orders", label: "Purchase Orders", icon: ClipboardList },
       { to: "/admin/stock-movements", label: "Stock Movements", icon: ArrowLeftRight },
     ],
@@ -123,7 +121,6 @@ function pageTitle(pathname: string): string {
     reviews: "Reviews",
     payments: "Payments",
     suppliers: "Suppliers",
-    "product-suppliers": "Product Suppliers",
     "purchase-orders": "Purchase Orders",
     "stock-movements": "Stock Movements",
   };
@@ -140,18 +137,51 @@ export function AdminLayout() {
   useEffect(() => {
     if (authLoading) return;
     if (!isAuthenticated) {
-      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`, { replace: true });
-      return;
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname || "/admin")}`, {
+        replace: true,
+      });
     }
-    if (!isAdminUser) {
-      navigate("/", { replace: true });
-    }
-  }, [authLoading, isAuthenticated, isAdminUser, navigate, location.pathname]);
+    // Non-admin: stay on a clear "Access denied" screen (do not silent-redirect home)
+  }, [authLoading, isAuthenticated, navigate, location.pathname]);
 
-  if (authLoading || !isAuthenticated || !isAdminUser) {
+  if (authLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="animate-spin text-muted-foreground" size={32} />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="animate-spin text-muted-foreground" size={32} />
+      </div>
+    );
+  }
+
+  if (!isAdminUser) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background p-6 text-center">
+        <h1 className="text-xl tracking-tight">Access denied</h1>
+        <p className="max-w-md text-sm text-muted-foreground">
+          Tài khoản <b>{user?.username}</b> không có quyền ADMIN.
+          <br />
+          Đăng nhập bằng <b>admin</b> / <b>Admin@123</b> (dev seed).
+        </p>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => navigate("/")}>
+            Về trang chủ
+          </Button>
+          <Button
+            onClick={async () => {
+              await logout();
+              navigate("/login?redirect=/admin", { replace: true });
+            }}
+          >
+            Đăng nhập lại
+          </Button>
+        </div>
       </div>
     );
   }

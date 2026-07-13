@@ -18,7 +18,6 @@ public record ProductRequest(
         @Positive(message = "CategoryId phai la so duong")
         Integer categoryId,
 
-        @NotBlank(message = "SKU khong duoc de trong")
         @Size(max = 50, message = "SKU khong duoc vuot qua 50 ky tu")
         String sku,
 

@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { flushSync } from "react-dom";
 import {
   Auth,
   Cart as CartApi,
@@ -41,14 +42,15 @@ interface StoreValue {
   authLoading: boolean;
   isAuthenticated: boolean;
   isAdminUser: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  /** Returns the signed-in user so callers can redirect after state is committed. */
+  login: (username: string, password: string) => Promise<UserResponse>;
   register: (data: {
     fullName: string;
     username: string;
     email: string;
     password: string;
     phone?: string;
-  }) => Promise<void>;
+  }) => Promise<UserResponse>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 
@@ -204,21 +206,30 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       login: async (username, password) => {
         await Auth.login({ username, password });
         const me = await Auth.me();
-        setUser(me);
+        // Commit user before login() resolves so /admin guard sees ADMIN immediately
+        flushSync(() => {
+          setUser(me);
+        });
+        return me;
       },
       register: async (data) => {
         await Auth.register(data);
         await Auth.login({ username: data.username, password: data.password });
         const me = await Auth.me();
-        setUser(me);
+        flushSync(() => {
+          setUser(me);
+        });
+        return me;
       },
       logout: async () => {
         try {
           await Auth.logout();
         } finally {
-          setUser(null);
-          setCart([]);
-          setWishlist([]);
+          flushSync(() => {
+            setUser(null);
+            setCart([]);
+            setWishlist([]);
+          });
         }
       },
       refreshUser,

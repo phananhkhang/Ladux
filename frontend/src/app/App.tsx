@@ -22,7 +22,6 @@ import { AdminOrders } from "./pages/admin/orders";
 import { AdminCustomers } from "./pages/admin/customers";
 import {
   AdminSuppliers,
-  AdminProductSuppliers,
   AdminPurchaseOrders,
   AdminStockMovements,
 } from "./pages/admin/supply-chain";
@@ -73,7 +72,6 @@ export default function App() {
             <Route path="reviews" element={<AdminReviews />} />
             <Route path="payments" element={<AdminPayments />} />
             <Route path="suppliers" element={<AdminSuppliers />} />
-            <Route path="product-suppliers" element={<AdminProductSuppliers />} />
             <Route path="purchase-orders" element={<AdminPurchaseOrders />} />
             <Route path="stock-movements" element={<AdminStockMovements />} />
           </Route>

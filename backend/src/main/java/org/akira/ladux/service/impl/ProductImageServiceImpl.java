@@ -21,10 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -83,18 +80,29 @@ public class ProductImageServiceImpl implements ProductImageService {
             @CacheEvict(value = "productImages", allEntries = true),
             @CacheEvict(value = "products", allEntries = true)
     })
-    public ProductImageResponse uploadImage(int productId, MultipartFile file) {
+    public List<ProductImageResponse> uploadImage(int productId, List<MultipartFile> files) {
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham voi id = " + productId));
-        String imageUrl = storeProductImage(file);
-        ProductImage image = ProductImage.builder()
-                .product(product)
-                .imageUrl(imageUrl)
-                .isPrimary(false)
-                .build();
-        return ProductImageResponse.fromEntity(repo.save(image));
+        List<ProductImageResponse> responses = new ArrayList<>();
+        boolean thumbnailAssigned = false;
+        for (MultipartFile file : files) {
+            if (file.isEmpty()) {
+                continue;
+            }
+            String url = storeProductImage(file);
+            ProductImage image = ProductImage.builder()
+                    .product(product)
+                    .imageUrl(url)
+                    .build();
+            responses.add(ProductImageResponse.fromEntity(repo.save(image)));
+            if (!thumbnailAssigned && (product.getThumbnail() == null || product.getThumbnail().isBlank())) {
+                product.setThumbnail(url);
+                productRepo.save(product);
+                thumbnailAssigned = true;
+            }
+        }
+        return responses;
     }
-
     @Override
     @Transactional
     @Caching(evict = {
@@ -115,7 +123,7 @@ public class ProductImageServiceImpl implements ProductImageService {
             throw new BusinessRuleException("File anh khong duoc de trong");
         }
 
-        String contentType = file.getContentType() == null
+            String contentType = file.getContentType() == null
                 ? ""
                 : file.getContentType().toLowerCase(Locale.ROOT);
         String extension = ALLOWED_IMAGE_TYPES.get(contentType);

@@ -60,5 +60,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
                           @Param("quantity") int quantity);
 
     boolean existsByCategoryId(int id);
+
+    boolean existsBySku(String sku);
 }
 

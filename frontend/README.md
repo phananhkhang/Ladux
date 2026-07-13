@@ -41,7 +41,7 @@ npm run build   # production build → dist/
 | `/admin/categories` · `/brands` · `/reviews` | Catalog support |
 | `/admin/orders` | Orders + state machine + tracking drawer |
 | `/admin/customers` · `/coupons` · `/payments` · `/users` | Sales ops |
-| `/admin/suppliers` · `/product-suppliers` · `/purchase-orders` · `/stock-movements` | Supply chain |
+| `/admin/suppliers` · `/purchase-orders` · `/stock-movements` | Supply chain |
 
 ## Notes
 

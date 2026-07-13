@@ -338,7 +338,8 @@ export interface CustomerUpdateRequest {
 export interface ProductRequest {
   brandId: number;
   categoryId: number;
-  sku: string;
+  /** Optional — backend auto-generates from product name when omitted */
+  sku?: string;
   name: string;
   basePrice: number;
   discountPrice?: number | null;

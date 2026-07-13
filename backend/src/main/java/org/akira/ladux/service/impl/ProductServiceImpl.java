@@ -115,7 +115,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = Product.builder()
                 .brand(brand)
                 .category(category)
-                .sku(request.sku())
+                .sku(resolveSku(request.sku(), request.name()))
                 .name(request.name())
                 .basePrice(request.basePrice())
                 .discountPrice(request.discountPrice())
@@ -147,9 +147,6 @@ public class ProductServiceImpl implements ProductService {
             Category category = categoryRepository.findById(request.categoryId())
                     .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.categoryId()));
             product.setCategory(category);
-        }
-        if (request.sku() != null) {
-            product.setSku(request.sku());
         }
         if (request.name() != null) {
             product.setName(request.name());
@@ -184,6 +181,38 @@ public class ProductServiceImpl implements ProductService {
     @CacheEvict(value = "products", allEntries = true)
     public void deleteProductById(int id) {
         repo.deleteById(id);
+    }
+
+    private String resolveSku(String requestedSku, String productName) {
+        // Always produce a non-blank unique SKU (never persist empty string)
+        String base;
+        if (requestedSku != null && !requestedSku.isBlank()) {
+            base = SlugUtils.toSlug(requestedSku);
+            if (base.isBlank()) {
+                base = SlugUtils.toSlug(productName);
+            }
+        } else {
+            base = SlugUtils.toSlug(productName);
+        }
+        if (base.isBlank()) {
+            base = "product";
+        }
+        return ensureUniqueSku(base);
+    }
+
+    /** SKU column is varchar(50) — keep base short enough for numeric suffixes. */
+    private String ensureUniqueSku(String rawBase) {
+        String base = rawBase.length() > 40 ? rawBase.substring(0, 40).replaceAll("-+$", "") : rawBase;
+        if (base.isBlank()) {
+            base = "product";
+        }
+        String candidate = base.length() > 50 ? base.substring(0, 50) : base;
+        int suffix = 2;
+        while (repo.existsBySku(candidate)) {
+            String withSuffix = base + "-" + suffix++;
+            candidate = withSuffix.length() > 50 ? withSuffix.substring(0, 50) : withSuffix;
+        }
+        return candidate;
     }
 
     private void validateProductPricing(BigDecimal basePrice, BigDecimal discountPrice) {

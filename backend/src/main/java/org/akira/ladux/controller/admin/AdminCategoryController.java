@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/admin/categories")
@@ -33,5 +34,11 @@ public class AdminCategoryController {
     public ResponseEntity<Void> deleteCategoryById(@PathVariable int id) {
         service.deleteCategoryById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    @PostMapping("/uploads-image")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CategoryResponse> uploadCategoryImage(@RequestParam("file") MultipartFile file) {
+        service.uploadCategoryImage(file);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -66,6 +66,19 @@ export function productDiscountPercent(p: {
   return discountPercent(p.basePrice, p.discountPrice);
 }
 
+/** Human labels for known laptop spec keys (products.specs JSON). */
+export const SPEC_KEY_LABELS: Record<string, string> = {
+  ram: "RAM",
+  storage: "Ổ cứng",
+  cpu: "CPU",
+  gpu: "GPU",
+  man_hinh: "Màn hình",
+};
+
+export function specKeyLabel(key: string): string {
+  return SPEC_KEY_LABELS[key] ?? key;
+}
+
 /** Build a short one-line spec summary from JSON specs string. */
 export function shortSpecFromSpecs(specs: string | null | undefined): string {
   if (!specs) return "";
@@ -105,5 +118,11 @@ export function formatAddress(a: {
 
 export function isAdmin(roles: string[] | undefined | null): boolean {
   if (!roles?.length) return false;
-  return roles.some((r) => r === "ADMIN" || r === "ROLE_ADMIN");
+  return roles.some((r) => {
+    const name = String(r ?? "")
+      .trim()
+      .toUpperCase()
+      .replace(/^ROLE_/, "");
+    return name === "ADMIN";
+  });
 }

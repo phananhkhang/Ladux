@@ -9,9 +9,11 @@ import {
   productDiscountPercent,
   productImages,
   shortSpecFromSpecs,
+  specKeyLabel,
 } from "@/lib/format";
 import { useStore } from "../data/store";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { ProductImageMagnifier } from "../components/product-image-magnifier";
 import { ProductCard } from "../components/product-card";
 import { RatingStars, StockBadge } from "../components/shared";
 import { Button } from "../components/ui/button";
@@ -142,21 +144,21 @@ export function ProductDetailPage() {
 
       <div className="grid gap-10 lg:grid-cols-2">
         <div className="space-y-3">
-          <div className="overflow-hidden rounded-xl border bg-muted">
-            <ImageWithFallback
-              src={images[activeImg]}
-              alt={product.name}
-              className="aspect-[4/3] w-full object-cover"
-            />
-          </div>
+          <ProductImageMagnifier
+            src={images[activeImg]}
+            alt={product.name}
+            lensSize={168}
+            zoom={2.5}
+          />
           {images.length > 1 && (
             <div className="flex gap-3">
               {images.map((img, i) => (
                 <button
                   key={i}
+                  type="button"
                   onClick={() => setActiveImg(i)}
-                  className={`overflow-hidden rounded-lg border-2 ${
-                    i === activeImg ? "border-primary" : "border-transparent"
+                  className={`overflow-hidden rounded-lg border-2 transition-colors ${
+                    i === activeImg ? "border-primary" : "border-transparent hover:border-muted-foreground/30"
                   }`}
                 >
                   <ImageWithFallback src={img} alt="" className="size-20 object-cover" />
@@ -280,7 +282,9 @@ export function ProductDetailPage() {
                 <tbody>
                   {Object.entries(specs).map(([k, v], i) => (
                     <tr key={k} className={i % 2 === 0 ? "bg-muted/40" : ""}>
-                      <td className="w-1/3 px-4 py-2.5 text-muted-foreground">{k}</td>
+                      <td className="w-1/3 px-4 py-2.5 text-muted-foreground">
+                        {specKeyLabel(k)}
+                      </td>
                       <td className="px-4 py-2.5">{v}</td>
                     </tr>
                   ))}

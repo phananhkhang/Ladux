@@ -35,11 +35,11 @@ public class AdminProductImageController {
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProductImageResponse> uploadProductImage(
+    public ResponseEntity<List<ProductImageResponse>> uploadProductImage(
             @PathVariable int productId,
-            @RequestPart("file") MultipartFile file
+            @RequestPart("file") List<MultipartFile> files
     ) {
-        return new ResponseEntity<>(service.uploadImage(productId, file), HttpStatus.CREATED);
+        return new ResponseEntity<>(service.uploadImage(productId, files), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{imageId}")

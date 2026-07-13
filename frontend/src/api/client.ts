@@ -532,12 +532,19 @@ export const AdminProducts = {
   addImages(productId: number, imageUrls: string[]) {
     return post(`/admin/products/${productId}/images`, imageUrls);
   },
-  uploadImage(productId: number, file: File) {
+  uploadImages(productId: number, files: File[]) {
     const fd = new FormData();
-    fd.append("file", file);
-    return post(`/admin/products/${productId}/images/upload`, fd, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    for (const file of files) {
+      // Same part name as @RequestPart("file") — Spring accepts multiple parts
+      fd.append("file", file);
+    }
+    return post<import("./types").ProductImageResponse[]>(
+      `/admin/products/${productId}/images/upload`,
+      fd,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      },
+    );
   },
   removeImage(productId: number, imageId: number) {
     return del(`/admin/products/${productId}/images/${imageId}`);

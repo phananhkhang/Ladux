@@ -10,7 +10,7 @@ public interface ProductImageService {
 
     List<ProductImageResponse> addImages(int productId, List<String> imageUrls);
 
-    ProductImageResponse uploadImage(int productId, MultipartFile file);
+    List<ProductImageResponse> uploadImage(int productId, List<MultipartFile> files);
 
     void deleteProductImageById(int productId, int imageId);
 }

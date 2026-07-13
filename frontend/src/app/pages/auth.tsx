@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router";
 import { Chrome, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Auth, getApiErrorMessage } from "@/api/client";
+import { isAdmin } from "@/lib/format";
 import { useStore } from "../data/store";
 import { ThemeToggle } from "../components/shared";
 import { Button } from "../components/ui/button";
@@ -43,11 +44,14 @@ export function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(username.trim(), password);
+      const me = await login(username.trim(), password);
       toast.success("Signed in");
-      // After login, check roles from refreshed store — use redirect or admin home
-      const dest = redirectTo === "/" && username.trim() === "admin" ? "/admin" : redirectTo;
-      navigate(dest);
+      // Prefer explicit redirect; otherwise send admins to /admin
+      let dest = redirectTo;
+      if (!params.get("redirect") || redirectTo === "/") {
+        dest = isAdmin(me.roles) ? "/admin" : "/";
+      }
+      navigate(dest, { replace: true });
     } catch (err) {
       toast.error(getApiErrorMessage(err, "Login failed"));
     } finally {
