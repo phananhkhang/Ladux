@@ -8,22 +8,28 @@ import org.akira.ladux.model.Category;
 import org.akira.ladux.repository.CategoryRepository;
 import org.akira.ladux.repository.ProductRepository;
 import org.akira.ladux.service.CategoryService;
+import org.akira.ladux.service.FileStorageService;
 import org.akira.ladux.utils.SlugUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository repo;
     private final ProductRepository productRepo;
+    private final FileStorageService fileStorage;
+
+    @Value("${app.upload.category-dir:categories}")
+    private String categoryUploadDir;
 
     @Override
     @Transactional(readOnly = true)
@@ -99,7 +105,12 @@ public class CategoryServiceImpl implements CategoryService {
         }
         // imageUrl optional: null/absent = keep current; empty string = clear
         if (request.imageUrl() != null) {
-            category.setImageUrl(blankToNull(request.imageUrl()));
+            String newUrl = blankToNull(request.imageUrl());
+            String oldUrl = category.getImageUrl();
+            if (oldUrl != null && !oldUrl.equals(newUrl)) {
+                fileStorage.deleteIfLocal(oldUrl);
+            }
+            category.setImageUrl(newUrl);
         }
         return CategoryResponse.fromEntity(category);
     }
@@ -114,13 +125,22 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     @CacheEvict(value = "categories", allEntries = true)
     public void deleteCategoryById(int id) {
+        Category category = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + id));
         if (repo.existsByParentId(id)) {
             throw new BusinessRuleException("Không thể xóa category này vì nó có category con");
         }
         if (productRepo.existsByCategoryId(id)) {
             throw new BusinessRuleException("Không thể xóa category này vì nó có sản phẩm liên quan");
         }
+        String imageUrl = category.getImageUrl();
         repo.deleteById(id);
+        fileStorage.deleteIfLocal(imageUrl);
+    }
+
+    @Override
+    public String uploadCategoryImage(MultipartFile file) {
+        return fileStorage.store(categoryUploadDir, file);
     }
 
     private void validateParentDoesNotCreateCycle(Category category, Category parentCandidate) {
@@ -134,8 +154,5 @@ public class CategoryServiceImpl implements CategoryService {
             }
             cursor = cursor.getParent();
         }
-    }
-    public void uploadCategoryImage(MultipartFile file) {
-
     }
 }

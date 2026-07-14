@@ -4,8 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.request.CategoryRequest;
 import org.akira.ladux.dto.response.CategoryResponse;
+import org.akira.ladux.dto.response.UploadUrlResponse;
 import org.akira.ladux.service.CategoryService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -35,10 +37,15 @@ public class AdminCategoryController {
         service.deleteCategoryById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    @PostMapping("/uploads-image")
+
+    /**
+     * Upload category image only — returns public path. Attach via create/update JSON {@code imageUrl}.
+     * Path: upload-image (fixed typo uploads-image).
+     */
+    @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CategoryResponse> uploadCategoryImage(@RequestParam("file") MultipartFile file) {
-        service.uploadCategoryImage(file);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<UploadUrlResponse> uploadCategoryImage(@RequestPart("file") MultipartFile file) {
+        String url = service.uploadCategoryImage(file);
+        return ResponseEntity.ok(new UploadUrlResponse(url));
     }
 }

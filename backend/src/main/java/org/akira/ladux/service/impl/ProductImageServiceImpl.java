@@ -8,6 +8,7 @@ import org.akira.ladux.model.Product;
 import org.akira.ladux.model.ProductImage;
 import org.akira.ladux.repository.ProductImageRepository;
 import org.akira.ladux.repository.ProductRepository;
+import org.akira.ladux.service.FileStorageService;
 import org.akira.ladux.service.ProductImageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -17,30 +18,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ProductImageServiceImpl implements ProductImageService {
     private final ProductImageRepository repo;
     private final ProductRepository productRepo;
-
-    @Value("${app.upload.root:uploads}")
-    private String uploadRoot;
+    private final FileStorageService fileStorage;
 
     @Value("${app.upload.product-dir:products}")
     private String productUploadDir;
-
-    private static final Map<String, String> ALLOWED_IMAGE_TYPES = Map.of(
-            "image/jpeg", ".jpg",
-            "image/png", ".png",
-            "image/webp", ".webp",
-            "image/gif", ".gif"
-    );
 
     @Override
     @Transactional(readOnly = true)
@@ -89,7 +78,7 @@ public class ProductImageServiceImpl implements ProductImageService {
             if (file.isEmpty()) {
                 continue;
             }
-            String url = storeProductImage(file);
+            String url = fileStorage.store(productUploadDir, file);
             ProductImage image = ProductImage.builder()
                     .product(product)
                     .imageUrl(url)
@@ -103,6 +92,7 @@ public class ProductImageServiceImpl implements ProductImageService {
         }
         return responses;
     }
+
     @Override
     @Transactional
     @Caching(evict = {
@@ -115,36 +105,8 @@ public class ProductImageServiceImpl implements ProductImageService {
         if (image.getProduct() == null || !image.getProduct().getId().equals(productId)) {
             throw new BusinessRuleException("Anh khong thuoc san pham dang thao tac");
         }
+        String imageUrl = image.getImageUrl();
         repo.delete(image);
-    }
-
-    private String storeProductImage(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            throw new BusinessRuleException("File anh khong duoc de trong");
-        }
-
-            String contentType = file.getContentType() == null
-                ? ""
-                : file.getContentType().toLowerCase(Locale.ROOT);
-        String extension = ALLOWED_IMAGE_TYPES.get(contentType);
-        if (extension == null) {
-            throw new BusinessRuleException("Chi ho tro anh JPG, PNG, WEBP hoac GIF");
-        }
-
-        String filename = UUID.randomUUID() + extension;
-        Path productDirectory = Path.of(uploadRoot, productUploadDir).toAbsolutePath().normalize();
-        Path target = productDirectory.resolve(filename).normalize();
-        if (!target.startsWith(productDirectory)) {
-            throw new BusinessRuleException("Duong dan upload khong hop le");
-        }
-
-        try {
-            Files.createDirectories(productDirectory);
-            Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException ex) {
-            throw new BusinessRuleException("Khong the luu file anh san pham");
-        }
-
-        return "/uploads/" + productUploadDir + "/" + filename;
+        fileStorage.deleteIfLocal(imageUrl);
     }
 }

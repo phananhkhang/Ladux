@@ -361,6 +361,11 @@ export interface CategoryRequest {
   imageUrl?: string | null;
 }
 
+/** Public path returned by orphan multipart upload endpoints (category image, etc.). */
+export interface UploadUrlResponse {
+  url: string;
+}
+
 export interface ReviewCreateRequest {
   productId: number;
   rating: number;

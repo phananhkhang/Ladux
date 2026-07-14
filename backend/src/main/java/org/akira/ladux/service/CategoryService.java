@@ -23,5 +23,9 @@ public interface CategoryService {
 
     void deleteCategoryById(int id);
 
-    void uploadCategoryImage(MultipartFile file);
+    /**
+     * Store category image on disk; return public path (e.g. /uploads/categories/uuid.webp).
+     * Caller attaches path via create/update JSON {@code imageUrl}.
+     */
+    String uploadCategoryImage(MultipartFile file);
 }

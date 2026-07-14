@@ -48,9 +48,15 @@ import {
 export function AdminCategories() {
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<CategoryResponse | null>(null);
   const [name, setName] = useState("");
+  /** Public path from upload or existing category (e.g. /uploads/categories/...). */
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  /** Local object URL for immediate preview before/while uploading. */
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -67,25 +73,90 @@ export function AdminCategories() {
     void load();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (localPreview) URL.revokeObjectURL(localPreview);
+    };
+  }, [localPreview]);
+
+  const resetForm = () => {
+    setName("");
+    setImageUrl(null);
+    if (localPreview) URL.revokeObjectURL(localPreview);
+    setLocalPreview(null);
+    setEditing(null);
+  };
+
+  const openCreate = () => {
+    resetForm();
+    setOpen(true);
+  };
+
+  const openEdit = (c: CategoryResponse) => {
+    if (localPreview) URL.revokeObjectURL(localPreview);
+    setLocalPreview(null);
+    setEditing(c);
+    setName(c.name);
+    setImageUrl(c.imageUrl ?? null);
+    setOpen(true);
+  };
+
+  const onPickImage = async (file: File | undefined) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Chỉ hỗ trợ file ảnh");
+      return;
+    }
+    const objectUrl = URL.createObjectURL(file);
+    setLocalPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return objectUrl;
+    });
+    setUploading(true);
+    try {
+      const { url } = await CategoriesApi.uploadImage(file);
+      setImageUrl(url);
+      toast.success("Đã upload ảnh");
+    } catch (e) {
+      toast.error(getApiErrorMessage(e));
+      setLocalPreview((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const save = async () => {
     if (!name.trim()) {
       toast.error("Name required");
       return;
     }
+    setSaving(true);
     try {
+      const body = {
+        name: name.trim(),
+        imageUrl: imageUrl,
+      };
       if (editing) {
-        await CategoriesApi.update(editing.id, { name: name.trim() });
+        await CategoriesApi.update(editing.id, body);
         toast.success("Category updated");
       } else {
-        await CategoriesApi.create({ name: name.trim() });
+        await CategoriesApi.create(body);
         toast.success("Category created");
       }
       setOpen(false);
+      resetForm();
       await load();
     } catch (e) {
       toast.error(getApiErrorMessage(e));
+    } finally {
+      setSaving(false);
     }
   };
+
+  const previewSrc = localPreview || resolveMediaUrl(imageUrl) || "";
 
   return (
     <div>
@@ -93,13 +164,7 @@ export function AdminCategories() {
         title="Categories"
         subtitle="Product category tree"
         action={
-          <Button
-            onClick={() => {
-              setEditing(null);
-              setName("");
-              setOpen(true);
-            }}
-          >
+          <Button onClick={openCreate}>
             <Plus size={16} /> Add category
           </Button>
         }
@@ -143,11 +208,7 @@ export function AdminCategories() {
                     variant="ghost"
                     size="icon"
                     className="size-7"
-                    onClick={() => {
-                      setEditing(c);
-                      setName(c.name);
-                      setOpen(true);
-                    }}
+                    onClick={() => openEdit(c)}
                   >
                     <Pencil size={13} />
                   </Button>
@@ -173,20 +234,76 @@ export function AdminCategories() {
           </ul>
         </div>
       )}
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog
+        open={open}
+        onOpenChange={(v) => {
+          setOpen(v);
+          if (!v) resetForm();
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editing ? "Edit category" : "New category"}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-2 py-2">
-            <Label>Name</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>Name</Label>
+              <Input value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Image</Label>
+              <div className="flex items-center gap-3">
+                {previewSrc ? (
+                  <img
+                    src={previewSrc}
+                    alt=""
+                    className="size-16 rounded-md border object-cover"
+                  />
+                ) : (
+                  <span className="flex size-16 items-center justify-center rounded-md border bg-muted text-xs text-muted-foreground">
+                    No image
+                  </span>
+                )}
+                <div className="flex flex-col gap-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    disabled={uploading || saving}
+                    onChange={(e) => void onPickImage(e.target.files?.[0])}
+                  />
+                  {uploading && (
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Loader2 className="size-3 animate-spin" /> Uploading…
+                    </span>
+                  )}
+                  {imageUrl && !uploading && (
+                    <span className="max-w-[220px] truncate text-xs text-muted-foreground">
+                      {imageUrl}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setOpen(false);
+                resetForm();
+              }}
+            >
               Cancel
             </Button>
-            <Button onClick={() => void save()}>Save</Button>
+            <Button disabled={saving || uploading} onClick={() => void save()}>
+              {saving ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" /> Saving…
+                </>
+              ) : (
+                "Save"
+              )}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

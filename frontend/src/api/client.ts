@@ -51,6 +51,7 @@ import type {
   UserResponse,
   WishlistRequest,
   WishlistResponse,
+  UploadUrlResponse,
   ApiErrorBody,
   CustomerLevel,
 } from "./types";
@@ -620,6 +621,17 @@ export const AdminCategories = {
   },
   remove(id: number) {
     return del(`/admin/categories/${id}`);
+  },
+  /**
+   * Upload category image → { url: "/uploads/categories/..." }.
+   * Attach via create/update JSON imageUrl. Do not force Content-Type without boundary.
+   */
+  uploadImage(file: File) {
+    const fd = new FormData();
+    fd.append("file", file);
+    return post<UploadUrlResponse>("/admin/categories/upload-image", fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
   },
 };
 
