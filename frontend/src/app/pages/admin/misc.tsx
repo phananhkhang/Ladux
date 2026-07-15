@@ -319,7 +319,6 @@ export function AdminBrands() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<BrandResponse | null>(null);
   const [name, setName] = useState("");
-  const [logoUrl, setLogoUrl] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -345,11 +344,10 @@ export function AdminBrands() {
       if (editing) {
         await BrandsApi.update(editing.id, {
           name: name.trim(),
-          logoUrl: logoUrl || null,
         });
         toast.success("Brand updated");
       } else {
-        await BrandsApi.create({ name: name.trim(), logoUrl: logoUrl || null });
+        await BrandsApi.create({ name: name.trim() });
         toast.success("Brand created");
       }
       setOpen(false);
@@ -384,7 +382,6 @@ export function AdminBrands() {
             onClick={() => {
               setEditing(r);
               setName(r.name);
-              setLogoUrl(r.logoUrl ?? "");
               setOpen(true);
             }}
           >
@@ -420,7 +417,6 @@ export function AdminBrands() {
             onClick={() => {
               setEditing(null);
               setName("");
-              setLogoUrl("");
               setOpen(true);
             }}
           >
@@ -447,10 +443,6 @@ export function AdminBrands() {
             <div className="space-y-1">
               <Label>Name</Label>
               <Input value={name} onChange={(e) => setName(e.target.value)} />
-            </div>
-            <div className="space-y-1">
-              <Label>Logo URL</Label>
-              <Input value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
             </div>
           </div>
           <DialogFooter>
@@ -533,18 +525,34 @@ export function AdminReviews() {
 
 // ------------------------------ Coupons --------------------------------------
 
+function toLocalDatetimeInput(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function defaultCouponExpiresLocal(): string {
+  const d = new Date();
+  d.setMonth(d.getMonth() + 1);
+  return toLocalDatetimeInput(d.toISOString());
+}
+
+const emptyCouponForm = {
+  code: "",
+  discountType: "PERCENT" as DiscountType,
+  discountValue: "10",
+  minOrderValue: "0",
+  usageLimit: "100",
+  expiresAt: "",
+};
+
 export function AdminCoupons() {
   const [rows, setRows] = useState<CouponResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({
-    code: "",
-    discountType: "PERCENT" as DiscountType,
-    discountValue: "10",
-    minOrderValue: "0",
-    usageLimit: "100",
-    expiresAt: "",
-  });
+  const [editing, setEditing] = useState<CouponResponse | null>(null);
+  const [form, setForm] = useState(emptyCouponForm);
 
   const load = async () => {
     setLoading(true);
@@ -562,17 +570,56 @@ export function AdminCoupons() {
     void load();
   }, []);
 
+  const openCreate = () => {
+    setEditing(null);
+    setForm({ ...emptyCouponForm, expiresAt: defaultCouponExpiresLocal() });
+    setOpen(true);
+  };
+
+  const openEdit = (r: CouponResponse) => {
+    setEditing(r);
+    // Backend requires expiresAt in the future — bump past/near-expiry dates for edit.
+    const exp = new Date(r.expiresAt);
+    const expiresAt =
+      !Number.isNaN(exp.getTime()) && exp.getTime() > Date.now() + 60_000
+        ? toLocalDatetimeInput(r.expiresAt)
+        : defaultCouponExpiresLocal();
+    setForm({
+      code: r.code,
+      discountType: r.discountType,
+      discountValue: String(r.discountValue),
+      minOrderValue: String(r.minOrderValue ?? 0),
+      usageLimit: r.usageLimit != null ? String(r.usageLimit) : "",
+      expiresAt,
+    });
+    setOpen(true);
+  };
+
   const save = async () => {
+    if (!form.code.trim()) {
+      toast.error("Code required");
+      return;
+    }
+    if (!form.expiresAt) {
+      toast.error("Expires at required");
+      return;
+    }
+    const body = {
+      code: form.code.trim().toUpperCase(),
+      discountType: form.discountType,
+      discountValue: Number(form.discountValue),
+      minOrderValue: Number(form.minOrderValue) || 0,
+      usageLimit: form.usageLimit ? Number(form.usageLimit) : undefined,
+      expiresAt: new Date(form.expiresAt).toISOString(),
+    };
     try {
-      await CouponsApi.create({
-        code: form.code.trim().toUpperCase(),
-        discountType: form.discountType,
-        discountValue: Number(form.discountValue),
-        minOrderValue: Number(form.minOrderValue) || 0,
-        usageLimit: Number(form.usageLimit) || undefined,
-        expiresAt: new Date(form.expiresAt).toISOString(),
-      });
-      toast.success("Coupon created");
+      if (editing) {
+        await CouponsApi.update(editing.id, body);
+        toast.success("Coupon updated");
+      } else {
+        await CouponsApi.create(body);
+        toast.success("Coupon created");
+      }
       setOpen(false);
       await load();
     } catch (e) {
@@ -617,21 +664,26 @@ export function AdminCoupons() {
       header: "",
       className: "text-right",
       render: (r) => (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={async () => {
-            try {
-              await CouponsApi.remove(r.id);
-              toast.success("Coupon deleted");
-              await load();
-            } catch (e) {
-              toast.error(getApiErrorMessage(e));
-            }
-          }}
-        >
-          <Trash2 size={14} />
-        </Button>
+        <div className="flex justify-end gap-1">
+          <Button variant="ghost" size="icon" onClick={() => openEdit(r)}>
+            <Pencil size={14} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={async () => {
+              try {
+                await CouponsApi.remove(r.id);
+                toast.success("Coupon deleted");
+                await load();
+              } catch (e) {
+                toast.error(getApiErrorMessage(e));
+              }
+            }}
+          >
+            <Trash2 size={14} />
+          </Button>
+        </div>
       ),
     },
   ];
@@ -642,17 +694,7 @@ export function AdminCoupons() {
         title="Coupons"
         subtitle={`${rows.length} coupons`}
         action={
-          <Button
-            onClick={() => {
-              const d = new Date();
-              d.setMonth(d.getMonth() + 1);
-              setForm((f) => ({
-                ...f,
-                expiresAt: d.toISOString().slice(0, 16),
-              }));
-              setOpen(true);
-            }}
-          >
+          <Button onClick={openCreate}>
             <Plus size={16} /> Add coupon
           </Button>
         }
@@ -670,7 +712,7 @@ export function AdminCoupons() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>New coupon</DialogTitle>
+            <DialogTitle>{editing ? "Edit coupon" : "New coupon"}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-3 py-2">
             <div className="space-y-1">
@@ -744,7 +786,7 @@ export function AdminCoupons() {
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={() => void save()}>Create</Button>
+            <Button onClick={() => void save()}>{editing ? "Save" : "Create"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -829,9 +871,31 @@ export function AdminPayments() {
 
 // ------------------------------ Users ----------------------------------------
 
+/** Seed role IDs from V3 mock data. */
+const ROLE_OPTIONS = [
+  { id: 1, name: "ADMIN" },
+  { id: 2, name: "CUSTOMER" },
+] as const;
+
+function roleNamesToIds(roles: string[] | undefined): number[] {
+  const set = new Set((roles ?? []).map((r) => r.toUpperCase()));
+  return ROLE_OPTIONS.filter((o) => set.has(o.name)).map((o) => o.id);
+}
+
 export function AdminUsers() {
   const [rows, setRows] = useState<UserResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<UserResponse | null>(null);
+  const [form, setForm] = useState({
+    email: "",
+    username: "",
+    password: "",
+    fullName: "",
+    phone: "",
+    isActive: true,
+    roleIds: [2] as number[],
+  });
 
   const load = async () => {
     setLoading(true);
@@ -848,6 +912,56 @@ export function AdminUsers() {
   useEffect(() => {
     void load();
   }, []);
+
+  const openEdit = (r: UserResponse) => {
+    setEditing(r);
+    setForm({
+      email: r.email ?? "",
+      username: r.username ?? "",
+      password: "",
+      fullName: r.fullName ?? "",
+      phone: r.phone ?? "",
+      isActive: r.isActive,
+      roleIds: roleNamesToIds(r.roles).length ? roleNamesToIds(r.roles) : [2],
+    });
+    setOpen(true);
+  };
+
+  const toggleRole = (roleId: number) => {
+    setForm((f) => {
+      const has = f.roleIds.includes(roleId);
+      const roleIds = has ? f.roleIds.filter((id) => id !== roleId) : [...f.roleIds, roleId];
+      return { ...f, roleIds };
+    });
+  };
+
+  const save = async () => {
+    if (!editing) return;
+    if (!form.email.trim() || !form.username.trim()) {
+      toast.error("Email and username required");
+      return;
+    }
+    if (form.roleIds.length === 0) {
+      toast.error("Select at least one role");
+      return;
+    }
+    try {
+      await UsersApi.update(editing.id, {
+        email: form.email.trim(),
+        username: form.username.trim(),
+        ...(form.password.trim() ? { password: form.password.trim() } : {}),
+        fullName: form.fullName.trim() || undefined,
+        phone: form.phone.trim() || undefined,
+        isActive: form.isActive,
+        roleIds: form.roleIds,
+      });
+      toast.success("User updated");
+      setOpen(false);
+      await load();
+    } catch (e) {
+      toast.error(getApiErrorMessage(e));
+    }
+  };
 
   const columns: Column<UserResponse>[] = [
     {
@@ -879,21 +993,26 @@ export function AdminUsers() {
       header: "",
       className: "text-right",
       render: (r) => (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={async () => {
-            try {
-              await UsersApi.remove(r.id);
-              toast.success("User deleted");
-              await load();
-            } catch (e) {
-              toast.error(getApiErrorMessage(e));
-            }
-          }}
-        >
-          <Trash2 size={14} />
-        </Button>
+        <div className="flex justify-end gap-1">
+          <Button variant="ghost" size="icon" onClick={() => openEdit(r)}>
+            <Pencil size={14} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={async () => {
+              try {
+                await UsersApi.remove(r.id);
+                toast.success("User deleted");
+                await load();
+              } catch (e) {
+                toast.error(getApiErrorMessage(e));
+              }
+            }}
+          >
+            <Trash2 size={14} />
+          </Button>
+        </div>
       ),
     },
   ];
@@ -911,6 +1030,89 @@ export function AdminUsers() {
           searchKeys={(r) => `${r.username} ${r.email} ${r.fullName}`}
         />
       )}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit user</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-3 py-2">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label>Username</Label>
+                <Input
+                  value={form.username}
+                  onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))}
+                />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <Label>Full name</Label>
+              <Input
+                value={form.fullName}
+                onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label>Phone</Label>
+                <Input
+                  value={form.phone}
+                  onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                  placeholder="09xxxxxxxx"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label>New password</Label>
+                <Input
+                  type="password"
+                  value={form.password}
+                  onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                  placeholder="Leave blank to keep"
+                />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <Label>Roles</Label>
+              <div className="flex flex-wrap gap-3 pt-1">
+                {ROLE_OPTIONS.map((role) => (
+                  <label key={role.id} className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={form.roleIds.includes(role.id)}
+                      onChange={() => toggleRole(role.id)}
+                      className="size-4 rounded border-input"
+                    />
+                    {role.name}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={form.isActive}
+                onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))}
+                className="size-4 rounded border-input"
+              />
+              Active account
+            </label>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => void save()}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

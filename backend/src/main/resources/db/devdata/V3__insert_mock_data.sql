@@ -25,19 +25,19 @@ INSERT INTO roles (id, name) VALUES
                                  (2, 'CUSTOMER');
 
 -- brands (12 rows, fixed ids)
-INSERT INTO brands (id, name, slug, logo_url) VALUES
-                                                  (1, 'Apple', 'apple', 'https://img.example.com/brand-apple.png'),
-                                                  (2, 'Lenovo', 'lenovo', 'https://img.example.com/brand-lenovo.png'),
-                                                  (3, 'Dell', 'dell', 'https://img.example.com/brand-dell.png'),
-                                                  (4, 'HP', 'hp', 'https://img.example.com/brand-hp.png'),
-                                                  (5, 'ASUS', 'asus', 'https://img.example.com/brand-asus.png'),
-                                                  (6, 'Acer', 'acer', 'https://img.example.com/brand-acer.png'),
-                                                  (7, 'MSI', 'msi', 'https://img.example.com/brand-msi.png'),
-                                                  (8, 'Razer', 'razer', 'https://img.example.com/brand-razer.png'),
-                                                  (9, 'Samsung', 'samsung', 'https://img.example.com/brand-samsung.png'),
-                                                  (10, 'LG', 'lg', 'https://img.example.com/brand-lg.png'),
-                                                  (11, 'Microsoft', 'microsoft', 'https://img.example.com/brand-microsoft.png'),
-                                                  (12, 'Huawei', 'huawei', 'https://img.example.com/brand-huawei.png');
+INSERT INTO brands (id, name, slug) VALUES
+                                                  (1, 'Apple', 'apple'),
+                                                  (2, 'Lenovo', 'lenovo'),
+                                                  (3, 'Dell', 'dell'),
+                                                  (4, 'HP', 'hp'),
+                                                  (5, 'ASUS', 'asus'),
+                                                  (6, 'Acer', 'acer'),
+                                                  (7, 'MSI', 'msi'),
+                                                  (8, 'Razer', 'razer'),
+                                                  (9, 'Samsung', 'samsung'),
+                                                  (10, 'LG', 'lg'),
+                                                  (11, 'Microsoft', 'microsoft'),
+                                                  (12, 'Huawei', 'huawei');
 
 -- categories (6 rows) — tat ca root de hien thi Shop by category
 INSERT INTO categories (id, name, slug, parent_id) VALUES

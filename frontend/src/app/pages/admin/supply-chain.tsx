@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   AdminSuppliers as SuppliersApi,
@@ -39,16 +39,20 @@ import {
 
 // --------------------------- Suppliers ---------------------------------------
 
+const emptySupplierForm = {
+  name: "",
+  address: "",
+  phone: "",
+  email: "",
+  isActive: true,
+};
+
 export function AdminSuppliers() {
   const [suppliers, setSuppliers] = useState<SupplierResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    address: "",
-    phone: "",
-    email: "",
-  });
+  const [editing, setEditing] = useState<SupplierResponse | null>(null);
+  const [form, setForm] = useState(emptySupplierForm);
 
   const load = async () => {
     setLoading(true);
@@ -65,6 +69,51 @@ export function AdminSuppliers() {
   useEffect(() => {
     void load();
   }, []);
+
+  const openCreate = () => {
+    setEditing(null);
+    setForm(emptySupplierForm);
+    setOpen(true);
+  };
+
+  const openEdit = (r: SupplierResponse) => {
+    setEditing(r);
+    setForm({
+      name: r.name ?? "",
+      address: r.address ?? "",
+      phone: r.phone ?? "",
+      email: r.email ?? "",
+      isActive: r.isActive,
+    });
+    setOpen(true);
+  };
+
+  const save = async () => {
+    if (!form.name.trim()) {
+      toast.error("Name required");
+      return;
+    }
+    const body = {
+      name: form.name.trim(),
+      address: form.address.trim() || null,
+      phone: form.phone.trim() || null,
+      email: form.email.trim() || null,
+      isActive: form.isActive,
+    };
+    try {
+      if (editing) {
+        await SuppliersApi.update(editing.id, body);
+        toast.success("Supplier updated");
+      } else {
+        await SuppliersApi.create(body);
+        toast.success("Supplier created");
+      }
+      setOpen(false);
+      await load();
+    } catch (e) {
+      toast.error(getApiErrorMessage(e));
+    }
+  };
 
   const columns: Column<SupplierResponse>[] = [
     {
@@ -91,6 +140,33 @@ export function AdminSuppliers() {
       header: "Active",
       render: (r) => <span className="text-sm">{r.isActive ? "Yes" : "No"}</span>,
     },
+    {
+      key: "actions",
+      header: "",
+      className: "text-right",
+      render: (r) => (
+        <div className="flex justify-end gap-1">
+          <Button variant="ghost" size="icon" onClick={() => openEdit(r)}>
+            <Pencil size={14} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={async () => {
+              try {
+                await SuppliersApi.remove(r.id);
+                toast.success(`Deleted ${r.name}`);
+                await load();
+              } catch (e) {
+                toast.error(getApiErrorMessage(e));
+              }
+            }}
+          >
+            <Trash2 size={14} />
+          </Button>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -99,7 +175,7 @@ export function AdminSuppliers() {
         title="Suppliers"
         subtitle={`${suppliers.length} suppliers`}
         action={
-          <Button onClick={() => setOpen(true)}>
+          <Button onClick={openCreate}>
             <Plus size={16} /> Add supplier
           </Button>
         }
@@ -117,7 +193,7 @@ export function AdminSuppliers() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>New supplier</DialogTitle>
+            <DialogTitle>{editing ? "Edit supplier" : "New supplier"}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-3 py-2">
             {(
@@ -136,25 +212,21 @@ export function AdminSuppliers() {
                 />
               </div>
             ))}
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={form.isActive}
+                onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))}
+                className="size-4 rounded border-input"
+              />
+              Active
+            </label>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button
-              onClick={async () => {
-                try {
-                  await SuppliersApi.create({ ...form, isActive: true });
-                  toast.success("Supplier created");
-                  setOpen(false);
-                  await load();
-                } catch (e) {
-                  toast.error(getApiErrorMessage(e));
-                }
-              }}
-            >
-              Save
-            </Button>
+            <Button onClick={() => void save()}>Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

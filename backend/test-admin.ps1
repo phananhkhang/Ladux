@@ -36,14 +36,14 @@ Write-Host ("token len = " + $token.Length)
 # ============ BRAND ============
 $brand = Step 'brand create' {
     Invoke-RestMethod -Method Post -Uri "$base/admin/brands" -Headers $H -ContentType 'application/json' `
-        -Body '{"name":"TestBrand QA","logoUrl":"https://img.example.com/b.png"}'
+        -Body '{"name":"TestBrand QA"}'
 }
 $brandId = $brand.id
 Write-Host ("  brandId=$brandId")
 
 Step 'brand update' {
     Invoke-RestMethod -Method Put -Uri "$base/admin/brands/$brandId" -Headers $H -ContentType 'application/json' `
-        -Body '{"name":"TestBrand QA Updated","logoUrl":"https://img.example.com/b2.png"}'
+        -Body '{"name":"TestBrand QA Updated"}'
 } | Out-Null
 
 # ============ CATEGORY ============

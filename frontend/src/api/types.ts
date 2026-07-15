@@ -75,7 +75,6 @@ export interface BrandResponse {
   id: number;
   name: string;
   slug: string;
-  logoUrl: string | null;
 }
 
 export interface CategoryResponse {
@@ -163,8 +162,10 @@ export interface UserAdminUpdateRequest {
   password?: string;
   fullName?: string;
   phone?: string;
+  avatar?: string;
   isActive?: boolean;
-  roles?: string[];
+  /** Role IDs: 1 = ADMIN, 2 = CUSTOMER (seed defaults). */
+  roleIds?: number[];
 }
 
 // ── Cart / Wishlist ──────────────────────────────────────────────────────────
@@ -352,7 +353,6 @@ export interface ProductRequest {
 
 export interface BrandRequest {
   name: string;
-  logoUrl?: string | null;
 }
 
 export interface CategoryRequest {

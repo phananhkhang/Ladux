@@ -7,8 +7,7 @@ import java.io.Serializable;
 public record BrandResponse(
         int id,
         String name,
-        String slug,
-        String logoUrl
+        String slug
 ) implements Serializable {
         public static BrandResponse fromEntity(Brand brand) {
         if (brand == null) {
@@ -17,8 +16,7 @@ public record BrandResponse(
             return new BrandResponse(
                     brand.getId(),
                     brand.getName(),
-                    brand.getSlug(),
-                    brand.getLogoUrl()
+                    brand.getSlug()
             );
     }
 }

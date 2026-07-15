@@ -20,8 +20,7 @@ CREATE TABLE users (
 CREATE TABLE brands (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    slug VARCHAR(120) NOT NULL UNIQUE,
-    logo_url VARCHAR(255)
+    slug VARCHAR(120) NOT NULL UNIQUE
 );
 
 CREATE TABLE categories (
