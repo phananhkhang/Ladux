@@ -51,19 +51,24 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
+    // Bộ giải mã mật khẩu sử dụng thuật toán BCrypt để mã hóa và xác thực mật khẩu người dùng.
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    // Cấu hình AuthenticationManager để quản lý xác thực người dùng.
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
+    // Cấu hình SecurityFilterChain để thiết lập các quy tắc bảo mật cho ứng dụng.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // withHttpOnlyFalse(): Cookie CSRF không set flag HttpOnly → JavaScript phía frontend có thể đọc được cookie XSRF-TOKEN để gửi header.
         CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
         csrfTokenRepository.setCookiePath("/");
 
+        // Tắt việc Spring tự động đưa CSRF token vào request attribute (cách cũ). Cách mới chỉ dựa vào cookie + header X-XSRF-TOKEN.
         CsrfTokenRequestAttributeHandler csrfRequestHandler = new CsrfTokenRequestAttributeHandler();
         csrfRequestHandler.setCsrfRequestAttributeName(null);
 
@@ -80,9 +85,9 @@ public class SecurityConfig {
                                 "/api/v1/payments/vnpay-webhook",
                                 "/oauth2/**", "/login/oauth2/**"
                         )
-                        .ignoringRequestMatchers(BEARER_AUTH_REQUEST)
+                        .ignoringRequestMatchers(BEARER_AUTH_REQUEST) // Bearer token (JWT) không cần CSRFf
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Không dùng session, mỗi request cần phải đem theo token để xác thực
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/v1/payments/vnpay-webhook").permitAll()
@@ -122,6 +127,10 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Cấu hình nguồn cấu hình CORS (Cross-Origin Resource Sharing)
+     * @return CorsConfigurationSource
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

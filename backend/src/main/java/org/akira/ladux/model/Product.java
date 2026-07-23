@@ -2,13 +2,14 @@ package org.akira.ladux.model;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.CascadeType;
@@ -54,9 +55,6 @@ public class Product {
     @ToString.Exclude
     private Category category;
 
-    @Column(nullable = false, unique = true, length = 50)
-    private String sku;
-
     @Column(nullable = false)
     private String name;
 
@@ -66,23 +64,9 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String description;                    // ← Thêm mới
 
-    @Column(nullable = false, precision = 15, scale = 2)
-    private BigDecimal basePrice;
-
-    @Column(precision = 15, scale = 2)
-    private BigDecimal discountPrice;
-
-    @Column(nullable = false)
-    @Builder.Default
-    private int stockQuantity = 0;
-
-    @Column(name = "low_stock_threshold")
-    @Builder.Default
-    private Integer lowStockThreshold = 5;  // Cảnh báo hết hàng
-
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "specs", columnDefinition = "jsonb")
-    private String specs;
+    private Map<String, Object> specs;
 
     private String thumbnail;
 
@@ -95,34 +79,38 @@ public class Product {
     private Instant createdAt;
 
     @Column(name = "updated_at")
-    @UpdateTimestamp
+    @LastModifiedDate
     private Instant updatedAt;
 
     // ==================== RELATIONSHIPS ====================
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    @Builder.Default
-    private List<ProductImage> images = new ArrayList<>();
-
     @OneToMany(mappedBy = "product")
     @ToString.Exclude
     @Builder.Default
     private List<Review> reviews = new ArrayList<>();
-
-    // Các quan hệ dưới đây KHÔNG nên có cascade
-    @OneToMany(mappedBy = "product")
-    @ToString.Exclude
-    @Builder.Default
-    private List<CartItem> cartItems = new ArrayList<>();
-
-    @OneToMany(mappedBy = "product")
-    @ToString.Exclude
-    @Builder.Default
-    private List<OrderItem> orderItems = new ArrayList<>();
-
     @OneToMany(mappedBy = "product")
     @ToString.Exclude
     @Builder.Default
     private List<Wishlist> wishlists = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @Builder.Default
+    private Set<ProductVariant> variants = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "product")
+    @ToString.Exclude
+    @Builder.Default
+    private List<ProductImage> images = new ArrayList<>();
+
+    // ==================== HELPER METHODS ====================
+    // Thêm vào cuối class Product.java
+    public void addVariant(ProductVariant variant) {
+        variants.add(variant);
+        variant.setProduct(this);
+    }
+
+    public void removeVariant(ProductVariant variant) {
+        variants.remove(variant);
+        variant.setProduct(null);
+    }
 }

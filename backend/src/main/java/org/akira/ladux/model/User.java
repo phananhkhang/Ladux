@@ -38,9 +38,10 @@ public class User {
     private String email;
     @Column(nullable = false, unique = true, length = 150)
     private String username;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 150)
     private String password;
-    private boolean isActive;
+    @Builder.Default
+    private boolean isActive = true;
 
     @Builder.Default
     @Column(name = "token_version", nullable = false)
@@ -58,4 +59,14 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Customer customer;
+
+    // Helper method
+    public void setCustomer(Customer customer) {
+        // Đặt customer cho user
+        this.customer = customer;
+        if (customer != null) {
+            // Luư user ngược lại customer để duy trì mối quan hệ hai chiều
+            customer.setUser(this);
+        }
+    }
 }

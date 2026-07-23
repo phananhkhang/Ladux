@@ -26,7 +26,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PurchaseOrderItem {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -39,18 +38,19 @@ public class PurchaseOrderItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     @ToString.Exclude
-    private Product product;
+    private ProductVariant productVariant;
 
     @Column(nullable = false)
-    private Integer quantity;
+    @Builder.Default
+    private Integer quantity = 1;          // Số lượng đặt hàng
 
     @Column(name = "cost_price", nullable = false, precision = 15, scale = 2)
     private BigDecimal costPrice;           // Giá nhập
 
     @Builder.Default
-    @Column(name = "received_quantity")
+    @Column(name = "received_quantity", nullable = false)
     private Integer receivedQuantity = 0;   // Số lượng đã nhận (hỗ trợ nhận hàng từng phần)
 
-    @Column(length = 255)
+    @Column(columnDefinition = "TEXT")
     private String note;
 }

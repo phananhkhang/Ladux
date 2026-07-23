@@ -9,6 +9,7 @@ import java.util.List;
 import org.akira.ladux.model.enums.DiscountType;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
@@ -38,6 +39,8 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Coupon {
 
+    private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
+    private BigDecimal maxDiscountAmount; // Chỉ áp dụng khi discountType = PERCENT, null nghĩa là không giới hạn
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -74,13 +77,11 @@ public class Coupon {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "update_at")
-    private Instant updateAt;
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 
     // ===== Domain logic dung chung cho preview (applyCoupon) va commit (redeem) =====
-
-    private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
     /** Coupon het han khi thoi diem het han khong con o tuong lai. */
     public boolean isExpired() {
@@ -100,9 +101,13 @@ public class Coupon {
 
     /** Tinh so tien duoc giam, khong vuot qua subTotal, lam tron 2 chu so. */
     public BigDecimal calculateDiscount(BigDecimal subTotal) {
-        BigDecimal discount = discountType == DiscountType.PERCENT
-                ? subTotal.multiply(discountValue).divide(ONE_HUNDRED, 2, RoundingMode.HALF_UP)
-                : discountValue;
-        return discount.min(subTotal).setScale(2, RoundingMode.HALF_UP);
+        if (discountType == DiscountType.PERCENT) {
+            BigDecimal discount = subTotal.multiply(discountValue).divide(ONE_HUNDRED, 2, RoundingMode.HALF_UP);
+            if (maxDiscountAmount != null && discount.compareTo(maxDiscountAmount) > 0) {
+                discount = maxDiscountAmount;
+            }
+            return discount;
+        }
+        return discountValue.min(subTotal).setScale(2, RoundingMode.HALF_UP);
     }
 }

@@ -29,6 +29,10 @@ public class Category {
     @Column(name = "image_url", length = 500)
     private String imageUrl;
 
+    @Builder.Default
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
+
     // Self-reference: category cha
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
@@ -36,7 +40,7 @@ public class Category {
     private Category parent;
 
     // Self-reference: danh sách category con
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parent")
     @ToString.Exclude
     @Builder.Default
     private List<Category> children = new ArrayList<>();

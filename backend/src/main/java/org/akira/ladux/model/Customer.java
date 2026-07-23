@@ -60,10 +60,10 @@ public class Customer {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    @Column(name = "level", length = 10)
+    @Column(name = "level", length = 20)
     private CustomerLevel level = CustomerLevel.BROWSER;
 
     @Builder.Default
-    @Column(name = "total_spent", precision = 15, scale = 2)
+    @Column(name = "total_spent", precision = 15, scale = 2, nullable = false)
     private BigDecimal totalSpent = BigDecimal.ZERO;
 }

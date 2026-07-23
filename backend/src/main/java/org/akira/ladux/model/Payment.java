@@ -7,6 +7,7 @@ import org.akira.ladux.model.enums.PaymentProvider;
 import org.akira.ladux.model.enums.PaymentStatus;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
@@ -66,11 +67,14 @@ public class Payment {
     @Builder.Default
     private PaymentStatus status = PaymentStatus.PENDING;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "payment_url", columnDefinition = "TEXT")
+    private String paymentUrl;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
     private Instant createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "update_at")
-    private Instant updateAt;
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 }

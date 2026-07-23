@@ -24,11 +24,14 @@ public class UserAddress {
     @Column(nullable = false, length = 150)
     private String receiverName;
 
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private String phone;
 
     @Column(nullable = false, length = 100)
     private String street;
+
+    @Column(nullable = false, length = 100)
+    private String ward; // Phường/ xã
 
     @Column(nullable = false, length = 100)
     private String district;

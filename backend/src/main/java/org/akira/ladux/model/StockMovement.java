@@ -2,27 +2,19 @@ package org.akira.ladux.model;
 
 import java.time.Instant;
 
+import jakarta.persistence.*;
 import org.akira.ladux.model.enums.StockMovementType;
 import org.akira.ladux.model.enums.StockReferenceType;
 import org.hibernate.annotations.CreationTimestamp;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name = "stock_movements")
@@ -31,49 +23,52 @@ import lombok.ToString;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StockMovement {
+@EntityListeners(AuditingEntityListener.class)
+public class StockMovement { // Sổ nhật ký thu chi cho kho hàng
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_variant_id", nullable = false)
     @ToString.Exclude
-    private Product product;
+    private ProductVariant productVariant;
 
     /**
      * Số lượng thay đổi:
-     * - Số dương (+): Nhập kho (import, return...)
+     * - Số dương (+): Nhập kho (Nhập, trả hàng)
      * - Số âm (-): Xuất kho (bán hàng, hư hỏng...)
      */
     @Column(nullable = false)
-    private Integer quantity;
+    @Builder.Default
+    private Integer quantity = 0;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "movement_type", length = 30, nullable = false)
-    private StockMovementType movementType;
+    @Column(name = "movement_type", length = 80, nullable = false)
+    private StockMovementType movementType; // Xác định lý do tăng giảm tồn kho
 
     /**
      * Tham chiếu đến nguồn gốc thay đổi (ví dụ: order_id, purchase_order_id...)
      */
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "reference_type", length = 30)
-    private StockReferenceType referenceType;   // ORDER, PURCHASE_ORDER, ADJUSTMENT...
+    @Column(name = "reference_type", length = 80)
+    private StockReferenceType referenceType;   // ORDER, PURCHASE_ORDER, ADJUSTMENT... cái này nó chỉ rõ cụ thể hơn
     
     @Column(name = "reference_id")
-    private Long referenceId;
+    private Integer referenceId;
 
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String note;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
+    @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
     private User createdBy;           // Staff, Admin thực hiện thay đổi
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
     private Instant createdAt;
 }

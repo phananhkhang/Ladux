@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.akira.ladux.model.enums.PurchaseOrderStatus;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.CascadeType;
@@ -39,8 +39,7 @@ import lombok.ToString;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PurchaseOrder {
-
+public class PurchaseOrder { // Đây là đơn đặt hàng của hệ thống
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -56,26 +55,29 @@ public class PurchaseOrder {
     private PurchaseOrderStatus status = PurchaseOrderStatus.PENDING;
 
     @Column(name = "expected_delivery_date")
-    private Instant expectedDeliveryDate;
+    private Instant expectedDeliveryDate; // Ngày dự kiến giao hàng
 
-    @Column(name = "total_amount", precision = 15, scale = 2)
+    @Column(name = "received_date", nullable = true)
+    private Instant receivedDate; // Thời gian nhận hàng thật tế
+
+    @Column(name = "total_amount", precision = 15, scale = 2, nullable = false)
     @Builder.Default
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String note;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
+    @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
     private User createdBy;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
     private Instant createdAt;
- 
+
     @Column(name = "updated_at")
-    @UpdateTimestamp
+    @LastModifiedDate
     private Instant updatedAt;
 
     @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)

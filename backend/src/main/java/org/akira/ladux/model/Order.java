@@ -75,7 +75,7 @@ public class Order {
     private OrderStatus status = OrderStatus.PENDING;
 
     @Column(columnDefinition = "TEXT")
-    private String shippingAddress;
+    private ShippingAddress shippingAddress;
 
     private String trackingNumber;
 
@@ -84,8 +84,8 @@ public class Order {
     private Instant createdAt;
 
     @UpdateTimestamp
-    @Column(name = "update_at")
-    private Instant updateAt;
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 
     private Instant paymentExpiresAt;
 
@@ -103,5 +103,4 @@ public class Order {
     @ToString.Exclude
     @Builder.Default
     private List<Payment> payments = new ArrayList<>();
-
 }

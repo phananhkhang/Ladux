@@ -16,7 +16,6 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Review {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

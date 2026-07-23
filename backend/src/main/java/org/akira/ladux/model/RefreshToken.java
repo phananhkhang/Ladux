@@ -37,7 +37,7 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(nullable = false, unique = true, length = 200)
     private String token;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,9 +50,9 @@ public class RefreshToken {
 
     @Builder.Default
     @Column(nullable = false)
-    private boolean revoked = false;
+    private boolean revoked = false; // Bị thu hồi?
 
-    @CreationTimestamp
+    @CreationTimestamp // Được tạo thời gian khi insert vào DB
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

@@ -1,0 +1,37 @@
+{"properties": [
+  {
+    "name": "\napp.auth.cookie.nam",
+    "type": "java.lang.String",
+    "description": "A description for '\napp.auth.cookie.nam'"
+  },
+  {
+    "name": "\nspring.security.oauth2.client.registration.google.scop",
+    "type": "java.lang.String",
+    "description": "A description for '\nspring.security.oauth2.client.registration.google.scop'"
+  },
+  {
+    "name": "\nspring.datasource.driver-class-nam",
+    "type": "java.lang.String",
+    "description": "A description for '\nspring.datasource.driver-class-nam'"
+  },
+  {
+    "name": "\nspring.datasource.passwor",
+    "type": "java.lang.String",
+    "description": "A description for '\nspring.datasource.passwor'"
+  },
+  {
+    "name": "\nspring.datasource.ur",
+    "type": "java.lang.String",
+    "description": "A description for '\nspring.datasource.ur'"
+  },
+  {
+    "name": "\nspring.datasource.usernam",
+    "type": "java.lang.String",
+    "description": "A description for '\nspring.datasource.usernam'"
+  },
+  {
+    "name": "\napp.jwt.access-expiratio",
+    "type": "java.lang.String",
+    "description": "A description for '\napp.jwt.access-expiratio'"
+  }
+]}
