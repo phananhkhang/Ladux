@@ -22,9 +22,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @EntityGraph(attributePaths = {"brand", "category", "images"})
     Product findBySlug(String slug);
 
-    @EntityGraph(attributePaths = {"brand", "category", "images"})
-    Product findBySku(String sku);
-
     @EntityGraph(attributePaths = {"brand", "category"})
     Page<Product> findAll(Pageable pageable);
 
@@ -50,17 +47,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             @Param("search") String search,
             Pageable pageable
     );
-    @Modifying
-    @Query("""
-    UPDATE Product p 
-    SET p.stockQuantity = p.stockQuantity - :quantity 
-    WHERE p.id = :productId 
-      AND p.stockQuantity >= :quantity""")
-    int deductStockAtomically(@Param("productId") Integer productId, 
-                          @Param("quantity") int quantity);
-
     boolean existsByCategoryId(int id);
 
-    boolean existsBySku(String sku);
 }
 

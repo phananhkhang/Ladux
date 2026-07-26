@@ -27,11 +27,16 @@ public class ProductVariant {
     @Column(nullable = false, unique = true, length = 50)
     private String sku; // Mã SKU riêng cho phiên bản (VD: IP15PM-256GB-BLK)
 
-    @Column(length = 50)
-    private String color; // VD: Titanium Đen
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "color_id", nullable = false)
+    @ToString.Exclude
+    private Color color; // // Mối quan hệ tới thực thể Color (lưu mã Hex, tên màu)
 
-    @Column(length = 50)
-    private String storage; // VD: 256GB
+    @Column(name = "ram", length = 50)
+    private String ram;
+
+    @Column(name = "rom", length = 50)
+    private String rom; // VD: 256GB
 
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal price; // Giá gốc biến thể
@@ -56,4 +61,5 @@ public class ProductVariant {
     @ToString.Exclude
     @Builder.Default
     private List<OrderItem> orderItems = new ArrayList<>();
+
 }

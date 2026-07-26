@@ -2,14 +2,11 @@ package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.request.ProductRequest;
+import org.akira.ladux.dto.request.ProductVariantRequest;
 import org.akira.ladux.dto.response.ProductResponse;
-import org.akira.ladux.model.Brand;
-import org.akira.ladux.model.Category;
-import org.akira.ladux.model.Product;
-import org.akira.ladux.model.ProductImage;
-import org.akira.ladux.repository.BrandRepository;
-import org.akira.ladux.repository.CategoryRepository;
-import org.akira.ladux.repository.ProductRepository;
+import org.akira.ladux.dto.response.ProductVariantResponse;
+import org.akira.ladux.model.*;
+import org.akira.ladux.repository.*;
 import org.akira.ladux.service.ProductService;
 import org.akira.ladux.utils.SlugUtils;
 import org.akira.ladux.exception.BusinessRuleException;
@@ -22,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +28,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository repo;
     private final BrandRepository brandRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductVariantRepository productVariantRepository;
+    private final ColorRepository colorRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -57,16 +58,6 @@ public class ProductServiceImpl implements ProductService {
         return ProductResponse.fromEntity(p);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'sku:' + #sku")
-    public ProductResponse getProductBySku(String sku) {
-        Product p = repo.findBySku(sku);
-        if (p == null) {
-            throw new ResourceNotFoundException("Khong tim thay product voi sku = " + sku);
-        }
-        return ProductResponse.fromEntity(p);
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -111,20 +102,39 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay brand voi id = " + request.brandId()));
         Category category = categoryRepository.findById(request.categoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.categoryId()));
-        validateProductPricing(request.basePrice(), request.discountPrice());
         Product product = Product.builder()
+                .description(request.description())
                 .brand(brand)
                 .category(category)
-                .sku(resolveSku(request.sku(), request.name()))
                 .name(request.name())
-                .basePrice(request.basePrice())
-                .discountPrice(request.discountPrice())
-                .stockQuantity(request.stockQuantity() == null ? 0 : request.stockQuantity())
-                .specs(request.specs())
-                .thumbnail(request.thumbnail())
+                .cpu(request.cpu())
+                .gpu(request.gpu())
+                .display(request.display())
+                .battery(request.battery())
+                .weight(request.weight())
+                .numberOfFans(request.numberOfFans())
+                .os(request.os())
                 .isActive(request.isActive() == null ? true : request.isActive())
                 .slug(SlugUtils.toSlug(request.name()))
                 .build();
+        if (request.variants() != null && !request.variants().isEmpty()) {
+            for (ProductVariantRequest variantRequest : request.variants()) {
+                Color color = colorRepository.findById(variantRequest.getColorId()).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy màu sắc với id = " + variantRequest.getColorId()));
+                String rawSku = product.getName() + " " + variantRequest.getRam() + " " + variantRequest.getRom() + " " + color.getName();
+                String sku = resolveSku(null, rawSku);
+                ProductVariant variant = ProductVariant.builder()
+                        .color(color)
+                        .ram(variantRequest.getRam())
+                        .rom(variantRequest.getRom())
+                        .price(variantRequest.getPrice())
+                        .discountPrice(variantRequest.getDiscountPrice())
+                        .stockQuantity(variantRequest.getStockQuantity())
+                        .sku(sku)
+                        .isActive(variantRequest.isActive())
+                        .build();
+                product.addVariant(variant);
+            }
+        }
         replaceProductImages(product, request.imageUrls());
         return ProductResponse.fromEntity(repo.save(product));
     }
@@ -135,9 +145,6 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse updateProduct(int id, ProductRequest request) {
         Product product = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + id));
-        BigDecimal nextBasePrice = request.basePrice() == null ? product.getBasePrice() : request.basePrice();
-        BigDecimal nextDiscountPrice = request.discountPrice() == null ? product.getDiscountPrice() : request.discountPrice();
-        validateProductPricing(nextBasePrice, nextDiscountPrice);
         if (request.brandId() != null) {
             Brand brand = brandRepository.findById(request.brandId())
                     .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay brand voi id = " + request.brandId()));
@@ -152,28 +159,40 @@ public class ProductServiceImpl implements ProductService {
             product.setName(request.name());
             product.setSlug(SlugUtils.toSlug(request.name()));
         }
-        if (request.basePrice() != null) {
-            product.setBasePrice(request.basePrice());
-        }
-        if (request.discountPrice() != null) {
-            product.setDiscountPrice(request.discountPrice());
-        }
-        if (request.stockQuantity() != null) {
-            product.setStockQuantity(request.stockQuantity());
-        }
-        if (request.specs() != null) {
-            product.setSpecs(request.specs());
-        }
-        if (request.thumbnail() != null) {
-            product.setThumbnail(request.thumbnail());
-        }
         if (request.isActive() != null) {
             product.setActive(request.isActive());
         }
         if (request.imageUrls() != null) {
             replaceProductImages(product, request.imageUrls());
         }
-        return ProductResponse.fromEntity(product);
+        if (request.description() != null) {
+            product.setDescription(request.description());
+        }
+        if (request.cpu() != null) {
+            product.setCpu(request.cpu());
+        }
+        if (request.gpu() != null) {
+            product.setGpu(request.gpu());
+        }
+        if (request.display() != null) {
+            product.setDisplay(request.display());
+        }
+        if (request.battery() != null) {
+            product.setBattery(request.battery());
+        }
+        if (request.weight() != null) {
+            product.setWeight(request.weight());
+        }
+        if (request.numberOfFans() != null) {
+            product.setNumberOfFans(request.numberOfFans());
+        }
+        if (request.os() != null) {
+            product.setOs(request.os());
+        }
+        if (request.imageUrls() != null) {
+            replaceProductImages(product, request.imageUrls());
+        }
+        return ProductResponse.fromEntity(repo.save(product));
     }
 
     @Override
@@ -183,38 +202,43 @@ public class ProductServiceImpl implements ProductService {
         repo.deleteById(id);
     }
 
-    private String resolveSku(String requestedSku, String productName) {
-        // Always produce a non-blank unique SKU (never persist empty string)
+    private String resolveSku(String requestedSku, String fallbackName) {
         String base;
         if (requestedSku != null && !requestedSku.isBlank()) {
             base = SlugUtils.toSlug(requestedSku);
             if (base.isBlank()) {
-                base = SlugUtils.toSlug(productName);
+                base = SlugUtils.toSlug(fallbackName);
             }
         } else {
-            base = SlugUtils.toSlug(productName);
+            base = SlugUtils.toSlug(fallbackName);
         }
+
         if (base.isBlank()) {
-            base = "product";
+            base = "LAPTOP";
         }
-        return ensureUniqueSku(base);
+
+        // Đổi toàn bộ SKU thành CHỮ HOA cho chuẩn thương mại điện tử
+        return ensureUniqueSku(base.toUpperCase());
     }
 
     /** SKU column is varchar(50) — keep base short enough for numeric suffixes. */
     private String ensureUniqueSku(String rawBase) {
         String base = rawBase.length() > 40 ? rawBase.substring(0, 40).replaceAll("-+$", "") : rawBase;
         if (base.isBlank()) {
-            base = "product";
+            base = "LAPTOP";
         }
+
         String candidate = base.length() > 50 ? base.substring(0, 50) : base;
         int suffix = 2;
-        while (repo.existsBySku(candidate)) {
+
+        // SỬA CHỖ NÀY: Dùng productVariantRepository thay vì repo (Product)
+        while (productVariantRepository.existsBySku(candidate)) {
             String withSuffix = base + "-" + suffix++;
             candidate = withSuffix.length() > 50 ? withSuffix.substring(0, 50) : withSuffix;
         }
+
         return candidate;
     }
-
     private void validateProductPricing(BigDecimal basePrice, BigDecimal discountPrice) {
         if (discountPrice != null && discountPrice.compareTo(basePrice) > 0) {
             throw new BusinessRuleException("DiscountPrice khong duoc lon hon BasePrice");
@@ -230,5 +254,11 @@ public class ProductServiceImpl implements ProductService {
                 .product(product)
                 .imageUrl(imageUrl)
                 .build()));
+    }
+    // == Variant Products ==
+    public ProductVariantResponse getProductVariantById(Integer variantId) {
+        ProductVariant variant = productVariantRepository.findById(variantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product variant voi id = " + variantId));
+        return ProductVariantResponse.fromEntity(variant);
     }
 }

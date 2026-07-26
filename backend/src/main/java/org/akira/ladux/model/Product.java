@@ -1,14 +1,8 @@
 package org.akira.ladux.model;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
-
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -62,13 +56,15 @@ public class Product {
     private String slug;
 
     @Column(columnDefinition = "TEXT")
-    private String description;                    // ← Thêm mới
+    private String description;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "specs", columnDefinition = "jsonb")
-    private Map<String, Object> specs;
-
-    private String thumbnail;
+    private String cpu; // VD: Intel Core i7-1360P
+    private String gpu; // VD: Intel Iris Xe Graphics / RTX 4050
+    private String display; // VD: 13.4 inch FHD+ (1920 x 1200), IPS, 500 nits
+    private String battery; // VD: 3-cell, 55 Wh
+    private String weight; // VD: 1.24 kg
+    private int numberOfFans; // VD: 2
+    private String os; // VD: Windows 11 Home
 
     @Builder.Default
     @Column(nullable = false)
@@ -87,6 +83,7 @@ public class Product {
     @ToString.Exclude
     @Builder.Default
     private List<Review> reviews = new ArrayList<>();
+    
     @OneToMany(mappedBy = "product")
     @ToString.Exclude
     @Builder.Default
@@ -97,7 +94,7 @@ public class Product {
     @Builder.Default
     private Set<ProductVariant> variants = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default
     private List<ProductImage> images = new ArrayList<>();

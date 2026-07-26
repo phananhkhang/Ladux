@@ -5,9 +5,12 @@ import org.akira.ladux.dto.LineDraft;
 import org.akira.ladux.dto.request.OrderLineRequest;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Product;
+import org.akira.ladux.model.ProductVariant;
 import org.akira.ladux.repository.ProductRepository;
+import org.akira.ladux.repository.ProductVariantRepository;
 import org.akira.ladux.service.InventoryService;
 import org.akira.ladux.service.PricingService;
+import org.akira.ladux.service.ProductVariantService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -25,7 +28,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class InventoryServiceImpl implements InventoryService {
-    private final ProductRepository productRepository;
+    private final ProductVariantRepository productVariantRepository;
     private final PricingService pricingService;
 
     @Override
@@ -36,22 +39,22 @@ public class InventoryServiceImpl implements InventoryService {
 
         for (OrderLineRequest item : items) {
             // Bước 1: Trừ kho nguyên tử — một lệnh UPDATE, không cần giữ lock lâu.
-            // SQL: UPDATE products SET stock_quantity = stock_quantity - :qty
-            //      WHERE id = :id AND stock_quantity >= :qty
-            int updated = productRepository.deductStockAtomically(item.productId(), item.quantity());
+            // SQL: UPDATE ProductVariant SET stockQuantity = stockQuantity - :qty
+            //      WHERE id = :id AND stockQuantity >= :qty
+            int updated = productVariantRepository.deductStockAtomically(item.productId(), item.quantity());
             if (updated == 0) {
                 throw new InsufficientStockException("Không đủ hàng hoặc sản phẩm không tồn tại");
             }
 
             // Bước 2: Load product sau khi trừ thành công để lấy giá bán hiện tại.
             // Giá sẽ được chốt vào OrderItem.priceAtPurchase (snapshot — không đổi sau này).
-            Product product = productRepository.findById(item.productId())
+            ProductVariant productVariant = productVariantRepository.findById(item.productId())
                     .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-            BigDecimal price = pricingService.sellingPrice(product);
+            BigDecimal price = pricingService.sellingPrice(productVariant);
             BigDecimal lineTotal = price.multiply(BigDecimal.valueOf(item.quantity()));
 
-            drafts.add(new LineDraft(product, item.quantity(), price, lineTotal));
+            drafts.add(new LineDraft(productVariant, item.quantity(), price, lineTotal));
         }
         return drafts;
     }

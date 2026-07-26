@@ -2,6 +2,7 @@ package org.akira.ladux.controller.user;
 
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.response.ProductResponse;
+import org.akira.ladux.dto.response.ProductVariantResponse;
 import org.akira.ladux.service.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,8 +40,14 @@ public class ProductController {
     public ResponseEntity<Page<ProductResponse>> getProductsByCategoryId(@PathVariable int categoryId, Pageable pageable) {
         return ResponseEntity.ok(service.getProductsByCategoryId(categoryId, pageable));
     }
+
     @GetMapping("/active")
     public ResponseEntity<Page<ProductResponse>> getActiveProducts(Pageable pageable) {
         return ResponseEntity.ok(service.getActiveProducts(pageable));
+    }
+    // Lấy san pham theo variant
+    @GetMapping("/variant/{variantId}")
+    public ResponseEntity<ProductVariantResponse> getProductVariantById(@PathVariable Integer variantId) {
+        return ResponseEntity.ok(service.getProductVariantById(variantId));
     }
 }

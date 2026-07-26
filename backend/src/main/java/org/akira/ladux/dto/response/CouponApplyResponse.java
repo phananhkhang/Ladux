@@ -16,7 +16,7 @@ public record CouponApplyResponse(
         int usedCount,
         Instant expiresAt
 ) implements Serializable {
-    public static CouponApplyResponse from(CouponResponse coupon) {
+    public static CouponApplyResponse fromEntity(CouponResponse coupon) {
         if (coupon == null) {
             return null;
         }

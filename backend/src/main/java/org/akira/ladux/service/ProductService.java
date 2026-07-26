@@ -2,6 +2,7 @@ package org.akira.ladux.service;
 
 import org.akira.ladux.dto.request.ProductRequest;
 import org.akira.ladux.dto.response.ProductResponse;
+import org.akira.ladux.dto.response.ProductVariantResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -11,8 +12,6 @@ public interface ProductService {
     ProductResponse getProductById(int id);
 
     ProductResponse getProductBySlug(String slug);
-
-    ProductResponse getProductBySku(String sku);
 
     Page<ProductResponse> getProductsByBrandId(int brandId, Pageable pageable);
 
@@ -27,4 +26,6 @@ public interface ProductService {
     ProductResponse updateProduct(int id, ProductRequest request);
 
     void deleteProductById(int id);
+
+    ProductVariantResponse getProductVariantById(Integer variantId);
 }
