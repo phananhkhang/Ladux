@@ -3,7 +3,6 @@ package org.akira.ladux.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.akira.ladux.model.Color;
 
 import java.math.BigDecimal;
 

@@ -1,9 +1,13 @@
 package org.akira.ladux.service.impl;
 
-import org.akira.ladux.dto.request.ProductVariantRequest;
+import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.response.ProductVariantResponse;
+import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Color;
+import org.akira.ladux.model.Product;
 import org.akira.ladux.model.ProductVariant;
+import org.akira.ladux.repository.ColorRepository;
+import org.akira.ladux.repository.ProductRepository;
 import org.akira.ladux.repository.ProductVariantRepository;
 import org.akira.ladux.service.ProductVariantService;
 import org.springframework.stereotype.Service;
@@ -11,35 +15,36 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
+@RequiredArgsConstructor
 public class ProductVariantServiceImpl implements ProductVariantService {
-    private final ProductVariantService productVariantService;
+    private final ProductRepository productRepository;
     private final ProductVariantRepository productVariantRepository;
-
-    public ProductVariantServiceImpl(ProductVariantService productVariantService, ProductVariantRepository productVariantRepository) {
-        this.productVariantService = productVariantService;
-        this.productVariantRepository = productVariantRepository;
-    }
+    private final ColorRepository colorRepository;
 
     @Override
-    public ProductVariantResponse addProductVariant(Integer productId, String sku, Color color, String ram, String rom, BigDecimal price, BigDecimal discountPrice, int stockQuantity, boolean active) {
-        if (productId == null || sku == null || color == null || ram == null || rom == null || price == null || stockQuantity < 0) {
+    public ProductVariantResponse addProductVariant(Integer productId, Integer colorId, String ram, String rom, BigDecimal price, BigDecimal discountPrice, int stockQuantity, boolean active) {
+        if (productId == null || colorId == null || ram == null || rom == null || price == null || stockQuantity < 0) {
             throw new IllegalArgumentException("Không được để trống bất kì trường nào và StockQuantity không được âm");
         }
-        if (color.getId() == null) {
+        if (colorId == null) {
             throw new IllegalArgumentException("Màu sắc không hợp lệ");
         }
-        ProductVariantResponse response = new ProductVariantResponse(
-                productId,
-                sku,
-                color,
-                ram,
-                rom,
-                price,
-                discountPrice,
-                stockQuantity,
-                active
-        );
-        return response;
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm với id: " + productId));
+        Color color = colorRepository.findById(colorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy màu sắc với id: " + colorId));
+        ProductVariant productVariant = ProductVariant.builder()
+                .product(product)
+                .sku(generateSku(product, color, ram, rom))
+                .color(color)
+                .ram(ram)
+                .rom(rom)
+                .price(price)
+                .discountPrice(discountPrice)
+                .stockQuantity(stockQuantity)
+                .isActive(active)
+                .build();
+        return ProductVariantResponse.fromEntity(productVariantRepository.save(productVariant));
     }
     public ProductVariantResponse updateProductVariant(Integer id, Color color, String ram, String rom, BigDecimal price, BigDecimal discountPrice, int stockQuantity, boolean active) {
         if (id == null || color == null || ram == null || rom == null || price == null || stockQuantity < 0) {
