@@ -1,18 +1,20 @@
 package org.akira.ladux.service.impl;
 
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.response.ProductVariantResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Color;
 import org.akira.ladux.model.Product;
 import org.akira.ladux.model.ProductVariant;
-import org.akira.ladux.repository.ColorRepository;
-import org.akira.ladux.repository.ProductRepository;
-import org.akira.ladux.repository.ProductVariantRepository;
+import org.akira.ladux.repository.*;
 import org.akira.ladux.service.ProductVariantService;
+import org.akira.ladux.utils.SkuUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+
+import static org.akira.ladux.utils.SkuUtils.generateSku;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +22,11 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     private final ProductRepository productRepository;
     private final ProductVariantRepository productVariantRepository;
     private final ColorRepository colorRepository;
+    private final CartItemRepository cartItemRepository;
 
+    // Dành cho Admin
     @Override
+    @Transactional
     public ProductVariantResponse addProductVariant(Integer productId, Integer colorId, String ram, String rom, BigDecimal price, BigDecimal discountPrice, int stockQuantity, boolean active) {
         if (productId == null || colorId == null || ram == null || rom == null || price == null || stockQuantity < 0) {
             throw new IllegalArgumentException("Không được để trống bất kì trường nào và StockQuantity không được âm");
@@ -29,13 +34,16 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         if (colorId == null) {
             throw new IllegalArgumentException("Màu sắc không hợp lệ");
         }
+        if (discountPrice != null && discountPrice.compareTo(price) > 0) {
+            throw new IllegalArgumentException("Giá khuyến mãi không được lớn hơn giá gốc");
+        }
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm với id: " + productId));
         Color color = colorRepository.findById(colorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy màu sắc với id: " + colorId));
         ProductVariant productVariant = ProductVariant.builder()
                 .product(product)
-                .sku(generateSku(product, color, ram, rom))
+                .sku(generateSku(product.getName(), ram, rom, color.getName()))
                 .color(color)
                 .ram(ram)
                 .rom(rom)
@@ -46,42 +54,47 @@ public class ProductVariantServiceImpl implements ProductVariantService {
                 .build();
         return ProductVariantResponse.fromEntity(productVariantRepository.save(productVariant));
     }
-    public ProductVariantResponse updateProductVariant(Integer id, Color color, String ram, String rom, BigDecimal price, BigDecimal discountPrice, int stockQuantity, boolean active) {
-        if (id == null || color == null || ram == null || rom == null || price == null || stockQuantity < 0) {
+    @Transactional
+    public ProductVariantResponse updateProductVariant(Integer id, Integer colorId, String ram, String rom, BigDecimal price, BigDecimal discountPrice, int stockQuantity, boolean active) {
+        if (id == null || colorId == null || ram == null || rom == null || price == null || stockQuantity < 0) {
             throw new IllegalArgumentException("Không được để trống bất kì trường nào và StockQuantity không được âm");
         }
         ProductVariant existingVariant = productVariantRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy ProductVariant với id: " + id));
-        if (color.getId() != null) {
-            existingVariant.setColor(color);
+        Color color = colorRepository.findById(colorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy màu sắc với id: " + colorId));
+        if (discountPrice != null && discountPrice.compareTo(price) > 0) {
+            throw new IllegalArgumentException("Giá khuyến mãi không được lớn hơn giá gốc");
         }
-        if (ram != null) {
-            existingVariant.setRam(ram);
-        }
-        if (rom != null) {
-            existingVariant.setRom(rom);
-        }
-        if (price != null) {
-            existingVariant.setPrice(price);
-        }
-        if (discountPrice != null) {
-            existingVariant.setDiscountPrice(discountPrice);
-        }
-        if (stockQuantity >= 0) {
-            existingVariant.setStockQuantity(stockQuantity);
-        }
+
+        existingVariant.setColor(color);
+        existingVariant.setRam(ram);
+        existingVariant.setRom(rom);
+        existingVariant.setPrice(price);
+        existingVariant.setDiscountPrice(discountPrice);
+        existingVariant.setStockQuantity(stockQuantity);
         existingVariant.setActive(active);
+        existingVariant.setSku(SkuUtils.generateSku(existingVariant.getProduct().getName(), ram, rom, color.getName()));
         productVariantRepository.save(existingVariant);
-        return new ProductVariantResponse(
-                existingVariant.getId(),
-                existingVariant.getProduct().getId(),
-                existingVariant.getSku(),
-                existingVariant.getColor(),
-                existingVariant.getRam(),
-                existingVariant.getRom(),
-                existingVariant.getPrice(),
-                existingVariant.getDiscountPrice(),
-                existingVariant.getStockQuantity(),
-                existingVariant.isActive()
-        );
+        return ProductVariantResponse.fromEntity(existingVariant);
+    }
+    @Override
+    @Transactional
+    public void deleteProductVariant(Integer variantId) {
+        if (variantId == null) {
+            throw new IllegalArgumentException("variantId không được để trống");
+        }
+        ProductVariant productVariantExisting = productVariantRepository.findById(variantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ProductVariant với id: " + variantId));
+        // KIểm tra xem ProductVariant có tồn tại trong OrderItem hay không, nếu có thì không được xóa
+        if (!productVariantExisting.getOrderItems().isEmpty()) {
+            productVariantExisting.setActive(false);
+            productVariantExisting.setStockQuantity(0);
+            productVariantRepository.save(productVariantExisting);
+            return;
+        }
+        // Xóa ProductVariant ra tất cả đơn hàng
+        cartItemRepository.deleteByProductVariantId(variantId);
+
+        productVariantRepository.delete(productVariantExisting);
     }
 }

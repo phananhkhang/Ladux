@@ -18,5 +18,6 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
     @Lock(LockModeType.PESSIMISTIC_WRITE) // Cái này ngon khi đọc dữ liệu lên để sửa, xóa, nếu chỉ đọc thông thường thì không Lock cũng được
     @Query("select c from Cart c where c.user.id = :userId")
     Optional<Cart> findByUserIdForUpdate(@Param("userId") Integer userId);
+
 }
 
