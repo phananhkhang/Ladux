@@ -3,6 +3,7 @@ package org.akira.ladux.service;
 import org.akira.ladux.dto.request.StockMovementRequest;
 import org.akira.ladux.dto.response.StockMovementResponse;
 import org.akira.ladux.model.Product;
+import org.akira.ladux.model.ProductVariant;
 import org.akira.ladux.model.StockMovement;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.enums.StockMovementType;
@@ -42,7 +43,7 @@ public interface StockMovementService {
      * Yeu cau chay trong transaction cua caller.
      */
     StockMovement recordLedgerEntry(
-            Product product,
+            ProductVariant productVariant,
             int signedQuantity,
             StockMovementType movementType,
             StockReferenceType referenceType,

@@ -14,12 +14,7 @@ import org.akira.ladux.dto.response.OrderResponse;
 import org.akira.ladux.dto.response.PaymentCallbackResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
-import org.akira.ladux.model.Cart;
-import org.akira.ladux.model.Coupon;
-import org.akira.ladux.model.Order;
-import org.akira.ladux.model.OrderHistory;
-import org.akira.ladux.model.OrderItem;
-import org.akira.ladux.model.User;
+import org.akira.ladux.model.*;
 import org.akira.ladux.model.enums.OrderStatus;
 import org.akira.ladux.model.enums.StockMovementType;
 import org.akira.ladux.model.enums.StockReferenceType;
@@ -156,14 +151,21 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal finalAmount = subTotal.subtract(discountAmount)
                 .max(BigDecimal.ZERO)
                 .setScale(2, RoundingMode.HALF_UP);
-
+        ShippingAddress shippingAddress = ShippingAddress.builder()
+                .receiverName(request.shippingAddress().receiverName())
+                .phone(request.shippingAddress().phone())
+                .street(request.shippingAddress().street())
+                .ward(request.shippingAddress().ward())
+                .district(request.shippingAddress().district())
+                .city(request.shippingAddress().city())
+                .build();
         Order order = Order.builder()
                 .coupon(coupon)
                 .subTotal(subTotal)
                 .discountAmount(discountAmount)
                 .finalAmount(finalAmount)
                 .status(OrderStatus.PENDING)
-                .shippingAddress(request.shippingAddress())
+                .shippingAddress(shippingAddress)
                 .user(user)
                 .build();
 
@@ -171,7 +173,7 @@ public class OrderServiceImpl implements OrderService {
         for (LineDraft draft : lineDrafts) {
             order.getItems().add(OrderItem.builder()
                     .order(order)
-                    .product(draft.product())
+                    .productVariant(draft.productVariant())
                     .quantity(draft.quantity())
                     .priceAtPurchase(draft.priceAtPurchase())
                     .build());
@@ -181,7 +183,7 @@ public class OrderServiceImpl implements OrderService {
         order.getHistories().add(OrderHistory.builder()
                 .order(order)
                 .user(order.getUser())
-                .status(OrderStatus.PENDING.name())
+                .status(OrderStatus.PENDING)
                 .description("Order created")
                 .build());
 
@@ -195,7 +197,7 @@ public class OrderServiceImpl implements OrderService {
         Long orderRef = order.getId().longValue();
         for (LineDraft draft : lineDrafts) {
             stockMovementService.recordLedgerEntry(
-                    draft.product(),
+                    draft.productVariant(),
                     -draft.quantity(),
                     StockMovementType.SALE_OUT,
                     StockReferenceType.ORDER,

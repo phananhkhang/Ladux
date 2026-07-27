@@ -18,9 +18,9 @@ public record CartResponse(
         }
         BigDecimal totalPrice = cart.getItems() == null ? BigDecimal.ZERO : cart.getItems().stream()
                 .map(item -> {
-                    BigDecimal price = item.getProduct().getDiscountPrice() == null
-                            ? item.getProduct().getBasePrice()
-                            : item.getProduct().getDiscountPrice();
+                    BigDecimal price = item.getProductVariant().getDiscountPrice() == null
+                            ? item.getProductVariant().getPrice()
+                            : item.getProductVariant().getDiscountPrice();
                     return price.multiply(BigDecimal.valueOf(item.getQuantity()));
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

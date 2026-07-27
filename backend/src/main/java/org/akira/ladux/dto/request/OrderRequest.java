@@ -1,5 +1,6 @@
 package org.akira.ladux.dto.request;
 
+import jakarta.validation.Valid;
 import org.akira.ladux.model.enums.PaymentProvider;
 
 import jakarta.validation.constraints.NotBlank;
@@ -14,5 +15,6 @@ public record OrderRequest(
 
         @NotBlank(message = "ShippingAddress khong duoc de trong")
         @Size(max = 1000, message = "ShippingAddress khong duoc vuot qua 1000 ky tu")
-        String shippingAddress
+        @Valid
+        ShippingAddressRequest shippingAddress
 ) {}
