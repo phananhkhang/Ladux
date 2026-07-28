@@ -1,0 +1,1707 @@
+{
+    "nodes":  [
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "type":  "file",
+                      "name":  "AdminProductSupplierController.java",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "summary":  "Admin REST controller for product-supplier links, exposing secured endpoints to list links by product or supplier, create a link, update link metadata, and remove links.",
+                      "tags":  [
+                                   "api-handler",
+                                   "admin-api",
+                                   "supplier-management",
+                                   "security"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:AdminProductSupplierController",
+                      "type":  "class",
+                      "name":  "AdminProductSupplierController",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "lineRange":  [
+                                        23,
+                                        56
+                                    ],
+                      "summary":  "Coordinates ADMIN-only HTTP requests for creating, updating, deleting, and listing product-supplier link records through ProductSupplierService.",
+                      "tags":  [
+                                   "api-handler",
+                                   "spring-web",
+                                   "admin-api"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:getByProduct",
+                      "type":  "function",
+                      "name":  "getByProduct",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "lineRange":  [
+                                        31,
+                                        34
+                                    ],
+                      "summary":  "Returns product-supplier link responses filtered by product id.",
+                      "tags":  [
+                                   "api-handler",
+                                   "endpoint-method",
+                                   "admin-api"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:getBySupplier",
+                      "type":  "function",
+                      "name":  "getBySupplier",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "lineRange":  [
+                                        36,
+                                        39
+                                    ],
+                      "summary":  "Returns product-supplier link responses filtered by supplier id.",
+                      "tags":  [
+                                   "api-handler",
+                                   "endpoint-method",
+                                   "admin-api"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:link",
+                      "type":  "function",
+                      "name":  "link",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "lineRange":  [
+                                        41,
+                                        44
+                                    ],
+                      "summary":  "Creates a product-supplier link after validation and returns the created response.",
+                      "tags":  [
+                                   "api-handler",
+                                   "endpoint-method",
+                                   "admin-api"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:update",
+                      "type":  "function",
+                      "name":  "update",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "lineRange":  [
+                                        46,
+                                        49
+                                    ],
+                      "summary":  "Updates cost and lead-time metadata for an existing product-supplier link.",
+                      "tags":  [
+                                   "api-handler",
+                                   "endpoint-method",
+                                   "admin-api"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:unlink",
+                      "type":  "function",
+                      "name":  "unlink",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "lineRange":  [
+                                        51,
+                                        55
+                                    ],
+                      "summary":  "Deletes an existing product-supplier link and returns an empty response for controller calls.",
+                      "tags":  [
+                                   "api-handler",
+                                   "endpoint-method",
+                                   "admin-api"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "type":  "file",
+                      "name":  "AdminSupplierController.java",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "summary":  "Admin REST controller for supplier management, providing paged listing, active filtering, lookup, search, create, update, and delete operations behind ADMIN authorization.",
+                      "tags":  [
+                                   "api-handler",
+                                   "admin-api",
+                                   "supplier-management",
+                                   "pagination"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:AdminSupplierController",
+                      "type":  "class",
+                      "name":  "AdminSupplierController",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "lineRange":  [
+                                        23,
+                                        66
+                                    ],
+                      "summary":  "Coordinates ADMIN-only HTTP requests for supplier listing, filtering, lookup, search, creation, update, and deletion through SupplierService.",
+                      "tags":  [
+                                   "api-handler",
+                                   "spring-web",
+                                   "admin-api"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:getAllSuppliers",
+                      "type":  "function",
+                      "name":  "getAllSuppliers",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "lineRange":  [
+                                        31,
+                                        34
+                                    ],
+                      "summary":  "Returns a pageable set of supplier responses.",
+                      "tags":  [
+                                   "api-handler",
+                                   "endpoint-method",
+                                   "admin-api"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:getActive",
+                      "type":  "function",
+                      "name":  "getActive",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "lineRange":  [
+                                        36,
+                                        39
+                                    ],
+                      "summary":  "Returns a pageable set of active supplier responses.",
+                      "tags":  [
+                                   "api-handler",
+                                   "endpoint-method",
+                                   "admin-api"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:getById",
+                      "type":  "function",
+                      "name":  "getById",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "lineRange":  [
+                                        41,
+                                        44
+                                    ],
+                      "summary":  "Returns a single supplier response by id.",
+                      "tags":  [
+                                   "api-handler",
+                                   "endpoint-method",
+                                   "admin-api"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:searchSuppliers",
+                      "type":  "function",
+                      "name":  "searchSuppliers",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "lineRange":  [
+                                        46,
+                                        49
+                                    ],
+                      "summary":  "Searches suppliers by optional name or phone criteria with pagination.",
+                      "tags":  [
+                                   "api-handler",
+                                   "endpoint-method",
+                                   "admin-api"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:createSupplier",
+                      "type":  "function",
+                      "name":  "createSupplier",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "lineRange":  [
+                                        51,
+                                        54
+                                    ],
+                      "summary":  "Creates a supplier entity or response from validated request data.",
+                      "tags":  [
+                                   "api-handler",
+                                   "endpoint-method",
+                                   "admin-api"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:updateSupplier",
+                      "type":  "function",
+                      "name":  "updateSupplier",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "lineRange":  [
+                                        56,
+                                        59
+                                    ],
+                      "summary":  "Updates supplier fields from a request and returns the updated response.",
+                      "tags":  [
+                                   "api-handler",
+                                   "endpoint-method",
+                                   "admin-api"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:deleteSupplier",
+                      "type":  "function",
+                      "name":  "deleteSupplier",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "lineRange":  [
+                                        61,
+                                        65
+                                    ],
+                      "summary":  "Deletes a supplier through the service layer and returns no content.",
+                      "tags":  [
+                                   "api-handler",
+                                   "endpoint-method",
+                                   "admin-api"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/dto/request/ProductSupplierRequest.java",
+                      "type":  "file",
+                      "name":  "ProductSupplierRequest.java",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/request/ProductSupplierRequest.java",
+                      "summary":  "Validation record for product-supplier link mutations, carrying product and supplier identifiers plus optional cost and lead-time metadata.",
+                      "tags":  [
+                                   "data-transfer",
+                                   "validation",
+                                   "supplier-management"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/dto/request/ProductSupplierRequest.java:ProductSupplierRequest",
+                      "type":  "class",
+                      "name":  "ProductSupplierRequest",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/request/ProductSupplierRequest.java",
+                      "lineRange":  [
+                                        9,
+                                        23
+                                    ],
+                      "summary":  "Carries validated product-supplier link input, including required foreign keys and optional non-negative cost and lead-time values.",
+                      "tags":  [
+                                   "data-transfer",
+                                   "validation",
+                                   "request-model"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/dto/request/SupplierRequest.java",
+                      "type":  "file",
+                      "name":  "SupplierRequest.java",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/request/SupplierRequest.java",
+                      "summary":  "Validation record for supplier create and update payloads, constraining names, contact fields, and optional active status.",
+                      "tags":  [
+                                   "data-transfer",
+                                   "validation",
+                                   "supplier-management"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/dto/request/SupplierRequest.java:SupplierRequest",
+                      "type":  "class",
+                      "name":  "SupplierRequest",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/request/SupplierRequest.java",
+                      "lineRange":  [
+                                        7,
+                                        23
+                                    ],
+                      "summary":  "Carries validated supplier input fields for create and update operations, including contact details and optional active state.",
+                      "tags":  [
+                                   "data-transfer",
+                                   "validation",
+                                   "request-model"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java",
+                      "type":  "file",
+                      "name":  "ProductSupplierResponse.java",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java",
+                      "summary":  "Serializable response DTO that flattens a ProductSupplier entity into product, supplier, cost, and lead-time fields for admin API responses.",
+                      "tags":  [
+                                   "data-transfer",
+                                   "serialization",
+                                   "supplier-management"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java:ProductSupplierResponse",
+                      "type":  "class",
+                      "name":  "ProductSupplierResponse",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java",
+                      "lineRange":  [
+                                        8,
+                                        31
+                                    ],
+                      "summary":  "Flattens ProductSupplier entity relationships into a serializable response shape with product and supplier display fields.",
+                      "tags":  [
+                                   "data-transfer",
+                                   "serialization",
+                                   "response-model"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java:fromEntity",
+                      "type":  "function",
+                      "name":  "fromEntity",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java",
+                      "lineRange":  [
+                                        17,
+                                        30
+                                    ],
+                      "summary":  "Maps an entity instance to a null-safe API response DTO.",
+                      "tags":  [
+                                   "mapper",
+                                   "serialization",
+                                   "data-transfer"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java",
+                      "type":  "file",
+                      "name":  "SupplierResponse.java",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/response/SupplierResponse.java",
+                      "summary":  "Serializable response DTO for supplier data, including contact fields, active state, and audit timestamps.",
+                      "tags":  [
+                                   "data-transfer",
+                                   "serialization",
+                                   "supplier-management"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java:SupplierResponse",
+                      "type":  "class",
+                      "name":  "SupplierResponse",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/response/SupplierResponse.java",
+                      "lineRange":  [
+                                        8,
+                                        33
+                                    ],
+                      "summary":  "Presents supplier identity, contact fields, active flag, and audit timestamps as a serializable API response.",
+                      "tags":  [
+                                   "data-transfer",
+                                   "serialization",
+                                   "response-model"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java:fromEntity",
+                      "type":  "function",
+                      "name":  "fromEntity",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/response/SupplierResponse.java",
+                      "lineRange":  [
+                                        18,
+                                        32
+                                    ],
+                      "summary":  "Maps an entity instance to a null-safe API response DTO.",
+                      "tags":  [
+                                   "mapper",
+                                   "serialization",
+                                   "data-transfer"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/model/ProductSupplier.java",
+                      "type":  "file",
+                      "name":  "ProductSupplier.java",
+                      "filePath":  "src/main/java/org/akira/ladux/model/ProductSupplier.java",
+                      "summary":  "JPA entity modeling the join between products and suppliers with a uniqueness constraint, cost price, and lead time attributes.",
+                      "tags":  [
+                                   "data-model",
+                                   "jpa-entity",
+                                   "supplier-management",
+                                   "relationship"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/model/ProductSupplier.java:ProductSupplier",
+                      "type":  "class",
+                      "name":  "ProductSupplier",
+                      "filePath":  "src/main/java/org/akira/ladux/model/ProductSupplier.java",
+                      "lineRange":  [
+                                        8,
+                                        40
+                                    ],
+                      "summary":  "Defines the product_suppliers persistence model with lazy product and supplier associations and link-specific purchasing metadata.",
+                      "tags":  [
+                                   "data-model",
+                                   "jpa-entity",
+                                   "persistence"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/model/Supplier.java",
+                      "type":  "file",
+                      "name":  "Supplier.java",
+                      "filePath":  "src/main/java/org/akira/ladux/model/Supplier.java",
+                      "summary":  "JPA entity representing suppliers with contact details, active state, and Spring Data auditing timestamps.",
+                      "tags":  [
+                                   "data-model",
+                                   "jpa-entity",
+                                   "supplier-management",
+                                   "auditing"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/model/Supplier.java:Supplier",
+                      "type":  "class",
+                      "name":  "Supplier",
+                      "filePath":  "src/main/java/org/akira/ladux/model/Supplier.java",
+                      "lineRange":  [
+                                        17,
+                                        54
+                                    ],
+                      "summary":  "Defines the suppliers persistence model with contact attributes, default active status, and audited creation and update timestamps.",
+                      "tags":  [
+                                   "data-model",
+                                   "jpa-entity",
+                                   "persistence"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/repository/ProductSupplierRepository.java",
+                      "type":  "file",
+                      "name":  "ProductSupplierRepository.java",
+                      "filePath":  "src/main/java/org/akira/ladux/repository/ProductSupplierRepository.java",
+                      "summary":  "Spring Data repository for product-supplier links, using entity graphs for product and supplier lookups plus uniqueness checks.",
+                      "tags":  [
+                                   "repository",
+                                   "data-access",
+                                   "supplier-management",
+                                   "jpa"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/repository/ProductSupplierRepository.java:ProductSupplierRepository",
+                      "type":  "class",
+                      "name":  "ProductSupplierRepository",
+                      "filePath":  "src/main/java/org/akira/ladux/repository/ProductSupplierRepository.java",
+                      "lineRange":  [
+                                        9,
+                                        18
+                                    ],
+                      "summary":  "Provides Spring Data access methods for querying product-supplier links by product or supplier and checking duplicate links.",
+                      "tags":  [
+                                   "repository",
+                                   "data-access",
+                                   "spring-data"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/repository/SupplierRepository.java",
+                      "type":  "file",
+                      "name":  "SupplierRepository.java",
+                      "filePath":  "src/main/java/org/akira/ladux/repository/SupplierRepository.java",
+                      "summary":  "Spring Data repository for suppliers, with active-supplier queries, name uniqueness checks, and a JPQL projection search by name or phone.",
+                      "tags":  [
+                                   "repository",
+                                   "data-access",
+                                   "supplier-management",
+                                   "jpa-query"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/repository/SupplierRepository.java:SupplierRepository",
+                      "type":  "class",
+                      "name":  "SupplierRepository",
+                      "filePath":  "src/main/java/org/akira/ladux/repository/SupplierRepository.java",
+                      "lineRange":  [
+                                        11,
+                                        25
+                                    ],
+                      "summary":  "Provides Spring Data access methods for active suppliers, case-insensitive name checks, and projected name-or-phone search.",
+                      "tags":  [
+                                   "repository",
+                                   "data-access",
+                                   "spring-data"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/service/ProductSupplierService.java",
+                      "type":  "file",
+                      "name":  "ProductSupplierService.java",
+                      "filePath":  "src/main/java/org/akira/ladux/service/ProductSupplierService.java",
+                      "summary":  "Service contract for managing product-supplier links and querying links by either side of the relationship.",
+                      "tags":  [
+                                   "service",
+                                   "interface",
+                                   "supplier-management",
+                                   "contract"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/service/ProductSupplierService.java:ProductSupplierService",
+                      "type":  "class",
+                      "name":  "ProductSupplierService",
+                      "filePath":  "src/main/java/org/akira/ladux/service/ProductSupplierService.java",
+                      "lineRange":  [
+                                        8,
+                                        19
+                                    ],
+                      "summary":  "Declares the application service operations for linking products to suppliers and retrieving those links.",
+                      "tags":  [
+                                   "service",
+                                   "interface",
+                                   "contract"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/service/SupplierService.java",
+                      "type":  "file",
+                      "name":  "SupplierService.java",
+                      "filePath":  "src/main/java/org/akira/ladux/service/SupplierService.java",
+                      "summary":  "Service contract for supplier administration, covering paginated reads, active filtering, search, create, update, and deletion.",
+                      "tags":  [
+                                   "service",
+                                   "interface",
+                                   "supplier-management",
+                                   "contract"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/service/SupplierService.java:SupplierService",
+                      "type":  "class",
+                      "name":  "SupplierService",
+                      "filePath":  "src/main/java/org/akira/ladux/service/SupplierService.java",
+                      "lineRange":  [
+                                        8,
+                                        22
+                                    ],
+                      "summary":  "Declares supplier administration operations used by the admin controller layer.",
+                      "tags":  [
+                                   "service",
+                                   "interface",
+                                   "contract"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "type":  "file",
+                      "name":  "ProductSupplierServiceImpl.java",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "summary":  "Transactional service implementation for product-supplier links, enforcing uniqueness, resolving referenced product and supplier entities, and mapping persisted links to responses.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "supplier-management",
+                                   "transactional"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:ProductSupplierServiceImpl",
+                      "type":  "class",
+                      "name":  "ProductSupplierServiceImpl",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "lineRange":  [
+                                        21,
+                                        78
+                                    ],
+                      "summary":  "Implements product-supplier link workflows with transactional writes, duplicate prevention, reference validation, and DTO mapping.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "transactional"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:link",
+                      "type":  "function",
+                      "name":  "link",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "lineRange":  [
+                                        29,
+                                        47
+                                    ],
+                      "summary":  "Creates a product-supplier link after validation and returns the created response.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "transactional"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:update",
+                      "type":  "function",
+                      "name":  "update",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "lineRange":  [
+                                        49,
+                                        57
+                                    ],
+                      "summary":  "Updates cost and lead-time metadata for an existing product-supplier link.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "transactional"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:unlink",
+                      "type":  "function",
+                      "name":  "unlink",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "lineRange":  [
+                                        59,
+                                        65
+                                    ],
+                      "summary":  "Deletes an existing product-supplier link and returns an empty response for controller calls.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "transactional"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:getByProduct",
+                      "type":  "function",
+                      "name":  "getByProduct",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "lineRange":  [
+                                        67,
+                                        71
+                                    ],
+                      "summary":  "Returns product-supplier link responses filtered by product id.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "transactional"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:getBySupplier",
+                      "type":  "function",
+                      "name":  "getBySupplier",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "lineRange":  [
+                                        73,
+                                        77
+                                    ],
+                      "summary":  "Returns product-supplier link responses filtered by supplier id.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "transactional"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "type":  "file",
+                      "name":  "SupplierServiceImpl.java",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "summary":  "Transactional supplier service implementation that maps repository results to responses, creates and updates supplier entities, deletes by id, and centralizes not-found handling.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "supplier-management",
+                                   "transactional"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:SupplierServiceImpl",
+                      "type":  "class",
+                      "name":  "SupplierServiceImpl",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "lineRange":  [
+                                        16,
+                                        83
+                                    ],
+                      "summary":  "Implements supplier workflows with repository pagination, response projection, entity construction, updates, deletion, and not-found handling.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "transactional"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:getAllSuppliers",
+                      "type":  "function",
+                      "name":  "getAllSuppliers",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "lineRange":  [
+                                        22,
+                                        26
+                                    ],
+                      "summary":  "Returns a pageable set of supplier responses.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "transactional"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:getActiveSuppliers",
+                      "type":  "function",
+                      "name":  "getActiveSuppliers",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "lineRange":  [
+                                        28,
+                                        32
+                                    ],
+                      "summary":  "Returns active suppliers from the repository mapped to response DTOs.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "transactional"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:getSupplierById",
+                      "type":  "function",
+                      "name":  "getSupplierById",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "lineRange":  [
+                                        34,
+                                        38
+                                    ],
+                      "summary":  "Loads a supplier by id and converts it to a response DTO.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "transactional"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:searchSuppliers",
+                      "type":  "function",
+                      "name":  "searchSuppliers",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "lineRange":  [
+                                        40,
+                                        44
+                                    ],
+                      "summary":  "Searches suppliers by optional name or phone criteria with pagination.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "transactional"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:createSupplier",
+                      "type":  "function",
+                      "name":  "createSupplier",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "lineRange":  [
+                                        46,
+                                        57
+                                    ],
+                      "summary":  "Creates a supplier entity or response from validated request data.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "transactional"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:updateSupplier",
+                      "type":  "function",
+                      "name":  "updateSupplier",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "lineRange":  [
+                                        59,
+                                        71
+                                    ],
+                      "summary":  "Updates supplier fields from a request and returns the updated response.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "transactional"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:deleteSupplierById",
+                      "type":  "function",
+                      "name":  "deleteSupplierById",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "lineRange":  [
+                                        73,
+                                        77
+                                    ],
+                      "summary":  "Deletes a supplier after verifying that the id exists.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "transactional"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:findOrThrow",
+                      "type":  "function",
+                      "name":  "findOrThrow",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "lineRange":  [
+                                        79,
+                                        82
+                                    ],
+                      "summary":  "Finds a supplier entity by id or raises ResourceNotFoundException.",
+                      "tags":  [
+                                   "utility",
+                                   "error-handling",
+                                   "repository-lookup"
+                               ],
+                      "complexity":  "simple"
+                  }
+              ],
+    "edges":  [
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "target":  "class:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:AdminProductSupplierController",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "target":  "class:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:AdminProductSupplierController",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:getByProduct",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:getByProduct",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:getBySupplier",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:getBySupplier",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:link",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:link",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:update",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:update",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:unlink",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java:unlink",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "class:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:AdminSupplierController",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "class:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:AdminSupplierController",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:getAllSuppliers",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:getAllSuppliers",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:getActive",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:getActive",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:getById",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:getById",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:searchSuppliers",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:searchSuppliers",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:createSupplier",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:createSupplier",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:updateSupplier",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:updateSupplier",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:deleteSupplier",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java:deleteSupplier",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/request/ProductSupplierRequest.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/request/ProductSupplierRequest.java:ProductSupplierRequest",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/request/ProductSupplierRequest.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/request/ProductSupplierRequest.java:ProductSupplierRequest",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/request/SupplierRequest.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/request/SupplierRequest.java:SupplierRequest",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/request/SupplierRequest.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/request/SupplierRequest.java:SupplierRequest",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java:ProductSupplierResponse",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java:ProductSupplierResponse",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java",
+                      "target":  "function:src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java:fromEntity",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java",
+                      "target":  "function:src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java:fromEntity",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java:SupplierResponse",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java:SupplierResponse",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java",
+                      "target":  "function:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java:fromEntity",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java",
+                      "target":  "function:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java:fromEntity",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/model/ProductSupplier.java",
+                      "target":  "class:src/main/java/org/akira/ladux/model/ProductSupplier.java:ProductSupplier",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/model/ProductSupplier.java",
+                      "target":  "class:src/main/java/org/akira/ladux/model/ProductSupplier.java:ProductSupplier",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/model/Supplier.java",
+                      "target":  "class:src/main/java/org/akira/ladux/model/Supplier.java:Supplier",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/model/Supplier.java",
+                      "target":  "class:src/main/java/org/akira/ladux/model/Supplier.java:Supplier",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/repository/ProductSupplierRepository.java",
+                      "target":  "class:src/main/java/org/akira/ladux/repository/ProductSupplierRepository.java:ProductSupplierRepository",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/repository/ProductSupplierRepository.java",
+                      "target":  "class:src/main/java/org/akira/ladux/repository/ProductSupplierRepository.java:ProductSupplierRepository",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/repository/SupplierRepository.java",
+                      "target":  "class:src/main/java/org/akira/ladux/repository/SupplierRepository.java:SupplierRepository",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/repository/SupplierRepository.java",
+                      "target":  "class:src/main/java/org/akira/ladux/repository/SupplierRepository.java:SupplierRepository",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/ProductSupplierService.java",
+                      "target":  "class:src/main/java/org/akira/ladux/service/ProductSupplierService.java:ProductSupplierService",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/ProductSupplierService.java",
+                      "target":  "class:src/main/java/org/akira/ladux/service/ProductSupplierService.java:ProductSupplierService",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/SupplierService.java",
+                      "target":  "class:src/main/java/org/akira/ladux/service/SupplierService.java:SupplierService",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/SupplierService.java",
+                      "target":  "class:src/main/java/org/akira/ladux/service/SupplierService.java:SupplierService",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "class:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:ProductSupplierServiceImpl",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "class:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:ProductSupplierServiceImpl",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:link",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:link",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:update",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:update",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:unlink",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:unlink",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:getByProduct",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:getByProduct",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:getBySupplier",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:getBySupplier",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "class:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:SupplierServiceImpl",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "class:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:SupplierServiceImpl",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:getAllSuppliers",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:getAllSuppliers",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:getActiveSuppliers",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:getActiveSuppliers",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:getSupplierById",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:getSupplierById",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:searchSuppliers",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:searchSuppliers",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:createSupplier",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:createSupplier",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:updateSupplier",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:updateSupplier",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:deleteSupplierById",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:deleteSupplierById",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:findOrThrow",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:findOrThrow",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/request/ProductSupplierRequest.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminProductSupplierController.java",
+                      "target":  "file:src/main/java/org/akira/ladux/service/ProductSupplierService.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/request/SupplierRequest.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/admin/AdminSupplierController.java",
+                      "target":  "file:src/main/java/org/akira/ladux/service/SupplierService.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/ProductSupplier.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/Supplier.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/repository/ProductSupplierRepository.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/ProductSupplier.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/repository/SupplierRepository.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/repository/SupplierRepository.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/Supplier.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/ProductSupplierService.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/request/ProductSupplierRequest.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/ProductSupplierService.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/SupplierService.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/request/SupplierRequest.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/SupplierService.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/request/ProductSupplierRequest.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/response/ProductSupplierResponse.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/exception/BusinessRuleException.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/Product.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/ProductSupplier.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/Supplier.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/repository/ProductRepository.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/repository/ProductSupplierRepository.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/repository/SupplierRepository.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/service/ProductSupplierService.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/request/SupplierRequest.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/response/SupplierResponse.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/Supplier.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/repository/SupplierRepository.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/service/SupplierService.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "class:src/main/java/org/akira/ladux/service/impl/ProductSupplierServiceImpl.java:ProductSupplierServiceImpl",
+                      "target":  "class:src/main/java/org/akira/ladux/service/ProductSupplierService.java:ProductSupplierService",
+                      "type":  "implements",
+                      "direction":  "forward",
+                      "weight":  0.9
+                  },
+                  {
+                      "source":  "class:src/main/java/org/akira/ladux/service/impl/SupplierServiceImpl.java:SupplierServiceImpl",
+                      "target":  "class:src/main/java/org/akira/ladux/service/SupplierService.java:SupplierService",
+                      "type":  "implements",
+                      "direction":  "forward",
+                      "weight":  0.9
+                  }
+              ]
+}

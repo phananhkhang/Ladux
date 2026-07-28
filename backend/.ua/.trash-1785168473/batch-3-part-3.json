@@ -1,0 +1,305 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/PurchaseOrderItem.java",
+      "type": "file",
+      "name": "PurchaseOrderItem.java",
+      "filePath": "src/main/java/org/akira/ladux/model/PurchaseOrderItem.java",
+      "summary": "Models an individual product line within a purchase order. It stores ordered quantity, received quantity, unit cost, and the parent purchase-order relationship.",
+      "tags": [
+        "data-model",
+        "jpa-entity",
+        "database",
+        "inventory"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses Lombok with JPA annotations to keep entity classes compact while preserving ORM mapping metadata."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/PurchaseOrderItem.java:PurchaseOrderItem",
+      "type": "class",
+      "name": "PurchaseOrderItem",
+      "filePath": "src/main/java/org/akira/ladux/model/PurchaseOrderItem.java",
+      "lineRange": [
+        21,
+        56
+      ],
+      "summary": "PurchaseOrderItem is a JPA domain entity for the inventory and purchasing data model.",
+      "tags": [
+        "data-model",
+        "jpa-entity",
+        "database",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/StockMovement.java",
+      "type": "file",
+      "name": "StockMovement.java",
+      "filePath": "src/main/java/org/akira/ladux/model/StockMovement.java",
+      "summary": "Models a stock ledger entry recording signed inventory quantity changes. It tracks the product, movement type, reference type, reference id, note, creator, and creation timestamp.",
+      "tags": [
+        "data-model",
+        "jpa-entity",
+        "database",
+        "inventory"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses Lombok with JPA annotations to keep entity classes compact while preserving ORM mapping metadata."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/StockMovement.java:StockMovement",
+      "type": "class",
+      "name": "StockMovement",
+      "filePath": "src/main/java/org/akira/ladux/model/StockMovement.java",
+      "lineRange": [
+        19,
+        74
+      ],
+      "summary": "StockMovement is a JPA domain entity for the inventory and purchasing data model.",
+      "tags": [
+        "data-model",
+        "jpa-entity",
+        "database",
+        "inventory"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/enums/PurchaseOrderStatus.java",
+      "type": "file",
+      "name": "PurchaseOrderStatus.java",
+      "filePath": "src/main/java/org/akira/ladux/model/enums/PurchaseOrderStatus.java",
+      "summary": "Enumerates the lifecycle states used by purchase orders from draft through ordered, partially received, received, and cancelled.",
+      "tags": [
+        "data-model",
+        "enum",
+        "domain-state",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/enums/PurchaseOrderStatus.java:PurchaseOrderStatus",
+      "type": "class",
+      "name": "PurchaseOrderStatus",
+      "filePath": "src/main/java/org/akira/ladux/model/enums/PurchaseOrderStatus.java",
+      "lineRange": [
+        3,
+        9
+      ],
+      "summary": "PurchaseOrderStatus defines the allowed domain values used to classify purchase-order or stock-movement state.",
+      "tags": [
+        "data-model",
+        "enum",
+        "domain-state",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/enums/StockMovementType.java",
+      "type": "file",
+      "name": "StockMovementType.java",
+      "filePath": "src/main/java/org/akira/ladux/model/enums/StockMovementType.java",
+      "summary": "Enumerates stock movement categories used by the inventory ledger, covering sales, returns, purchase receipts, adjustments, damage, and corrections.",
+      "tags": [
+        "data-model",
+        "enum",
+        "domain-state",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/enums/StockMovementType.java:StockMovementType",
+      "type": "class",
+      "name": "StockMovementType",
+      "filePath": "src/main/java/org/akira/ladux/model/enums/StockMovementType.java",
+      "lineRange": [
+        3,
+        11
+      ],
+      "summary": "StockMovementType defines the allowed domain values used to classify purchase-order or stock-movement state.",
+      "tags": [
+        "data-model",
+        "enum",
+        "domain-state",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/enums/StockReferenceType.java",
+      "type": "file",
+      "name": "StockReferenceType.java",
+      "filePath": "src/main/java/org/akira/ladux/model/enums/StockReferenceType.java",
+      "summary": "Enumerates the source object types that can be attached to stock movement records, such as orders, purchase orders, and manual adjustments.",
+      "tags": [
+        "data-model",
+        "enum",
+        "domain-state",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/enums/StockReferenceType.java:StockReferenceType",
+      "type": "class",
+      "name": "StockReferenceType",
+      "filePath": "src/main/java/org/akira/ladux/model/enums/StockReferenceType.java",
+      "lineRange": [
+        3,
+        9
+      ],
+      "summary": "StockReferenceType defines the allowed domain values used to classify purchase-order or stock-movement state.",
+      "tags": [
+        "data-model",
+        "enum",
+        "domain-state",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/repository/ProductRepository.java",
+      "type": "file",
+      "name": "ProductRepository.java",
+      "filePath": "src/main/java/org/akira/ladux/repository/ProductRepository.java",
+      "summary": "Defines Spring Data queries for product lookup, filtering, search, category checks, and pessimistic locking. Inventory services use its locked product query for stock-safe updates.",
+      "tags": [
+        "repository",
+        "database",
+        "spring-data",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/repository/ProductRepository.java:ProductRepository",
+      "type": "class",
+      "name": "ProductRepository",
+      "filePath": "src/main/java/org/akira/ladux/repository/ProductRepository.java",
+      "lineRange": [
+        17,
+        53
+      ],
+      "summary": "ProductRepository is a Spring Data repository interface for persistence queries used by inventory workflows.",
+      "tags": [
+        "repository",
+        "spring-data",
+        "database",
+        "inventory"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/PurchaseOrderItem.java",
+      "target": "class:src/main/java/org/akira/ladux/model/PurchaseOrderItem.java:PurchaseOrderItem",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/PurchaseOrderItem.java",
+      "target": "class:src/main/java/org/akira/ladux/model/PurchaseOrderItem.java:PurchaseOrderItem",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/StockMovement.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/StockMovementType.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/StockMovement.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/StockReferenceType.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/StockMovement.java",
+      "target": "class:src/main/java/org/akira/ladux/model/StockMovement.java:StockMovement",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/StockMovement.java",
+      "target": "class:src/main/java/org/akira/ladux/model/StockMovement.java:StockMovement",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/enums/PurchaseOrderStatus.java",
+      "target": "class:src/main/java/org/akira/ladux/model/enums/PurchaseOrderStatus.java:PurchaseOrderStatus",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/enums/PurchaseOrderStatus.java",
+      "target": "class:src/main/java/org/akira/ladux/model/enums/PurchaseOrderStatus.java:PurchaseOrderStatus",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/enums/StockMovementType.java",
+      "target": "class:src/main/java/org/akira/ladux/model/enums/StockMovementType.java:StockMovementType",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/enums/StockMovementType.java",
+      "target": "class:src/main/java/org/akira/ladux/model/enums/StockMovementType.java:StockMovementType",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/enums/StockReferenceType.java",
+      "target": "class:src/main/java/org/akira/ladux/model/enums/StockReferenceType.java:StockReferenceType",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/enums/StockReferenceType.java",
+      "target": "class:src/main/java/org/akira/ladux/model/enums/StockReferenceType.java:StockReferenceType",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/ProductRepository.java",
+      "target": "file:src/main/java/org/akira/ladux/model/Product.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/ProductRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/ProductRepository.java:ProductRepository",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/ProductRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/ProductRepository.java:ProductRepository",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    }
+  ]
+}

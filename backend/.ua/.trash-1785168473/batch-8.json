@@ -1,0 +1,1396 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "type": "file",
+      "name": "AdminOrderItemController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "summary": "Exposes admin-only order item endpoints for paginated listing, lookup by item id, and lookup by order id through the order item service.",
+      "tags": [
+        "api-handler",
+        "admin-api",
+        "order-items",
+        "pagination"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "type": "file",
+      "name": "AdminProductImageController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "summary": "Exposes admin product image endpoints for adding image URLs, uploading multipart image files, and deleting images for a product.",
+      "tags": [
+        "api-handler",
+        "admin-api",
+        "product-images",
+        "upload"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/user/ProductImageController.java",
+      "type": "file",
+      "name": "ProductImageController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/ProductImageController.java",
+      "summary": "Provides the public product image endpoint that returns all images associated with a product.",
+      "tags": [
+        "api-handler",
+        "public-api",
+        "product-images",
+        "catalog"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java",
+      "type": "file",
+      "name": "OrderItemResponse.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java",
+      "summary": "Defines the serializable order item response projection and maps order item entities into API-safe response records.",
+      "tags": [
+        "data-transfer",
+        "serialization",
+        "order-items",
+        "mapper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java",
+      "type": "file",
+      "name": "ProductImageResponse.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java",
+      "summary": "Defines the serializable product image response projection and maps product image entities to id and image URL values.",
+      "tags": [
+        "data-transfer",
+        "serialization",
+        "product-images",
+        "mapper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+      "type": "file",
+      "name": "ResourceNotFoundException.java",
+      "filePath": "src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+      "summary": "Defines the shared runtime exception used when requested domain resources cannot be found.",
+      "tags": [
+        "exception",
+        "error-handling",
+        "domain-error",
+        "shared"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/OrderItem.java",
+      "type": "file",
+      "name": "OrderItem.java",
+      "filePath": "src/main/java/org/akira/ladux/model/OrderItem.java",
+      "summary": "Models the order_items JPA entity with lazy links to an order and product variant plus purchase quantity and captured price.",
+      "tags": [
+        "data-model",
+        "jpa-entity",
+        "order-items",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/ProductImage.java",
+      "type": "file",
+      "name": "ProductImage.java",
+      "filePath": "src/main/java/org/akira/ladux/model/ProductImage.java",
+      "summary": "Models secondary product images as a JPA entity linked to products, with lifecycle hooks forcing image records to non-primary status.",
+      "tags": [
+        "data-model",
+        "jpa-entity",
+        "product-images",
+        "lifecycle-hook"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/repository/OrderItemRepository.java",
+      "type": "file",
+      "name": "OrderItemRepository.java",
+      "filePath": "src/main/java/org/akira/ladux/repository/OrderItemRepository.java",
+      "summary": "Provides Spring Data JPA access to order items with entity graphs for eager order and product loading in list, lookup, and order-scoped queries.",
+      "tags": [
+        "repository",
+        "spring-data",
+        "order-items",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/repository/ProductImageRepository.java",
+      "type": "file",
+      "name": "ProductImageRepository.java",
+      "filePath": "src/main/java/org/akira/ladux/repository/ProductImageRepository.java",
+      "summary": "Provides Spring Data JPA access to product image records, including lookup by owning product id.",
+      "tags": [
+        "repository",
+        "spring-data",
+        "product-images",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/service/OrderItemService.java",
+      "type": "file",
+      "name": "OrderItemService.java",
+      "filePath": "src/main/java/org/akira/ladux/service/OrderItemService.java",
+      "summary": "Declares the order item service contract for paginated admin listing, single item lookup, and order-scoped lookup.",
+      "tags": [
+        "service-contract",
+        "order-items",
+        "pagination",
+        "api-boundary"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/service/ProductImageService.java",
+      "type": "file",
+      "name": "ProductImageService.java",
+      "filePath": "src/main/java/org/akira/ladux/service/ProductImageService.java",
+      "summary": "Declares the product image service contract for reading, adding URL-based images, uploading files, and deleting product images.",
+      "tags": [
+        "service-contract",
+        "product-images",
+        "upload",
+        "api-boundary"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "type": "file",
+      "name": "OrderItemServiceImpl.java",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "summary": "Implements cached read-only order item queries, mapping repository results to order item response DTOs and raising not-found errors for missing ids.",
+      "tags": [
+        "service",
+        "order-items",
+        "caching",
+        "pagination"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "type": "file",
+      "name": "ProductImageServiceImpl.java",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "summary": "Implements product image reads and mutations with cache eviction, product validation, file storage integration, thumbnail assignment, and local-file cleanup on deletion.",
+      "tags": [
+        "service",
+        "product-images",
+        "upload",
+        "caching",
+        "file-storage"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses Spring caching annotations with transactional service methods and a value-injected upload directory."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java:AdminOrderItemController",
+      "type": "class",
+      "name": "AdminOrderItemController",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "lineRange": [
+        15,
+        38
+      ],
+      "summary": "Handles admin REST requests for order item listing and lookup operations.",
+      "tags": [
+        "api-handler",
+        "spring-web",
+        "controller"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java:getAllOrderItems",
+      "type": "function",
+      "name": "getAllOrderItems",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "lineRange": [
+        21,
+        25
+      ],
+      "summary": "Returns a paginated collection of order item response DTOs.",
+      "tags": [
+        "endpoint-method",
+        "spring-web",
+        "api-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java:getOrderItemById",
+      "type": "function",
+      "name": "getOrderItemById",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "lineRange": [
+        27,
+        31
+      ],
+      "summary": "Returns one order item response by id or raises a not-found exception.",
+      "tags": [
+        "endpoint-method",
+        "spring-web",
+        "api-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java:getOrderItemsByOrderId",
+      "type": "function",
+      "name": "getOrderItemsByOrderId",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "lineRange": [
+        33,
+        37
+      ],
+      "summary": "Returns paginated order item responses for a specific order id.",
+      "tags": [
+        "endpoint-method",
+        "spring-web",
+        "api-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java:AdminProductImageController",
+      "type": "class",
+      "name": "AdminProductImageController",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "lineRange": [
+        19,
+        51
+      ],
+      "summary": "Handles admin REST requests for creating, uploading, and deleting product image resources.",
+      "tags": [
+        "api-handler",
+        "spring-web",
+        "controller"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java:addSecondaryImages",
+      "type": "function",
+      "name": "addSecondaryImages",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "lineRange": [
+        26,
+        34
+      ],
+      "summary": "Adds secondary product image URLs for a product through the admin API.",
+      "tags": [
+        "endpoint-method",
+        "spring-web",
+        "api-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java:uploadProductImage",
+      "type": "function",
+      "name": "uploadProductImage",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "lineRange": [
+        36,
+        43
+      ],
+      "summary": "Uploads multipart product image files and returns created image responses.",
+      "tags": [
+        "endpoint-method",
+        "spring-web",
+        "api-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java:deleteProductImageById",
+      "type": "function",
+      "name": "deleteProductImageById",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "lineRange": [
+        45,
+        50
+      ],
+      "summary": "Deletes a product image for a product and returns an empty success response.",
+      "tags": [
+        "endpoint-method",
+        "spring-web",
+        "api-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/user/ProductImageController.java:ProductImageController",
+      "type": "class",
+      "name": "ProductImageController",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/ProductImageController.java",
+      "lineRange": [
+        15,
+        26
+      ],
+      "summary": "Handles public REST requests for retrieving product images by product id.",
+      "tags": [
+        "api-handler",
+        "spring-web",
+        "controller"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/ProductImageController.java:getProductImagesByProductId",
+      "type": "function",
+      "name": "getProductImagesByProductId",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/ProductImageController.java",
+      "lineRange": [
+        22,
+        25
+      ],
+      "summary": "Returns all image responses associated with a product id.",
+      "tags": [
+        "endpoint-method",
+        "spring-web",
+        "api-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java:OrderItemResponse",
+      "type": "class",
+      "name": "OrderItemResponse",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java",
+      "lineRange": [
+        7,
+        26
+      ],
+      "summary": "Serializable response record representing the exposed order item fields returned by APIs.",
+      "tags": [
+        "data-transfer",
+        "serialization",
+        "record"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java:fromEntity",
+      "type": "function",
+      "name": "fromEntity",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java",
+      "lineRange": [
+        14,
+        25
+      ],
+      "summary": "Maps a domain entity instance into its response record representation.",
+      "tags": [
+        "mapper",
+        "serialization",
+        "data-transfer"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java:ProductImageResponse",
+      "type": "class",
+      "name": "ProductImageResponse",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java",
+      "lineRange": [
+        7,
+        20
+      ],
+      "summary": "Serializable response record representing a product image id and URL.",
+      "tags": [
+        "data-transfer",
+        "serialization",
+        "record"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java:fromEntity",
+      "type": "function",
+      "name": "fromEntity",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java",
+      "lineRange": [
+        11,
+        19
+      ],
+      "summary": "Maps a domain entity instance into its response record representation.",
+      "tags": [
+        "mapper",
+        "serialization",
+        "data-transfer"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java:ResourceNotFoundException",
+      "type": "class",
+      "name": "ResourceNotFoundException",
+      "filePath": "src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+      "lineRange": [
+        3,
+        7
+      ],
+      "summary": "Runtime exception class for missing resources in service-layer workflows.",
+      "tags": [
+        "exception",
+        "error-handling",
+        "runtime"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java:ResourceNotFoundException",
+      "type": "function",
+      "name": "ResourceNotFoundException",
+      "filePath": "src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+      "lineRange": [
+        4,
+        6
+      ],
+      "summary": "Constructs a not-found exception with the supplied message.",
+      "tags": [
+        "constructor",
+        "exception",
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/OrderItem.java:OrderItem",
+      "type": "class",
+      "name": "OrderItem",
+      "filePath": "src/main/java/org/akira/ladux/model/OrderItem.java",
+      "lineRange": [
+        8,
+        37
+      ],
+      "summary": "JPA entity class for persisted order line items and their relationships to orders and product variants.",
+      "tags": [
+        "data-model",
+        "jpa-entity",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/ProductImage.java:ProductImage",
+      "type": "class",
+      "name": "ProductImage",
+      "filePath": "src/main/java/org/akira/ladux/model/ProductImage.java",
+      "lineRange": [
+        6,
+        36
+      ],
+      "summary": "JPA entity class for secondary product image records associated with products.",
+      "tags": [
+        "data-model",
+        "jpa-entity",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/repository/OrderItemRepository.java:OrderItemRepository",
+      "type": "class",
+      "name": "OrderItemRepository",
+      "filePath": "src/main/java/org/akira/ladux/repository/OrderItemRepository.java",
+      "lineRange": [
+        12,
+        23
+      ],
+      "summary": "Spring Data repository interface for order item persistence and entity-graph-backed queries.",
+      "tags": [
+        "repository",
+        "spring-data",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/repository/ProductImageRepository.java:ProductImageRepository",
+      "type": "class",
+      "name": "ProductImageRepository",
+      "filePath": "src/main/java/org/akira/ladux/repository/ProductImageRepository.java",
+      "lineRange": [
+        9,
+        11
+      ],
+      "summary": "Spring Data repository interface for product image persistence and product-scoped lookup.",
+      "tags": [
+        "repository",
+        "spring-data",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/service/OrderItemService.java:OrderItemService",
+      "type": "class",
+      "name": "OrderItemService",
+      "filePath": "src/main/java/org/akira/ladux/service/OrderItemService.java",
+      "lineRange": [
+        7,
+        13
+      ],
+      "summary": "Service contract for order item retrieval operations.",
+      "tags": [
+        "service-contract",
+        "interface",
+        "api-boundary"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/service/ProductImageService.java:ProductImageService",
+      "type": "class",
+      "name": "ProductImageService",
+      "filePath": "src/main/java/org/akira/ladux/service/ProductImageService.java",
+      "lineRange": [
+        8,
+        16
+      ],
+      "summary": "Service contract for product image retrieval and mutation operations.",
+      "tags": [
+        "service-contract",
+        "interface",
+        "api-boundary"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:OrderItemServiceImpl",
+      "type": "class",
+      "name": "OrderItemServiceImpl",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "lineRange": [
+        14,
+        43
+      ],
+      "summary": "Service implementation for cached order item retrieval and DTO mapping.",
+      "tags": [
+        "service",
+        "implementation",
+        "business-logic"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:getAllOrderItems",
+      "type": "function",
+      "name": "getAllOrderItems",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "lineRange": [
+        19,
+        25
+      ],
+      "summary": "Returns a paginated collection of order item response DTOs.",
+      "tags": [
+        "service-method",
+        "business-logic",
+        "transactional"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:getOrderItemById",
+      "type": "function",
+      "name": "getOrderItemById",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "lineRange": [
+        27,
+        33
+      ],
+      "summary": "Returns one order item response by id or raises a not-found exception.",
+      "tags": [
+        "service-method",
+        "business-logic",
+        "transactional"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:getOrderItemsByOrderId",
+      "type": "function",
+      "name": "getOrderItemsByOrderId",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "lineRange": [
+        35,
+        41
+      ],
+      "summary": "Returns paginated order item responses for a specific order id.",
+      "tags": [
+        "service-method",
+        "business-logic",
+        "transactional"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:ProductImageServiceImpl",
+      "type": "class",
+      "name": "ProductImageServiceImpl",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "lineRange": [
+        24,
+        112
+      ],
+      "summary": "Service implementation for product image storage, upload handling, deletion, and cache invalidation.",
+      "tags": [
+        "service",
+        "implementation",
+        "business-logic"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:getProductImagesByProductId",
+      "type": "function",
+      "name": "getProductImagesByProductId",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "lineRange": [
+        34,
+        41
+      ],
+      "summary": "Returns all image responses associated with a product id.",
+      "tags": [
+        "service-method",
+        "business-logic",
+        "transactional"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:addImages",
+      "type": "function",
+      "name": "addImages",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "lineRange": [
+        43,
+        64
+      ],
+      "summary": "Creates secondary product image records from supplied image URLs.",
+      "tags": [
+        "service-method",
+        "business-logic",
+        "transactional"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:uploadImage",
+      "type": "function",
+      "name": "uploadImage",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "lineRange": [
+        66,
+        94
+      ],
+      "summary": "Stores uploaded image files, persists image records, and assigns the first thumbnail when needed.",
+      "tags": [
+        "service-method",
+        "business-logic",
+        "transactional"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:deleteProductImageById",
+      "type": "function",
+      "name": "deleteProductImageById",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "lineRange": [
+        96,
+        111
+      ],
+      "summary": "Deletes a product image for a product and returns an empty success response.",
+      "tags": [
+        "service-method",
+        "business-logic",
+        "transactional"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java:AdminOrderItemController",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java:AdminOrderItemController",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java:getAllOrderItems",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java:getAllOrderItems",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java:getOrderItemById",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java:getOrderItemById",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java:getOrderItemsByOrderId",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java:getOrderItemsByOrderId",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java:AdminProductImageController",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java:AdminProductImageController",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java:addSecondaryImages",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java:addSecondaryImages",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java:uploadProductImage",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java:uploadProductImage",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java:deleteProductImageById",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java:deleteProductImageById",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ProductImageController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/ProductImageController.java:ProductImageController",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ProductImageController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/ProductImageController.java:ProductImageController",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ProductImageController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/ProductImageController.java:getProductImagesByProductId",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ProductImageController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/ProductImageController.java:getProductImagesByProductId",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java:OrderItemResponse",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java:OrderItemResponse",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java:fromEntity",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java:fromEntity",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java:ProductImageResponse",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java:ProductImageResponse",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java:fromEntity",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java:fromEntity",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+      "target": "class:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java:ResourceNotFoundException",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+      "target": "class:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java:ResourceNotFoundException",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+      "target": "function:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java:ResourceNotFoundException",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+      "target": "function:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java:ResourceNotFoundException",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/OrderItem.java",
+      "target": "class:src/main/java/org/akira/ladux/model/OrderItem.java:OrderItem",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/OrderItem.java",
+      "target": "class:src/main/java/org/akira/ladux/model/OrderItem.java:OrderItem",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/ProductImage.java",
+      "target": "class:src/main/java/org/akira/ladux/model/ProductImage.java:ProductImage",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/ProductImage.java",
+      "target": "class:src/main/java/org/akira/ladux/model/ProductImage.java:ProductImage",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/OrderItemRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/OrderItemRepository.java:OrderItemRepository",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/OrderItemRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/OrderItemRepository.java:OrderItemRepository",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/ProductImageRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/ProductImageRepository.java:ProductImageRepository",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/ProductImageRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/ProductImageRepository.java:ProductImageRepository",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/OrderItemService.java",
+      "target": "class:src/main/java/org/akira/ladux/service/OrderItemService.java:OrderItemService",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/OrderItemService.java",
+      "target": "class:src/main/java/org/akira/ladux/service/OrderItemService.java:OrderItemService",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/ProductImageService.java",
+      "target": "class:src/main/java/org/akira/ladux/service/ProductImageService.java:ProductImageService",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/ProductImageService.java",
+      "target": "class:src/main/java/org/akira/ladux/service/ProductImageService.java:ProductImageService",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "target": "class:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:OrderItemServiceImpl",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "target": "class:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:OrderItemServiceImpl",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:getAllOrderItems",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:getAllOrderItems",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:getOrderItemById",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:getOrderItemById",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:getOrderItemsByOrderId",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:getOrderItemsByOrderId",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "class:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:ProductImageServiceImpl",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "class:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:ProductImageServiceImpl",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:getProductImagesByProductId",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:getProductImagesByProductId",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:addImages",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:addImages",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:uploadImage",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:uploadImage",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:deleteProductImageById",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:deleteProductImageById",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/OrderItemService.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/ProductImageService.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ProductImageController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ProductImageController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/ProductImageService.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/OrderItem.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/ProductImage.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/OrderItemRepository.java",
+      "target": "file:src/main/java/org/akira/ladux/model/OrderItem.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/ProductImageRepository.java",
+      "target": "file:src/main/java/org/akira/ladux/model/ProductImage.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/OrderItemService.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/ProductImageService.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/repository/OrderItemRepository.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/service/OrderItemService.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/exception/BusinessRuleException.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/model/Product.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/model/ProductImage.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/repository/ProductImageRepository.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/repository/ProductRepository.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/service/FileStorageService.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/service/ProductImageService.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:OrderItemServiceImpl",
+      "target": "class:src/main/java/org/akira/ladux/service/OrderItemService.java:OrderItemService",
+      "type": "implements",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:ProductImageServiceImpl",
+      "target": "class:src/main/java/org/akira/ladux/service/ProductImageService.java:ProductImageService",
+      "type": "implements",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:getAllOrderItems",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java:fromEntity",
+      "type": "calls",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:getOrderItemById",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java:fromEntity",
+      "type": "calls",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java:getOrderItemsByOrderId",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java:fromEntity",
+      "type": "calls",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:getProductImagesByProductId",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java:fromEntity",
+      "type": "calls",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:addImages",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java:fromEntity",
+      "type": "calls",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java:uploadImage",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java:fromEntity",
+      "type": "calls",
+      "weight": 0.8,
+      "direction": "forward"
+    }
+  ]
+}

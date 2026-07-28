@@ -6,6 +6,7 @@ import java.time.Instant;
 import org.akira.ladux.model.StockMovement;
 import org.akira.ladux.model.enums.StockMovementType;
 import org.akira.ladux.model.enums.StockReferenceType;
+import org.aspectj.weaver.ast.Var;
 
 public record StockMovementResponse(
         Integer id,
@@ -14,7 +15,7 @@ public record StockMovementResponse(
         Integer quantity,
         StockMovementType movementType,
         StockReferenceType referenceType,
-        Long referenceId,
+        Integer referenceId,
         String note,
         Integer createdById,
         Instant createdAt
@@ -25,8 +26,8 @@ public record StockMovementResponse(
         }
         return new StockMovementResponse(
                 m.getId(),
-                m.getProduct() == null ? null : m.getProduct().getId(),
-                m.getProduct() == null ? null : m.getProduct().getName(),
+                m.getProductVariant() == null ? null : m.getProductVariant().getId(),
+                m.getProductVariant() == null ? null : m.getProductVariant().getProduct().getName(),
                 m.getQuantity(),
                 m.getMovementType(),
                 m.getReferenceType(),

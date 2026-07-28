@@ -1,0 +1,3250 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 18,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 18,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 18,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "src/main/java/org/akira/ladux/model/Wishlist.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 30,
+      "nonEmptyLines": 25,
+      "classes": [
+        {
+          "name": "Wishlist",
+          "startLine": 6,
+          "endLine": 30,
+          "methods": [],
+          "properties": [
+            "id",
+            "user",
+            "product"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Wishlist",
+          "line": 6,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/model/enums/RoleName.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 8,
+      "nonEmptyLines": 7,
+      "classes": [
+        {
+          "name": "RoleName",
+          "startLine": 3,
+          "endLine": 8,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "RoleName",
+          "line": 3,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/repository/RefreshTokenRepository.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 21,
+      "nonEmptyLines": 16,
+      "classes": [
+        {
+          "name": "RefreshTokenRepository",
+          "startLine": 12,
+          "endLine": 21,
+          "methods": [
+            "findByToken",
+            "revokeAllByUserId"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "RefreshTokenRepository",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/repository/RoleRepository.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 11,
+      "nonEmptyLines": 8,
+      "classes": [
+        {
+          "name": "RoleRepository",
+          "startLine": 8,
+          "endLine": 10,
+          "methods": [
+            "findByName"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "RoleRepository",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/repository/UserRepository.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 51,
+      "nonEmptyLines": 37,
+      "classes": [
+        {
+          "name": "UserRepository",
+          "startLine": 17,
+          "endLine": 51,
+          "methods": [
+            "findByEmail",
+            "findAll",
+            "findById",
+            "findByIsActiveTrue",
+            "findByIdForUpdate",
+            "findByUsername",
+            "existsByEmail",
+            "existsByUsername",
+            "existsByEmailAndIdNot",
+            "existsByUsernameAndIdNot",
+            "incrementTokenVersion"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "UserRepository",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/repository/WishlistRepository.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 21,
+      "nonEmptyLines": 14,
+      "classes": [
+        {
+          "name": "WishlistRepository",
+          "startLine": 9,
+          "endLine": 20,
+          "methods": [
+            "findByUserId",
+            "findByProductId",
+            "existsByUserIdAndProductId",
+            "findByUserIdAndProductId"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "WishlistRepository",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 77,
+      "nonEmptyLines": 65,
+      "functions": [
+        {
+          "name": "AuthCookieService",
+          "startLine": 26,
+          "endLine": 44,
+          "params": [
+            "accessCookieName",
+            "refreshCookieName",
+            "accessCookiePath",
+            "refreshCookiePath",
+            "sameSite",
+            "secure",
+            "accessExpirationMs",
+            "refreshExpirationMs"
+          ]
+        },
+        {
+          "name": "accessCookieName",
+          "startLine": 46,
+          "endLine": 48,
+          "params": []
+        },
+        {
+          "name": "refreshCookieName",
+          "startLine": 50,
+          "endLine": 52,
+          "params": []
+        },
+        {
+          "name": "createAccessCookie",
+          "startLine": 54,
+          "endLine": 56,
+          "params": [
+            "token"
+          ]
+        },
+        {
+          "name": "clearAccessCookie",
+          "startLine": 58,
+          "endLine": 60,
+          "params": []
+        },
+        {
+          "name": "createRefreshCookie",
+          "startLine": 62,
+          "endLine": 64,
+          "params": [
+            "token"
+          ]
+        },
+        {
+          "name": "clearRefreshCookie",
+          "startLine": 66,
+          "endLine": 68,
+          "params": []
+        },
+        {
+          "name": "baseCookie",
+          "startLine": 70,
+          "endLine": 76,
+          "params": [
+            "name",
+            "value",
+            "path"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AuthCookieService",
+          "startLine": 14,
+          "endLine": 77,
+          "methods": [
+            "AuthCookieService",
+            "accessCookieName",
+            "refreshCookieName",
+            "createAccessCookie",
+            "clearAccessCookie",
+            "createRefreshCookie",
+            "clearRefreshCookie",
+            "baseCookie"
+          ],
+          "properties": [
+            "accessCookieName",
+            "refreshCookieName",
+            "accessCookiePath",
+            "refreshCookiePath",
+            "sameSite",
+            "secure",
+            "accessMaxAge",
+            "refreshMaxAge"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "AuthCookieService",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "accessCookieName",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "refreshCookieName",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "createAccessCookie",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "clearAccessCookie",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "createRefreshCookie",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "clearRefreshCookie",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "AuthCookieService",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "AuthCookieService",
+          "callee": "Duration.ofMillis",
+          "lineNumber": 42
+        },
+        {
+          "caller": "AuthCookieService",
+          "callee": "Duration.ofMillis",
+          "lineNumber": 43
+        },
+        {
+          "caller": "createAccessCookie",
+          "callee": "baseCookie(accessCookieName, token, accessCookiePath).maxAge(accessMaxAge).build",
+          "lineNumber": 55
+        },
+        {
+          "caller": "createAccessCookie",
+          "callee": "baseCookie(accessCookieName, token, accessCookiePath).maxAge",
+          "lineNumber": 55
+        },
+        {
+          "caller": "createAccessCookie",
+          "callee": "baseCookie",
+          "lineNumber": 55
+        },
+        {
+          "caller": "clearAccessCookie",
+          "callee": "baseCookie(accessCookieName, \"\", accessCookiePath).maxAge(Duration.ZERO).build",
+          "lineNumber": 59
+        },
+        {
+          "caller": "clearAccessCookie",
+          "callee": "baseCookie(accessCookieName, \"\", accessCookiePath).maxAge",
+          "lineNumber": 59
+        },
+        {
+          "caller": "clearAccessCookie",
+          "callee": "baseCookie",
+          "lineNumber": 59
+        },
+        {
+          "caller": "createRefreshCookie",
+          "callee": "baseCookie(refreshCookieName, token, refreshCookiePath).maxAge(refreshMaxAge).build",
+          "lineNumber": 63
+        },
+        {
+          "caller": "createRefreshCookie",
+          "callee": "baseCookie(refreshCookieName, token, refreshCookiePath).maxAge",
+          "lineNumber": 63
+        },
+        {
+          "caller": "createRefreshCookie",
+          "callee": "baseCookie",
+          "lineNumber": 63
+        },
+        {
+          "caller": "clearRefreshCookie",
+          "callee": "baseCookie(refreshCookieName, \"\", refreshCookiePath).maxAge(Duration.ZERO).build",
+          "lineNumber": 67
+        },
+        {
+          "caller": "clearRefreshCookie",
+          "callee": "baseCookie(refreshCookieName, \"\", refreshCookiePath).maxAge",
+          "lineNumber": 67
+        },
+        {
+          "caller": "clearRefreshCookie",
+          "callee": "baseCookie",
+          "lineNumber": 67
+        },
+        {
+          "caller": "baseCookie",
+          "callee": "ResponseCookie.from(name, value)\r\n                .httpOnly(true)\r\n                .secure(secure)\r\n                .path(path).sameSite",
+          "lineNumber": 71
+        },
+        {
+          "caller": "baseCookie",
+          "callee": "ResponseCookie.from(name, value)\r\n                .httpOnly(true)\r\n                .secure(secure).path",
+          "lineNumber": 71
+        },
+        {
+          "caller": "baseCookie",
+          "callee": "ResponseCookie.from(name, value)\r\n                .httpOnly(true).secure",
+          "lineNumber": 71
+        },
+        {
+          "caller": "baseCookie",
+          "callee": "ResponseCookie.from(name, value).httpOnly",
+          "lineNumber": 71
+        },
+        {
+          "caller": "baseCookie",
+          "callee": "ResponseCookie.from",
+          "lineNumber": 71
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 8,
+        "functionCount": 8,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/FileStorageService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 22,
+      "nonEmptyLines": 18,
+      "classes": [
+        {
+          "name": "FileStorageService",
+          "startLine": 9,
+          "endLine": 22,
+          "methods": [
+            "store",
+            "deleteIfLocal"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "FileStorageService",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/JwtService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 95,
+      "nonEmptyLines": 81,
+      "functions": [
+        {
+          "name": "generateAccessToken",
+          "startLine": 35,
+          "endLine": 49,
+          "params": [
+            "user"
+          ]
+        },
+        {
+          "name": "extractUsername",
+          "startLine": 51,
+          "endLine": 53,
+          "params": [
+            "jwt"
+          ]
+        },
+        {
+          "name": "extractTokenVersion",
+          "startLine": 56,
+          "endLine": 58,
+          "params": [
+            "jwt"
+          ]
+        },
+        {
+          "name": "isTokenValid",
+          "startLine": 60,
+          "endLine": 66,
+          "params": [
+            "jwt",
+            "userDetails"
+          ]
+        },
+        {
+          "name": "parseClaims",
+          "startLine": 68,
+          "endLine": 74,
+          "params": [
+            "jwt"
+          ]
+        },
+        {
+          "name": "getKey",
+          "startLine": 76,
+          "endLine": 78,
+          "params": []
+        },
+        {
+          "name": "resolveKeyBytes",
+          "startLine": 80,
+          "endLine": 94,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "JwtService",
+          "startLine": 26,
+          "endLine": 95,
+          "methods": [
+            "generateAccessToken",
+            "extractUsername",
+            "extractTokenVersion",
+            "isTokenValid",
+            "parseClaims",
+            "getKey",
+            "resolveKeyBytes"
+          ],
+          "properties": [
+            "secret",
+            "accessExpirationMs"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "generateAccessToken",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "extractUsername",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "extractTokenVersion",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "isTokenValid",
+          "line": 60,
+          "isDefault": false
+        },
+        {
+          "name": "JwtService",
+          "line": 26,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "generateAccessToken",
+          "callee": "Jwts.builder()\r\n                .subject(user.getUsername())\r\n                .claim(\"userId\", user.getId())\r\n                .claim(\"roles\", user.getRoles().stream()\r\n                        .map(r -> r.getName().name())\r\n                        .toList())\r\n                .claim(\"type\", \"access\")\r\n                .claim(\"tokenVersion\", user.getTokenVersion())\r\n                .id(UUID.randomUUID().toString()) // jti\r\n                .issuedAt(new Date())\r\n                .expiration(new Date(System.currentTimeMillis() + accessExpirationMs))\r\n                .signWith(getKey()).compact",
+          "lineNumber": 36
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "Jwts.builder()\r\n                .subject(user.getUsername())\r\n                .claim(\"userId\", user.getId())\r\n                .claim(\"roles\", user.getRoles().stream()\r\n                        .map(r -> r.getName().name())\r\n                        .toList())\r\n                .claim(\"type\", \"access\")\r\n                .claim(\"tokenVersion\", user.getTokenVersion())\r\n                .id(UUID.randomUUID().toString()) // jti\r\n                .issuedAt(new Date())\r\n                .expiration(new Date(System.currentTimeMillis() + accessExpirationMs)).signWith",
+          "lineNumber": 36
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "Jwts.builder()\r\n                .subject(user.getUsername())\r\n                .claim(\"userId\", user.getId())\r\n                .claim(\"roles\", user.getRoles().stream()\r\n                        .map(r -> r.getName().name())\r\n                        .toList())\r\n                .claim(\"type\", \"access\")\r\n                .claim(\"tokenVersion\", user.getTokenVersion())\r\n                .id(UUID.randomUUID().toString()) // jti\r\n                .issuedAt(new Date()).expiration",
+          "lineNumber": 36
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "Jwts.builder()\r\n                .subject(user.getUsername())\r\n                .claim(\"userId\", user.getId())\r\n                .claim(\"roles\", user.getRoles().stream()\r\n                        .map(r -> r.getName().name())\r\n                        .toList())\r\n                .claim(\"type\", \"access\")\r\n                .claim(\"tokenVersion\", user.getTokenVersion())\r\n                .id(UUID.randomUUID().toString()).issuedAt",
+          "lineNumber": 36
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "Jwts.builder()\r\n                .subject(user.getUsername())\r\n                .claim(\"userId\", user.getId())\r\n                .claim(\"roles\", user.getRoles().stream()\r\n                        .map(r -> r.getName().name())\r\n                        .toList())\r\n                .claim(\"type\", \"access\")\r\n                .claim(\"tokenVersion\", user.getTokenVersion()).id",
+          "lineNumber": 36
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "Jwts.builder()\r\n                .subject(user.getUsername())\r\n                .claim(\"userId\", user.getId())\r\n                .claim(\"roles\", user.getRoles().stream()\r\n                        .map(r -> r.getName().name())\r\n                        .toList())\r\n                .claim(\"type\", \"access\").claim",
+          "lineNumber": 36
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "Jwts.builder()\r\n                .subject(user.getUsername())\r\n                .claim(\"userId\", user.getId())\r\n                .claim(\"roles\", user.getRoles().stream()\r\n                        .map(r -> r.getName().name())\r\n                        .toList()).claim",
+          "lineNumber": 36
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "Jwts.builder()\r\n                .subject(user.getUsername())\r\n                .claim(\"userId\", user.getId()).claim",
+          "lineNumber": 36
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "Jwts.builder()\r\n                .subject(user.getUsername()).claim",
+          "lineNumber": 36
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "Jwts.builder().subject",
+          "lineNumber": 36
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "Jwts.builder",
+          "lineNumber": 36
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "user.getUsername",
+          "lineNumber": 37
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "user.getId",
+          "lineNumber": 38
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "user.getRoles().stream()\r\n                        .map(r -> r.getName().name()).toList",
+          "lineNumber": 39
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "user.getRoles().stream().map",
+          "lineNumber": 39
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "user.getRoles().stream",
+          "lineNumber": 39
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "user.getRoles",
+          "lineNumber": 39
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "r.getName().name",
+          "lineNumber": 40
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "r.getName",
+          "lineNumber": 40
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "user.getTokenVersion",
+          "lineNumber": 43
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "UUID.randomUUID().toString",
+          "lineNumber": 44
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "UUID.randomUUID",
+          "lineNumber": 44
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "new Date",
+          "lineNumber": 45
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "new Date",
+          "lineNumber": 46
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "System.currentTimeMillis",
+          "lineNumber": 46
+        },
+        {
+          "caller": "generateAccessToken",
+          "callee": "getKey",
+          "lineNumber": 47
+        },
+        {
+          "caller": "extractUsername",
+          "callee": "parseClaims(jwt).getSubject",
+          "lineNumber": 52
+        },
+        {
+          "caller": "extractUsername",
+          "callee": "parseClaims",
+          "lineNumber": 52
+        },
+        {
+          "caller": "extractTokenVersion",
+          "callee": "parseClaims(jwt).get",
+          "lineNumber": 57
+        },
+        {
+          "caller": "extractTokenVersion",
+          "callee": "parseClaims",
+          "lineNumber": 57
+        },
+        {
+          "caller": "isTokenValid",
+          "callee": "parseClaims",
+          "lineNumber": 61
+        },
+        {
+          "caller": "isTokenValid",
+          "callee": "\"access\".equals",
+          "lineNumber": 62
+        },
+        {
+          "caller": "isTokenValid",
+          "callee": "claims.get",
+          "lineNumber": 62
+        },
+        {
+          "caller": "isTokenValid",
+          "callee": "claims.getSubject().equals",
+          "lineNumber": 64
+        },
+        {
+          "caller": "isTokenValid",
+          "callee": "claims.getSubject",
+          "lineNumber": 64
+        },
+        {
+          "caller": "isTokenValid",
+          "callee": "userDetails.getUsername",
+          "lineNumber": 64
+        },
+        {
+          "caller": "isTokenValid",
+          "callee": "claims.getExpiration().after",
+          "lineNumber": 65
+        },
+        {
+          "caller": "isTokenValid",
+          "callee": "claims.getExpiration",
+          "lineNumber": 65
+        },
+        {
+          "caller": "isTokenValid",
+          "callee": "new Date",
+          "lineNumber": 65
+        },
+        {
+          "caller": "parseClaims",
+          "callee": "Jwts.parser()\r\n                .verifyWith(getKey())\r\n                .build()\r\n                .parseSignedClaims(jwt).getPayload",
+          "lineNumber": 69
+        },
+        {
+          "caller": "parseClaims",
+          "callee": "Jwts.parser()\r\n                .verifyWith(getKey())\r\n                .build().parseSignedClaims",
+          "lineNumber": 69
+        },
+        {
+          "caller": "parseClaims",
+          "callee": "Jwts.parser()\r\n                .verifyWith(getKey()).build",
+          "lineNumber": 69
+        },
+        {
+          "caller": "parseClaims",
+          "callee": "Jwts.parser().verifyWith",
+          "lineNumber": 69
+        },
+        {
+          "caller": "parseClaims",
+          "callee": "Jwts.parser",
+          "lineNumber": 69
+        },
+        {
+          "caller": "parseClaims",
+          "callee": "getKey",
+          "lineNumber": 70
+        },
+        {
+          "caller": "getKey",
+          "callee": "Keys.hmacShaKeyFor",
+          "lineNumber": 77
+        },
+        {
+          "caller": "getKey",
+          "callee": "resolveKeyBytes",
+          "lineNumber": 77
+        },
+        {
+          "caller": "resolveKeyBytes",
+          "callee": "Decoders.BASE64.decode",
+          "lineNumber": 82
+        },
+        {
+          "caller": "resolveKeyBytes",
+          "callee": "MessageDigest.getInstance(\"SHA-256\").digest",
+          "lineNumber": 90
+        },
+        {
+          "caller": "resolveKeyBytes",
+          "callee": "MessageDigest.getInstance",
+          "lineNumber": 90
+        },
+        {
+          "caller": "resolveKeyBytes",
+          "callee": "secret.getBytes",
+          "lineNumber": 90
+        },
+        {
+          "caller": "resolveKeyBytes",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 92
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 5,
+        "functionCount": 7,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/MyUserDetailsService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 26,
+      "nonEmptyLines": 23,
+      "functions": [
+        {
+          "name": "loadUserByUsername",
+          "startLine": 19,
+          "endLine": 25,
+          "params": [
+            "username"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "MyUserDetailsService",
+          "startLine": 14,
+          "endLine": 26,
+          "methods": [
+            "loadUserByUsername"
+          ],
+          "properties": [
+            "repo"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "loadUserByUsername",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "MyUserDetailsService",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "loadUserByUsername",
+          "callee": "repo.findByUsername(username).orElseThrow",
+          "lineNumber": 22
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "repo.findByUsername",
+          "lineNumber": 22
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "new UsernameNotFoundException",
+          "lineNumber": 23
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "new UserPrincipal",
+          "lineNumber": 24
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/RefreshTokenService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 105,
+      "nonEmptyLines": 93,
+      "functions": [
+        {
+          "name": "create",
+          "startLine": 37,
+          "endLine": 46,
+          "params": [
+            "user"
+          ]
+        },
+        {
+          "name": "verifyAndRotate",
+          "startLine": 52,
+          "endLine": 64,
+          "params": [
+            "rawToken"
+          ]
+        },
+        {
+          "name": "revoke",
+          "startLine": 66,
+          "endLine": 72,
+          "params": [
+            "rawToken"
+          ]
+        },
+        {
+          "name": "revokeSessionAndBump",
+          "startLine": 79,
+          "endLine": 88,
+          "params": [
+            "rawToken"
+          ]
+        },
+        {
+          "name": "revokeAllRefreshTokens",
+          "startLine": 95,
+          "endLine": 98,
+          "params": [
+            "userId"
+          ]
+        },
+        {
+          "name": "generateOpaqueToken",
+          "startLine": 100,
+          "endLine": 104,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "RefreshTokenService",
+          "startLine": 26,
+          "endLine": 105,
+          "methods": [
+            "create",
+            "verifyAndRotate",
+            "revoke",
+            "revokeSessionAndBump",
+            "revokeAllRefreshTokens",
+            "generateOpaqueToken"
+          ],
+          "properties": [
+            "RANDOM",
+            "repo",
+            "userRepository",
+            "refreshExpirationMs"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "create",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "verifyAndRotate",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "revoke",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "revokeSessionAndBump",
+          "line": 79,
+          "isDefault": false
+        },
+        {
+          "name": "revokeAllRefreshTokens",
+          "line": 95,
+          "isDefault": false
+        },
+        {
+          "name": "RefreshTokenService",
+          "line": 26,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "create",
+          "callee": "RefreshToken.builder()\n                .token(generateOpaqueToken())\n                .user(user)\n                .expiryDate(Instant.now().plusMillis(refreshExpirationMs))\n                .revoked(false).build",
+          "lineNumber": 39
+        },
+        {
+          "caller": "create",
+          "callee": "RefreshToken.builder()\n                .token(generateOpaqueToken())\n                .user(user)\n                .expiryDate(Instant.now().plusMillis(refreshExpirationMs)).revoked",
+          "lineNumber": 39
+        },
+        {
+          "caller": "create",
+          "callee": "RefreshToken.builder()\n                .token(generateOpaqueToken())\n                .user(user).expiryDate",
+          "lineNumber": 39
+        },
+        {
+          "caller": "create",
+          "callee": "RefreshToken.builder()\n                .token(generateOpaqueToken()).user",
+          "lineNumber": 39
+        },
+        {
+          "caller": "create",
+          "callee": "RefreshToken.builder().token",
+          "lineNumber": 39
+        },
+        {
+          "caller": "create",
+          "callee": "RefreshToken.builder",
+          "lineNumber": 39
+        },
+        {
+          "caller": "create",
+          "callee": "generateOpaqueToken",
+          "lineNumber": 40
+        },
+        {
+          "caller": "create",
+          "callee": "Instant.now().plusMillis",
+          "lineNumber": 42
+        },
+        {
+          "caller": "create",
+          "callee": "Instant.now",
+          "lineNumber": 42
+        },
+        {
+          "caller": "create",
+          "callee": "repo.save",
+          "lineNumber": 45
+        },
+        {
+          "caller": "verifyAndRotate",
+          "callee": "rawToken.isBlank",
+          "lineNumber": 54
+        },
+        {
+          "caller": "verifyAndRotate",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 55
+        },
+        {
+          "caller": "verifyAndRotate",
+          "callee": "repo.findByToken(rawToken).orElseThrow",
+          "lineNumber": 57
+        },
+        {
+          "caller": "verifyAndRotate",
+          "callee": "repo.findByToken",
+          "lineNumber": 57
+        },
+        {
+          "caller": "verifyAndRotate",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 58
+        },
+        {
+          "caller": "verifyAndRotate",
+          "callee": "current.isUsable",
+          "lineNumber": 59
+        },
+        {
+          "caller": "verifyAndRotate",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 60
+        },
+        {
+          "caller": "verifyAndRotate",
+          "callee": "current.setRevoked",
+          "lineNumber": 62
+        },
+        {
+          "caller": "verifyAndRotate",
+          "callee": "create",
+          "lineNumber": 63
+        },
+        {
+          "caller": "verifyAndRotate",
+          "callee": "current.getUser",
+          "lineNumber": 63
+        },
+        {
+          "caller": "revoke",
+          "callee": "rawToken.isBlank",
+          "lineNumber": 68
+        },
+        {
+          "caller": "revoke",
+          "callee": "repo.findByToken(rawToken).ifPresent",
+          "lineNumber": 71
+        },
+        {
+          "caller": "revoke",
+          "callee": "repo.findByToken",
+          "lineNumber": 71
+        },
+        {
+          "caller": "revoke",
+          "callee": "token.setRevoked",
+          "lineNumber": 71
+        },
+        {
+          "caller": "revokeSessionAndBump",
+          "callee": "rawToken.isBlank",
+          "lineNumber": 81
+        },
+        {
+          "caller": "revokeSessionAndBump",
+          "callee": "repo.findByToken(rawToken).ifPresent",
+          "lineNumber": 84
+        },
+        {
+          "caller": "revokeSessionAndBump",
+          "callee": "repo.findByToken",
+          "lineNumber": 84
+        },
+        {
+          "caller": "revokeSessionAndBump",
+          "callee": "token.setRevoked",
+          "lineNumber": 85
+        },
+        {
+          "caller": "revokeSessionAndBump",
+          "callee": "userRepository.incrementTokenVersion",
+          "lineNumber": 86
+        },
+        {
+          "caller": "revokeSessionAndBump",
+          "callee": "token.getUser().getId",
+          "lineNumber": 86
+        },
+        {
+          "caller": "revokeSessionAndBump",
+          "callee": "token.getUser",
+          "lineNumber": 86
+        },
+        {
+          "caller": "revokeAllRefreshTokens",
+          "callee": "repo.revokeAllByUserId",
+          "lineNumber": 97
+        },
+        {
+          "caller": "generateOpaqueToken",
+          "callee": "RANDOM.nextBytes",
+          "lineNumber": 102
+        },
+        {
+          "caller": "generateOpaqueToken",
+          "callee": "Base64.getUrlEncoder().withoutPadding().encodeToString",
+          "lineNumber": 103
+        },
+        {
+          "caller": "generateOpaqueToken",
+          "callee": "Base64.getUrlEncoder().withoutPadding",
+          "lineNumber": 103
+        },
+        {
+          "caller": "generateOpaqueToken",
+          "callee": "Base64.getUrlEncoder",
+          "lineNumber": 103
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 6,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/UserService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 31,
+      "nonEmptyLines": 20,
+      "classes": [
+        {
+          "name": "UserService",
+          "startLine": 11,
+          "endLine": 31,
+          "methods": [
+            "getAllUsers",
+            "getUserById",
+            "getUserByEmail",
+            "getActiveUsers",
+            "updateUser",
+            "updateProfile",
+            "updateAvatar",
+            "deleteUserById",
+            "savedUser",
+            "uploadAvatar"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "UserService",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/WishlistService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 13,
+      "nonEmptyLines": 8,
+      "classes": [
+        {
+          "name": "WishlistService",
+          "startLine": 7,
+          "endLine": 13,
+          "methods": [
+            "addItemToWishlist",
+            "getWishlistsByUserId",
+            "removeItemFromWishlist"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "WishlistService",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 95,
+      "nonEmptyLines": 81,
+      "functions": [
+        {
+          "name": "FileStorageServiceImpl",
+          "startLine": 29,
+          "endLine": 31,
+          "params": [
+            "uploadRoot"
+          ]
+        },
+        {
+          "name": "store",
+          "startLine": 33,
+          "endLine": 64,
+          "params": [
+            "subDir",
+            "file"
+          ]
+        },
+        {
+          "name": "deleteIfLocal",
+          "startLine": 66,
+          "endLine": 82,
+          "params": [
+            "publicUrl"
+          ]
+        },
+        {
+          "name": "normalizeSubDir",
+          "startLine": 85,
+          "endLine": 94,
+          "params": [
+            "subDir"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "FileStorageServiceImpl",
+          "startLine": 17,
+          "endLine": 95,
+          "methods": [
+            "FileStorageServiceImpl",
+            "store",
+            "deleteIfLocal",
+            "normalizeSubDir"
+          ],
+          "properties": [
+            "ALLOWED_IMAGE_TYPES",
+            "uploadRoot"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "FileStorageServiceImpl",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "store",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "deleteIfLocal",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "FileStorageServiceImpl",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "store",
+          "callee": "file.isEmpty",
+          "lineNumber": 35
+        },
+        {
+          "caller": "store",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 36
+        },
+        {
+          "caller": "store",
+          "callee": "normalizeSubDir",
+          "lineNumber": 39
+        },
+        {
+          "caller": "store",
+          "callee": "file.getContentType",
+          "lineNumber": 41
+        },
+        {
+          "caller": "store",
+          "callee": "file.getContentType().toLowerCase",
+          "lineNumber": 43
+        },
+        {
+          "caller": "store",
+          "callee": "file.getContentType",
+          "lineNumber": 43
+        },
+        {
+          "caller": "store",
+          "callee": "ALLOWED_IMAGE_TYPES.get",
+          "lineNumber": 44
+        },
+        {
+          "caller": "store",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 46
+        },
+        {
+          "caller": "store",
+          "callee": "UUID.randomUUID",
+          "lineNumber": 49
+        },
+        {
+          "caller": "store",
+          "callee": "Path.of(uploadRoot, safeSubDir).toAbsolutePath().normalize",
+          "lineNumber": 50
+        },
+        {
+          "caller": "store",
+          "callee": "Path.of(uploadRoot, safeSubDir).toAbsolutePath",
+          "lineNumber": 50
+        },
+        {
+          "caller": "store",
+          "callee": "Path.of",
+          "lineNumber": 50
+        },
+        {
+          "caller": "store",
+          "callee": "directory.resolve(filename).normalize",
+          "lineNumber": 51
+        },
+        {
+          "caller": "store",
+          "callee": "directory.resolve",
+          "lineNumber": 51
+        },
+        {
+          "caller": "store",
+          "callee": "target.startsWith",
+          "lineNumber": 52
+        },
+        {
+          "caller": "store",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 53
+        },
+        {
+          "caller": "store",
+          "callee": "Files.createDirectories",
+          "lineNumber": 57
+        },
+        {
+          "caller": "store",
+          "callee": "Files.copy",
+          "lineNumber": 58
+        },
+        {
+          "caller": "store",
+          "callee": "file.getInputStream",
+          "lineNumber": 58
+        },
+        {
+          "caller": "store",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 60
+        },
+        {
+          "caller": "deleteIfLocal",
+          "callee": "publicUrl.isBlank",
+          "lineNumber": 68
+        },
+        {
+          "caller": "deleteIfLocal",
+          "callee": "publicUrl.startsWith",
+          "lineNumber": 68
+        },
+        {
+          "caller": "deleteIfLocal",
+          "callee": "publicUrl.substring",
+          "lineNumber": 71
+        },
+        {
+          "caller": "deleteIfLocal",
+          "callee": "\"/uploads/\".length",
+          "lineNumber": 71
+        },
+        {
+          "caller": "deleteIfLocal",
+          "callee": "Path.of(uploadRoot).toAbsolutePath().normalize",
+          "lineNumber": 72
+        },
+        {
+          "caller": "deleteIfLocal",
+          "callee": "Path.of(uploadRoot).toAbsolutePath",
+          "lineNumber": 72
+        },
+        {
+          "caller": "deleteIfLocal",
+          "callee": "Path.of",
+          "lineNumber": 72
+        },
+        {
+          "caller": "deleteIfLocal",
+          "callee": "uploadDirectory.resolve(relativePath).normalize",
+          "lineNumber": 73
+        },
+        {
+          "caller": "deleteIfLocal",
+          "callee": "uploadDirectory.resolve",
+          "lineNumber": 73
+        },
+        {
+          "caller": "deleteIfLocal",
+          "callee": "storedFile.startsWith",
+          "lineNumber": 74
+        },
+        {
+          "caller": "deleteIfLocal",
+          "callee": "Files.deleteIfExists",
+          "lineNumber": 78
+        },
+        {
+          "caller": "normalizeSubDir",
+          "callee": "subDir.isBlank",
+          "lineNumber": 86
+        },
+        {
+          "caller": "normalizeSubDir",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 87
+        },
+        {
+          "caller": "normalizeSubDir",
+          "callee": "subDir.trim().replace",
+          "lineNumber": 89
+        },
+        {
+          "caller": "normalizeSubDir",
+          "callee": "subDir.trim",
+          "lineNumber": 89
+        },
+        {
+          "caller": "normalizeSubDir",
+          "callee": "trimmed.contains",
+          "lineNumber": 90
+        },
+        {
+          "caller": "normalizeSubDir",
+          "callee": "trimmed.contains",
+          "lineNumber": 90
+        },
+        {
+          "caller": "normalizeSubDir",
+          "callee": "trimmed.startsWith",
+          "lineNumber": 90
+        },
+        {
+          "caller": "normalizeSubDir",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 91
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 4,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/impl/UserServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 259,
+      "nonEmptyLines": 239,
+      "functions": [
+        {
+          "name": "savedUser",
+          "startLine": 51,
+          "endLine": 89,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "getAllUsers",
+          "startLine": 91,
+          "endLine": 97,
+          "params": [
+            "pageable"
+          ]
+        },
+        {
+          "name": "getUserById",
+          "startLine": 99,
+          "endLine": 105,
+          "params": [
+            "id"
+          ]
+        },
+        {
+          "name": "getUserByEmail",
+          "startLine": 107,
+          "endLine": 112,
+          "params": [
+            "email"
+          ]
+        },
+        {
+          "name": "getActiveUsers",
+          "startLine": 114,
+          "endLine": 120,
+          "params": [
+            "pageable"
+          ]
+        },
+        {
+          "name": "updateUser",
+          "startLine": 122,
+          "endLine": 165,
+          "params": [
+            "id",
+            "request"
+          ]
+        },
+        {
+          "name": "updateProfile",
+          "startLine": 167,
+          "endLine": 201,
+          "params": [
+            "id",
+            "request"
+          ]
+        },
+        {
+          "name": "updateAvatar",
+          "startLine": 203,
+          "endLine": 213,
+          "params": [
+            "id",
+            "file"
+          ]
+        },
+        {
+          "name": "uploadAvatar",
+          "startLine": 215,
+          "endLine": 223,
+          "params": [
+            "id",
+            "file"
+          ]
+        },
+        {
+          "name": "deleteUserById",
+          "startLine": 225,
+          "endLine": 230,
+          "params": [
+            "id"
+          ]
+        },
+        {
+          "name": "getOrCreateCustomer",
+          "startLine": 233,
+          "endLine": 245,
+          "params": [
+            "user"
+          ]
+        },
+        {
+          "name": "resolveRoles",
+          "startLine": 247,
+          "endLine": 258,
+          "params": [
+            "roleIds"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "UserServiceImpl",
+          "startLine": 38,
+          "endLine": 259,
+          "methods": [
+            "savedUser",
+            "getAllUsers",
+            "getUserById",
+            "getUserByEmail",
+            "getActiveUsers",
+            "updateUser",
+            "updateProfile",
+            "updateAvatar",
+            "uploadAvatar",
+            "deleteUserById",
+            "getOrCreateCustomer",
+            "resolveRoles"
+          ],
+          "properties": [
+            "repo",
+            "cartRepository",
+            "roleRepository",
+            "encoder",
+            "refreshTokenService",
+            "fileStorage",
+            "avatarUploadDir"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "savedUser",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "getAllUsers",
+          "line": 91,
+          "isDefault": false
+        },
+        {
+          "name": "getUserById",
+          "line": 99,
+          "isDefault": false
+        },
+        {
+          "name": "getUserByEmail",
+          "line": 107,
+          "isDefault": false
+        },
+        {
+          "name": "getActiveUsers",
+          "line": 114,
+          "isDefault": false
+        },
+        {
+          "name": "updateUser",
+          "line": 122,
+          "isDefault": false
+        },
+        {
+          "name": "updateProfile",
+          "line": 167,
+          "isDefault": false
+        },
+        {
+          "name": "updateAvatar",
+          "line": 203,
+          "isDefault": false
+        },
+        {
+          "name": "uploadAvatar",
+          "line": 215,
+          "isDefault": false
+        },
+        {
+          "name": "deleteUserById",
+          "line": 225,
+          "isDefault": false
+        },
+        {
+          "name": "UserServiceImpl",
+          "line": 38,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "savedUser",
+          "callee": "request.email().trim",
+          "lineNumber": 55
+        },
+        {
+          "caller": "savedUser",
+          "callee": "request.email",
+          "lineNumber": 55
+        },
+        {
+          "caller": "savedUser",
+          "callee": "request.username().trim",
+          "lineNumber": 56
+        },
+        {
+          "caller": "savedUser",
+          "callee": "request.username",
+          "lineNumber": 56
+        },
+        {
+          "caller": "savedUser",
+          "callee": "repo.existsByEmail",
+          "lineNumber": 58
+        },
+        {
+          "caller": "savedUser",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 59
+        },
+        {
+          "caller": "savedUser",
+          "callee": "repo.existsByUsername",
+          "lineNumber": 61
+        },
+        {
+          "caller": "savedUser",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 62
+        },
+        {
+          "caller": "savedUser",
+          "callee": "roleRepository.findByName",
+          "lineNumber": 65
+        },
+        {
+          "caller": "savedUser",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 67
+        },
+        {
+          "caller": "savedUser",
+          "callee": "User.builder()\r\n                .email(email)\r\n                .username(username)\r\n                .password(encoder.encode(request.password()))\r\n                .isActive(true)\r\n                .roles(Set.of(customerRole)).build",
+          "lineNumber": 69
+        },
+        {
+          "caller": "savedUser",
+          "callee": "User.builder()\r\n                .email(email)\r\n                .username(username)\r\n                .password(encoder.encode(request.password()))\r\n                .isActive(true).roles",
+          "lineNumber": 69
+        },
+        {
+          "caller": "savedUser",
+          "callee": "User.builder()\r\n                .email(email)\r\n                .username(username)\r\n                .password(encoder.encode(request.password())).isActive",
+          "lineNumber": 69
+        },
+        {
+          "caller": "savedUser",
+          "callee": "User.builder()\r\n                .email(email)\r\n                .username(username).password",
+          "lineNumber": 69
+        },
+        {
+          "caller": "savedUser",
+          "callee": "User.builder()\r\n                .email(email).username",
+          "lineNumber": 69
+        },
+        {
+          "caller": "savedUser",
+          "callee": "User.builder().email",
+          "lineNumber": 69
+        },
+        {
+          "caller": "savedUser",
+          "callee": "User.builder",
+          "lineNumber": 69
+        },
+        {
+          "caller": "savedUser",
+          "callee": "encoder.encode",
+          "lineNumber": 72
+        },
+        {
+          "caller": "savedUser",
+          "callee": "request.password",
+          "lineNumber": 72
+        },
+        {
+          "caller": "savedUser",
+          "callee": "Set.of",
+          "lineNumber": 74
+        },
+        {
+          "caller": "savedUser",
+          "callee": "Customer.builder()\r\n                .user(user)\r\n                .fullName(request.fullName().trim())\r\n                .phone(request.phone())\r\n                .level(CustomerLevel.BROWSER)\r\n                .loyaltyPoints(0L)\r\n                .totalSpent(BigDecimal.ZERO).build",
+          "lineNumber": 77
+        },
+        {
+          "caller": "savedUser",
+          "callee": "Customer.builder()\r\n                .user(user)\r\n                .fullName(request.fullName().trim())\r\n                .phone(request.phone())\r\n                .level(CustomerLevel.BROWSER)\r\n                .loyaltyPoints(0L).totalSpent",
+          "lineNumber": 77
+        },
+        {
+          "caller": "savedUser",
+          "callee": "Customer.builder()\r\n                .user(user)\r\n                .fullName(request.fullName().trim())\r\n                .phone(request.phone())\r\n                .level(CustomerLevel.BROWSER).loyaltyPoints",
+          "lineNumber": 77
+        },
+        {
+          "caller": "savedUser",
+          "callee": "Customer.builder()\r\n                .user(user)\r\n                .fullName(request.fullName().trim())\r\n                .phone(request.phone()).level",
+          "lineNumber": 77
+        },
+        {
+          "caller": "savedUser",
+          "callee": "Customer.builder()\r\n                .user(user)\r\n                .fullName(request.fullName().trim()).phone",
+          "lineNumber": 77
+        },
+        {
+          "caller": "savedUser",
+          "callee": "Customer.builder()\r\n                .user(user).fullName",
+          "lineNumber": 77
+        },
+        {
+          "caller": "savedUser",
+          "callee": "Customer.builder().user",
+          "lineNumber": 77
+        },
+        {
+          "caller": "savedUser",
+          "callee": "Customer.builder",
+          "lineNumber": 77
+        },
+        {
+          "caller": "savedUser",
+          "callee": "request.fullName().trim",
+          "lineNumber": 79
+        },
+        {
+          "caller": "savedUser",
+          "callee": "request.fullName",
+          "lineNumber": 79
+        },
+        {
+          "caller": "savedUser",
+          "callee": "request.phone",
+          "lineNumber": 80
+        },
+        {
+          "caller": "savedUser",
+          "callee": "user.setCustomer",
+          "lineNumber": 85
+        },
+        {
+          "caller": "savedUser",
+          "callee": "repo.save",
+          "lineNumber": 86
+        },
+        {
+          "caller": "savedUser",
+          "callee": "cartRepository.save",
+          "lineNumber": 87
+        },
+        {
+          "caller": "savedUser",
+          "callee": "Cart.builder().user(saved).build",
+          "lineNumber": 87
+        },
+        {
+          "caller": "savedUser",
+          "callee": "Cart.builder().user",
+          "lineNumber": 87
+        },
+        {
+          "caller": "savedUser",
+          "callee": "Cart.builder",
+          "lineNumber": 87
+        },
+        {
+          "caller": "savedUser",
+          "callee": "UserResponse.fromEntity",
+          "lineNumber": 88
+        },
+        {
+          "caller": "getAllUsers",
+          "callee": "repo.findAll(pageable).map",
+          "lineNumber": 95
+        },
+        {
+          "caller": "getAllUsers",
+          "callee": "repo.findAll",
+          "lineNumber": 95
+        },
+        {
+          "caller": "getUserById",
+          "callee": "UserResponse.fromEntity",
+          "lineNumber": 103
+        },
+        {
+          "caller": "getUserById",
+          "callee": "repo.findById(id).orElseThrow",
+          "lineNumber": 103
+        },
+        {
+          "caller": "getUserById",
+          "callee": "repo.findById",
+          "lineNumber": 103
+        },
+        {
+          "caller": "getUserById",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 104
+        },
+        {
+          "caller": "getUserByEmail",
+          "callee": "UserResponse.fromEntity",
+          "lineNumber": 111
+        },
+        {
+          "caller": "getUserByEmail",
+          "callee": "repo.findByEmail",
+          "lineNumber": 111
+        },
+        {
+          "caller": "getActiveUsers",
+          "callee": "repo.findByIsActiveTrue(pageable).map",
+          "lineNumber": 118
+        },
+        {
+          "caller": "getActiveUsers",
+          "callee": "repo.findByIsActiveTrue",
+          "lineNumber": 118
+        },
+        {
+          "caller": "updateUser",
+          "callee": "repo.findById(id).orElseThrow",
+          "lineNumber": 126
+        },
+        {
+          "caller": "updateUser",
+          "callee": "repo.findById",
+          "lineNumber": 126
+        },
+        {
+          "caller": "updateUser",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 127
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.email",
+          "lineNumber": 128
+        },
+        {
+          "caller": "updateUser",
+          "callee": "user.setEmail",
+          "lineNumber": 129
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.email",
+          "lineNumber": 129
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.username",
+          "lineNumber": 131
+        },
+        {
+          "caller": "updateUser",
+          "callee": "user.setUsername",
+          "lineNumber": 132
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.username",
+          "lineNumber": 132
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.password",
+          "lineNumber": 134
+        },
+        {
+          "caller": "updateUser",
+          "callee": "user.setPassword",
+          "lineNumber": 135
+        },
+        {
+          "caller": "updateUser",
+          "callee": "encoder.encode",
+          "lineNumber": 135
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.password",
+          "lineNumber": 135
+        },
+        {
+          "caller": "updateUser",
+          "callee": "user.setTokenVersion",
+          "lineNumber": 137
+        },
+        {
+          "caller": "updateUser",
+          "callee": "user.getTokenVersion",
+          "lineNumber": 137
+        },
+        {
+          "caller": "updateUser",
+          "callee": "refreshTokenService.revokeAllRefreshTokens",
+          "lineNumber": 138
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.fullName",
+          "lineNumber": 140
+        },
+        {
+          "caller": "updateUser",
+          "callee": "getOrCreateCustomer(user).setFullName",
+          "lineNumber": 141
+        },
+        {
+          "caller": "updateUser",
+          "callee": "getOrCreateCustomer",
+          "lineNumber": 141
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.fullName",
+          "lineNumber": 141
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.phone",
+          "lineNumber": 143
+        },
+        {
+          "caller": "updateUser",
+          "callee": "getOrCreateCustomer(user).setPhone",
+          "lineNumber": 144
+        },
+        {
+          "caller": "updateUser",
+          "callee": "getOrCreateCustomer",
+          "lineNumber": 144
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.phone",
+          "lineNumber": 144
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.avatar",
+          "lineNumber": 146
+        },
+        {
+          "caller": "updateUser",
+          "callee": "getOrCreateCustomer(user).setAvatarUrl",
+          "lineNumber": 147
+        },
+        {
+          "caller": "updateUser",
+          "callee": "getOrCreateCustomer",
+          "lineNumber": 147
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.avatar",
+          "lineNumber": 147
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.isActive",
+          "lineNumber": 149
+        },
+        {
+          "caller": "updateUser",
+          "callee": "user.setActive",
+          "lineNumber": 150
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.isActive",
+          "lineNumber": 150
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.isActive",
+          "lineNumber": 152
+        },
+        {
+          "caller": "updateUser",
+          "callee": "user.setTokenVersion",
+          "lineNumber": 153
+        },
+        {
+          "caller": "updateUser",
+          "callee": "user.getTokenVersion",
+          "lineNumber": 153
+        },
+        {
+          "caller": "updateUser",
+          "callee": "refreshTokenService.revokeAllRefreshTokens",
+          "lineNumber": 154
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.roleIds",
+          "lineNumber": 157
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.roleIds().isEmpty",
+          "lineNumber": 158
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.roleIds",
+          "lineNumber": 158
+        },
+        {
+          "caller": "updateUser",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 159
+        },
+        {
+          "caller": "updateUser",
+          "callee": "resolveRoles",
+          "lineNumber": 161
+        },
+        {
+          "caller": "updateUser",
+          "callee": "request.roleIds",
+          "lineNumber": 161
+        },
+        {
+          "caller": "updateUser",
+          "callee": "user.setRoles",
+          "lineNumber": 162
+        },
+        {
+          "caller": "updateUser",
+          "callee": "UserResponse.fromEntity",
+          "lineNumber": 164
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "repo.findById(id).orElseThrow",
+          "lineNumber": 171
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "repo.findById",
+          "lineNumber": 171
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 172
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "request.email",
+          "lineNumber": 174
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "request.email().trim",
+          "lineNumber": 175
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "request.email",
+          "lineNumber": 175
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "repo.existsByEmailAndIdNot",
+          "lineNumber": 176
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 177
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "user.setEmail",
+          "lineNumber": 179
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "request.username",
+          "lineNumber": 181
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "request.username().trim",
+          "lineNumber": 182
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "request.username",
+          "lineNumber": 182
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "repo.existsByUsernameAndIdNot",
+          "lineNumber": 183
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 184
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "user.setUsername",
+          "lineNumber": 186
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "request.password",
+          "lineNumber": 188
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "user.setPassword",
+          "lineNumber": 189
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "encoder.encode",
+          "lineNumber": 189
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "request.password",
+          "lineNumber": 189
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "user.setTokenVersion",
+          "lineNumber": 191
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "user.getTokenVersion",
+          "lineNumber": 191
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "refreshTokenService.revokeAllRefreshTokens",
+          "lineNumber": 192
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "request.fullName",
+          "lineNumber": 194
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "getOrCreateCustomer(user).setFullName",
+          "lineNumber": 195
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "getOrCreateCustomer",
+          "lineNumber": 195
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "request.fullName().trim",
+          "lineNumber": 195
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "request.fullName",
+          "lineNumber": 195
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "request.phone",
+          "lineNumber": 197
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "getOrCreateCustomer(user).setPhone",
+          "lineNumber": 198
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "getOrCreateCustomer",
+          "lineNumber": 198
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "request.phone",
+          "lineNumber": 198
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "UserResponse.fromEntity",
+          "lineNumber": 200
+        },
+        {
+          "caller": "updateAvatar",
+          "callee": "repo.findById(id).orElseThrow",
+          "lineNumber": 207
+        },
+        {
+          "caller": "updateAvatar",
+          "callee": "repo.findById",
+          "lineNumber": 207
+        },
+        {
+          "caller": "updateAvatar",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 208
+        },
+        {
+          "caller": "updateAvatar",
+          "callee": "getOrCreateCustomer",
+          "lineNumber": 209
+        },
+        {
+          "caller": "updateAvatar",
+          "callee": "fileStorage.deleteIfLocal",
+          "lineNumber": 210
+        },
+        {
+          "caller": "updateAvatar",
+          "callee": "customer.getAvatarUrl",
+          "lineNumber": 210
+        },
+        {
+          "caller": "updateAvatar",
+          "callee": "customer.setAvatarUrl",
+          "lineNumber": 211
+        },
+        {
+          "caller": "updateAvatar",
+          "callee": "fileStorage.store",
+          "lineNumber": 211
+        },
+        {
+          "caller": "updateAvatar",
+          "callee": "UserResponse.fromEntity",
+          "lineNumber": 212
+        },
+        {
+          "caller": "uploadAvatar",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 220
+        },
+        {
+          "caller": "uploadAvatar",
+          "callee": "updateAvatar",
+          "lineNumber": 222
+        },
+        {
+          "caller": "deleteUserById",
+          "callee": "repo.deleteById",
+          "lineNumber": 229
+        },
+        {
+          "caller": "getOrCreateCustomer",
+          "callee": "user.getCustomer",
+          "lineNumber": 234
+        },
+        {
+          "caller": "getOrCreateCustomer",
+          "callee": "Customer.builder()\r\n                    .user(user)\r\n                    .level(CustomerLevel.BROWSER)\r\n                    .loyaltyPoints(0L)\r\n                    .totalSpent(BigDecimal.ZERO).build",
+          "lineNumber": 236
+        },
+        {
+          "caller": "getOrCreateCustomer",
+          "callee": "Customer.builder()\r\n                    .user(user)\r\n                    .level(CustomerLevel.BROWSER)\r\n                    .loyaltyPoints(0L).totalSpent",
+          "lineNumber": 236
+        },
+        {
+          "caller": "getOrCreateCustomer",
+          "callee": "Customer.builder()\r\n                    .user(user)\r\n                    .level(CustomerLevel.BROWSER).loyaltyPoints",
+          "lineNumber": 236
+        },
+        {
+          "caller": "getOrCreateCustomer",
+          "callee": "Customer.builder()\r\n                    .user(user).level",
+          "lineNumber": 236
+        },
+        {
+          "caller": "getOrCreateCustomer",
+          "callee": "Customer.builder().user",
+          "lineNumber": 236
+        },
+        {
+          "caller": "getOrCreateCustomer",
+          "callee": "Customer.builder",
+          "lineNumber": 236
+        },
+        {
+          "caller": "getOrCreateCustomer",
+          "callee": "user.setCustomer",
+          "lineNumber": 242
+        },
+        {
+          "caller": "resolveRoles",
+          "callee": "new LinkedHashSet<>",
+          "lineNumber": 251
+        },
+        {
+          "caller": "resolveRoles",
+          "callee": "roleRepository.findById(roleId).orElseThrow",
+          "lineNumber": 253
+        },
+        {
+          "caller": "resolveRoles",
+          "callee": "roleRepository.findById",
+          "lineNumber": 253
+        },
+        {
+          "caller": "resolveRoles",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 254
+        },
+        {
+          "caller": "resolveRoles",
+          "callee": "roles.add",
+          "lineNumber": 255
+        }
+      ],
+      "metrics": {
+        "importCount": 18,
+        "exportCount": 11,
+        "functionCount": 12,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/impl/WishlistServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 72,
+      "nonEmptyLines": 63,
+      "functions": [
+        {
+          "name": "addItemToWishlist",
+          "startLine": 28,
+          "endLine": 51,
+          "params": [
+            "userId",
+            "productId"
+          ]
+        },
+        {
+          "name": "getWishlistsByUserId",
+          "startLine": 53,
+          "endLine": 60,
+          "params": [
+            "userId"
+          ]
+        },
+        {
+          "name": "removeItemFromWishlist",
+          "startLine": 62,
+          "endLine": 71,
+          "params": [
+            "userId",
+            "productId"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "WishlistServiceImpl",
+          "startLine": 21,
+          "endLine": 72,
+          "methods": [
+            "addItemToWishlist",
+            "getWishlistsByUserId",
+            "removeItemFromWishlist"
+          ],
+          "properties": [
+            "repo",
+            "userRepository",
+            "productRepository"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "addItemToWishlist",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "getWishlistsByUserId",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "removeItemFromWishlist",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "WishlistServiceImpl",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "addItemToWishlist",
+          "callee": "userRepository.findById(userId).orElseThrow",
+          "lineNumber": 33
+        },
+        {
+          "caller": "addItemToWishlist",
+          "callee": "userRepository.findById",
+          "lineNumber": 33
+        },
+        {
+          "caller": "addItemToWishlist",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 34
+        },
+        {
+          "caller": "addItemToWishlist",
+          "callee": "productRepository.findById(productId).orElseThrow",
+          "lineNumber": 35
+        },
+        {
+          "caller": "addItemToWishlist",
+          "callee": "productRepository.findById",
+          "lineNumber": 35
+        },
+        {
+          "caller": "addItemToWishlist",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 36
+        },
+        {
+          "caller": "addItemToWishlist",
+          "callee": "repo.existsByUserIdAndProductId",
+          "lineNumber": 39
+        },
+        {
+          "caller": "addItemToWishlist",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 41
+        },
+        {
+          "caller": "addItemToWishlist",
+          "callee": "Wishlist.builder()\r\n                .user(user)\r\n                .product(product).build",
+          "lineNumber": 45
+        },
+        {
+          "caller": "addItemToWishlist",
+          "callee": "Wishlist.builder()\r\n                .user(user).product",
+          "lineNumber": 45
+        },
+        {
+          "caller": "addItemToWishlist",
+          "callee": "Wishlist.builder().user",
+          "lineNumber": 45
+        },
+        {
+          "caller": "addItemToWishlist",
+          "callee": "Wishlist.builder",
+          "lineNumber": 45
+        },
+        {
+          "caller": "addItemToWishlist",
+          "callee": "repo.save",
+          "lineNumber": 50
+        },
+        {
+          "caller": "getWishlistsByUserId",
+          "callee": "repo.findByUserId(userId).stream()\r\n                .map(WishlistResponse::fromEntity).toList",
+          "lineNumber": 57
+        },
+        {
+          "caller": "getWishlistsByUserId",
+          "callee": "repo.findByUserId(userId).stream().map",
+          "lineNumber": 57
+        },
+        {
+          "caller": "getWishlistsByUserId",
+          "callee": "repo.findByUserId(userId).stream",
+          "lineNumber": 57
+        },
+        {
+          "caller": "getWishlistsByUserId",
+          "callee": "repo.findByUserId",
+          "lineNumber": 57
+        },
+        {
+          "caller": "removeItemFromWishlist",
+          "callee": "repo.findByUserIdAndProductId",
+          "lineNumber": 66
+        },
+        {
+          "caller": "removeItemFromWishlist",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 68
+        },
+        {
+          "caller": "removeItemFromWishlist",
+          "callee": "repo.delete",
+          "lineNumber": 70
+        }
+      ],
+      "metrics": {
+        "importCount": 10,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/utils/SecurityUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 32,
+      "nonEmptyLines": 29,
+      "functions": [
+        {
+          "name": "getCurrentUserId",
+          "startLine": 18,
+          "endLine": 31,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "SecurityUtils",
+          "startLine": 10,
+          "endLine": 32,
+          "methods": [
+            "getCurrentUserId"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "getCurrentUserId",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "SecurityUtils",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getCurrentUserId",
+          "callee": "SecurityContextHolder.getContext().getAuthentication",
+          "lineNumber": 19
+        },
+        {
+          "caller": "getCurrentUserId",
+          "callee": "SecurityContextHolder.getContext",
+          "lineNumber": 19
+        },
+        {
+          "caller": "getCurrentUserId",
+          "callee": "authentication.isAuthenticated",
+          "lineNumber": 20
+        },
+        {
+          "caller": "getCurrentUserId",
+          "callee": "new UnauthenticatedException",
+          "lineNumber": 21
+        },
+        {
+          "caller": "getCurrentUserId",
+          "callee": "authentication.getPrincipal",
+          "lineNumber": 23
+        },
+        {
+          "caller": "getCurrentUserId",
+          "callee": "userPrincipal.getId",
+          "lineNumber": 26
+        },
+        {
+          "caller": "getCurrentUserId",
+          "callee": "new UnauthenticatedException",
+          "lineNumber": 29
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/test/java/org/akira/ladux/service/FileStorageServiceImplTest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 94,
+      "nonEmptyLines": 76,
+      "functions": [
+        {
+          "name": "setUp",
+          "startLine": 27,
+          "endLine": 30,
+          "params": []
+        },
+        {
+          "name": "store_rejectsEmptyFile",
+          "startLine": 32,
+          "endLine": 42,
+          "params": []
+        },
+        {
+          "name": "store_rejectsUnknownContentType",
+          "startLine": 44,
+          "endLine": 53,
+          "params": []
+        },
+        {
+          "name": "store_writesFileAndReturnsPublicPath",
+          "startLine": 55,
+          "endLine": 70,
+          "params": []
+        },
+        {
+          "name": "deleteIfLocal_removesStoredFile",
+          "startLine": 72,
+          "endLine": 86,
+          "params": []
+        },
+        {
+          "name": "deleteIfLocal_noOpsForExternalUrl",
+          "startLine": 88,
+          "endLine": 93,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "FileStorageServiceImplTest",
+          "startLine": 20,
+          "endLine": 94,
+          "methods": [
+            "setUp",
+            "store_rejectsEmptyFile",
+            "store_rejectsUnknownContentType",
+            "store_writesFileAndReturnsPublicPath",
+            "deleteIfLocal_removesStoredFile",
+            "deleteIfLocal_noOpsForExternalUrl"
+          ],
+          "properties": [
+            "tempDir",
+            "fileStorage"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "setUp",
+          "callee": "new FileStorageServiceImpl",
+          "lineNumber": 29
+        },
+        {
+          "caller": "setUp",
+          "callee": "tempDir.toString",
+          "lineNumber": 29
+        },
+        {
+          "caller": "store_rejectsEmptyFile",
+          "callee": "mock",
+          "lineNumber": 34
+        },
+        {
+          "caller": "store_rejectsEmptyFile",
+          "callee": "when(file.isEmpty()).thenReturn",
+          "lineNumber": 35
+        },
+        {
+          "caller": "store_rejectsEmptyFile",
+          "callee": "when",
+          "lineNumber": 35
+        },
+        {
+          "caller": "store_rejectsEmptyFile",
+          "callee": "file.isEmpty",
+          "lineNumber": 35
+        },
+        {
+          "caller": "store_rejectsEmptyFile",
+          "callee": "assertThrows",
+          "lineNumber": 37
+        },
+        {
+          "caller": "store_rejectsEmptyFile",
+          "callee": "fileStorage.store",
+          "lineNumber": 38
+        },
+        {
+          "caller": "store_rejectsEmptyFile",
+          "callee": "assertTrue",
+          "lineNumber": 39
+        },
+        {
+          "caller": "store_rejectsEmptyFile",
+          "callee": "ex.getMessage().toLowerCase().contains",
+          "lineNumber": 39
+        },
+        {
+          "caller": "store_rejectsEmptyFile",
+          "callee": "ex.getMessage().toLowerCase",
+          "lineNumber": 39
+        },
+        {
+          "caller": "store_rejectsEmptyFile",
+          "callee": "ex.getMessage",
+          "lineNumber": 39
+        },
+        {
+          "caller": "store_rejectsEmptyFile",
+          "callee": "ex.getMessage().toLowerCase().contains",
+          "lineNumber": 40
+        },
+        {
+          "caller": "store_rejectsEmptyFile",
+          "callee": "ex.getMessage().toLowerCase",
+          "lineNumber": 40
+        },
+        {
+          "caller": "store_rejectsEmptyFile",
+          "callee": "ex.getMessage",
+          "lineNumber": 40
+        },
+        {
+          "caller": "store_rejectsEmptyFile",
+          "callee": "ex.getMessage().contains",
+          "lineNumber": 41
+        },
+        {
+          "caller": "store_rejectsEmptyFile",
+          "callee": "ex.getMessage",
+          "lineNumber": 41
+        },
+        {
+          "caller": "store_rejectsUnknownContentType",
+          "callee": "mock",
+          "lineNumber": 46
+        },
+        {
+          "caller": "store_rejectsUnknownContentType",
+          "callee": "when(file.isEmpty()).thenReturn",
+          "lineNumber": 47
+        },
+        {
+          "caller": "store_rejectsUnknownContentType",
+          "callee": "when",
+          "lineNumber": 47
+        },
+        {
+          "caller": "store_rejectsUnknownContentType",
+          "callee": "file.isEmpty",
+          "lineNumber": 47
+        },
+        {
+          "caller": "store_rejectsUnknownContentType",
+          "callee": "when(file.getContentType()).thenReturn",
+          "lineNumber": 48
+        },
+        {
+          "caller": "store_rejectsUnknownContentType",
+          "callee": "when",
+          "lineNumber": 48
+        },
+        {
+          "caller": "store_rejectsUnknownContentType",
+          "callee": "file.getContentType",
+          "lineNumber": 48
+        },
+        {
+          "caller": "store_rejectsUnknownContentType",
+          "callee": "assertThrows",
+          "lineNumber": 50
+        },
+        {
+          "caller": "store_rejectsUnknownContentType",
+          "callee": "fileStorage.store",
+          "lineNumber": 51
+        },
+        {
+          "caller": "store_rejectsUnknownContentType",
+          "callee": "assertTrue",
+          "lineNumber": 52
+        },
+        {
+          "caller": "store_rejectsUnknownContentType",
+          "callee": "ex.getMessage().contains",
+          "lineNumber": 52
+        },
+        {
+          "caller": "store_rejectsUnknownContentType",
+          "callee": "ex.getMessage",
+          "lineNumber": 52
+        },
+        {
+          "caller": "store_rejectsUnknownContentType",
+          "callee": "ex.getMessage().contains",
+          "lineNumber": 52
+        },
+        {
+          "caller": "store_rejectsUnknownContentType",
+          "callee": "ex.getMessage",
+          "lineNumber": 52
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "mock",
+          "lineNumber": 58
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "when(file.isEmpty()).thenReturn",
+          "lineNumber": 59
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "when",
+          "lineNumber": 59
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "file.isEmpty",
+          "lineNumber": 59
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "when(file.getContentType()).thenReturn",
+          "lineNumber": 60
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "when",
+          "lineNumber": 60
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "file.getContentType",
+          "lineNumber": 60
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "when(file.getInputStream()).thenReturn",
+          "lineNumber": 61
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "when",
+          "lineNumber": 61
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "file.getInputStream",
+          "lineNumber": 61
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "new ByteArrayInputStream",
+          "lineNumber": 61
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "fileStorage.store",
+          "lineNumber": 63
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "assertTrue",
+          "lineNumber": 65
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "url.matches",
+          "lineNumber": 65
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "url.substring",
+          "lineNumber": 66
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "\"/uploads/\".length",
+          "lineNumber": 66
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "tempDir.resolve",
+          "lineNumber": 67
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "assertTrue",
+          "lineNumber": 68
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "Files.exists",
+          "lineNumber": 68
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "assertEquals",
+          "lineNumber": 69
+        },
+        {
+          "caller": "store_writesFileAndReturnsPublicPath",
+          "callee": "Files.size",
+          "lineNumber": 69
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "mock",
+          "lineNumber": 75
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "when(file.isEmpty()).thenReturn",
+          "lineNumber": 76
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "when",
+          "lineNumber": 76
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "file.isEmpty",
+          "lineNumber": 76
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "when(file.getContentType()).thenReturn",
+          "lineNumber": 77
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "when",
+          "lineNumber": 77
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "file.getContentType",
+          "lineNumber": 77
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "when(file.getInputStream()).thenReturn",
+          "lineNumber": 78
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "when",
+          "lineNumber": 78
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "file.getInputStream",
+          "lineNumber": 78
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "new ByteArrayInputStream",
+          "lineNumber": 78
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "fileStorage.store",
+          "lineNumber": 80
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "tempDir.resolve",
+          "lineNumber": 81
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "url.substring",
+          "lineNumber": 81
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "\"/uploads/\".length",
+          "lineNumber": 81
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "assertTrue",
+          "lineNumber": 82
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "Files.exists",
+          "lineNumber": 82
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "fileStorage.deleteIfLocal",
+          "lineNumber": 84
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "assertTrue",
+          "lineNumber": 85
+        },
+        {
+          "caller": "deleteIfLocal_removesStoredFile",
+          "callee": "Files.notExists",
+          "lineNumber": 85
+        },
+        {
+          "caller": "deleteIfLocal_noOpsForExternalUrl",
+          "callee": "fileStorage.deleteIfLocal",
+          "lineNumber": 90
+        },
+        {
+          "caller": "deleteIfLocal_noOpsForExternalUrl",
+          "callee": "fileStorage.deleteIfLocal",
+          "lineNumber": 91
+        },
+        {
+          "caller": "deleteIfLocal_noOpsForExternalUrl",
+          "callee": "fileStorage.deleteIfLocal",
+          "lineNumber": 92
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 0,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    }
+  ]
+}

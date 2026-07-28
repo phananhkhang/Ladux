@@ -1,0 +1,529 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 7,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 7,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 7,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 36,
+      "nonEmptyLines": 31,
+      "functions": [
+        {
+          "name": "getAllOrderHistories",
+          "startLine": 22,
+          "endLine": 25,
+          "params": [
+            "pageable"
+          ]
+        },
+        {
+          "name": "getOrderHistoryById",
+          "startLine": 27,
+          "endLine": 30,
+          "params": [
+            "id"
+          ]
+        },
+        {
+          "name": "getOrderHistoriesByOrderId",
+          "startLine": 32,
+          "endLine": 35,
+          "params": [
+            "orderId",
+            "pageable"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AdminOrderHistoryController",
+          "startLine": 15,
+          "endLine": 36,
+          "methods": [
+            "getAllOrderHistories",
+            "getOrderHistoryById",
+            "getOrderHistoriesByOrderId"
+          ],
+          "properties": [
+            "service"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getAllOrderHistories",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "getOrderHistoryById",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "getOrderHistoriesByOrderId",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "AdminOrderHistoryController",
+          "line": 15,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getAllOrderHistories",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 24
+        },
+        {
+          "caller": "getAllOrderHistories",
+          "callee": "service.getAllOrderHistories",
+          "lineNumber": 24
+        },
+        {
+          "caller": "getOrderHistoryById",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 29
+        },
+        {
+          "caller": "getOrderHistoryById",
+          "callee": "service.getOrderHistoryById",
+          "lineNumber": 29
+        },
+        {
+          "caller": "getOrderHistoriesByOrderId",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 34
+        },
+        {
+          "caller": "getOrderHistoriesByOrderId",
+          "callee": "service.getOrderHistoriesByOrderId",
+          "lineNumber": 34
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 25,
+      "functions": [
+        {
+          "name": "getOrdersHistoryByUser",
+          "startLine": 21,
+          "endLine": 27,
+          "params": [
+            "userPrincipal",
+            "pageable"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "OrderHistoryController",
+          "startLine": 15,
+          "endLine": 28,
+          "methods": [
+            "getOrdersHistoryByUser"
+          ],
+          "properties": [
+            "service"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getOrdersHistoryByUser",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "OrderHistoryController",
+          "line": 15,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getOrdersHistoryByUser",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 26
+        },
+        {
+          "caller": "getOrdersHistoryByUser",
+          "callee": "service.getOrdersHistoryByUser",
+          "lineNumber": 26
+        },
+        {
+          "caller": "getOrdersHistoryByUser",
+          "callee": "userPrincipal.getId",
+          "lineNumber": 26
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 26,
+      "nonEmptyLines": 24,
+      "functions": [
+        {
+          "name": "fromEntity",
+          "startLine": 14,
+          "endLine": 25,
+          "params": [
+            "history"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "OrderHistoryResponse",
+          "startLine": 7,
+          "endLine": 26,
+          "methods": [
+            "fromEntity"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "fromEntity",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "OrderHistoryResponse",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "fromEntity",
+          "callee": "new OrderHistoryResponse",
+          "lineNumber": 18
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "history.getId",
+          "lineNumber": 19
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "history.getOrder",
+          "lineNumber": 20
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "history.getOrder().getId",
+          "lineNumber": 20
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "history.getOrder",
+          "lineNumber": 20
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "history.getStatus",
+          "lineNumber": 21
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "history.getDescription",
+          "lineNumber": 22
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "history.getCreatedAt",
+          "lineNumber": 23
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/model/OrderHistory.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 51,
+      "nonEmptyLines": 41,
+      "classes": [
+        {
+          "name": "OrderHistory",
+          "startLine": 17,
+          "endLine": 51,
+          "methods": [],
+          "properties": [
+            "id",
+            "user",
+            "order",
+            "status",
+            "description",
+            "createdAt"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "OrderHistory",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/repository/OrderHistoryRepository.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 30,
+      "nonEmptyLines": 24,
+      "classes": [
+        {
+          "name": "OrderHistoryRepository",
+          "startLine": 12,
+          "endLine": 29,
+          "methods": [
+            "findAll",
+            "findById",
+            "findByOrderId",
+            "findByUserId"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "OrderHistoryRepository",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/OrderHistoryService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 15,
+      "nonEmptyLines": 10,
+      "classes": [
+        {
+          "name": "OrderHistoryService",
+          "startLine": 7,
+          "endLine": 15,
+          "methods": [
+            "getAllOrderHistories",
+            "getOrderHistoryById",
+            "getOrderHistoriesByOrderId",
+            "getOrdersHistoryByUser"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "OrderHistoryService",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 49,
+      "nonEmptyLines": 44,
+      "functions": [
+        {
+          "name": "getAllOrderHistories",
+          "startLine": 19,
+          "endLine": 25,
+          "params": [
+            "pageable"
+          ]
+        },
+        {
+          "name": "getOrderHistoryById",
+          "startLine": 27,
+          "endLine": 33,
+          "params": [
+            "id"
+          ]
+        },
+        {
+          "name": "getOrderHistoriesByOrderId",
+          "startLine": 35,
+          "endLine": 41,
+          "params": [
+            "orderId",
+            "pageable"
+          ]
+        },
+        {
+          "name": "getOrdersHistoryByUser",
+          "startLine": 42,
+          "endLine": 48,
+          "params": [
+            "userId",
+            "pageable"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "OrderHistoryServiceImpl",
+          "startLine": 14,
+          "endLine": 49,
+          "methods": [
+            "getAllOrderHistories",
+            "getOrderHistoryById",
+            "getOrderHistoriesByOrderId",
+            "getOrdersHistoryByUser"
+          ],
+          "properties": [
+            "repo"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getAllOrderHistories",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "getOrderHistoryById",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "getOrderHistoriesByOrderId",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "getOrdersHistoryByUser",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "OrderHistoryServiceImpl",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getAllOrderHistories",
+          "callee": "repo.findAll(pageable).map",
+          "lineNumber": 23
+        },
+        {
+          "caller": "getAllOrderHistories",
+          "callee": "repo.findAll",
+          "lineNumber": 23
+        },
+        {
+          "caller": "getOrderHistoryById",
+          "callee": "OrderHistoryResponse.fromEntity",
+          "lineNumber": 31
+        },
+        {
+          "caller": "getOrderHistoryById",
+          "callee": "repo.findById(id).orElseThrow",
+          "lineNumber": 31
+        },
+        {
+          "caller": "getOrderHistoryById",
+          "callee": "repo.findById",
+          "lineNumber": 31
+        },
+        {
+          "caller": "getOrderHistoryById",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 32
+        },
+        {
+          "caller": "getOrderHistoriesByOrderId",
+          "callee": "repo.findByOrderId(orderId, pageable).map",
+          "lineNumber": 39
+        },
+        {
+          "caller": "getOrderHistoriesByOrderId",
+          "callee": "repo.findByOrderId",
+          "lineNumber": 39
+        },
+        {
+          "caller": "getOrdersHistoryByUser",
+          "callee": "repo.findByUserId(userId, pageable).map",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getOrdersHistoryByUser",
+          "callee": "repo.findByUserId",
+          "lineNumber": 46
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    }
+  ]
+}

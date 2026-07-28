@@ -8,9 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StockMovementRepository extends JpaRepository<StockMovement, Integer> {
 
-    @EntityGraph(attributePaths = {"product", "createdBy"})
-    Page<StockMovement> findByProductId(Integer productId, Pageable pageable);
+    @EntityGraph(attributePaths = {"productVariant", "createdBy"})
+    Page<StockMovement> findByProductVariantId(Integer productVariantId, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"product", "createdBy"})
+    @EntityGraph(attributePaths = {"productVariant", "createdBy"})
     Page<StockMovement> findAll(Pageable pageable);
 }

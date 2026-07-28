@@ -1,0 +1,1791 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/java/org/akira/ladux/config/JwtFilter.java",
+      "type": "file",
+      "name": "JwtFilter.java",
+      "filePath": "src/main/java/org/akira/ladux/config/JwtFilter.java",
+      "summary": "Spring Security request filter that resolves access JWTs from cookies or Bearer headers, validates token state, and installs authenticated principals into the security context while allowing public requests to continue anonymously.",
+      "tags": [
+        "security",
+        "jwt",
+        "middleware",
+        "authentication"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "This filter intentionally clears bad cookie tokens but lets authorization rules decide whether anonymous access is allowed."
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java",
+      "type": "file",
+      "name": "OAuth2SuccessHandler.java",
+      "filePath": "src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java",
+      "summary": "Handles successful OAuth2 login by locating the registered user, rejecting disabled or unknown accounts, issuing access and refresh cookies, and redirecting to the configured frontend success URL.",
+      "tags": [
+        "security",
+        "oauth2",
+        "authentication",
+        "cookie-session"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "type": "file",
+      "name": "AuthController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/AuthController.java",
+      "summary": "REST controller for registration, login, refresh-token rotation, logout, and CSRF token retrieval under `/api/v1/auth`. It coordinates authentication, cookie issuance, refresh-token revocation, and seeded-user password safeguards.",
+      "tags": [
+        "api-handler",
+        "authentication",
+        "refresh-token",
+        "security"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "type": "file",
+      "name": "AdminUserController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "summary": "Admin REST controller for paginated user listing, user lookup, active-user filtering, profile updates, and deletion with role-based authorization checks.",
+      "tags": [
+        "api-handler",
+        "admin",
+        "user-management",
+        "authorization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "type": "file",
+      "name": "UserController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "summary": "Authenticated user REST controller exposing current-profile retrieval, avatar upload, and self-service profile updates through `UserService`.",
+      "tags": [
+        "api-handler",
+        "user-profile",
+        "file-upload",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "type": "file",
+      "name": "WishlistController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "summary": "Authenticated wishlist REST controller that adds products, lists the current user's wishlist, and removes products by product id.",
+      "tags": [
+        "api-handler",
+        "wishlist",
+        "user-feature",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/LoginRequest.java",
+      "type": "file",
+      "name": "LoginRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/LoginRequest.java",
+      "summary": "Validation record for username/password login payloads, requiring both credentials to be present.",
+      "tags": [
+        "request-dto",
+        "validation",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/RegisterRequest.java",
+      "type": "file",
+      "name": "RegisterRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/RegisterRequest.java",
+      "summary": "Validation record for user registration payloads, covering name, username, email, password, and Vietnamese phone-number constraints.",
+      "tags": [
+        "request-dto",
+        "validation",
+        "registration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/UserAdminUpdateRequest.java",
+      "type": "file",
+      "name": "UserAdminUpdateRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/UserAdminUpdateRequest.java",
+      "summary": "Validation record for administrator-driven user updates, including account identity, customer profile fields, active status, and role ids.",
+      "tags": [
+        "request-dto",
+        "validation",
+        "admin",
+        "user-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/UserProfileUpdateRequest.java",
+      "type": "file",
+      "name": "UserProfileUpdateRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/UserProfileUpdateRequest.java",
+      "summary": "Validation record for a user updating their own profile fields, including email, username, password, full name, and phone.",
+      "tags": [
+        "request-dto",
+        "validation",
+        "user-profile"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/WishlistRequest.java",
+      "type": "file",
+      "name": "WishlistRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/WishlistRequest.java",
+      "summary": "Validation record for wishlist mutations that require a positive product id.",
+      "tags": [
+        "request-dto",
+        "validation",
+        "wishlist"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/response/UserResponse.java",
+      "type": "file",
+      "name": "UserResponse.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/UserResponse.java",
+      "summary": "Serializable user response DTO that flattens account, customer profile, active flag, and role names from the `User` aggregate.",
+      "tags": [
+        "response-dto",
+        "serialization",
+        "user-profile",
+        "mapper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/response/WishlistResponse.java",
+      "type": "file",
+      "name": "WishlistResponse.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/WishlistResponse.java",
+      "summary": "Serializable wishlist response DTO that exposes the wishlist id and nested product response mapped from the wishlist entity.",
+      "tags": [
+        "response-dto",
+        "serialization",
+        "wishlist",
+        "mapper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/exception/BusinessRuleException.java",
+      "type": "file",
+      "name": "BusinessRuleException.java",
+      "filePath": "src/main/java/org/akira/ladux/exception/BusinessRuleException.java",
+      "summary": "Runtime exception used to signal domain or business-rule violations that should be handled by the application exception layer.",
+      "tags": [
+        "exception",
+        "business-rule",
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/exception/UnauthenticatedException.java",
+      "type": "file",
+      "name": "UnauthenticatedException.java",
+      "filePath": "src/main/java/org/akira/ladux/exception/UnauthenticatedException.java",
+      "summary": "Runtime exception for unauthenticated access conditions that need to propagate through the application exception layer.",
+      "tags": [
+        "exception",
+        "authentication",
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/RefreshToken.java",
+      "type": "file",
+      "name": "RefreshToken.java",
+      "filePath": "src/main/java/org/akira/ladux/model/RefreshToken.java",
+      "summary": "JPA entity for opaque refresh tokens with user ownership, expiry, revocation state, creation timestamp, and an `isUsable` validity helper.",
+      "tags": [
+        "data-model",
+        "refresh-token",
+        "persistence",
+        "security"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/Role.java",
+      "type": "file",
+      "name": "Role.java",
+      "filePath": "src/main/java/org/akira/ladux/model/Role.java",
+      "summary": "JPA entity for application roles, storing a unique `RoleName` enum and the inverse many-to-many relationship to users.",
+      "tags": [
+        "data-model",
+        "authorization",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/User.java",
+      "type": "file",
+      "name": "User.java",
+      "filePath": "src/main/java/org/akira/ladux/model/User.java",
+      "summary": "Core JPA user entity containing credentials, activation state, token-version revocation support, roles, and a one-to-one customer profile link.",
+      "tags": [
+        "data-model",
+        "user-account",
+        "persistence",
+        "security"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/UserPrincipal.java",
+      "type": "file",
+      "name": "UserPrincipal.java",
+      "filePath": "src/main/java/org/akira/ladux/model/UserPrincipal.java",
+      "summary": "Spring Security `UserDetails` adapter that wraps a `User`, maps roles into granted authorities, exposes account state, and surfaces token version for JWT revocation checks.",
+      "tags": [
+        "security",
+        "authentication",
+        "adapter",
+        "authorization"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "The principal maps persisted roles to Spring Security authorities using the `ROLE_` prefix convention."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/config/JwtFilter.java:JwtFilter",
+      "type": "class",
+      "name": "JwtFilter",
+      "filePath": "src/main/java/org/akira/ladux/config/JwtFilter.java",
+      "lineRange": [
+        31,
+        155
+      ],
+      "summary": "Once-per-request security filter that validates JWT credentials and populates Spring Security authentication only when user state and token version are still valid.",
+      "tags": [
+        "security",
+        "jwt",
+        "middleware",
+        "authentication"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java:OAuth2SuccessHandler",
+      "type": "class",
+      "name": "OAuth2SuccessHandler",
+      "filePath": "src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java",
+      "lineRange": [
+        35,
+        86
+      ],
+      "summary": "OAuth2 success handler that converts a verified OAuth2 principal into Ladux access and refresh cookies for registered active users.",
+      "tags": [
+        "security",
+        "oauth2",
+        "authentication",
+        "cookie-session"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/AuthController.java:AuthController",
+      "type": "class",
+      "name": "AuthController",
+      "filePath": "src/main/java/org/akira/ladux/controller/AuthController.java",
+      "lineRange": [
+        36,
+        136
+      ],
+      "summary": "Authentication API controller coordinating registration, login, refresh rotation, logout, and CSRF token exposure.",
+      "tags": [
+        "api-handler",
+        "authentication",
+        "refresh-token",
+        "security"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:AdminUserController",
+      "type": "class",
+      "name": "AdminUserController",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "lineRange": [
+        22,
+        67
+      ],
+      "summary": "Administrator API controller for user search, listing, updates, and deletion guarded by `@PreAuthorize` role checks.",
+      "tags": [
+        "api-handler",
+        "admin",
+        "user-management",
+        "authorization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/user/UserController.java:UserController",
+      "type": "class",
+      "name": "UserController",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "lineRange": [
+        15,
+        41
+      ],
+      "summary": "User-facing API controller for the authenticated account profile and avatar workflow.",
+      "tags": [
+        "api-handler",
+        "user-profile",
+        "file-upload",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/user/WishlistController.java:WishlistController",
+      "type": "class",
+      "name": "WishlistController",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "lineRange": [
+        16,
+        37
+      ],
+      "summary": "User-facing API controller for current-user wishlist mutations and retrieval.",
+      "tags": [
+        "api-handler",
+        "wishlist",
+        "user-feature",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/LoginRequest.java:LoginRequest",
+      "type": "class",
+      "name": "LoginRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/LoginRequest.java",
+      "lineRange": [
+        5,
+        10
+      ],
+      "summary": "Record DTO representing required username and password login credentials.",
+      "tags": [
+        "request-dto",
+        "validation",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/RegisterRequest.java:RegisterRequest",
+      "type": "class",
+      "name": "RegisterRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/RegisterRequest.java",
+      "lineRange": [
+        8,
+        28
+      ],
+      "summary": "Record DTO representing registration input with Bean Validation constraints for identity and contact fields.",
+      "tags": [
+        "request-dto",
+        "validation",
+        "registration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/UserAdminUpdateRequest.java:UserAdminUpdateRequest",
+      "type": "class",
+      "name": "UserAdminUpdateRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/UserAdminUpdateRequest.java",
+      "lineRange": [
+        10,
+        34
+      ],
+      "summary": "Record DTO representing administrator-editable user and role fields with validation constraints.",
+      "tags": [
+        "request-dto",
+        "validation",
+        "admin",
+        "user-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/UserProfileUpdateRequest.java:UserProfileUpdateRequest",
+      "type": "class",
+      "name": "UserProfileUpdateRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/UserProfileUpdateRequest.java",
+      "lineRange": [
+        7,
+        24
+      ],
+      "summary": "Record DTO representing self-service profile update fields with validation constraints.",
+      "tags": [
+        "request-dto",
+        "validation",
+        "user-profile"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/WishlistRequest.java:WishlistRequest",
+      "type": "class",
+      "name": "WishlistRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/WishlistRequest.java",
+      "lineRange": [
+        6,
+        10
+      ],
+      "summary": "Record DTO representing a wishlist product selection with positive id validation.",
+      "tags": [
+        "request-dto",
+        "validation",
+        "wishlist"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/response/UserResponse.java:UserResponse",
+      "type": "class",
+      "name": "UserResponse",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/UserResponse.java",
+      "lineRange": [
+        9,
+        44
+      ],
+      "summary": "Serializable response record that maps a `User` and optional `Customer` into API-facing account fields.",
+      "tags": [
+        "response-dto",
+        "serialization",
+        "user-profile",
+        "mapper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/response/WishlistResponse.java:WishlistResponse",
+      "type": "class",
+      "name": "WishlistResponse",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/WishlistResponse.java",
+      "lineRange": [
+        7,
+        20
+      ],
+      "summary": "Serializable response record that maps a wishlist entity to an id plus nested product representation.",
+      "tags": [
+        "response-dto",
+        "serialization",
+        "wishlist",
+        "mapper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/exception/BusinessRuleException.java:BusinessRuleException",
+      "type": "class",
+      "name": "BusinessRuleException",
+      "filePath": "src/main/java/org/akira/ladux/exception/BusinessRuleException.java",
+      "lineRange": [
+        3,
+        7
+      ],
+      "summary": "Runtime exception class for rejecting operations that violate application business rules.",
+      "tags": [
+        "exception",
+        "business-rule",
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/exception/UnauthenticatedException.java:UnauthenticatedException",
+      "type": "class",
+      "name": "UnauthenticatedException",
+      "filePath": "src/main/java/org/akira/ladux/exception/UnauthenticatedException.java",
+      "lineRange": [
+        3,
+        7
+      ],
+      "summary": "Runtime exception class for unauthenticated request conditions.",
+      "tags": [
+        "exception",
+        "authentication",
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/RefreshToken.java:RefreshToken",
+      "type": "class",
+      "name": "RefreshToken",
+      "filePath": "src/main/java/org/akira/ladux/model/RefreshToken.java",
+      "lineRange": [
+        27,
+        63
+      ],
+      "summary": "Refresh-token JPA entity with expiry and revocation fields for server-side session control.",
+      "tags": [
+        "data-model",
+        "refresh-token",
+        "persistence",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/Role.java:Role",
+      "type": "class",
+      "name": "Role",
+      "filePath": "src/main/java/org/akira/ladux/model/Role.java",
+      "lineRange": [
+        10,
+        31
+      ],
+      "summary": "Role JPA entity connecting `RoleName` values to users through the `user_roles` join table.",
+      "tags": [
+        "data-model",
+        "authorization",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/User.java:User",
+      "type": "class",
+      "name": "User",
+      "filePath": "src/main/java/org/akira/ladux/model/User.java",
+      "lineRange": [
+        25,
+        72
+      ],
+      "summary": "User JPA entity for credentials, active state, token revocation version, role membership, and linked customer profile data.",
+      "tags": [
+        "data-model",
+        "user-account",
+        "persistence",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/UserPrincipal.java:UserPrincipal",
+      "type": "class",
+      "name": "UserPrincipal",
+      "filePath": "src/main/java/org/akira/ladux/model/UserPrincipal.java",
+      "lineRange": [
+        14,
+        68
+      ],
+      "summary": "Spring Security principal adapter exposing user credentials, authorities, active-state checks, and token version.",
+      "tags": [
+        "security",
+        "authentication",
+        "adapter",
+        "authorization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/config/JwtFilter.java:doFilterInternal",
+      "type": "function",
+      "name": "doFilterInternal",
+      "filePath": "src/main/java/org/akira/ladux/config/JwtFilter.java",
+      "lineRange": [
+        39,
+        117
+      ],
+      "summary": "Validates an incoming JWT from cookie or Authorization header, handles invalid tokens without forcing a 401, checks token version against the loaded principal, and installs the authentication token into the security context.",
+      "tags": [
+        "security",
+        "jwt",
+        "authentication",
+        "middleware"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java:onAuthenticationSuccess",
+      "type": "function",
+      "name": "onAuthenticationSuccess",
+      "filePath": "src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java",
+      "lineRange": [
+        58,
+        85
+      ],
+      "summary": "Processes a successful OAuth2 authentication by reading the email claim, verifying the local user, issuing access and refresh cookies, and redirecting to the configured frontend URL.",
+      "tags": [
+        "oauth2",
+        "authentication",
+        "cookie-session",
+        "redirect"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/AuthController.java:register",
+      "type": "function",
+      "name": "register",
+      "filePath": "src/main/java/org/akira/ladux/controller/AuthController.java",
+      "lineRange": [
+        48,
+        51
+      ],
+      "summary": "Creates a new user account from a validated registration request and returns the created user response with HTTP 201.",
+      "tags": [
+        "api-handler",
+        "registration",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/AuthController.java:login",
+      "type": "function",
+      "name": "login",
+      "filePath": "src/main/java/org/akira/ladux/controller/AuthController.java",
+      "lineRange": [
+        53,
+        80
+      ],
+      "summary": "Authenticates username and password credentials, rejects invalid seeded-password accounts, creates access and refresh tokens, and returns the access token while setting auth cookies.",
+      "tags": [
+        "api-handler",
+        "authentication",
+        "refresh-token",
+        "cookie-session"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/AuthController.java:refresh",
+      "type": "function",
+      "name": "refresh",
+      "filePath": "src/main/java/org/akira/ladux/controller/AuthController.java",
+      "lineRange": [
+        82,
+        99
+      ],
+      "summary": "Reads the refresh cookie, verifies and rotates the refresh token, and issues a new access token plus replacement refresh cookie.",
+      "tags": [
+        "api-handler",
+        "refresh-token",
+        "cookie-session"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/AuthController.java:logout",
+      "type": "function",
+      "name": "logout",
+      "filePath": "src/main/java/org/akira/ladux/controller/AuthController.java",
+      "lineRange": [
+        101,
+        110
+      ],
+      "summary": "Revokes the current refresh session, bumps token version through the service, and clears both access and refresh cookies.",
+      "tags": [
+        "api-handler",
+        "logout",
+        "token-revocation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/AuthController.java:csrf",
+      "type": "function",
+      "name": "csrf",
+      "filePath": "src/main/java/org/akira/ladux/controller/AuthController.java",
+      "lineRange": [
+        112,
+        119
+      ],
+      "summary": "Returns the CSRF header name, parameter name, and token value for frontend requests.",
+      "tags": [
+        "api-handler",
+        "csrf",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:getAllUsers",
+      "type": "function",
+      "name": "getAllUsers",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "lineRange": [
+        28,
+        32
+      ],
+      "summary": "Returns a pageable list of all users for administrators.",
+      "tags": [
+        "api-handler",
+        "admin",
+        "pagination"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:getUserById",
+      "type": "function",
+      "name": "getUserById",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "lineRange": [
+        35,
+        39
+      ],
+      "summary": "Returns a user by id, allowing administrators or the matching principal to access the record.",
+      "tags": [
+        "api-handler",
+        "authorization",
+        "user-lookup"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:getUserByEmail",
+      "type": "function",
+      "name": "getUserByEmail",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "lineRange": [
+        41,
+        45
+      ],
+      "summary": "Returns a user by email for administrator lookups.",
+      "tags": [
+        "api-handler",
+        "admin",
+        "user-lookup"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:getActiveUsers",
+      "type": "function",
+      "name": "getActiveUsers",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "lineRange": [
+        47,
+        51
+      ],
+      "summary": "Returns a pageable list of active users for administrators.",
+      "tags": [
+        "api-handler",
+        "admin",
+        "pagination"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:updateUserByAdmin",
+      "type": "function",
+      "name": "updateUserByAdmin",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "lineRange": [
+        54,
+        60
+      ],
+      "summary": "Applies administrator-supplied user updates through the user service and returns the updated response.",
+      "tags": [
+        "api-handler",
+        "admin",
+        "user-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:deleteUserById",
+      "type": "function",
+      "name": "deleteUserById",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "lineRange": [
+        61,
+        66
+      ],
+      "summary": "Deletes a user by id through the user service and returns HTTP 204.",
+      "tags": [
+        "api-handler",
+        "admin",
+        "deletion"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/UserController.java:getCurrentUser",
+      "type": "function",
+      "name": "getCurrentUser",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "lineRange": [
+        21,
+        24
+      ],
+      "summary": "Loads the authenticated principal's user profile by id.",
+      "tags": [
+        "api-handler",
+        "user-profile",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/UserController.java:uploadAvatar",
+      "type": "function",
+      "name": "uploadAvatar",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "lineRange": [
+        26,
+        32
+      ],
+      "summary": "Uploads an avatar multipart file for the authenticated user and returns the refreshed user response.",
+      "tags": [
+        "api-handler",
+        "file-upload",
+        "user-profile"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/UserController.java:updateCurrentUser",
+      "type": "function",
+      "name": "updateCurrentUser",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "lineRange": [
+        34,
+        40
+      ],
+      "summary": "Applies validated profile changes for the authenticated user.",
+      "tags": [
+        "api-handler",
+        "user-profile",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/WishlistController.java:addItemToWishlist",
+      "type": "function",
+      "name": "addItemToWishlist",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "lineRange": [
+        22,
+        26
+      ],
+      "summary": "Adds the requested product to the authenticated user's wishlist and returns HTTP 201.",
+      "tags": [
+        "api-handler",
+        "wishlist",
+        "creation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/WishlistController.java:getWishlistsByUserId",
+      "type": "function",
+      "name": "getWishlistsByUserId",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "lineRange": [
+        27,
+        30
+      ],
+      "summary": "Returns all wishlist entries for the authenticated user.",
+      "tags": [
+        "api-handler",
+        "wishlist",
+        "query"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/WishlistController.java:removeItemFromWishlist",
+      "type": "function",
+      "name": "removeItemFromWishlist",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "lineRange": [
+        32,
+        36
+      ],
+      "summary": "Removes the specified product from the authenticated user's wishlist and returns HTTP 204.",
+      "tags": [
+        "api-handler",
+        "wishlist",
+        "deletion"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/response/UserResponse.java:fromEntity",
+      "type": "function",
+      "name": "fromEntity",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/UserResponse.java",
+      "lineRange": [
+        19,
+        43
+      ],
+      "summary": "Maps a user entity into a serializable response, including role names and optional customer profile fields.",
+      "tags": [
+        "mapper",
+        "serialization",
+        "response-dto"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/response/WishlistResponse.java:fromEntity",
+      "type": "function",
+      "name": "fromEntity",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/WishlistResponse.java",
+      "lineRange": [
+        11,
+        19
+      ],
+      "summary": "Maps a wishlist entity into a response DTO with a nested product response when the product is present.",
+      "tags": [
+        "mapper",
+        "serialization",
+        "response-dto"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/model/RefreshToken.java:isUsable",
+      "type": "function",
+      "name": "isUsable",
+      "filePath": "src/main/java/org/akira/ladux/model/RefreshToken.java",
+      "lineRange": [
+        60,
+        62
+      ],
+      "summary": "Checks whether the refresh token has not been revoked and has not expired.",
+      "tags": [
+        "domain-method",
+        "refresh-token",
+        "validation"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/JwtFilter.java",
+      "target": "class:src/main/java/org/akira/ladux/config/JwtFilter.java:JwtFilter",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/JwtFilter.java",
+      "target": "class:src/main/java/org/akira/ladux/config/JwtFilter.java:JwtFilter",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java",
+      "target": "class:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java:OAuth2SuccessHandler",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java",
+      "target": "class:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java:OAuth2SuccessHandler",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/AuthController.java:AuthController",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/AuthController.java:AuthController",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:AdminUserController",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:AdminUserController",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/UserController.java:UserController",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/UserController.java:UserController",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/WishlistController.java:WishlistController",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/WishlistController.java:WishlistController",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/request/LoginRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/LoginRequest.java:LoginRequest",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/request/LoginRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/LoginRequest.java:LoginRequest",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/request/RegisterRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/RegisterRequest.java:RegisterRequest",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/request/RegisterRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/RegisterRequest.java:RegisterRequest",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/request/UserAdminUpdateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/UserAdminUpdateRequest.java:UserAdminUpdateRequest",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/request/UserAdminUpdateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/UserAdminUpdateRequest.java:UserAdminUpdateRequest",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/request/UserProfileUpdateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/UserProfileUpdateRequest.java:UserProfileUpdateRequest",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/request/UserProfileUpdateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/UserProfileUpdateRequest.java:UserProfileUpdateRequest",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/request/WishlistRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/WishlistRequest.java:WishlistRequest",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/request/WishlistRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/WishlistRequest.java:WishlistRequest",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/response/UserResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/UserResponse.java:UserResponse",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/response/UserResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/UserResponse.java:UserResponse",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/response/WishlistResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/WishlistResponse.java:WishlistResponse",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/response/WishlistResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/WishlistResponse.java:WishlistResponse",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/exception/BusinessRuleException.java",
+      "target": "class:src/main/java/org/akira/ladux/exception/BusinessRuleException.java:BusinessRuleException",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/exception/BusinessRuleException.java",
+      "target": "class:src/main/java/org/akira/ladux/exception/BusinessRuleException.java:BusinessRuleException",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/exception/UnauthenticatedException.java",
+      "target": "class:src/main/java/org/akira/ladux/exception/UnauthenticatedException.java:UnauthenticatedException",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/exception/UnauthenticatedException.java",
+      "target": "class:src/main/java/org/akira/ladux/exception/UnauthenticatedException.java:UnauthenticatedException",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/model/RefreshToken.java",
+      "target": "class:src/main/java/org/akira/ladux/model/RefreshToken.java:RefreshToken",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/model/RefreshToken.java",
+      "target": "class:src/main/java/org/akira/ladux/model/RefreshToken.java:RefreshToken",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/model/Role.java",
+      "target": "class:src/main/java/org/akira/ladux/model/Role.java:Role",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/model/Role.java",
+      "target": "class:src/main/java/org/akira/ladux/model/Role.java:Role",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/model/User.java",
+      "target": "class:src/main/java/org/akira/ladux/model/User.java:User",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/model/User.java",
+      "target": "class:src/main/java/org/akira/ladux/model/User.java:User",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/model/UserPrincipal.java",
+      "target": "class:src/main/java/org/akira/ladux/model/UserPrincipal.java:UserPrincipal",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/model/UserPrincipal.java",
+      "target": "class:src/main/java/org/akira/ladux/model/UserPrincipal.java:UserPrincipal",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/JwtFilter.java",
+      "target": "function:src/main/java/org/akira/ladux/config/JwtFilter.java:doFilterInternal",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/JwtFilter.java",
+      "target": "function:src/main/java/org/akira/ladux/config/JwtFilter.java:doFilterInternal",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java",
+      "target": "function:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java:onAuthenticationSuccess",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java",
+      "target": "function:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java:onAuthenticationSuccess",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/AuthController.java:register",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/AuthController.java:register",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/AuthController.java:login",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/AuthController.java:login",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/AuthController.java:refresh",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/AuthController.java:refresh",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/AuthController.java:logout",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/AuthController.java:logout",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/AuthController.java:csrf",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/AuthController.java:csrf",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:getAllUsers",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:getAllUsers",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:getUserById",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:getUserById",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:getUserByEmail",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:getUserByEmail",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:getActiveUsers",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:getActiveUsers",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:updateUserByAdmin",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:updateUserByAdmin",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:deleteUserById",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java:deleteUserById",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/UserController.java:getCurrentUser",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/UserController.java:getCurrentUser",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/UserController.java:uploadAvatar",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/UserController.java:uploadAvatar",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/UserController.java:updateCurrentUser",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/UserController.java:updateCurrentUser",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/WishlistController.java:addItemToWishlist",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/WishlistController.java:addItemToWishlist",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/WishlistController.java:getWishlistsByUserId",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/WishlistController.java:getWishlistsByUserId",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/WishlistController.java:removeItemFromWishlist",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/WishlistController.java:removeItemFromWishlist",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/response/UserResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/UserResponse.java:fromEntity",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/response/UserResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/UserResponse.java:fromEntity",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/response/WishlistResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/WishlistResponse.java:fromEntity",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/response/WishlistResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/WishlistResponse.java:fromEntity",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/model/RefreshToken.java",
+      "target": "function:src/main/java/org/akira/ladux/model/RefreshToken.java:isUsable",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/model/RefreshToken.java",
+      "target": "function:src/main/java/org/akira/ladux/model/RefreshToken.java:isUsable",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/JwtFilter.java",
+      "target": "file:src/main/java/org/akira/ladux/model/UserPrincipal.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/JwtFilter.java",
+      "target": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/JwtFilter.java",
+      "target": "file:src/main/java/org/akira/ladux/service/JwtService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java",
+      "target": "file:src/main/java/org/akira/ladux/model/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java",
+      "target": "file:src/main/java/org/akira/ladux/repository/UserRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java",
+      "target": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java",
+      "target": "file:src/main/java/org/akira/ladux/service/JwtService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/config/OAuth2SuccessHandler.java",
+      "target": "file:src/main/java/org/akira/ladux/service/RefreshTokenService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/LoginRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/RegisterRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/UserResponse.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "file:src/main/java/org/akira/ladux/exception/BusinessRuleException.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "file:src/main/java/org/akira/ladux/model/RefreshToken.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "file:src/main/java/org/akira/ladux/model/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "file:src/main/java/org/akira/ladux/repository/UserRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/JwtService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/RefreshTokenService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/UserAdminUpdateRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/UserResponse.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminUserController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/UserProfileUpdateRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/UserResponse.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "target": "file:src/main/java/org/akira/ladux/model/UserPrincipal.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/UserController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/WishlistRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/WishlistResponse.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "target": "file:src/main/java/org/akira/ladux/model/UserPrincipal.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/controller/user/WishlistController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/WishlistService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/response/UserResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/Customer.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/response/UserResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/dto/response/WishlistResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/Wishlist.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "direction": "forward",
+      "source": "file:src/main/java/org/akira/ladux/model/Role.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/RoleName.java",
+      "type": "imports",
+      "weight": 0.7
+    }
+  ]
+}

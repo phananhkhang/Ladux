@@ -1,6 +1,7 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.akira.ladux.dto.request.OrderStatusUpdateRequest;
 import org.akira.ladux.dto.response.OrderResponse;
 import org.akira.ladux.exception.BusinessRuleException;
@@ -67,7 +68,7 @@ public class OrderStateMachineImpl implements OrderStateMachine {
         order.getHistories().add(OrderHistory.builder()
                 .order(order)
                 .user(order.getUser())
-                .status(target.name())
+                .status(target)
                 .description("Order status changed from " + current.name() + " to " + target.name())
                 .build());
         return OrderResponse.fromEntity(order);
@@ -76,6 +77,7 @@ public class OrderStateMachineImpl implements OrderStateMachine {
     @Override
     @Scheduled(fixedDelayString = "${ladux.order-expiration.fixed-delay-ms:60000}")
     @Transactional
+    @SchedulerLock
     @Caching(evict = {
             @CacheEvict(value = "orders", allEntries = true),
             @CacheEvict(value = "orderHistories", allEntries = true),

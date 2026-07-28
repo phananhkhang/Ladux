@@ -1,0 +1,1234 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 11,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 11,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 11,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "src/main/java/org/akira/ladux/controller/user/CartController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 46,
+      "nonEmptyLines": 43,
+      "functions": [
+        {
+          "name": "getCartByUserId",
+          "startLine": 21,
+          "endLine": 25,
+          "params": [
+            "principal"
+          ]
+        },
+        {
+          "name": "addItemToCart",
+          "startLine": 26,
+          "endLine": 30,
+          "params": [
+            "principal",
+            "request"
+          ]
+        },
+        {
+          "name": "updateQuantity",
+          "startLine": 31,
+          "endLine": 35,
+          "params": [
+            "principal",
+            "productId",
+            "request"
+          ]
+        },
+        {
+          "name": "removeItemFromCart",
+          "startLine": 36,
+          "endLine": 40,
+          "params": [
+            "principal",
+            "productId"
+          ]
+        },
+        {
+          "name": "clearCart",
+          "startLine": 41,
+          "endLine": 45,
+          "params": [
+            "principal"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CartController",
+          "startLine": 15,
+          "endLine": 46,
+          "methods": [
+            "getCartByUserId",
+            "addItemToCart",
+            "updateQuantity",
+            "removeItemFromCart",
+            "clearCart"
+          ],
+          "properties": [
+            "service"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getCartByUserId",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "addItemToCart",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "updateQuantity",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "removeItemFromCart",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "clearCart",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "CartController",
+          "line": 15,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getCartByUserId",
+          "callee": "service.getCartByUserId",
+          "lineNumber": 23
+        },
+        {
+          "caller": "getCartByUserId",
+          "callee": "principal.getId",
+          "lineNumber": 23
+        },
+        {
+          "caller": "getCartByUserId",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 24
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "service.addItemToCart",
+          "lineNumber": 28
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "principal.getId",
+          "lineNumber": 28
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "request.productId",
+          "lineNumber": 28
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "request.quantity",
+          "lineNumber": 28
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "ResponseEntity.status(HttpStatus.CREATED).build",
+          "lineNumber": 29
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "ResponseEntity.status",
+          "lineNumber": 29
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "service.updateQuantity",
+          "lineNumber": 33
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "principal.getId",
+          "lineNumber": 33
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "request.quantity",
+          "lineNumber": 33
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "ResponseEntity.ok().build",
+          "lineNumber": 34
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 34
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "service.removeItemFromCart",
+          "lineNumber": 38
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "principal.getId",
+          "lineNumber": 38
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "ResponseEntity.noContent().build",
+          "lineNumber": 39
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "ResponseEntity.noContent",
+          "lineNumber": 39
+        },
+        {
+          "caller": "clearCart",
+          "callee": "service.clearCart",
+          "lineNumber": 43
+        },
+        {
+          "caller": "clearCart",
+          "callee": "principal.getId",
+          "lineNumber": 43
+        },
+        {
+          "caller": "clearCart",
+          "callee": "ResponseEntity.noContent().build",
+          "lineNumber": 44
+        },
+        {
+          "caller": "clearCart",
+          "callee": "ResponseEntity.noContent",
+          "lineNumber": 44
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 6,
+        "functionCount": 5,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/request/CartItemRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 14,
+      "nonEmptyLines": 11,
+      "classes": [
+        {
+          "name": "CartItemRequest",
+          "startLine": 6,
+          "endLine": 14,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "CartItemRequest",
+          "line": 6,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/request/CartQuantityRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 10,
+      "nonEmptyLines": 8,
+      "classes": [
+        {
+          "name": "CartQuantityRequest",
+          "startLine": 6,
+          "endLine": 10,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "CartQuantityRequest",
+          "line": 6,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/response/CartItemResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 22,
+      "nonEmptyLines": 19,
+      "functions": [
+        {
+          "name": "fromEntity",
+          "startLine": 12,
+          "endLine": 21,
+          "params": [
+            "item"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CartItemResponse",
+          "startLine": 7,
+          "endLine": 22,
+          "methods": [
+            "fromEntity"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "fromEntity",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "CartItemResponse",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "fromEntity",
+          "callee": "new CartItemResponse",
+          "lineNumber": 16
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getId",
+          "lineNumber": 17
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getProduct",
+          "lineNumber": 18
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "ProductResponse.summaryFromEntity",
+          "lineNumber": 18
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getProduct",
+          "lineNumber": 18
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getQuantity",
+          "lineNumber": 19
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 36,
+      "nonEmptyLines": 33,
+      "functions": [
+        {
+          "name": "fromEntity",
+          "startLine": 15,
+          "endLine": 35,
+          "params": [
+            "cart"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CartResponse",
+          "startLine": 9,
+          "endLine": 36,
+          "methods": [
+            "fromEntity"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "fromEntity",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "CartResponse",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "fromEntity",
+          "callee": "cart.getItems",
+          "lineNumber": 19
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "cart.getItems().stream()\r\n                .map(item -> {\r\n                    BigDecimal price = item.getProductVariant().getDiscountPrice() == null\r\n                            ? item.getProductVariant().getPrice()\r\n                            : item.getProductVariant().getDiscountPrice();\r\n                    return price.multiply(BigDecimal.valueOf(item.getQuantity()));\r\n                }).reduce",
+          "lineNumber": 19
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "cart.getItems().stream().map",
+          "lineNumber": 19
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "cart.getItems().stream",
+          "lineNumber": 19
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "cart.getItems",
+          "lineNumber": 19
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getProductVariant().getDiscountPrice",
+          "lineNumber": 21
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getProductVariant",
+          "lineNumber": 21
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getProductVariant().getPrice",
+          "lineNumber": 22
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getProductVariant",
+          "lineNumber": 22
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getProductVariant().getDiscountPrice",
+          "lineNumber": 23
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getProductVariant",
+          "lineNumber": 23
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "price.multiply",
+          "lineNumber": 24
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "BigDecimal.valueOf",
+          "lineNumber": 24
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getQuantity",
+          "lineNumber": 24
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "new CartResponse",
+          "lineNumber": 27
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "cart.getId",
+          "lineNumber": 28
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "cart.getUser",
+          "lineNumber": 29
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "cart.getUser().getId",
+          "lineNumber": 29
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "cart.getUser",
+          "lineNumber": 29
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "cart.getItems",
+          "lineNumber": 30
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "List.of",
+          "lineNumber": 30
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "cart.getItems().stream()\r\n                        .map(CartItemResponse::fromEntity).toList",
+          "lineNumber": 30
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "cart.getItems().stream().map",
+          "lineNumber": 30
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "cart.getItems().stream",
+          "lineNumber": 30
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "cart.getItems",
+          "lineNumber": 30
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/model/Cart.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 31,
+      "nonEmptyLines": 25,
+      "classes": [
+        {
+          "name": "Cart",
+          "startLine": 9,
+          "endLine": 31,
+          "methods": [],
+          "properties": [
+            "id",
+            "user",
+            "items"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Cart",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/model/CartItem.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 40,
+      "nonEmptyLines": 33,
+      "functions": [
+        {
+          "name": "incrementQuantity",
+          "startLine": 37,
+          "endLine": 39,
+          "params": [
+            "quantity"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CartItem",
+          "startLine": 7,
+          "endLine": 40,
+          "methods": [
+            "incrementQuantity"
+          ],
+          "properties": [
+            "id",
+            "cart",
+            "productVariant",
+            "quantity"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "incrementQuantity",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "CartItem",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/repository/CartItemRepository.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 10,
+      "classes": [
+        {
+          "name": "CartItemRepository",
+          "startLine": 9,
+          "endLine": 15,
+          "methods": [
+            "findByCartId",
+            "findByProductId",
+            "deleteByProductVariantId"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "CartItemRepository",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/repository/CartRepository.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 23,
+      "nonEmptyLines": 17,
+      "classes": [
+        {
+          "name": "CartRepository",
+          "startLine": 13,
+          "endLine": 22,
+          "methods": [
+            "findByUserId",
+            "findByUserIdForUpdate"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "CartRepository",
+          "line": 13,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/CartService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 14,
+      "nonEmptyLines": 9,
+      "classes": [
+        {
+          "name": "CartService",
+          "startLine": 4,
+          "endLine": 14,
+          "methods": [
+            "getCartByUserId",
+            "addItemToCart",
+            "updateQuantity",
+            "removeItemFromCart",
+            "clearCart"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "CartService",
+          "line": 4,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 120,
+      "nonEmptyLines": 113,
+      "functions": [
+        {
+          "name": "getCartByUserId",
+          "startLine": 30,
+          "endLine": 39,
+          "params": [
+            "userId"
+          ]
+        },
+        {
+          "name": "addItemToCart",
+          "startLine": 40,
+          "endLine": 73,
+          "params": [
+            "userId",
+            "productId",
+            "quantity"
+          ]
+        },
+        {
+          "name": "updateQuantity",
+          "startLine": 74,
+          "endLine": 93,
+          "params": [
+            "userId",
+            "productId",
+            "quantity"
+          ]
+        },
+        {
+          "name": "removeItemFromCart",
+          "startLine": 94,
+          "endLine": 108,
+          "params": [
+            "userId",
+            "productId"
+          ]
+        },
+        {
+          "name": "clearCart",
+          "startLine": 109,
+          "endLine": 119,
+          "params": [
+            "userId"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CartServiceImpl",
+          "startLine": 24,
+          "endLine": 120,
+          "methods": [
+            "getCartByUserId",
+            "addItemToCart",
+            "updateQuantity",
+            "removeItemFromCart",
+            "clearCart"
+          ],
+          "properties": [
+            "repo",
+            "userRepository",
+            "productRepository"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getCartByUserId",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "addItemToCart",
+          "line": 40,
+          "isDefault": false
+        },
+        {
+          "name": "updateQuantity",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "removeItemFromCart",
+          "line": 94,
+          "isDefault": false
+        },
+        {
+          "name": "clearCart",
+          "line": 109,
+          "isDefault": false
+        },
+        {
+          "name": "CartServiceImpl",
+          "line": 24,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getCartByUserId",
+          "callee": "repo.findByUserId",
+          "lineNumber": 34
+        },
+        {
+          "caller": "getCartByUserId",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 36
+        },
+        {
+          "caller": "getCartByUserId",
+          "callee": "CartResponse.fromEntity",
+          "lineNumber": 38
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "userRepository.findByIdForUpdate(userId).orElseThrow",
+          "lineNumber": 44
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "userRepository.findByIdForUpdate",
+          "lineNumber": 44
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 45
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "repo.findByUserIdForUpdate(userId).orElseGet",
+          "lineNumber": 46
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "repo.findByUserIdForUpdate",
+          "lineNumber": 46
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "Cart.builder()\r\n                        .user(user).build",
+          "lineNumber": 47
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "Cart.builder().user",
+          "lineNumber": 47
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "Cart.builder",
+          "lineNumber": 47
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "productRepository.findById(productId).orElseThrow",
+          "lineNumber": 52
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "productRepository.findById",
+          "lineNumber": 52
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 53
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "cart.getItems().stream()\r\n                .filter(item -> item.getProduct().getId().equals(productId)).findFirst",
+          "lineNumber": 56
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "cart.getItems().stream().filter",
+          "lineNumber": 56
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "cart.getItems().stream",
+          "lineNumber": 56
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "cart.getItems",
+          "lineNumber": 56
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "item.getProduct().getId().equals",
+          "lineNumber": 57
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "item.getProduct().getId",
+          "lineNumber": 57
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "item.getProduct",
+          "lineNumber": 57
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "existingItem.isPresent",
+          "lineNumber": 60
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "existingItem.get().incrementQuantity",
+          "lineNumber": 62
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "existingItem.get",
+          "lineNumber": 62
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "CartItem.builder()\r\n                    .cart(cart)\r\n                    .product(product)\r\n                    .quantity(quantity).build",
+          "lineNumber": 65
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "CartItem.builder()\r\n                    .cart(cart)\r\n                    .product(product).quantity",
+          "lineNumber": 65
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "CartItem.builder()\r\n                    .cart(cart).product",
+          "lineNumber": 65
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "CartItem.builder().cart",
+          "lineNumber": 65
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "CartItem.builder",
+          "lineNumber": 65
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "cart.getItems().add",
+          "lineNumber": 70
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "cart.getItems",
+          "lineNumber": 70
+        },
+        {
+          "caller": "addItemToCart",
+          "callee": "repo.save",
+          "lineNumber": 72
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "userRepository.findByIdForUpdate(userId).orElseThrow",
+          "lineNumber": 78
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "userRepository.findByIdForUpdate",
+          "lineNumber": 78
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 79
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "repo.findByUserIdForUpdate(userId).orElseThrow",
+          "lineNumber": 80
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "repo.findByUserIdForUpdate",
+          "lineNumber": 80
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 81
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "cart.getItems().stream()\r\n                .filter(i -> i.getProduct().getId().equals(productId))\r\n                .findFirst().orElseThrow",
+          "lineNumber": 82
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "cart.getItems().stream()\r\n                .filter(i -> i.getProduct().getId().equals(productId)).findFirst",
+          "lineNumber": 82
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "cart.getItems().stream().filter",
+          "lineNumber": 82
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "cart.getItems().stream",
+          "lineNumber": 82
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "cart.getItems",
+          "lineNumber": 82
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "i.getProduct().getId().equals",
+          "lineNumber": 83
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "i.getProduct().getId",
+          "lineNumber": 83
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "i.getProduct",
+          "lineNumber": 83
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 85
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "cart.getItems().remove",
+          "lineNumber": 88
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "cart.getItems",
+          "lineNumber": 88
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "item.setQuantity",
+          "lineNumber": 90
+        },
+        {
+          "caller": "updateQuantity",
+          "callee": "repo.save",
+          "lineNumber": 92
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "userRepository.findByIdForUpdate(userId).orElseThrow",
+          "lineNumber": 98
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "userRepository.findByIdForUpdate",
+          "lineNumber": 98
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 99
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "repo.findByUserIdForUpdate(userId).orElseThrow",
+          "lineNumber": 100
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "repo.findByUserIdForUpdate",
+          "lineNumber": 100
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 101
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "cart.getItems().stream()\r\n                .filter(i -> i.getProduct().getId().equals(productId))\r\n                .findFirst().orElseThrow",
+          "lineNumber": 102
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "cart.getItems().stream()\r\n                .filter(i -> i.getProduct().getId().equals(productId)).findFirst",
+          "lineNumber": 102
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "cart.getItems().stream().filter",
+          "lineNumber": 102
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "cart.getItems().stream",
+          "lineNumber": 102
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "cart.getItems",
+          "lineNumber": 102
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "i.getProduct().getId().equals",
+          "lineNumber": 103
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "i.getProduct().getId",
+          "lineNumber": 103
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "i.getProduct",
+          "lineNumber": 103
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 105
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "cart.getItems().remove",
+          "lineNumber": 106
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "cart.getItems",
+          "lineNumber": 106
+        },
+        {
+          "caller": "removeItemFromCart",
+          "callee": "repo.save",
+          "lineNumber": 107
+        },
+        {
+          "caller": "clearCart",
+          "callee": "userRepository.findByIdForUpdate(userId).orElseThrow",
+          "lineNumber": 113
+        },
+        {
+          "caller": "clearCart",
+          "callee": "userRepository.findByIdForUpdate",
+          "lineNumber": 113
+        },
+        {
+          "caller": "clearCart",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 114
+        },
+        {
+          "caller": "clearCart",
+          "callee": "repo.findByUserIdForUpdate(userId).orElseThrow",
+          "lineNumber": 115
+        },
+        {
+          "caller": "clearCart",
+          "callee": "repo.findByUserIdForUpdate",
+          "lineNumber": 115
+        },
+        {
+          "caller": "clearCart",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 116
+        },
+        {
+          "caller": "clearCart",
+          "callee": "cart.getItems().clear",
+          "lineNumber": 117
+        },
+        {
+          "caller": "clearCart",
+          "callee": "cart.getItems",
+          "lineNumber": 117
+        },
+        {
+          "caller": "clearCart",
+          "callee": "repo.save",
+          "lineNumber": 118
+        }
+      ],
+      "metrics": {
+        "importCount": 10,
+        "exportCount": 6,
+        "functionCount": 5,
+        "classCount": 1
+      }
+    }
+  ]
+}

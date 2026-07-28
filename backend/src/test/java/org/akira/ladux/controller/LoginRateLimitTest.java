@@ -27,22 +27,24 @@ class LoginRateLimitTest extends AbstractIntegrationTest {
     void blocksLoginAfterExceedingLimit() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         String body = "{\"username\":\"khong-ton-tai\",\"password\":\"sai-mat-khau\"}";
+        String forwardedFor = "203.0.113." + System.nanoTime();
 
         // 5 lan dau: trong gioi han -> khong bi 429.
         for (int i = 1; i <= 5; i++) {
-            int status = postLogin(client, body);
+            int status = postLogin(client, body, forwardedFor);
             assertNotEquals(429, status, "Lan thu " + i + " khong duoc bi rate limit");
         }
 
         // Lan thu 6: vuot gioi han -> 429.
-        int sixth = postLogin(client, body);
+        int sixth = postLogin(client, body, forwardedFor);
         assertEquals(429, sixth, "Lan thu 6 phai bi chan (429 Too Many Requests)");
     }
 
-    private int postLogin(HttpClient client, String body) throws Exception {
+    private int postLogin(HttpClient client, String body, String forwardedFor) throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:" + port + "/api/v1/auth/login"))
                 .header("Content-Type", "application/json")
+                .header("X-Forwarded-For", forwardedFor)
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
         return client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode();

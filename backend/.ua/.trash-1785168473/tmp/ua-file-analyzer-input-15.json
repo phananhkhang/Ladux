@@ -1,0 +1,76 @@
+{
+    "projectRoot":  "C:\\Users\\ADMIN\\OneDrive\\Desktop\\Ladux\\backend",
+    "batchFiles":  [
+                       {
+                           "path":  "src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+                           "language":  "java",
+                           "sizeLines":  36,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java",
+                           "language":  "java",
+                           "sizeLines":  27,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+                           "language":  "java",
+                           "sizeLines":  26,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/model/OrderHistory.java",
+                           "language":  "java",
+                           "sizeLines":  51,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/repository/OrderHistoryRepository.java",
+                           "language":  "java",
+                           "sizeLines":  30,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/service/OrderHistoryService.java",
+                           "language":  "java",
+                           "sizeLines":  15,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+                           "language":  "java",
+                           "sizeLines":  49,
+                           "fileCategory":  "code"
+                       }
+                   ],
+    "batchImportData":  {
+                            "src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java":  [
+                                                                                                                    "src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+                                                                                                                    "src/main/java/org/akira/ladux/service/OrderHistoryService.java"
+                                                                                                                ],
+                            "src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java":  [
+                                                                                                              "src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+                                                                                                              "src/main/java/org/akira/ladux/model/UserPrincipal.java",
+                                                                                                              "src/main/java/org/akira/ladux/service/OrderHistoryService.java"
+                                                                                                          ],
+                            "src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java":  [
+                                                                                                         "src/main/java/org/akira/ladux/model/OrderHistory.java"
+                                                                                                     ],
+                            "src/main/java/org/akira/ladux/model/OrderHistory.java":  [
+                                                                                          "src/main/java/org/akira/ladux/model/enums/OrderStatus.java"
+                                                                                      ],
+                            "src/main/java/org/akira/ladux/repository/OrderHistoryRepository.java":  [
+                                                                                                         "src/main/java/org/akira/ladux/model/OrderHistory.java"
+                                                                                                     ],
+                            "src/main/java/org/akira/ladux/service/OrderHistoryService.java":  [
+                                                                                                   "src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java"
+                                                                                               ],
+                            "src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java":  [
+                                                                                                            "src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+                                                                                                            "src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+                                                                                                            "src/main/java/org/akira/ladux/repository/OrderHistoryRepository.java",
+                                                                                                            "src/main/java/org/akira/ladux/service/OrderHistoryService.java"
+                                                                                                        ]
+                        }
+}

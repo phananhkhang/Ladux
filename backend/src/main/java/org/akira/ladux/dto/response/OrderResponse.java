@@ -1,6 +1,7 @@
 package org.akira.ladux.dto.response;
 
 import org.akira.ladux.model.Order;
+import org.akira.ladux.model.ShippingAddress;
 import org.akira.ladux.model.enums.OrderStatus;
 import org.akira.ladux.model.enums.PaymentProvider;
 import java.io.Serializable;
@@ -16,7 +17,7 @@ public record OrderResponse(
         BigDecimal discountAmount,
         BigDecimal finalAmount,
         OrderStatus status,
-        String shippingAddress,
+        ShippingAddress shippingAddress,
         String trackingNumber,
         Instant createdAt,
         Instant paymentExpiresAt,

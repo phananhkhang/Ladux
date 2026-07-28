@@ -1,0 +1,34 @@
+{
+    "projectRoot":  "C:\\Users\\ADMIN\\OneDrive\\Desktop\\Ladux\\backend",
+    "batchFiles":  [
+                       {
+                           "path":  ".dockerignore",
+                           "language":  "unknown",
+                           "sizeLines":  7,
+                           "fileCategory":  "infra"
+                       },
+                       {
+                           "path":  "Dockerfile",
+                           "language":  "dockerfile",
+                           "sizeLines":  23,
+                           "fileCategory":  "infra"
+                       },
+                       {
+                           "path":  "docker-compose.yml",
+                           "language":  "yaml",
+                           "sizeLines":  77,
+                           "fileCategory":  "infra"
+                       }
+                   ],
+    "batchImportData":  {
+                            ".dockerignore":  [
+
+                                              ],
+                            "Dockerfile":  [
+
+                                           ],
+                            "docker-compose.yml":  [
+
+                                                   ]
+                        }
+}

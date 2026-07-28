@@ -15,7 +15,7 @@ public record CartItemResponse(
         }
         return new CartItemResponse(
                 item.getId(),
-                item.getProduct() == null ? null : ProductResponse.summaryFromEntity(item.getProduct()),
+                item.getProductVariant() == null ? null : ProductResponse.summaryFromEntity(item.getProductVariant().getProduct()),
                 item.getQuantity()
         );
     }

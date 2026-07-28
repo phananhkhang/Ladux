@@ -1,0 +1,978 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 9,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 9,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 9,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 25,
+      "functions": [
+        {
+          "name": "getAllReviews",
+          "startLine": 18,
+          "endLine": 22,
+          "params": [
+            "pageable"
+          ]
+        },
+        {
+          "name": "getReviewsByUserId",
+          "startLine": 23,
+          "endLine": 27,
+          "params": [
+            "userId",
+            "pageable"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AdminReviewController",
+          "startLine": 12,
+          "endLine": 28,
+          "methods": [
+            "getAllReviews",
+            "getReviewsByUserId"
+          ],
+          "properties": [
+            "service"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getAllReviews",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "getReviewsByUserId",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "AdminReviewController",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getAllReviews",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 21
+        },
+        {
+          "caller": "getAllReviews",
+          "callee": "service.getAllReviews",
+          "lineNumber": 21
+        },
+        {
+          "caller": "getReviewsByUserId",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 26
+        },
+        {
+          "caller": "getReviewsByUserId",
+          "callee": "service.getReviewsByUserId",
+          "lineNumber": 26
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 53,
+      "nonEmptyLines": 47,
+      "functions": [
+        {
+          "name": "getReviewsByProductId",
+          "startLine": 23,
+          "endLine": 26,
+          "params": [
+            "productId",
+            "pageable"
+          ]
+        },
+        {
+          "name": "createReview",
+          "startLine": 28,
+          "endLine": 34,
+          "params": [
+            "principal",
+            "request"
+          ]
+        },
+        {
+          "name": "updateReview",
+          "startLine": 36,
+          "endLine": 43,
+          "params": [
+            "principal",
+            "reviewId",
+            "request"
+          ]
+        },
+        {
+          "name": "deleteReviewById",
+          "startLine": 45,
+          "endLine": 52,
+          "params": [
+            "principal",
+            "reviewId"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ReviewController",
+          "startLine": 17,
+          "endLine": 53,
+          "methods": [
+            "getReviewsByProductId",
+            "createReview",
+            "updateReview",
+            "deleteReviewById"
+          ],
+          "properties": [
+            "service"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getReviewsByProductId",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "createReview",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "updateReview",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "deleteReviewById",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "ReviewController",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getReviewsByProductId",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 25
+        },
+        {
+          "caller": "getReviewsByProductId",
+          "callee": "service.getReviewsByProductId",
+          "lineNumber": 25
+        },
+        {
+          "caller": "createReview",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 33
+        },
+        {
+          "caller": "createReview",
+          "callee": "service.createReview",
+          "lineNumber": 33
+        },
+        {
+          "caller": "createReview",
+          "callee": "principal.getId",
+          "lineNumber": 33
+        },
+        {
+          "caller": "updateReview",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 42
+        },
+        {
+          "caller": "updateReview",
+          "callee": "service.updateReview",
+          "lineNumber": 42
+        },
+        {
+          "caller": "updateReview",
+          "callee": "principal.getId",
+          "lineNumber": 42
+        },
+        {
+          "caller": "deleteReviewById",
+          "callee": "service.deleteReviewById",
+          "lineNumber": 50
+        },
+        {
+          "caller": "deleteReviewById",
+          "callee": "principal.getId",
+          "lineNumber": 50
+        },
+        {
+          "caller": "deleteReviewById",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 51
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/request/ReviewCreateRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 21,
+      "nonEmptyLines": 17,
+      "classes": [
+        {
+          "name": "ReviewCreateRequest",
+          "startLine": 9,
+          "endLine": 21,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ReviewCreateRequest",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/request/ReviewUpdateRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 14,
+      "nonEmptyLines": 11,
+      "classes": [
+        {
+          "name": "ReviewUpdateRequest",
+          "startLine": 7,
+          "endLine": 14,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ReviewUpdateRequest",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/response/ReviewResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 40,
+      "nonEmptyLines": 37,
+      "functions": [
+        {
+          "name": "fromEntity",
+          "startLine": 16,
+          "endLine": 39,
+          "params": [
+            "review"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ReviewResponse",
+          "startLine": 8,
+          "endLine": 40,
+          "methods": [
+            "fromEntity"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "fromEntity",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "ReviewResponse",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "fromEntity",
+          "callee": "review.getUser",
+          "lineNumber": 21
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "user.getCustomer",
+          "lineNumber": 22
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "customer.getFullName",
+          "lineNumber": 25
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "customer.getFullName",
+          "lineNumber": 26
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "customer.getAvatarUrl",
+          "lineNumber": 27
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "user.getUsername",
+          "lineNumber": 29
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "new ReviewResponse",
+          "lineNumber": 31
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "review.getId",
+          "lineNumber": 32
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "review.getRating",
+          "lineNumber": 35
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "review.getComment",
+          "lineNumber": 36
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "review.getCreatedAt",
+          "lineNumber": 37
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/model/Review.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 42,
+      "nonEmptyLines": 34,
+      "classes": [
+        {
+          "name": "Review",
+          "startLine": 9,
+          "endLine": 42,
+          "methods": [],
+          "properties": [
+            "id",
+            "user",
+            "product",
+            "rating",
+            "comment",
+            "createdAt"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Review",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/repository/ReviewRepository.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 35,
+      "nonEmptyLines": 26,
+      "classes": [
+        {
+          "name": "ReviewRepository",
+          "startLine": 14,
+          "endLine": 34,
+          "methods": [
+            "findAll",
+            "findById",
+            "findByProductId",
+            "findByUserId",
+            "existsByUserIdAndProductId",
+            "findByUserIdAndId"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ReviewRepository",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/ReviewService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 25,
+      "nonEmptyLines": 16,
+      "classes": [
+        {
+          "name": "ReviewService",
+          "startLine": 9,
+          "endLine": 25,
+          "methods": [
+            "getAllReviews",
+            "getReviewById",
+            "getReviewsByProductId",
+            "getReviewsByUserId",
+            "createReview",
+            "updateReview",
+            "deleteReviewById",
+            "validateReviewRating"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ReviewService",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 122,
+      "nonEmptyLines": 112,
+      "functions": [
+        {
+          "name": "getAllReviews",
+          "startLine": 33,
+          "endLine": 39,
+          "params": [
+            "pageable"
+          ]
+        },
+        {
+          "name": "getReviewById",
+          "startLine": 41,
+          "endLine": 47,
+          "params": [
+            "id"
+          ]
+        },
+        {
+          "name": "getReviewsByProductId",
+          "startLine": 49,
+          "endLine": 55,
+          "params": [
+            "productId",
+            "pageable"
+          ]
+        },
+        {
+          "name": "getReviewsByUserId",
+          "startLine": 57,
+          "endLine": 63,
+          "params": [
+            "userId",
+            "pageable"
+          ]
+        },
+        {
+          "name": "createReview",
+          "startLine": 65,
+          "endLine": 89,
+          "params": [
+            "userId",
+            "request"
+          ]
+        },
+        {
+          "name": "updateReview",
+          "startLine": 91,
+          "endLine": 107,
+          "params": [
+            "userId",
+            "reviewId",
+            "request"
+          ]
+        },
+        {
+          "name": "deleteReviewById",
+          "startLine": 109,
+          "endLine": 116,
+          "params": [
+            "userId",
+            "reviewId"
+          ]
+        },
+        {
+          "name": "validateReviewRating",
+          "startLine": 118,
+          "endLine": 121,
+          "params": [
+            "rating"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ReviewServiceImpl",
+          "startLine": 25,
+          "endLine": 122,
+          "methods": [
+            "getAllReviews",
+            "getReviewById",
+            "getReviewsByProductId",
+            "getReviewsByUserId",
+            "createReview",
+            "updateReview",
+            "deleteReviewById",
+            "validateReviewRating"
+          ],
+          "properties": [
+            "repo",
+            "userRepository",
+            "productRepository",
+            "orderRepository"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getAllReviews",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "getReviewById",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "getReviewsByProductId",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "getReviewsByUserId",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "createReview",
+          "line": 65,
+          "isDefault": false
+        },
+        {
+          "name": "updateReview",
+          "line": 91,
+          "isDefault": false
+        },
+        {
+          "name": "deleteReviewById",
+          "line": 109,
+          "isDefault": false
+        },
+        {
+          "name": "validateReviewRating",
+          "line": 118,
+          "isDefault": false
+        },
+        {
+          "name": "ReviewServiceImpl",
+          "line": 25,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getAllReviews",
+          "callee": "repo.findAll(pageable).map",
+          "lineNumber": 37
+        },
+        {
+          "caller": "getAllReviews",
+          "callee": "repo.findAll",
+          "lineNumber": 37
+        },
+        {
+          "caller": "getReviewById",
+          "callee": "ReviewResponse.fromEntity",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getReviewById",
+          "callee": "repo.findById(id).orElseThrow",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getReviewById",
+          "callee": "repo.findById",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getReviewById",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getReviewsByProductId",
+          "callee": "repo.findByProductId(productId, pageable).map",
+          "lineNumber": 53
+        },
+        {
+          "caller": "getReviewsByProductId",
+          "callee": "repo.findByProductId",
+          "lineNumber": 53
+        },
+        {
+          "caller": "getReviewsByUserId",
+          "callee": "repo.findByUserId(userId, pageable).map",
+          "lineNumber": 61
+        },
+        {
+          "caller": "getReviewsByUserId",
+          "callee": "repo.findByUserId",
+          "lineNumber": 61
+        },
+        {
+          "caller": "createReview",
+          "callee": "userRepository.findById(userId).orElseThrow",
+          "lineNumber": 69
+        },
+        {
+          "caller": "createReview",
+          "callee": "userRepository.findById",
+          "lineNumber": 69
+        },
+        {
+          "caller": "createReview",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 70
+        },
+        {
+          "caller": "createReview",
+          "callee": "productRepository.findById(request.productId()).orElseThrow",
+          "lineNumber": 71
+        },
+        {
+          "caller": "createReview",
+          "callee": "productRepository.findById",
+          "lineNumber": 71
+        },
+        {
+          "caller": "createReview",
+          "callee": "request.productId",
+          "lineNumber": 71
+        },
+        {
+          "caller": "createReview",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 72
+        },
+        {
+          "caller": "createReview",
+          "callee": "request.productId",
+          "lineNumber": 72
+        },
+        {
+          "caller": "createReview",
+          "callee": "repo.existsByUserIdAndProductId",
+          "lineNumber": 73
+        },
+        {
+          "caller": "createReview",
+          "callee": "user.getId",
+          "lineNumber": 73
+        },
+        {
+          "caller": "createReview",
+          "callee": "product.getId",
+          "lineNumber": 73
+        },
+        {
+          "caller": "createReview",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 74
+        },
+        {
+          "caller": "createReview",
+          "callee": "orderRepository.existsOrderContainingProductWithStatus",
+          "lineNumber": 76
+        },
+        {
+          "caller": "createReview",
+          "callee": "user.getId",
+          "lineNumber": 76
+        },
+        {
+          "caller": "createReview",
+          "callee": "product.getId",
+          "lineNumber": 76
+        },
+        {
+          "caller": "createReview",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 77
+        },
+        {
+          "caller": "createReview",
+          "callee": "validateReviewRating",
+          "lineNumber": 79
+        },
+        {
+          "caller": "createReview",
+          "callee": "request.rating",
+          "lineNumber": 79
+        },
+        {
+          "caller": "createReview",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 80
+        },
+        {
+          "caller": "createReview",
+          "callee": "Review.builder()\r\n                .user(user)\r\n                .product(product)\r\n                .rating(request.rating())\r\n                .comment(request.comment()).build",
+          "lineNumber": 82
+        },
+        {
+          "caller": "createReview",
+          "callee": "Review.builder()\r\n                .user(user)\r\n                .product(product)\r\n                .rating(request.rating()).comment",
+          "lineNumber": 82
+        },
+        {
+          "caller": "createReview",
+          "callee": "Review.builder()\r\n                .user(user)\r\n                .product(product).rating",
+          "lineNumber": 82
+        },
+        {
+          "caller": "createReview",
+          "callee": "Review.builder()\r\n                .user(user).product",
+          "lineNumber": 82
+        },
+        {
+          "caller": "createReview",
+          "callee": "Review.builder().user",
+          "lineNumber": 82
+        },
+        {
+          "caller": "createReview",
+          "callee": "Review.builder",
+          "lineNumber": 82
+        },
+        {
+          "caller": "createReview",
+          "callee": "request.rating",
+          "lineNumber": 85
+        },
+        {
+          "caller": "createReview",
+          "callee": "request.comment",
+          "lineNumber": 86
+        },
+        {
+          "caller": "createReview",
+          "callee": "ReviewResponse.fromEntity",
+          "lineNumber": 88
+        },
+        {
+          "caller": "createReview",
+          "callee": "repo.save",
+          "lineNumber": 88
+        },
+        {
+          "caller": "updateReview",
+          "callee": "repo.findByUserIdAndId(userId, reviewId).orElseThrow",
+          "lineNumber": 95
+        },
+        {
+          "caller": "updateReview",
+          "callee": "repo.findByUserIdAndId",
+          "lineNumber": 95
+        },
+        {
+          "caller": "updateReview",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 96
+        },
+        {
+          "caller": "updateReview",
+          "callee": "request.rating",
+          "lineNumber": 97
+        },
+        {
+          "caller": "updateReview",
+          "callee": "validateReviewRating",
+          "lineNumber": 97
+        },
+        {
+          "caller": "updateReview",
+          "callee": "request.rating",
+          "lineNumber": 97
+        },
+        {
+          "caller": "updateReview",
+          "callee": "review.setRating",
+          "lineNumber": 98
+        },
+        {
+          "caller": "updateReview",
+          "callee": "request.rating",
+          "lineNumber": 98
+        },
+        {
+          "caller": "updateReview",
+          "callee": "request.rating",
+          "lineNumber": 100
+        },
+        {
+          "caller": "updateReview",
+          "callee": "validateReviewRating",
+          "lineNumber": 100
+        },
+        {
+          "caller": "updateReview",
+          "callee": "request.rating",
+          "lineNumber": 100
+        },
+        {
+          "caller": "updateReview",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 101
+        },
+        {
+          "caller": "updateReview",
+          "callee": "request.comment",
+          "lineNumber": 103
+        },
+        {
+          "caller": "updateReview",
+          "callee": "review.setComment",
+          "lineNumber": 104
+        },
+        {
+          "caller": "updateReview",
+          "callee": "request.comment",
+          "lineNumber": 104
+        },
+        {
+          "caller": "updateReview",
+          "callee": "ReviewResponse.fromEntity",
+          "lineNumber": 106
+        },
+        {
+          "caller": "deleteReviewById",
+          "callee": "repo.findByUserIdAndId(userId, reviewId).orElseThrow",
+          "lineNumber": 113
+        },
+        {
+          "caller": "deleteReviewById",
+          "callee": "repo.findByUserIdAndId",
+          "lineNumber": 113
+        },
+        {
+          "caller": "deleteReviewById",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 114
+        },
+        {
+          "caller": "deleteReviewById",
+          "callee": "repo.delete",
+          "lineNumber": 115
+        }
+      ],
+      "metrics": {
+        "importCount": 14,
+        "exportCount": 9,
+        "functionCount": 8,
+        "classCount": 1
+      }
+    }
+  ]
+}

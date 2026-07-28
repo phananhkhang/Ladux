@@ -12,12 +12,14 @@ import org.akira.ladux.dto.request.OrderStatusUpdateRequest;
 import org.akira.ladux.dto.request.PurchaseOrderCreateRequest;
 import org.akira.ladux.dto.request.PurchaseOrderItemRequest;
 import org.akira.ladux.dto.request.PurchaseOrderReceiveRequest;
+import org.akira.ladux.dto.request.ShippingAddressRequest;
 import org.akira.ladux.dto.request.StockMovementRequest;
 import org.akira.ladux.dto.response.PurchaseOrderResponse;
 import org.akira.ladux.model.Cart;
 import org.akira.ladux.model.CartItem;
 import org.akira.ladux.model.Order;
 import org.akira.ladux.model.Product;
+import org.akira.ladux.model.ProductVariant;
 import org.akira.ladux.model.StockMovement;
 import org.akira.ladux.model.enums.OrderStatus;
 import org.akira.ladux.model.enums.PaymentProvider;
@@ -27,8 +29,10 @@ import org.akira.ladux.model.enums.StockReferenceType;
 import org.akira.ladux.repository.BrandRepository;
 import org.akira.ladux.repository.CartRepository;
 import org.akira.ladux.repository.CategoryRepository;
+import org.akira.ladux.repository.ColorRepository;
 import org.akira.ladux.repository.OrderRepository;
 import org.akira.ladux.repository.ProductRepository;
+import org.akira.ladux.repository.ProductVariantRepository;
 import org.akira.ladux.repository.StockMovementRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +59,10 @@ class StockMovementFlowTest extends AbstractIntegrationTest {
     @Autowired StockMovementService stockMovementService;
     @Autowired CartRepository cartRepository;
     @Autowired ProductRepository productRepository;
+    @Autowired ProductVariantRepository productVariantRepository;
     @Autowired BrandRepository brandRepository;
     @Autowired CategoryRepository categoryRepository;
+    @Autowired ColorRepository colorRepository;
     @Autowired OrderRepository orderRepository;
     @Autowired StockMovementRepository stockMovementRepository;
 
@@ -67,24 +73,29 @@ class StockMovementFlowTest extends AbstractIntegrationTest {
     private static final int ADMIN_ID = 1;  // admin
     private static final int SUPPLIER_ID = 1; // seed V23
 
-    private Product newProduct(int stock, String price) {
+    private ProductVariant newVariant(int stock, String price) {
         String unique = UUID.randomUUID().toString().substring(0, 8);
-        return productRepository.save(Product.builder()
+        Product product = productRepository.save(Product.builder()
                 .brand(brandRepository.findAll().get(0))
                 .category(categoryRepository.findAll().get(0))
-                .sku("SM-" + unique)
                 .name("SM Product " + unique)
                 .slug("sm-product-" + unique)
-                .basePrice(new BigDecimal(price))
+                .isActive(true)
+                .build());
+        return productVariantRepository.save(ProductVariant.builder()
+                .product(product)
+                .color(colorRepository.findAll().get(0))
+                .sku("SM-" + unique)
+                .price(new BigDecimal(price))
                 .stockQuantity(stock)
                 .isActive(true)
                 .build());
     }
 
-    private void setCartSingleItem(int userId, Product product, int qty) {
+    private void setCartSingleItem(int userId, ProductVariant productVariant, int qty) {
         Cart cart = cartRepository.findByUserIdForUpdate(userId).orElseThrow();
         cart.getItems().clear();
-        cart.getItems().add(CartItem.builder().cart(cart).product(product).quantity(qty).build());
+        cart.getItems().add(CartItem.builder().cart(cart).productVariant(productVariant).quantity(qty).build());
         cartRepository.save(cart);
     }
 
@@ -94,49 +105,54 @@ class StockMovementFlowTest extends AbstractIntegrationTest {
                 .getContent().get(0);
     }
 
-    private int stockOf(int productId) {
-        return productRepository.findById(productId).orElseThrow().getStockQuantity();
+    private int stockOf(int productVariantId) {
+        return productVariantRepository.findById(productVariantId).orElseThrow().getStockQuantity();
     }
 
-    private List<StockMovement> movementsOf(int productId) {
+    private List<StockMovement> movementsOf(int productVariantId) {
         return stockMovementRepository
-                .findByProductId(productId, PageRequest.of(0, 50, Sort.by("id")))
+                .findByProductVariantId(productVariantId, PageRequest.of(0, 50, Sort.by("id")))
                 .getContent();
+    }
+
+    private OrderRequest orderRequest(String couponCode, PaymentProvider paymentProvider) {
+        return new OrderRequest(couponCode, paymentProvider,
+                new ShippingAddressRequest("Test User", "0900000000", "123 Test Street", "Ward 1", "District 1", "HCM"));
     }
 
     @Test
     void checkout_writesSaleOutMovement_andDeductsStockOnce() {
-        Product product = newProduct(10, "500.00");
-        setCartSingleItem(USER_ID, product, 3);
+        ProductVariant productVariant = newVariant(10, "500.00");
+        setCartSingleItem(USER_ID, productVariant, 3);
 
-        orderService.createOrder(USER_ID, new OrderRequest(null, PaymentProvider.COD, "addr"));
+        orderService.createOrder(USER_ID, orderRequest(null, PaymentProvider.COD));
         em.flush();
         em.clear();
 
         // Ton kho giam DUNG 3 (khong tru kep).
-        assertEquals(7, stockOf(product.getId()), "Ban 3 -> ton 10-3=7, khong duoc tru kep");
+        assertEquals(7, stockOf(productVariant.getId()), "Ban 3 -> ton 10-3=7, khong duoc tru kep");
 
         // So cai: dung 1 dong SALE_OUT, quantity = -3, tham chieu ve don hang.
-        List<StockMovement> movements = movementsOf(product.getId());
+        List<StockMovement> movements = movementsOf(productVariant.getId());
         assertEquals(1, movements.size(), "Phai co dung 1 bien dong sau khi ban");
         StockMovement sale = movements.get(0);
         assertEquals(StockMovementType.SALE_OUT, sale.getMovementType());
         assertEquals(-3, sale.getQuantity(), "Ban hang ghi so am");
         assertEquals(StockReferenceType.ORDER, sale.getReferenceType());
-        assertEquals(newestOrderOf(USER_ID).getId().longValue(), sale.getReferenceId(),
+        assertEquals(newestOrderOf(USER_ID).getId().longValue(), sale.getReferenceId().longValue(),
                 "Bien dong phai tham chieu dung don hang vua tao");
     }
 
     @Test
     void cancelOrder_writesReturnInMovement_andRestoresStock() {
-        Product product = newProduct(10, "1000.00");
-        setCartSingleItem(USER_ID, product, 4);
+        ProductVariant productVariant = newVariant(10, "1000.00");
+        setCartSingleItem(USER_ID, productVariant, 4);
 
-        orderService.createOrder(USER_ID, new OrderRequest(null, PaymentProvider.COD, "addr"));
+        orderService.createOrder(USER_ID, orderRequest(null, PaymentProvider.COD));
         em.flush();
         em.clear();
         Order order = newestOrderOf(USER_ID);
-        assertEquals(6, stockOf(product.getId()), "Sau ban: 10-4=6");
+        assertEquals(6, stockOf(productVariant.getId()), "Sau ban: 10-4=6");
 
         orderService.updateOrderStatus(order.getId(),
                 new OrderStatusUpdateRequest(OrderStatus.CANCELLED, null));
@@ -144,10 +160,10 @@ class StockMovementFlowTest extends AbstractIntegrationTest {
         em.clear();
 
         // Ton kho hoan ve 10 (cong DUNG 4, khong cong kep).
-        assertEquals(10, stockOf(product.getId()), "Huy don -> hoan kho ve 10");
+        assertEquals(10, stockOf(productVariant.getId()), "Huy don -> hoan kho ve 10");
 
         // So cai: SALE_OUT (-4) + RETURN_IN (+4); tong bien dong = 0.
-        List<StockMovement> movements = movementsOf(product.getId());
+        List<StockMovement> movements = movementsOf(productVariant.getId());
         assertEquals(2, movements.size(), "Phai co 2 bien dong: ban + hoan");
         assertEquals(StockMovementType.SALE_OUT, movements.get(0).getMovementType());
         assertEquals(-4, movements.get(0).getQuantity());
@@ -159,17 +175,17 @@ class StockMovementFlowTest extends AbstractIntegrationTest {
 
     @Test
     void manualAdjustment_damageOut_decreasesStock_andWritesMovement() {
-        Product product = newProduct(10, "500.00");
+        ProductVariant productVariant = newVariant(10, "500.00");
 
         stockMovementService.createAdjustment(
-                new StockMovementRequest(product.getId(), 2, StockMovementType.DAMAGE_OUT, "Vo 2 cai khi kiem ke"),
+                new StockMovementRequest(productVariant.getId(), 2, StockMovementType.DAMAGE_OUT, "Vo 2 cai khi kiem ke"),
                 ADMIN_ID);
         em.flush();
         em.clear();
 
-        assertEquals(8, stockOf(product.getId()), "Hao hut 2 -> ton 10-2=8");
+        assertEquals(8, stockOf(productVariant.getId()), "Hao hut 2 -> ton 10-2=8");
 
-        List<StockMovement> movements = movementsOf(product.getId());
+        List<StockMovement> movements = movementsOf(productVariant.getId());
         assertEquals(1, movements.size());
         StockMovement m = movements.get(0);
         assertEquals(StockMovementType.DAMAGE_OUT, m.getMovementType());
@@ -179,13 +195,13 @@ class StockMovementFlowTest extends AbstractIntegrationTest {
 
     @Test
     void purchaseOrderReceive_purchaseIn_increasesStock_andWritesMovement() {
-        Product product = newProduct(5, "500.00");
+        ProductVariant productVariant = newVariant(5, "500.00");
 
         PurchaseOrderResponse po = purchaseOrderService.createPurchaseOrder(
                 new PurchaseOrderCreateRequest(
                         SUPPLIER_ID, null, "Nhap bo sung",
                         List.of(new PurchaseOrderItemRequest(
-                                product.getId(), 10, new BigDecimal("300.00"), null))),
+                                productVariant.getId(), 10, new BigDecimal("300.00"), null))),
                 ADMIN_ID);
         em.flush();
         em.clear();
@@ -200,15 +216,15 @@ class StockMovementFlowTest extends AbstractIntegrationTest {
         em.clear();
 
         // Ton kho tang DUNG 10 (5 -> 15), khong cong kep.
-        assertEquals(15, stockOf(product.getId()), "Nhan 10 -> ton 5+10=15");
+        assertEquals(15, stockOf(productVariant.getId()), "Nhan 10 -> ton 5+10=15");
         assertEquals(PurchaseOrderStatus.RECEIVED, received.status(), "Nhan du -> don ve RECEIVED");
 
-        List<StockMovement> movements = movementsOf(product.getId());
+        List<StockMovement> movements = movementsOf(productVariant.getId());
         assertEquals(1, movements.size());
         StockMovement m = movements.get(0);
         assertEquals(StockMovementType.PURCHASE_IN, m.getMovementType());
         assertEquals(10, m.getQuantity(), "Nhap hang ghi so duong");
         assertEquals(StockReferenceType.PURCHASE_ORDER, m.getReferenceType());
-        assertEquals(po.id().longValue(), m.getReferenceId(), "Bien dong tham chieu dung don mua");
+        assertEquals(po.id().longValue(), m.getReferenceId().longValue(), "Bien dong tham chieu dung don mua");
     }
 }

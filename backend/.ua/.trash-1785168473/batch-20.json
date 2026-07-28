@@ -1,0 +1,53 @@
+{
+  "nodes": [
+    {
+      "id": "config:src/main/resources/application-dev.properties",
+      "type": "config",
+      "name": "application-dev.properties",
+      "filePath": "src/main/resources/application-dev.properties",
+      "summary": "Development Spring Boot profile configuration enabling SQL logging, Flyway migration repair options, Redis caching, upload storage defaults, and local fallbacks for payment and JWT secrets.",
+      "tags": [
+        "configuration",
+        "spring-boot",
+        "development",
+        "database",
+        "redis"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Spring profile properties override the shared application settings for local and Docker development behavior."
+    },
+    {
+      "id": "config:src/main/resources/application-prod.properties",
+      "type": "config",
+      "name": "application-prod.properties",
+      "filePath": "src/main/resources/application-prod.properties",
+      "summary": "Production Spring Boot profile configuration that validates the database schema, disables automatic SQL initialization, and defaults authentication cookies to secure mode.",
+      "tags": [
+        "configuration",
+        "spring-boot",
+        "production",
+        "security",
+        "database"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Production settings intentionally avoid schema mutation and rely on validated migrations."
+    },
+    {
+      "id": "config:src/main/resources/application.properties",
+      "type": "config",
+      "name": "application.properties",
+      "filePath": "src/main/resources/application.properties",
+      "summary": "Shared Spring Boot application configuration covering active profiles, PostgreSQL datasource access, JWT and OAuth2 authentication, upload paths, Redis, Actuator health probes, and login rate limiting.",
+      "tags": [
+        "configuration",
+        "spring-boot",
+        "security",
+        "database",
+        "monitoring"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "The file uses environment-variable placeholders extensively so deployment-specific secrets and infrastructure endpoints can be injected at runtime."
+    }
+  ],
+  "edges": []
+}

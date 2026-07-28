@@ -127,6 +127,6 @@ public class CouponServiceImpl implements CouponService {
         if (coupon.isUsageLimitReached()) {
             throw new BusinessRuleException("Coupon da het luot su dung");
         }
-        return CouponApplyResponse.from(CouponResponse.fromEntity(coupon));
+        return CouponApplyResponse.fromEntity(CouponResponse.fromEntity(coupon));
     }
 }

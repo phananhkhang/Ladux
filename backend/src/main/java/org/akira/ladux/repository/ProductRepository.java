@@ -3,6 +3,7 @@ package org.akira.ladux.repository;
 import java.util.Optional;
 
 import org.akira.ladux.model.Product;
+import org.akira.ladux.model.ProductVariant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -37,7 +38,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Product p where p.id = :id")
-    Optional<Product> findByIdForUpdate(@Param("id") Integer id);
+    Optional<ProductVariant> findByIdForUpdate(@Param("id") Integer id);
 
     @EntityGraph(attributePaths = {"brand", "category"})
     @Query("""

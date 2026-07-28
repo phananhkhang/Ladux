@@ -1,0 +1,2423 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 17,
+  "filesSkipped": [
+    ".gitattributes",
+    ".ua/.understandignore",
+    "mvnw",
+    "src/test/resources/application-test.properties"
+  ],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 17,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 14,
+      "failed": 0,
+      "skipped": 3
+    }
+  },
+  "results": [
+    {
+      "path": ".ua/config.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 3,
+      "nonEmptyLines": 3,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/LaduxApplication.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 25,
+      "nonEmptyLines": 21,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 22,
+          "endLine": 24,
+          "params": [
+            "args"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "LaduxApplication",
+          "startLine": 16,
+          "endLine": 25,
+          "methods": [
+            "main"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "main",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "LaduxApplication",
+          "line": 16,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "SpringApplication.run",
+          "lineNumber": 23
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/config/JacksonConfig.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 77,
+      "nonEmptyLines": 67,
+      "functions": [
+        {
+          "name": "jsonCustomizer",
+          "startLine": 28,
+          "endLine": 76,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "JacksonConfig",
+          "startLine": 21,
+          "endLine": 77,
+          "methods": [
+            "jsonCustomizer"
+          ],
+          "properties": [
+            "APP_ZONE",
+            "DATE_TIME_FORMATTER"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "jsonCustomizer",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "JacksonConfig",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "jsonCustomizer",
+          "callee": "new SimpleModule",
+          "lineNumber": 31
+        },
+        {
+          "caller": "jsonCustomizer",
+          "callee": "module.addSerializer",
+          "lineNumber": 33
+        },
+        {
+          "caller": "jsonCustomizer",
+          "callee": "new ValueSerializer<>",
+          "lineNumber": 33
+        },
+        {
+          "caller": "serialize",
+          "callee": "gen.writeString",
+          "lineNumber": 37
+        },
+        {
+          "caller": "serialize",
+          "callee": "DATE_TIME_FORMATTER.format",
+          "lineNumber": 37
+        },
+        {
+          "caller": "serialize",
+          "callee": "value.atZone",
+          "lineNumber": 37
+        },
+        {
+          "caller": "jsonCustomizer",
+          "callee": "module.addDeserializer",
+          "lineNumber": 41
+        },
+        {
+          "caller": "jsonCustomizer",
+          "callee": "new ValueDeserializer<>",
+          "lineNumber": 41
+        },
+        {
+          "caller": "deserialize",
+          "callee": "parser.getString",
+          "lineNumber": 44
+        },
+        {
+          "caller": "deserialize",
+          "callee": "value.isBlank",
+          "lineNumber": 45
+        },
+        {
+          "caller": "deserialize",
+          "callee": "LocalDateTime.parse(value.trim(), DATE_TIME_FORMATTER)\r\n                                .atZone(APP_ZONE).toInstant",
+          "lineNumber": 49
+        },
+        {
+          "caller": "deserialize",
+          "callee": "LocalDateTime.parse(value.trim(), DATE_TIME_FORMATTER).atZone",
+          "lineNumber": 49
+        },
+        {
+          "caller": "deserialize",
+          "callee": "LocalDateTime.parse",
+          "lineNumber": 49
+        },
+        {
+          "caller": "deserialize",
+          "callee": "value.trim",
+          "lineNumber": 49
+        },
+        {
+          "caller": "deserialize",
+          "callee": "Instant.parse",
+          "lineNumber": 53
+        },
+        {
+          "caller": "deserialize",
+          "callee": "value.trim",
+          "lineNumber": 53
+        },
+        {
+          "caller": "jsonCustomizer",
+          "callee": "module.addSerializer",
+          "lineNumber": 58
+        },
+        {
+          "caller": "jsonCustomizer",
+          "callee": "new ValueSerializer<>",
+          "lineNumber": 58
+        },
+        {
+          "caller": "serialize",
+          "callee": "gen.writeString",
+          "lineNumber": 62
+        },
+        {
+          "caller": "serialize",
+          "callee": "DATE_TIME_FORMATTER.format",
+          "lineNumber": 62
+        },
+        {
+          "caller": "jsonCustomizer",
+          "callee": "module.addDeserializer",
+          "lineNumber": 66
+        },
+        {
+          "caller": "jsonCustomizer",
+          "callee": "new ValueDeserializer<>",
+          "lineNumber": 66
+        },
+        {
+          "caller": "deserialize",
+          "callee": "LocalDateTime.parse",
+          "lineNumber": 70
+        },
+        {
+          "caller": "deserialize",
+          "callee": "parser.getString().trim",
+          "lineNumber": 70
+        },
+        {
+          "caller": "deserialize",
+          "callee": "parser.getString",
+          "lineNumber": 70
+        },
+        {
+          "caller": "jsonCustomizer",
+          "callee": "builder.addModule",
+          "lineNumber": 74
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 96,
+      "nonEmptyLines": 82,
+      "functions": [
+        {
+          "name": "LoginRateLimitFilter",
+          "startLine": 42,
+          "endLine": 49,
+          "params": [
+            "proxyManager",
+            "capacity",
+            "refillMinutes"
+          ]
+        },
+        {
+          "name": "shouldNotFilter",
+          "startLine": 52,
+          "endLine": 57,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "doFilterInternal",
+          "startLine": 59,
+          "endLine": 77,
+          "params": [
+            "request",
+            "response",
+            "filterChain"
+          ]
+        },
+        {
+          "name": "bucketConfiguration",
+          "startLine": 79,
+          "endLine": 86,
+          "params": []
+        },
+        {
+          "name": "resolveClientIp",
+          "startLine": 89,
+          "endLine": 95,
+          "params": [
+            "request"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "LoginRateLimitFilter",
+          "startLine": 30,
+          "endLine": 96,
+          "methods": [
+            "LoginRateLimitFilter",
+            "shouldNotFilter",
+            "doFilterInternal",
+            "bucketConfiguration",
+            "resolveClientIp"
+          ],
+          "properties": [
+            "LOGIN_PATH",
+            "TOO_MANY_REQUESTS_BODY",
+            "proxyManager",
+            "capacity",
+            "refillPeriod"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "LoginRateLimitFilter",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "LoginRateLimitFilter",
+          "line": 30,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "LoginRateLimitFilter",
+          "callee": "Duration.ofMinutes",
+          "lineNumber": 48
+        },
+        {
+          "caller": "shouldNotFilter",
+          "callee": "\"POST\".equalsIgnoreCase",
+          "lineNumber": 54
+        },
+        {
+          "caller": "shouldNotFilter",
+          "callee": "request.getMethod",
+          "lineNumber": 54
+        },
+        {
+          "caller": "shouldNotFilter",
+          "callee": "request.getRequestURI().startsWith",
+          "lineNumber": 55
+        },
+        {
+          "caller": "shouldNotFilter",
+          "callee": "request.getRequestURI",
+          "lineNumber": 55
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "resolveClientIp",
+          "lineNumber": 63
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "proxyManager.builder().build",
+          "lineNumber": 64
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "proxyManager.builder",
+          "lineNumber": 64
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "bucketConfiguration",
+          "lineNumber": 64
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "bucket.tryConsume",
+          "lineNumber": 66
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "filterChain.doFilter",
+          "lineNumber": 67
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "response.setStatus",
+          "lineNumber": 72
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "response.setContentType",
+          "lineNumber": 73
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "response.setCharacterEncoding",
+          "lineNumber": 74
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "response.setHeader",
+          "lineNumber": 75
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "String.valueOf",
+          "lineNumber": 75
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "refillPeriod.toSeconds",
+          "lineNumber": 75
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "response.getWriter().write",
+          "lineNumber": 76
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "response.getWriter",
+          "lineNumber": 76
+        },
+        {
+          "caller": "bucketConfiguration",
+          "callee": "BucketConfiguration.builder()\n                .addLimit(Bandwidth.builder()\n                        .capacity(capacity)\n                        .refillGreedy(capacity, refillPeriod)\n                        .build()).build",
+          "lineNumber": 80
+        },
+        {
+          "caller": "bucketConfiguration",
+          "callee": "BucketConfiguration.builder().addLimit",
+          "lineNumber": 80
+        },
+        {
+          "caller": "bucketConfiguration",
+          "callee": "BucketConfiguration.builder",
+          "lineNumber": 80
+        },
+        {
+          "caller": "bucketConfiguration",
+          "callee": "Bandwidth.builder()\n                        .capacity(capacity)\n                        .refillGreedy(capacity, refillPeriod).build",
+          "lineNumber": 81
+        },
+        {
+          "caller": "bucketConfiguration",
+          "callee": "Bandwidth.builder()\n                        .capacity(capacity).refillGreedy",
+          "lineNumber": 81
+        },
+        {
+          "caller": "bucketConfiguration",
+          "callee": "Bandwidth.builder().capacity",
+          "lineNumber": 81
+        },
+        {
+          "caller": "bucketConfiguration",
+          "callee": "Bandwidth.builder",
+          "lineNumber": 81
+        },
+        {
+          "caller": "resolveClientIp",
+          "callee": "request.getHeader",
+          "lineNumber": 90
+        },
+        {
+          "caller": "resolveClientIp",
+          "callee": "forwarded.isBlank",
+          "lineNumber": 91
+        },
+        {
+          "caller": "resolveClientIp",
+          "callee": "forwarded.split(\",\")[0].trim",
+          "lineNumber": 92
+        },
+        {
+          "caller": "resolveClientIp",
+          "callee": "forwarded.split",
+          "lineNumber": 92
+        },
+        {
+          "caller": "resolveClientIp",
+          "callee": "request.getRemoteAddr",
+          "lineNumber": 94
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 5,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/config/RateLimitConfig.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 49,
+      "nonEmptyLines": 43,
+      "functions": [
+        {
+          "name": "rateLimitRedisClient",
+          "startLine": 29,
+          "endLine": 34,
+          "params": [
+            "host",
+            "port"
+          ]
+        },
+        {
+          "name": "loginRateLimitProxyManager",
+          "startLine": 40,
+          "endLine": 48,
+          "params": [
+            "rateLimitRedisClient"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "RateLimitConfig",
+          "startLine": 25,
+          "endLine": 49,
+          "methods": [
+            "rateLimitRedisClient",
+            "loginRateLimitProxyManager"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "rateLimitRedisClient",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "loginRateLimitProxyManager",
+          "line": 40,
+          "isDefault": false
+        },
+        {
+          "name": "RateLimitConfig",
+          "line": 25,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "rateLimitRedisClient",
+          "callee": "RedisClient.create",
+          "lineNumber": 33
+        },
+        {
+          "caller": "rateLimitRedisClient",
+          "callee": "RedisURI.builder().withHost(host).withPort(port).build",
+          "lineNumber": 33
+        },
+        {
+          "caller": "rateLimitRedisClient",
+          "callee": "RedisURI.builder().withHost(host).withPort",
+          "lineNumber": 33
+        },
+        {
+          "caller": "rateLimitRedisClient",
+          "callee": "RedisURI.builder().withHost",
+          "lineNumber": 33
+        },
+        {
+          "caller": "rateLimitRedisClient",
+          "callee": "RedisURI.builder",
+          "lineNumber": 33
+        },
+        {
+          "caller": "loginRateLimitProxyManager",
+          "callee": "rateLimitRedisClient.connect",
+          "lineNumber": 43
+        },
+        {
+          "caller": "loginRateLimitProxyManager",
+          "callee": "RedisCodec.of",
+          "lineNumber": 43
+        },
+        {
+          "caller": "loginRateLimitProxyManager",
+          "callee": "LettuceBasedProxyManager.builderFor(connection)\n                .withExpirationStrategy(\n                        ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(Duration.ofMinutes(10))).build",
+          "lineNumber": 44
+        },
+        {
+          "caller": "loginRateLimitProxyManager",
+          "callee": "LettuceBasedProxyManager.builderFor(connection).withExpirationStrategy",
+          "lineNumber": 44
+        },
+        {
+          "caller": "loginRateLimitProxyManager",
+          "callee": "LettuceBasedProxyManager.builderFor",
+          "lineNumber": 44
+        },
+        {
+          "caller": "loginRateLimitProxyManager",
+          "callee": "ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax",
+          "lineNumber": 46
+        },
+        {
+          "caller": "loginRateLimitProxyManager",
+          "callee": "Duration.ofMinutes",
+          "lineNumber": 46
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/config/SecurityConfig.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 146,
+      "nonEmptyLines": 133,
+      "functions": [
+        {
+          "name": "passwordEncoder",
+          "startLine": 55,
+          "endLine": 58,
+          "params": []
+        },
+        {
+          "name": "authenticationManager",
+          "startLine": 60,
+          "endLine": 63,
+          "params": [
+            "configuration"
+          ]
+        },
+        {
+          "name": "securityFilterChain",
+          "startLine": 65,
+          "endLine": 128,
+          "params": [
+            "http"
+          ]
+        },
+        {
+          "name": "corsConfigurationSource",
+          "startLine": 134,
+          "endLine": 145,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "SecurityConfig",
+          "startLine": 39,
+          "endLine": 146,
+          "methods": [
+            "passwordEncoder",
+            "authenticationManager",
+            "securityFilterChain",
+            "corsConfigurationSource"
+          ],
+          "properties": [
+            "BEARER_AUTH_REQUEST",
+            "jwtFilter",
+            "oAuth2SuccessHandler"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "passwordEncoder",
+          "line": 55,
+          "isDefault": false
+        },
+        {
+          "name": "authenticationManager",
+          "line": 60,
+          "isDefault": false
+        },
+        {
+          "name": "securityFilterChain",
+          "line": 65,
+          "isDefault": false
+        },
+        {
+          "name": "corsConfigurationSource",
+          "line": 134,
+          "isDefault": false
+        },
+        {
+          "name": "SecurityConfig",
+          "line": 39,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "passwordEncoder",
+          "callee": "new BCryptPasswordEncoder",
+          "lineNumber": 57
+        },
+        {
+          "caller": "authenticationManager",
+          "callee": "configuration.getAuthenticationManager",
+          "lineNumber": 62
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "CookieCsrfTokenRepository.withHttpOnlyFalse",
+          "lineNumber": 68
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "csrfTokenRepository.setCookiePath",
+          "lineNumber": 69
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "new CsrfTokenRequestAttributeHandler",
+          "lineNumber": 72
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "csrfRequestHandler.setCsrfRequestAttributeName",
+          "lineNumber": 73
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "http\r\n                .cors(cors -> cors.configurationSource(corsConfigurationSource()))\r\n                .csrf(csrf -> csrf\r\n                        .csrfTokenRepository(csrfTokenRepository)\r\n                        .csrfTokenRequestHandler(csrfRequestHandler)\r\n                        .ignoringRequestMatchers(\r\n                                \"/api/v1/auth/login\", \"/api/v1/auth/login/\",\r\n                                \"/api/v1/auth/register\", \"/api/v1/auth/register/\",\r\n                                \"/api/v1/auth/refresh\", \"/api/v1/auth/refresh/\",\r\n                                \"/api/v1/auth/logout\", \"/api/v1/auth/logout/\",\r\n                                \"/api/v1/payments/vnpay-webhook\",\r\n                                \"/oauth2/**\", \"/login/oauth2/**\"\r\n                        )\r\n                        .ignoringRequestMatchers(BEARER_AUTH_REQUEST) // Bearer token (JWT) không cần CSRFf\r\n                )\r\n                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Không dùng session, mỗi request cần phải đem theo token để xác thực\r\n                .authorizeHttpRequests(auth -> auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll()\r\n                        .requestMatchers(\"/error\", \"/api/v1/auth/**\", \"/oauth2/**\", \"/login/oauth2/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET, \"/uploads/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET,\r\n                                \"/api/v1/products/**\",\r\n                                \"/api/v1/brands/**\",\r\n                                \"/api/v1/categories/**\",\r\n                                \"/api/v1/reviews/**\")\r\n                        .permitAll()\r\n                        .requestMatchers(\"/swagger-ui.html\", \"/swagger-ui/**\", \"/v3/api-docs/**\").permitAll()\r\n                        .requestMatchers(\"/actuator/health/**\", \"/actuator/info\").permitAll()\r\n                        .requestMatchers(\"/actuator/**\").hasRole(\"ADMIN\")\r\n                        .anyRequest().authenticated()\r\n                )\r\n                .oauth2Login(oauth2 -> oauth2\r\n                        .successHandler(oAuth2SuccessHandler)\r\n                ).exceptionHandling",
+          "lineNumber": 75
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "http\r\n                .cors(cors -> cors.configurationSource(corsConfigurationSource()))\r\n                .csrf(csrf -> csrf\r\n                        .csrfTokenRepository(csrfTokenRepository)\r\n                        .csrfTokenRequestHandler(csrfRequestHandler)\r\n                        .ignoringRequestMatchers(\r\n                                \"/api/v1/auth/login\", \"/api/v1/auth/login/\",\r\n                                \"/api/v1/auth/register\", \"/api/v1/auth/register/\",\r\n                                \"/api/v1/auth/refresh\", \"/api/v1/auth/refresh/\",\r\n                                \"/api/v1/auth/logout\", \"/api/v1/auth/logout/\",\r\n                                \"/api/v1/payments/vnpay-webhook\",\r\n                                \"/oauth2/**\", \"/login/oauth2/**\"\r\n                        )\r\n                        .ignoringRequestMatchers(BEARER_AUTH_REQUEST) // Bearer token (JWT) không cần CSRFf\r\n                )\r\n                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Không dùng session, mỗi request cần phải đem theo token để xác thực\r\n                .authorizeHttpRequests(auth -> auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll()\r\n                        .requestMatchers(\"/error\", \"/api/v1/auth/**\", \"/oauth2/**\", \"/login/oauth2/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET, \"/uploads/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET,\r\n                                \"/api/v1/products/**\",\r\n                                \"/api/v1/brands/**\",\r\n                                \"/api/v1/categories/**\",\r\n                                \"/api/v1/reviews/**\")\r\n                        .permitAll()\r\n                        .requestMatchers(\"/swagger-ui.html\", \"/swagger-ui/**\", \"/v3/api-docs/**\").permitAll()\r\n                        .requestMatchers(\"/actuator/health/**\", \"/actuator/info\").permitAll()\r\n                        .requestMatchers(\"/actuator/**\").hasRole(\"ADMIN\")\r\n                        .anyRequest().authenticated()\r\n                ).oauth2Login",
+          "lineNumber": 75
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "http\r\n                .cors(cors -> cors.configurationSource(corsConfigurationSource()))\r\n                .csrf(csrf -> csrf\r\n                        .csrfTokenRepository(csrfTokenRepository)\r\n                        .csrfTokenRequestHandler(csrfRequestHandler)\r\n                        .ignoringRequestMatchers(\r\n                                \"/api/v1/auth/login\", \"/api/v1/auth/login/\",\r\n                                \"/api/v1/auth/register\", \"/api/v1/auth/register/\",\r\n                                \"/api/v1/auth/refresh\", \"/api/v1/auth/refresh/\",\r\n                                \"/api/v1/auth/logout\", \"/api/v1/auth/logout/\",\r\n                                \"/api/v1/payments/vnpay-webhook\",\r\n                                \"/oauth2/**\", \"/login/oauth2/**\"\r\n                        )\r\n                        .ignoringRequestMatchers(BEARER_AUTH_REQUEST) // Bearer token (JWT) không cần CSRFf\r\n                )\r\n                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests",
+          "lineNumber": 75
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "http\r\n                .cors(cors -> cors.configurationSource(corsConfigurationSource()))\r\n                .csrf(csrf -> csrf\r\n                        .csrfTokenRepository(csrfTokenRepository)\r\n                        .csrfTokenRequestHandler(csrfRequestHandler)\r\n                        .ignoringRequestMatchers(\r\n                                \"/api/v1/auth/login\", \"/api/v1/auth/login/\",\r\n                                \"/api/v1/auth/register\", \"/api/v1/auth/register/\",\r\n                                \"/api/v1/auth/refresh\", \"/api/v1/auth/refresh/\",\r\n                                \"/api/v1/auth/logout\", \"/api/v1/auth/logout/\",\r\n                                \"/api/v1/payments/vnpay-webhook\",\r\n                                \"/oauth2/**\", \"/login/oauth2/**\"\r\n                        )\r\n                        .ignoringRequestMatchers(BEARER_AUTH_REQUEST) // Bearer token (JWT) không cần CSRFf\r\n                ).sessionManagement",
+          "lineNumber": 75
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "http\r\n                .cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf",
+          "lineNumber": 75
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "http.cors",
+          "lineNumber": 75
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "cors.configurationSource",
+          "lineNumber": 76
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "corsConfigurationSource",
+          "lineNumber": 76
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "csrf\r\n                        .csrfTokenRepository(csrfTokenRepository)\r\n                        .csrfTokenRequestHandler(csrfRequestHandler)\r\n                        .ignoringRequestMatchers(\r\n                                \"/api/v1/auth/login\", \"/api/v1/auth/login/\",\r\n                                \"/api/v1/auth/register\", \"/api/v1/auth/register/\",\r\n                                \"/api/v1/auth/refresh\", \"/api/v1/auth/refresh/\",\r\n                                \"/api/v1/auth/logout\", \"/api/v1/auth/logout/\",\r\n                                \"/api/v1/payments/vnpay-webhook\",\r\n                                \"/oauth2/**\", \"/login/oauth2/**\"\r\n                        ).ignoringRequestMatchers",
+          "lineNumber": 77
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "csrf\r\n                        .csrfTokenRepository(csrfTokenRepository)\r\n                        .csrfTokenRequestHandler(csrfRequestHandler).ignoringRequestMatchers",
+          "lineNumber": 77
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "csrf\r\n                        .csrfTokenRepository(csrfTokenRepository).csrfTokenRequestHandler",
+          "lineNumber": 77
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "csrf.csrfTokenRepository",
+          "lineNumber": 77
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "session.sessionCreationPolicy",
+          "lineNumber": 90
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll()\r\n                        .requestMatchers(\"/error\", \"/api/v1/auth/**\", \"/oauth2/**\", \"/login/oauth2/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET, \"/uploads/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET,\r\n                                \"/api/v1/products/**\",\r\n                                \"/api/v1/brands/**\",\r\n                                \"/api/v1/categories/**\",\r\n                                \"/api/v1/reviews/**\")\r\n                        .permitAll()\r\n                        .requestMatchers(\"/swagger-ui.html\", \"/swagger-ui/**\", \"/v3/api-docs/**\").permitAll()\r\n                        .requestMatchers(\"/actuator/health/**\", \"/actuator/info\").permitAll()\r\n                        .requestMatchers(\"/actuator/**\").hasRole(\"ADMIN\")\r\n                        .anyRequest().authenticated",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll()\r\n                        .requestMatchers(\"/error\", \"/api/v1/auth/**\", \"/oauth2/**\", \"/login/oauth2/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET, \"/uploads/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET,\r\n                                \"/api/v1/products/**\",\r\n                                \"/api/v1/brands/**\",\r\n                                \"/api/v1/categories/**\",\r\n                                \"/api/v1/reviews/**\")\r\n                        .permitAll()\r\n                        .requestMatchers(\"/swagger-ui.html\", \"/swagger-ui/**\", \"/v3/api-docs/**\").permitAll()\r\n                        .requestMatchers(\"/actuator/health/**\", \"/actuator/info\").permitAll()\r\n                        .requestMatchers(\"/actuator/**\").hasRole(\"ADMIN\").anyRequest",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll()\r\n                        .requestMatchers(\"/error\", \"/api/v1/auth/**\", \"/oauth2/**\", \"/login/oauth2/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET, \"/uploads/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET,\r\n                                \"/api/v1/products/**\",\r\n                                \"/api/v1/brands/**\",\r\n                                \"/api/v1/categories/**\",\r\n                                \"/api/v1/reviews/**\")\r\n                        .permitAll()\r\n                        .requestMatchers(\"/swagger-ui.html\", \"/swagger-ui/**\", \"/v3/api-docs/**\").permitAll()\r\n                        .requestMatchers(\"/actuator/health/**\", \"/actuator/info\").permitAll()\r\n                        .requestMatchers(\"/actuator/**\").hasRole",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll()\r\n                        .requestMatchers(\"/error\", \"/api/v1/auth/**\", \"/oauth2/**\", \"/login/oauth2/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET, \"/uploads/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET,\r\n                                \"/api/v1/products/**\",\r\n                                \"/api/v1/brands/**\",\r\n                                \"/api/v1/categories/**\",\r\n                                \"/api/v1/reviews/**\")\r\n                        .permitAll()\r\n                        .requestMatchers(\"/swagger-ui.html\", \"/swagger-ui/**\", \"/v3/api-docs/**\").permitAll()\r\n                        .requestMatchers(\"/actuator/health/**\", \"/actuator/info\").permitAll().requestMatchers",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll()\r\n                        .requestMatchers(\"/error\", \"/api/v1/auth/**\", \"/oauth2/**\", \"/login/oauth2/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET, \"/uploads/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET,\r\n                                \"/api/v1/products/**\",\r\n                                \"/api/v1/brands/**\",\r\n                                \"/api/v1/categories/**\",\r\n                                \"/api/v1/reviews/**\")\r\n                        .permitAll()\r\n                        .requestMatchers(\"/swagger-ui.html\", \"/swagger-ui/**\", \"/v3/api-docs/**\").permitAll()\r\n                        .requestMatchers(\"/actuator/health/**\", \"/actuator/info\").permitAll",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll()\r\n                        .requestMatchers(\"/error\", \"/api/v1/auth/**\", \"/oauth2/**\", \"/login/oauth2/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET, \"/uploads/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET,\r\n                                \"/api/v1/products/**\",\r\n                                \"/api/v1/brands/**\",\r\n                                \"/api/v1/categories/**\",\r\n                                \"/api/v1/reviews/**\")\r\n                        .permitAll()\r\n                        .requestMatchers(\"/swagger-ui.html\", \"/swagger-ui/**\", \"/v3/api-docs/**\").permitAll().requestMatchers",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll()\r\n                        .requestMatchers(\"/error\", \"/api/v1/auth/**\", \"/oauth2/**\", \"/login/oauth2/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET, \"/uploads/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET,\r\n                                \"/api/v1/products/**\",\r\n                                \"/api/v1/brands/**\",\r\n                                \"/api/v1/categories/**\",\r\n                                \"/api/v1/reviews/**\")\r\n                        .permitAll()\r\n                        .requestMatchers(\"/swagger-ui.html\", \"/swagger-ui/**\", \"/v3/api-docs/**\").permitAll",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll()\r\n                        .requestMatchers(\"/error\", \"/api/v1/auth/**\", \"/oauth2/**\", \"/login/oauth2/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET, \"/uploads/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET,\r\n                                \"/api/v1/products/**\",\r\n                                \"/api/v1/brands/**\",\r\n                                \"/api/v1/categories/**\",\r\n                                \"/api/v1/reviews/**\")\r\n                        .permitAll().requestMatchers",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll()\r\n                        .requestMatchers(\"/error\", \"/api/v1/auth/**\", \"/oauth2/**\", \"/login/oauth2/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET, \"/uploads/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET,\r\n                                \"/api/v1/products/**\",\r\n                                \"/api/v1/brands/**\",\r\n                                \"/api/v1/categories/**\",\r\n                                \"/api/v1/reviews/**\").permitAll",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll()\r\n                        .requestMatchers(\"/error\", \"/api/v1/auth/**\", \"/oauth2/**\", \"/login/oauth2/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET, \"/uploads/**\").permitAll().requestMatchers",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll()\r\n                        .requestMatchers(\"/error\", \"/api/v1/auth/**\", \"/oauth2/**\", \"/login/oauth2/**\").permitAll()\r\n                        .requestMatchers(HttpMethod.GET, \"/uploads/**\").permitAll",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll()\r\n                        .requestMatchers(\"/error\", \"/api/v1/auth/**\", \"/oauth2/**\", \"/login/oauth2/**\").permitAll().requestMatchers",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll()\r\n                        .requestMatchers(\"/error\", \"/api/v1/auth/**\", \"/oauth2/**\", \"/login/oauth2/**\").permitAll",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll().requestMatchers",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll()\r\n                        .requestMatchers(\"/api/v1/payments/vnpay-webhook\").permitAll",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll().requestMatchers",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth\r\n                        .requestMatchers(HttpMethod.OPTIONS, \"/**\").permitAll",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "auth.requestMatchers",
+          "lineNumber": 91
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "oauth2.successHandler",
+          "lineNumber": 107
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "exceptions.accessDeniedHandler",
+          "lineNumber": 110
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "response.setStatus",
+          "lineNumber": 111
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "response.setContentType",
+          "lineNumber": 112
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "ErrorResponse.builder()\r\n                            .timestamp(LocalDateTime.now())\r\n                            .status(HttpServletResponse.SC_FORBIDDEN)\r\n                            .error(\"Forbidden\")\r\n                            .message(message).build",
+          "lineNumber": 117
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "ErrorResponse.builder()\r\n                            .timestamp(LocalDateTime.now())\r\n                            .status(HttpServletResponse.SC_FORBIDDEN)\r\n                            .error(\"Forbidden\").message",
+          "lineNumber": 117
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "ErrorResponse.builder()\r\n                            .timestamp(LocalDateTime.now())\r\n                            .status(HttpServletResponse.SC_FORBIDDEN).error",
+          "lineNumber": 117
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "ErrorResponse.builder()\r\n                            .timestamp(LocalDateTime.now()).status",
+          "lineNumber": 117
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "ErrorResponse.builder().timestamp",
+          "lineNumber": 117
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "ErrorResponse.builder",
+          "lineNumber": 117
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "LocalDateTime.now",
+          "lineNumber": 118
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "new ObjectMapper().writeValue",
+          "lineNumber": 123
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "new ObjectMapper",
+          "lineNumber": 123
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "response.getOutputStream",
+          "lineNumber": 123
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "http.addFilterBefore",
+          "lineNumber": 126
+        },
+        {
+          "caller": "securityFilterChain",
+          "callee": "http.build",
+          "lineNumber": 127
+        },
+        {
+          "caller": "corsConfigurationSource",
+          "callee": "new CorsConfiguration",
+          "lineNumber": 136
+        },
+        {
+          "caller": "corsConfigurationSource",
+          "callee": "configuration.setAllowedOrigins",
+          "lineNumber": 137
+        },
+        {
+          "caller": "corsConfigurationSource",
+          "callee": "List.of",
+          "lineNumber": 137
+        },
+        {
+          "caller": "corsConfigurationSource",
+          "callee": "configuration.setAllowedMethods",
+          "lineNumber": 138
+        },
+        {
+          "caller": "corsConfigurationSource",
+          "callee": "List.of",
+          "lineNumber": 138
+        },
+        {
+          "caller": "corsConfigurationSource",
+          "callee": "configuration.setAllowedHeaders",
+          "lineNumber": 139
+        },
+        {
+          "caller": "corsConfigurationSource",
+          "callee": "List.of",
+          "lineNumber": 139
+        },
+        {
+          "caller": "corsConfigurationSource",
+          "callee": "configuration.setAllowCredentials",
+          "lineNumber": 140
+        },
+        {
+          "caller": "corsConfigurationSource",
+          "callee": "new UrlBasedCorsConfigurationSource",
+          "lineNumber": 142
+        },
+        {
+          "caller": "corsConfigurationSource",
+          "callee": "source.registerCorsConfiguration",
+          "lineNumber": 143
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/config/ShedLockConfig.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 20,
+      "nonEmptyLines": 17,
+      "functions": [
+        {
+          "name": "lockProvider",
+          "startLine": 16,
+          "endLine": 19,
+          "params": [
+            "dataSource"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ShedLockConfig",
+          "startLine": 12,
+          "endLine": 20,
+          "methods": [
+            "lockProvider"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "lockProvider",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "ShedLockConfig",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "lockProvider",
+          "callee": "new JdbcTemplateLockProvider",
+          "lineNumber": 18
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/config/WebConfig.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 53,
+      "nonEmptyLines": 48,
+      "functions": [
+        {
+          "name": "trailingSlashHandlerFilter",
+          "startLine": 23,
+          "endLine": 32,
+          "params": []
+        },
+        {
+          "name": "customizePageable",
+          "startLine": 33,
+          "endLine": 42,
+          "params": []
+        },
+        {
+          "name": "addResourceHandlers",
+          "startLine": 43,
+          "endLine": 52,
+          "params": [
+            "registry"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "WebConfig",
+          "startLine": 16,
+          "endLine": 53,
+          "methods": [
+            "trailingSlashHandlerFilter",
+            "customizePageable",
+            "addResourceHandlers"
+          ],
+          "properties": [
+            "uploadRoot"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "trailingSlashHandlerFilter",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "customizePageable",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "addResourceHandlers",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "WebConfig",
+          "line": 16,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "trailingSlashHandlerFilter",
+          "callee": "UrlHandlerFilter\r\n                .trailingSlashHandler(\"/**\")\r\n                .wrapRequest().build",
+          "lineNumber": 25
+        },
+        {
+          "caller": "trailingSlashHandlerFilter",
+          "callee": "UrlHandlerFilter\r\n                .trailingSlashHandler(\"/**\").wrapRequest",
+          "lineNumber": 25
+        },
+        {
+          "caller": "trailingSlashHandlerFilter",
+          "callee": "UrlHandlerFilter.trailingSlashHandler",
+          "lineNumber": 25
+        },
+        {
+          "caller": "trailingSlashHandlerFilter",
+          "callee": "new FilterRegistrationBean<>",
+          "lineNumber": 29
+        },
+        {
+          "caller": "trailingSlashHandlerFilter",
+          "callee": "registration.setOrder",
+          "lineNumber": 30
+        },
+        {
+          "caller": "customizePageable",
+          "callee": "resolver.setFallbackPageable",
+          "lineNumber": 37
+        },
+        {
+          "caller": "customizePageable",
+          "callee": "PageRequest.of",
+          "lineNumber": 37
+        },
+        {
+          "caller": "customizePageable",
+          "callee": "resolver.setMaxPageSize",
+          "lineNumber": 40
+        },
+        {
+          "caller": "addResourceHandlers",
+          "callee": "Path.of(uploadRoot)\r\n                .toAbsolutePath()\r\n                .normalize()\r\n                .toUri().toString",
+          "lineNumber": 45
+        },
+        {
+          "caller": "addResourceHandlers",
+          "callee": "Path.of(uploadRoot)\r\n                .toAbsolutePath()\r\n                .normalize().toUri",
+          "lineNumber": 45
+        },
+        {
+          "caller": "addResourceHandlers",
+          "callee": "Path.of(uploadRoot)\r\n                .toAbsolutePath().normalize",
+          "lineNumber": 45
+        },
+        {
+          "caller": "addResourceHandlers",
+          "callee": "Path.of(uploadRoot).toAbsolutePath",
+          "lineNumber": 45
+        },
+        {
+          "caller": "addResourceHandlers",
+          "callee": "Path.of",
+          "lineNumber": 45
+        },
+        {
+          "caller": "addResourceHandlers",
+          "callee": "registry.addResourceHandler(\"/uploads/**\").addResourceLocations",
+          "lineNumber": 50
+        },
+        {
+          "caller": "addResourceHandlers",
+          "callee": "registry.addResourceHandler",
+          "lineNumber": 50
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/request/ShippingAddressRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 30,
+      "nonEmptyLines": 23,
+      "classes": [
+        {
+          "name": "ShippingAddressRequest",
+          "startLine": 6,
+          "endLine": 30,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ShippingAddressRequest",
+          "line": 6,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/request/UserRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 32,
+      "nonEmptyLines": 25,
+      "classes": [
+        {
+          "name": "UserRequest",
+          "startLine": 8,
+          "endLine": 32,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "UserRequest",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/exception/ErrorResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 14,
+      "classes": [
+        {
+          "name": "ErrorResponse",
+          "startLine": 8,
+          "endLine": 16,
+          "methods": [],
+          "properties": [
+            "timestamp",
+            "status",
+            "error",
+            "message"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ErrorResponse",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 187,
+      "nonEmptyLines": 169,
+      "functions": [
+        {
+          "name": "handleResourceNotFound",
+          "startLine": 32,
+          "endLine": 41,
+          "params": [
+            "ex"
+          ]
+        },
+        {
+          "name": "handleValidationException",
+          "startLine": 43,
+          "endLine": 56,
+          "params": [
+            "ex"
+          ]
+        },
+        {
+          "name": "handleBusinessRuleException",
+          "startLine": 58,
+          "endLine": 67,
+          "params": [
+            "ex"
+          ]
+        },
+        {
+          "name": "handleConstraintViolation",
+          "startLine": 69,
+          "endLine": 81,
+          "params": [
+            "ex"
+          ]
+        },
+        {
+          "name": "handleUsernameNotFound",
+          "startLine": 83,
+          "endLine": 92,
+          "params": []
+        },
+        {
+          "name": "handleBadCredentials",
+          "startLine": 94,
+          "endLine": 103,
+          "params": []
+        },
+        {
+          "name": "handleAccessDenied",
+          "startLine": 105,
+          "endLine": 114,
+          "params": []
+        },
+        {
+          "name": "handleDataIntegrityViolation",
+          "startLine": 116,
+          "endLine": 125,
+          "params": [
+            "ex"
+          ]
+        },
+        {
+          "name": "handleGlobalException",
+          "startLine": 127,
+          "endLine": 137,
+          "params": [
+            "ex"
+          ]
+        },
+        {
+          "name": "resolveDataIntegrityMessage",
+          "startLine": 139,
+          "endLine": 151,
+          "params": [
+            "ex"
+          ]
+        },
+        {
+          "name": "resolveNotNullMessage",
+          "startLine": 153,
+          "endLine": 160,
+          "params": [
+            "sqlException"
+          ]
+        },
+        {
+          "name": "resolveUniqueConstraintMessage",
+          "startLine": 162,
+          "endLine": 175,
+          "params": [
+            "sqlException"
+          ]
+        },
+        {
+          "name": "findSqlException",
+          "startLine": 177,
+          "endLine": 186,
+          "params": [
+            "throwable"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GlobalExceptionHandler",
+          "startLine": 26,
+          "endLine": 187,
+          "methods": [
+            "handleResourceNotFound",
+            "handleValidationException",
+            "handleBusinessRuleException",
+            "handleConstraintViolation",
+            "handleUsernameNotFound",
+            "handleBadCredentials",
+            "handleAccessDenied",
+            "handleDataIntegrityViolation",
+            "handleGlobalException",
+            "resolveDataIntegrityMessage",
+            "resolveNotNullMessage",
+            "resolveUniqueConstraintMessage",
+            "findSqlException"
+          ],
+          "properties": [
+            "log",
+            "NULL_COLUMN_PATTERN",
+            "UNIQUE_CONSTRAINT_PATTERN"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "handleResourceNotFound",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "handleValidationException",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "handleBusinessRuleException",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "handleConstraintViolation",
+          "line": 69,
+          "isDefault": false
+        },
+        {
+          "name": "handleUsernameNotFound",
+          "line": 83,
+          "isDefault": false
+        },
+        {
+          "name": "handleBadCredentials",
+          "line": 94,
+          "isDefault": false
+        },
+        {
+          "name": "handleAccessDenied",
+          "line": 105,
+          "isDefault": false
+        },
+        {
+          "name": "handleDataIntegrityViolation",
+          "line": 116,
+          "isDefault": false
+        },
+        {
+          "name": "handleGlobalException",
+          "line": 127,
+          "isDefault": false
+        },
+        {
+          "name": "GlobalExceptionHandler",
+          "line": 26,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "handleResourceNotFound",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.NOT_FOUND.value())\r\n                .error(HttpStatus.NOT_FOUND.getReasonPhrase())\r\n                .message(ex.getMessage()).build",
+          "lineNumber": 34
+        },
+        {
+          "caller": "handleResourceNotFound",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.NOT_FOUND.value())\r\n                .error(HttpStatus.NOT_FOUND.getReasonPhrase()).message",
+          "lineNumber": 34
+        },
+        {
+          "caller": "handleResourceNotFound",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.NOT_FOUND.value()).error",
+          "lineNumber": 34
+        },
+        {
+          "caller": "handleResourceNotFound",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now()).status",
+          "lineNumber": 34
+        },
+        {
+          "caller": "handleResourceNotFound",
+          "callee": "ErrorResponse.builder().timestamp",
+          "lineNumber": 34
+        },
+        {
+          "caller": "handleResourceNotFound",
+          "callee": "ErrorResponse.builder",
+          "lineNumber": 34
+        },
+        {
+          "caller": "handleResourceNotFound",
+          "callee": "LocalDateTime.now",
+          "lineNumber": 35
+        },
+        {
+          "caller": "handleResourceNotFound",
+          "callee": "HttpStatus.NOT_FOUND.value",
+          "lineNumber": 36
+        },
+        {
+          "caller": "handleResourceNotFound",
+          "callee": "HttpStatus.NOT_FOUND.getReasonPhrase",
+          "lineNumber": 37
+        },
+        {
+          "caller": "handleResourceNotFound",
+          "callee": "ex.getMessage",
+          "lineNumber": 38
+        },
+        {
+          "caller": "handleResourceNotFound",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 40
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "ex.getBindingResult().getFieldErrors().stream()\r\n                .map(fieldError -> fieldError.getDefaultMessage()).collect",
+          "lineNumber": 45
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "ex.getBindingResult().getFieldErrors().stream().map",
+          "lineNumber": 45
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "ex.getBindingResult().getFieldErrors().stream",
+          "lineNumber": 45
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "ex.getBindingResult().getFieldErrors",
+          "lineNumber": 45
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "ex.getBindingResult",
+          "lineNumber": 45
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "fieldError.getDefaultMessage",
+          "lineNumber": 46
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "Collectors.joining",
+          "lineNumber": 47
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.BAD_REQUEST.value())\r\n                .error(\"Validation Error\")\r\n                .message(errorMessage).build",
+          "lineNumber": 49
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.BAD_REQUEST.value())\r\n                .error(\"Validation Error\").message",
+          "lineNumber": 49
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.BAD_REQUEST.value()).error",
+          "lineNumber": 49
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now()).status",
+          "lineNumber": 49
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "ErrorResponse.builder().timestamp",
+          "lineNumber": 49
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "ErrorResponse.builder",
+          "lineNumber": 49
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "LocalDateTime.now",
+          "lineNumber": 50
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "HttpStatus.BAD_REQUEST.value",
+          "lineNumber": 51
+        },
+        {
+          "caller": "handleValidationException",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 55
+        },
+        {
+          "caller": "handleBusinessRuleException",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.BAD_REQUEST.value())\r\n                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())\r\n                .message(ex.getMessage()).build",
+          "lineNumber": 60
+        },
+        {
+          "caller": "handleBusinessRuleException",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.BAD_REQUEST.value())\r\n                .error(HttpStatus.BAD_REQUEST.getReasonPhrase()).message",
+          "lineNumber": 60
+        },
+        {
+          "caller": "handleBusinessRuleException",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.BAD_REQUEST.value()).error",
+          "lineNumber": 60
+        },
+        {
+          "caller": "handleBusinessRuleException",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now()).status",
+          "lineNumber": 60
+        },
+        {
+          "caller": "handleBusinessRuleException",
+          "callee": "ErrorResponse.builder().timestamp",
+          "lineNumber": 60
+        },
+        {
+          "caller": "handleBusinessRuleException",
+          "callee": "ErrorResponse.builder",
+          "lineNumber": 60
+        },
+        {
+          "caller": "handleBusinessRuleException",
+          "callee": "LocalDateTime.now",
+          "lineNumber": 61
+        },
+        {
+          "caller": "handleBusinessRuleException",
+          "callee": "HttpStatus.BAD_REQUEST.value",
+          "lineNumber": 62
+        },
+        {
+          "caller": "handleBusinessRuleException",
+          "callee": "HttpStatus.BAD_REQUEST.getReasonPhrase",
+          "lineNumber": 63
+        },
+        {
+          "caller": "handleBusinessRuleException",
+          "callee": "ex.getMessage",
+          "lineNumber": 64
+        },
+        {
+          "caller": "handleBusinessRuleException",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 66
+        },
+        {
+          "caller": "handleConstraintViolation",
+          "callee": "ex.getConstraintViolations().stream()\r\n                .map(violation -> violation.getMessage()).collect",
+          "lineNumber": 71
+        },
+        {
+          "caller": "handleConstraintViolation",
+          "callee": "ex.getConstraintViolations().stream().map",
+          "lineNumber": 71
+        },
+        {
+          "caller": "handleConstraintViolation",
+          "callee": "ex.getConstraintViolations().stream",
+          "lineNumber": 71
+        },
+        {
+          "caller": "handleConstraintViolation",
+          "callee": "ex.getConstraintViolations",
+          "lineNumber": 71
+        },
+        {
+          "caller": "handleConstraintViolation",
+          "callee": "violation.getMessage",
+          "lineNumber": 72
+        },
+        {
+          "caller": "handleConstraintViolation",
+          "callee": "Collectors.joining",
+          "lineNumber": 73
+        },
+        {
+          "caller": "handleConstraintViolation",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.BAD_REQUEST.value())\r\n                .error(\"Validation Error\")\r\n                .message(errorMessage).build",
+          "lineNumber": 74
+        },
+        {
+          "caller": "handleConstraintViolation",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.BAD_REQUEST.value())\r\n                .error(\"Validation Error\").message",
+          "lineNumber": 74
+        },
+        {
+          "caller": "handleConstraintViolation",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.BAD_REQUEST.value()).error",
+          "lineNumber": 74
+        },
+        {
+          "caller": "handleConstraintViolation",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now()).status",
+          "lineNumber": 74
+        },
+        {
+          "caller": "handleConstraintViolation",
+          "callee": "ErrorResponse.builder().timestamp",
+          "lineNumber": 74
+        },
+        {
+          "caller": "handleConstraintViolation",
+          "callee": "ErrorResponse.builder",
+          "lineNumber": 74
+        },
+        {
+          "caller": "handleConstraintViolation",
+          "callee": "LocalDateTime.now",
+          "lineNumber": 75
+        },
+        {
+          "caller": "handleConstraintViolation",
+          "callee": "HttpStatus.BAD_REQUEST.value",
+          "lineNumber": 76
+        },
+        {
+          "caller": "handleConstraintViolation",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 80
+        },
+        {
+          "caller": "handleUsernameNotFound",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.UNAUTHORIZED.value())\r\n                .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())\r\n                .message(\"Username hoac password khong dung\").build",
+          "lineNumber": 85
+        },
+        {
+          "caller": "handleUsernameNotFound",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.UNAUTHORIZED.value())\r\n                .error(HttpStatus.UNAUTHORIZED.getReasonPhrase()).message",
+          "lineNumber": 85
+        },
+        {
+          "caller": "handleUsernameNotFound",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.UNAUTHORIZED.value()).error",
+          "lineNumber": 85
+        },
+        {
+          "caller": "handleUsernameNotFound",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now()).status",
+          "lineNumber": 85
+        },
+        {
+          "caller": "handleUsernameNotFound",
+          "callee": "ErrorResponse.builder().timestamp",
+          "lineNumber": 85
+        },
+        {
+          "caller": "handleUsernameNotFound",
+          "callee": "ErrorResponse.builder",
+          "lineNumber": 85
+        },
+        {
+          "caller": "handleUsernameNotFound",
+          "callee": "LocalDateTime.now",
+          "lineNumber": 86
+        },
+        {
+          "caller": "handleUsernameNotFound",
+          "callee": "HttpStatus.UNAUTHORIZED.value",
+          "lineNumber": 87
+        },
+        {
+          "caller": "handleUsernameNotFound",
+          "callee": "HttpStatus.UNAUTHORIZED.getReasonPhrase",
+          "lineNumber": 88
+        },
+        {
+          "caller": "handleUsernameNotFound",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 91
+        },
+        {
+          "caller": "handleBadCredentials",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.UNAUTHORIZED.value())\r\n                .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())\r\n                .message(\"Username hoac password khong dung\").build",
+          "lineNumber": 96
+        },
+        {
+          "caller": "handleBadCredentials",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.UNAUTHORIZED.value())\r\n                .error(HttpStatus.UNAUTHORIZED.getReasonPhrase()).message",
+          "lineNumber": 96
+        },
+        {
+          "caller": "handleBadCredentials",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.UNAUTHORIZED.value()).error",
+          "lineNumber": 96
+        },
+        {
+          "caller": "handleBadCredentials",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now()).status",
+          "lineNumber": 96
+        },
+        {
+          "caller": "handleBadCredentials",
+          "callee": "ErrorResponse.builder().timestamp",
+          "lineNumber": 96
+        },
+        {
+          "caller": "handleBadCredentials",
+          "callee": "ErrorResponse.builder",
+          "lineNumber": 96
+        },
+        {
+          "caller": "handleBadCredentials",
+          "callee": "LocalDateTime.now",
+          "lineNumber": 97
+        },
+        {
+          "caller": "handleBadCredentials",
+          "callee": "HttpStatus.UNAUTHORIZED.value",
+          "lineNumber": 98
+        },
+        {
+          "caller": "handleBadCredentials",
+          "callee": "HttpStatus.UNAUTHORIZED.getReasonPhrase",
+          "lineNumber": 99
+        },
+        {
+          "caller": "handleBadCredentials",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 102
+        },
+        {
+          "caller": "handleAccessDenied",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.FORBIDDEN.value())\r\n                .error(HttpStatus.FORBIDDEN.getReasonPhrase())\r\n                .message(\"Ban khong co quyen thuc hien thao tac nay\").build",
+          "lineNumber": 107
+        },
+        {
+          "caller": "handleAccessDenied",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.FORBIDDEN.value())\r\n                .error(HttpStatus.FORBIDDEN.getReasonPhrase()).message",
+          "lineNumber": 107
+        },
+        {
+          "caller": "handleAccessDenied",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.FORBIDDEN.value()).error",
+          "lineNumber": 107
+        },
+        {
+          "caller": "handleAccessDenied",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now()).status",
+          "lineNumber": 107
+        },
+        {
+          "caller": "handleAccessDenied",
+          "callee": "ErrorResponse.builder().timestamp",
+          "lineNumber": 107
+        },
+        {
+          "caller": "handleAccessDenied",
+          "callee": "ErrorResponse.builder",
+          "lineNumber": 107
+        },
+        {
+          "caller": "handleAccessDenied",
+          "callee": "LocalDateTime.now",
+          "lineNumber": 108
+        },
+        {
+          "caller": "handleAccessDenied",
+          "callee": "HttpStatus.FORBIDDEN.value",
+          "lineNumber": 109
+        },
+        {
+          "caller": "handleAccessDenied",
+          "callee": "HttpStatus.FORBIDDEN.getReasonPhrase",
+          "lineNumber": 110
+        },
+        {
+          "caller": "handleAccessDenied",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 113
+        },
+        {
+          "caller": "handleDataIntegrityViolation",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.CONFLICT.value())\r\n                .error(HttpStatus.CONFLICT.getReasonPhrase())\r\n                .message(resolveDataIntegrityMessage(ex)).build",
+          "lineNumber": 118
+        },
+        {
+          "caller": "handleDataIntegrityViolation",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.CONFLICT.value())\r\n                .error(HttpStatus.CONFLICT.getReasonPhrase()).message",
+          "lineNumber": 118
+        },
+        {
+          "caller": "handleDataIntegrityViolation",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.CONFLICT.value()).error",
+          "lineNumber": 118
+        },
+        {
+          "caller": "handleDataIntegrityViolation",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now()).status",
+          "lineNumber": 118
+        },
+        {
+          "caller": "handleDataIntegrityViolation",
+          "callee": "ErrorResponse.builder().timestamp",
+          "lineNumber": 118
+        },
+        {
+          "caller": "handleDataIntegrityViolation",
+          "callee": "ErrorResponse.builder",
+          "lineNumber": 118
+        },
+        {
+          "caller": "handleDataIntegrityViolation",
+          "callee": "LocalDateTime.now",
+          "lineNumber": 119
+        },
+        {
+          "caller": "handleDataIntegrityViolation",
+          "callee": "HttpStatus.CONFLICT.value",
+          "lineNumber": 120
+        },
+        {
+          "caller": "handleDataIntegrityViolation",
+          "callee": "HttpStatus.CONFLICT.getReasonPhrase",
+          "lineNumber": 121
+        },
+        {
+          "caller": "handleDataIntegrityViolation",
+          "callee": "resolveDataIntegrityMessage",
+          "lineNumber": 122
+        },
+        {
+          "caller": "handleDataIntegrityViolation",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 124
+        },
+        {
+          "caller": "handleGlobalException",
+          "callee": "log.error",
+          "lineNumber": 129
+        },
+        {
+          "caller": "handleGlobalException",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())\r\n                .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())\r\n                .message(\"Da xay ra loi he thong\").build",
+          "lineNumber": 130
+        },
+        {
+          "caller": "handleGlobalException",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())\r\n                .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()).message",
+          "lineNumber": 130
+        },
+        {
+          "caller": "handleGlobalException",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now())\r\n                .status(HttpStatus.INTERNAL_SERVER_ERROR.value()).error",
+          "lineNumber": 130
+        },
+        {
+          "caller": "handleGlobalException",
+          "callee": "ErrorResponse.builder()\r\n                .timestamp(LocalDateTime.now()).status",
+          "lineNumber": 130
+        },
+        {
+          "caller": "handleGlobalException",
+          "callee": "ErrorResponse.builder().timestamp",
+          "lineNumber": 130
+        },
+        {
+          "caller": "handleGlobalException",
+          "callee": "ErrorResponse.builder",
+          "lineNumber": 130
+        },
+        {
+          "caller": "handleGlobalException",
+          "callee": "LocalDateTime.now",
+          "lineNumber": 131
+        },
+        {
+          "caller": "handleGlobalException",
+          "callee": "HttpStatus.INTERNAL_SERVER_ERROR.value",
+          "lineNumber": 132
+        },
+        {
+          "caller": "handleGlobalException",
+          "callee": "HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase",
+          "lineNumber": 133
+        },
+        {
+          "caller": "handleGlobalException",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 136
+        },
+        {
+          "caller": "resolveDataIntegrityMessage",
+          "callee": "findSqlException",
+          "lineNumber": 140
+        },
+        {
+          "caller": "resolveDataIntegrityMessage",
+          "callee": "sqlException.getSQLState",
+          "lineNumber": 141
+        },
+        {
+          "caller": "resolveDataIntegrityMessage",
+          "callee": "sqlException.getSQLState",
+          "lineNumber": 144
+        },
+        {
+          "caller": "resolveDataIntegrityMessage",
+          "callee": "resolveUniqueConstraintMessage",
+          "lineNumber": 145
+        },
+        {
+          "caller": "resolveDataIntegrityMessage",
+          "callee": "resolveNotNullMessage",
+          "lineNumber": 147
+        },
+        {
+          "caller": "resolveNotNullMessage",
+          "callee": "NULL_COLUMN_PATTERN.matcher",
+          "lineNumber": 154
+        },
+        {
+          "caller": "resolveNotNullMessage",
+          "callee": "sqlException.getMessage",
+          "lineNumber": 154
+        },
+        {
+          "caller": "resolveNotNullMessage",
+          "callee": "matcher.find",
+          "lineNumber": 155
+        },
+        {
+          "caller": "resolveNotNullMessage",
+          "callee": "matcher.group",
+          "lineNumber": 158
+        },
+        {
+          "caller": "resolveUniqueConstraintMessage",
+          "callee": "UNIQUE_CONSTRAINT_PATTERN.matcher",
+          "lineNumber": 163
+        },
+        {
+          "caller": "resolveUniqueConstraintMessage",
+          "callee": "sqlException.getMessage",
+          "lineNumber": 163
+        },
+        {
+          "caller": "resolveUniqueConstraintMessage",
+          "callee": "matcher.find",
+          "lineNumber": 164
+        },
+        {
+          "caller": "resolveUniqueConstraintMessage",
+          "callee": "matcher.group",
+          "lineNumber": 167
+        },
+        {
+          "caller": "resolveUniqueConstraintMessage",
+          "callee": "constraint.contains",
+          "lineNumber": 168
+        },
+        {
+          "caller": "resolveUniqueConstraintMessage",
+          "callee": "constraint.contains",
+          "lineNumber": 171
+        },
+        {
+          "caller": "findSqlException",
+          "callee": "cursor.getCause",
+          "lineNumber": 183
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 10,
+        "functionCount": 13,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/model/ShippingAddress.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 32,
+      "nonEmptyLines": 24,
+      "classes": [
+        {
+          "name": "ShippingAddress",
+          "startLine": 7,
+          "endLine": 32,
+          "methods": [],
+          "properties": [
+            "receiverName",
+            "phone",
+            "street",
+            "ward",
+            "district",
+            "city"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ShippingAddress",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/resources/META-INF/additional-spring-configuration-metadata.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 37,
+      "nonEmptyLines": 37,
+      "sections": [
+        {
+          "heading": "properties",
+          "level": 1,
+          "line": 1
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    },
+    {
+      "path": "src/main/resources/db/devdata/V3__insert_mock_data.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 282,
+      "nonEmptyLines": 263,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0
+      }
+    },
+    {
+      "path": "src/test/java/org/akira/ladux/LaduxApplicationTests.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 15,
+      "nonEmptyLines": 12,
+      "functions": [
+        {
+          "name": "contextLoads",
+          "startLine": 12,
+          "endLine": 14,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "LaduxApplicationTests",
+          "startLine": 10,
+          "endLine": 15,
+          "methods": [
+            "contextLoads"
+          ],
+          "properties": []
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/test/java/org/akira/ladux/model/RefreshTokenTest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 45,
+      "nonEmptyLines": 38,
+      "functions": [
+        {
+          "name": "usable_whenNotRevokedAndNotExpired",
+          "startLine": 16,
+          "endLine": 24,
+          "params": []
+        },
+        {
+          "name": "notUsable_whenRevoked",
+          "startLine": 26,
+          "endLine": 34,
+          "params": []
+        },
+        {
+          "name": "notUsable_whenExpired",
+          "startLine": 36,
+          "endLine": 44,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "RefreshTokenTest",
+          "startLine": 14,
+          "endLine": 45,
+          "methods": [
+            "usable_whenNotRevokedAndNotExpired",
+            "notUsable_whenRevoked",
+            "notUsable_whenExpired"
+          ],
+          "properties": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "usable_whenNotRevokedAndNotExpired",
+          "callee": "RefreshToken.builder()\n                .token(\"abc\")\n                .expiryDate(Instant.now().plus(1, ChronoUnit.DAYS))\n                .revoked(false).build",
+          "lineNumber": 18
+        },
+        {
+          "caller": "usable_whenNotRevokedAndNotExpired",
+          "callee": "RefreshToken.builder()\n                .token(\"abc\")\n                .expiryDate(Instant.now().plus(1, ChronoUnit.DAYS)).revoked",
+          "lineNumber": 18
+        },
+        {
+          "caller": "usable_whenNotRevokedAndNotExpired",
+          "callee": "RefreshToken.builder()\n                .token(\"abc\").expiryDate",
+          "lineNumber": 18
+        },
+        {
+          "caller": "usable_whenNotRevokedAndNotExpired",
+          "callee": "RefreshToken.builder().token",
+          "lineNumber": 18
+        },
+        {
+          "caller": "usable_whenNotRevokedAndNotExpired",
+          "callee": "RefreshToken.builder",
+          "lineNumber": 18
+        },
+        {
+          "caller": "usable_whenNotRevokedAndNotExpired",
+          "callee": "Instant.now().plus",
+          "lineNumber": 20
+        },
+        {
+          "caller": "usable_whenNotRevokedAndNotExpired",
+          "callee": "Instant.now",
+          "lineNumber": 20
+        },
+        {
+          "caller": "usable_whenNotRevokedAndNotExpired",
+          "callee": "assertTrue",
+          "lineNumber": 23
+        },
+        {
+          "caller": "usable_whenNotRevokedAndNotExpired",
+          "callee": "token.isUsable",
+          "lineNumber": 23
+        },
+        {
+          "caller": "notUsable_whenRevoked",
+          "callee": "RefreshToken.builder()\n                .token(\"abc\")\n                .expiryDate(Instant.now().plus(1, ChronoUnit.DAYS))\n                .revoked(true).build",
+          "lineNumber": 28
+        },
+        {
+          "caller": "notUsable_whenRevoked",
+          "callee": "RefreshToken.builder()\n                .token(\"abc\")\n                .expiryDate(Instant.now().plus(1, ChronoUnit.DAYS)).revoked",
+          "lineNumber": 28
+        },
+        {
+          "caller": "notUsable_whenRevoked",
+          "callee": "RefreshToken.builder()\n                .token(\"abc\").expiryDate",
+          "lineNumber": 28
+        },
+        {
+          "caller": "notUsable_whenRevoked",
+          "callee": "RefreshToken.builder().token",
+          "lineNumber": 28
+        },
+        {
+          "caller": "notUsable_whenRevoked",
+          "callee": "RefreshToken.builder",
+          "lineNumber": 28
+        },
+        {
+          "caller": "notUsable_whenRevoked",
+          "callee": "Instant.now().plus",
+          "lineNumber": 30
+        },
+        {
+          "caller": "notUsable_whenRevoked",
+          "callee": "Instant.now",
+          "lineNumber": 30
+        },
+        {
+          "caller": "notUsable_whenRevoked",
+          "callee": "assertFalse",
+          "lineNumber": 33
+        },
+        {
+          "caller": "notUsable_whenRevoked",
+          "callee": "token.isUsable",
+          "lineNumber": 33
+        },
+        {
+          "caller": "notUsable_whenExpired",
+          "callee": "RefreshToken.builder()\n                .token(\"abc\")\n                .expiryDate(Instant.now().minus(1, ChronoUnit.SECONDS))\n                .revoked(false).build",
+          "lineNumber": 38
+        },
+        {
+          "caller": "notUsable_whenExpired",
+          "callee": "RefreshToken.builder()\n                .token(\"abc\")\n                .expiryDate(Instant.now().minus(1, ChronoUnit.SECONDS)).revoked",
+          "lineNumber": 38
+        },
+        {
+          "caller": "notUsable_whenExpired",
+          "callee": "RefreshToken.builder()\n                .token(\"abc\").expiryDate",
+          "lineNumber": 38
+        },
+        {
+          "caller": "notUsable_whenExpired",
+          "callee": "RefreshToken.builder().token",
+          "lineNumber": 38
+        },
+        {
+          "caller": "notUsable_whenExpired",
+          "callee": "RefreshToken.builder",
+          "lineNumber": 38
+        },
+        {
+          "caller": "notUsable_whenExpired",
+          "callee": "Instant.now().minus",
+          "lineNumber": 40
+        },
+        {
+          "caller": "notUsable_whenExpired",
+          "callee": "Instant.now",
+          "lineNumber": 40
+        },
+        {
+          "caller": "notUsable_whenExpired",
+          "callee": "assertFalse",
+          "lineNumber": 43
+        },
+        {
+          "caller": "notUsable_whenExpired",
+          "callee": "token.isUsable",
+          "lineNumber": 43
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    }
+  ]
+}

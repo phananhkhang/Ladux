@@ -1,0 +1,676 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "type": "file",
+      "name": "AdminPurchaseOrderController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "summary": "Exposes admin REST endpoints for listing, creating, updating, and receiving purchase orders. It delegates purchase-order workflows to the service layer and accepts authenticated user context for auditable actions.",
+      "tags": [
+        "api-handler",
+        "admin-api",
+        "rest-controller",
+        "inventory"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:AdminPurchaseOrderController",
+      "type": "class",
+      "name": "AdminPurchaseOrderController",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "lineRange": [
+        27,
+        77
+      ],
+      "summary": "AdminPurchaseOrderController groups Spring MVC endpoints for the admin inventory API and delegates business decisions to service interfaces.",
+      "tags": [
+        "api-handler",
+        "rest-controller",
+        "admin-api",
+        "inventory"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:getAllPurchaseOrders",
+      "type": "function",
+      "name": "getAllPurchaseOrders",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "lineRange": [
+        35,
+        38
+      ],
+      "summary": "Retrieves all purchase orders data through the service or repository layer.",
+      "tags": [
+        "service",
+        "purchase-order",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:getByStatus",
+      "type": "function",
+      "name": "getByStatus",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "lineRange": [
+        40,
+        44
+      ],
+      "summary": "Retrieves by status data through the service or repository layer.",
+      "tags": [
+        "api-handler",
+        "rest-endpoint",
+        "admin-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:getBySupplier",
+      "type": "function",
+      "name": "getBySupplier",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "lineRange": [
+        46,
+        50
+      ],
+      "summary": "Retrieves by supplier data through the service or repository layer.",
+      "tags": [
+        "api-handler",
+        "rest-endpoint",
+        "admin-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:getById",
+      "type": "function",
+      "name": "getById",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "lineRange": [
+        52,
+        55
+      ],
+      "summary": "Retrieves by id data through the service or repository layer.",
+      "tags": [
+        "api-handler",
+        "rest-endpoint",
+        "admin-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:create",
+      "type": "function",
+      "name": "create",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "lineRange": [
+        57,
+        62
+      ],
+      "summary": "create implements a focused operation in the purchase-order or stock-movement workflow.",
+      "tags": [
+        "api-handler",
+        "rest-endpoint",
+        "admin-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:updateStatus",
+      "type": "function",
+      "name": "updateStatus",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "lineRange": [
+        64,
+        68
+      ],
+      "summary": "Loads a purchase order and applies a requested status transition before returning the updated response.",
+      "tags": [
+        "api-handler",
+        "rest-endpoint",
+        "admin-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:receive",
+      "type": "function",
+      "name": "receive",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "lineRange": [
+        70,
+        76
+      ],
+      "summary": "receive implements a focused operation in the purchase-order or stock-movement workflow.",
+      "tags": [
+        "service",
+        "purchase-order",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "type": "file",
+      "name": "AdminStockMovementController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "summary": "Exposes admin REST endpoints for stock movement browsing and manual stock adjustments. It routes pagination, product filtering, and authenticated adjustment requests into the stock movement service.",
+      "tags": [
+        "api-handler",
+        "admin-api",
+        "rest-controller",
+        "inventory"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java:AdminStockMovementController",
+      "type": "class",
+      "name": "AdminStockMovementController",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "lineRange": [
+        23,
+        48
+      ],
+      "summary": "AdminStockMovementController groups Spring MVC endpoints for the admin inventory API and delegates business decisions to service interfaces.",
+      "tags": [
+        "api-handler",
+        "rest-controller",
+        "admin-api",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java:getAllStockMovements",
+      "type": "function",
+      "name": "getAllStockMovements",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "lineRange": [
+        31,
+        34
+      ],
+      "summary": "Retrieves all stock movements data through the service or repository layer.",
+      "tags": [
+        "service",
+        "stock-movement",
+        "ledger"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java:getByProduct",
+      "type": "function",
+      "name": "getByProduct",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "lineRange": [
+        36,
+        39
+      ],
+      "summary": "Retrieves by product data through the service or repository layer.",
+      "tags": [
+        "api-handler",
+        "rest-endpoint",
+        "admin-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java:createAdjustment",
+      "type": "function",
+      "name": "createAdjustment",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "lineRange": [
+        42,
+        47
+      ],
+      "summary": "Validates and applies a manual stock adjustment, then records the corresponding inventory ledger movement.",
+      "tags": [
+        "service",
+        "stock-movement",
+        "ledger"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderCreateRequest.java",
+      "type": "file",
+      "name": "PurchaseOrderCreateRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/PurchaseOrderCreateRequest.java",
+      "summary": "Defines the request payload for creating purchase orders, including supplier selection and line items. Bean validation annotations constrain the required purchase-order input.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "request-model",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/PurchaseOrderCreateRequest.java:PurchaseOrderCreateRequest",
+      "type": "class",
+      "name": "PurchaseOrderCreateRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/PurchaseOrderCreateRequest.java",
+      "lineRange": [
+        12,
+        25
+      ],
+      "summary": "PurchaseOrderCreateRequest is a request DTO carrying validated input for purchase-order or stock-movement operations.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "request-model",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderItemRequest.java",
+      "type": "file",
+      "name": "PurchaseOrderItemRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/PurchaseOrderItemRequest.java",
+      "summary": "Defines a validated line-item request for purchase orders with product, quantity, and unit cost fields. It is embedded by purchase-order creation and receiving payloads.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "request-model",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/PurchaseOrderItemRequest.java:PurchaseOrderItemRequest",
+      "type": "class",
+      "name": "PurchaseOrderItemRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/PurchaseOrderItemRequest.java",
+      "lineRange": [
+        10,
+        25
+      ],
+      "summary": "PurchaseOrderItemRequest is a request DTO carrying validated input for purchase-order or stock-movement operations.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "request-model",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderReceiveRequest.java",
+      "type": "file",
+      "name": "PurchaseOrderReceiveRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/PurchaseOrderReceiveRequest.java",
+      "summary": "Defines the payload used when receiving goods against a purchase order. It captures received quantities per line and optional receiving notes for the inventory workflow.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "request-model",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/PurchaseOrderReceiveRequest.java:PurchaseOrderReceiveRequest",
+      "type": "class",
+      "name": "PurchaseOrderReceiveRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/PurchaseOrderReceiveRequest.java",
+      "lineRange": [
+        15,
+        29
+      ],
+      "summary": "PurchaseOrderReceiveRequest is a request DTO carrying validated input for purchase-order or stock-movement operations.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "request-model",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderStatusUpdateRequest.java",
+      "type": "file",
+      "name": "PurchaseOrderStatusUpdateRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/PurchaseOrderStatusUpdateRequest.java",
+      "summary": "Defines the request body for changing a purchase order status. The payload is intentionally small and centers on the target purchase-order state.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "request-model",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/PurchaseOrderStatusUpdateRequest.java:PurchaseOrderStatusUpdateRequest",
+      "type": "class",
+      "name": "PurchaseOrderStatusUpdateRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/PurchaseOrderStatusUpdateRequest.java",
+      "lineRange": [
+        7,
+        10
+      ],
+      "summary": "PurchaseOrderStatusUpdateRequest is a request DTO carrying validated input for purchase-order or stock-movement operations.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "request-model",
+        "inventory"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderCreateRequest.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderReceiveRequest.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderStatusUpdateRequest.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/model/UserPrincipal.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PurchaseOrderStatus.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/PurchaseOrderService.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:AdminPurchaseOrderController",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:AdminPurchaseOrderController",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:getAllPurchaseOrders",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:getAllPurchaseOrders",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:getByStatus",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:getByStatus",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:getBySupplier",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:getBySupplier",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:getById",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:getById",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:create",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:create",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:updateStatus",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:updateStatus",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:receive",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPurchaseOrderController.java:receive",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/StockMovementRequest.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "target": "file:src/main/java/org/akira/ladux/model/UserPrincipal.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/StockMovementService.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java:AdminStockMovementController",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java:AdminStockMovementController",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java:getAllStockMovements",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java:getAllStockMovements",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java:getByProduct",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java:getByProduct",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java:createAdjustment",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminStockMovementController.java:createAdjustment",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderCreateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/PurchaseOrderCreateRequest.java:PurchaseOrderCreateRequest",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderCreateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/PurchaseOrderCreateRequest.java:PurchaseOrderCreateRequest",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderItemRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/PurchaseOrderItemRequest.java:PurchaseOrderItemRequest",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderItemRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/PurchaseOrderItemRequest.java:PurchaseOrderItemRequest",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderReceiveRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/PurchaseOrderReceiveRequest.java:PurchaseOrderReceiveRequest",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderReceiveRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/PurchaseOrderReceiveRequest.java:PurchaseOrderReceiveRequest",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderStatusUpdateRequest.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PurchaseOrderStatus.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderStatusUpdateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/PurchaseOrderStatusUpdateRequest.java:PurchaseOrderStatusUpdateRequest",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PurchaseOrderStatusUpdateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/PurchaseOrderStatusUpdateRequest.java:PurchaseOrderStatusUpdateRequest",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    }
+  ]
+}

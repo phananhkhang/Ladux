@@ -1,0 +1,1344 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "type": "file",
+      "name": "AdminOrderController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "summary": "Exposes administrative order endpoints for listing orders, filtering by status, and changing order state. It delegates business rules to OrderService while enforcing admin-facing request and response shapes.",
+      "tags": [
+        "api-handler",
+        "rest-controller",
+        "order-payment",
+        "spring-web"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java:AdminOrderController",
+      "type": "class",
+      "name": "AdminOrderController",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "lineRange": [
+        16,
+        42
+      ],
+      "summary": "AdminOrderController is a Spring REST controller that exposes administrative order and payment operations and delegates business work to its service dependency.",
+      "tags": [
+        "api-handler",
+        "rest-controller",
+        "spring-web"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java:getAllOrders",
+      "type": "function",
+      "name": "getAllOrders",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "lineRange": [
+        22,
+        26
+      ],
+      "summary": "getAllOrders retrieves order or payment data with the appropriate admin or user scope and maps it for API responses.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java:getOrdersByStatus",
+      "type": "function",
+      "name": "getOrdersByStatus",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "lineRange": [
+        28,
+        32
+      ],
+      "summary": "getOrdersByStatus retrieves order or payment data with the appropriate admin or user scope and maps it for API responses.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java:updateOrderStatus",
+      "type": "function",
+      "name": "updateOrderStatus",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "lineRange": [
+        34,
+        41
+      ],
+      "summary": "updateOrderStatus applies an allowed order status change and triggers lifecycle side effects through the order workflow.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "type": "file",
+      "name": "AdminPaymentController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "summary": "Exposes administrative payment endpoints for querying payments and manually updating payment status callbacks. It is the admin API facade over PaymentService payment-management operations.",
+      "tags": [
+        "api-handler",
+        "rest-controller",
+        "order-payment",
+        "spring-web"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:AdminPaymentController",
+      "type": "class",
+      "name": "AdminPaymentController",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "lineRange": [
+        15,
+        55
+      ],
+      "summary": "AdminPaymentController is a Spring REST controller that exposes administrative order and payment operations and delegates business work to its service dependency.",
+      "tags": [
+        "api-handler",
+        "rest-controller",
+        "spring-web"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:getAllPayments",
+      "type": "function",
+      "name": "getAllPayments",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "lineRange": [
+        21,
+        25
+      ],
+      "summary": "getAllPayments retrieves order or payment data with the appropriate admin or user scope and maps it for API responses.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:getPaymentsByOrderId",
+      "type": "function",
+      "name": "getPaymentsByOrderId",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "lineRange": [
+        27,
+        32
+      ],
+      "summary": "getPaymentsByOrderId retrieves order or payment data with the appropriate admin or user scope and maps it for API responses.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:getPaymentById",
+      "type": "function",
+      "name": "getPaymentById",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "lineRange": [
+        35,
+        39
+      ],
+      "summary": "getPaymentById retrieves order or payment data with the appropriate admin or user scope and maps it for API responses.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:getPaymentsByStatus",
+      "type": "function",
+      "name": "getPaymentsByStatus",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "lineRange": [
+        41,
+        46
+      ],
+      "summary": "getPaymentsByStatus retrieves order or payment data with the appropriate admin or user scope and maps it for API responses.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:updatePayment",
+      "type": "function",
+      "name": "updatePayment",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "lineRange": [
+        48,
+        53
+      ],
+      "summary": "updatePayment applies an administrative payment status callback and confirms the related order when payment succeeds.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "type": "file",
+      "name": "OrderController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "summary": "Provides authenticated customer order endpoints for viewing orders, creating checkout orders, and retrying payment. It derives the user id from UserPrincipal before delegating to OrderService.",
+      "tags": [
+        "api-handler",
+        "rest-controller",
+        "order-payment",
+        "spring-web"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/user/OrderController.java:OrderController",
+      "type": "class",
+      "name": "OrderController",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "lineRange": [
+        20,
+        50
+      ],
+      "summary": "OrderController is a Spring REST controller that exposes user-facing order and payment operations and delegates business work to its service dependency.",
+      "tags": [
+        "api-handler",
+        "rest-controller",
+        "spring-web"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/OrderController.java:getOrderById",
+      "type": "function",
+      "name": "getOrderById",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "lineRange": [
+        27,
+        30
+      ],
+      "summary": "getOrderById retrieves order or payment data with the appropriate admin or user scope and maps it for API responses.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/OrderController.java:getOrdersByUserId",
+      "type": "function",
+      "name": "getOrdersByUserId",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "lineRange": [
+        32,
+        35
+      ],
+      "summary": "getOrdersByUserId retrieves order or payment data with the appropriate admin or user scope and maps it for API responses.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/OrderController.java:createOrder",
+      "type": "function",
+      "name": "createOrder",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "lineRange": [
+        38,
+        41
+      ],
+      "summary": "createOrder validates the customer cart, computes totals and discounts, persists a pending order, reserves stock, and initializes payment when needed.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/OrderController.java:retryPayment",
+      "type": "function",
+      "name": "retryPayment",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "lineRange": [
+        43,
+        49
+      ],
+      "summary": "retryPayment validates ownership and current payment state before creating a new payment attempt for an existing order.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "type": "file",
+      "name": "PaymentController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "summary": "Provides authenticated customer payment endpoints for listing personal payments and creating a payment attempt. It constrains payment queries to the current user before calling PaymentService.",
+      "tags": [
+        "api-handler",
+        "rest-controller",
+        "order-payment",
+        "spring-web"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/user/PaymentController.java:PaymentController",
+      "type": "class",
+      "name": "PaymentController",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "lineRange": [
+        17,
+        53
+      ],
+      "summary": "PaymentController is a Spring REST controller that exposes user-facing order and payment operations and delegates business work to its service dependency.",
+      "tags": [
+        "api-handler",
+        "rest-controller",
+        "spring-web"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/PaymentController.java:getMyPayments",
+      "type": "function",
+      "name": "getMyPayments",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "lineRange": [
+        24,
+        29
+      ],
+      "summary": "getMyPayments retrieves order or payment data with the appropriate admin or user scope and maps it for API responses.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/PaymentController.java:getMyPaymentsByOrderId",
+      "type": "function",
+      "name": "getMyPaymentsByOrderId",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "lineRange": [
+        31,
+        37
+      ],
+      "summary": "getMyPaymentsByOrderId retrieves order or payment data with the appropriate admin or user scope and maps it for API responses.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/PaymentController.java:getMyPaymentsByStatus",
+      "type": "function",
+      "name": "getMyPaymentsByStatus",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "lineRange": [
+        39,
+        45
+      ],
+      "summary": "getMyPaymentsByStatus retrieves order or payment data with the appropriate admin or user scope and maps it for API responses.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/PaymentController.java:createPayment",
+      "type": "function",
+      "name": "createPayment",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "lineRange": [
+        47,
+        52
+      ],
+      "summary": "createPayment validates order ownership and payment eligibility before creating a new pending payment for the customer.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java",
+      "type": "file",
+      "name": "PaymentWebhookController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java",
+      "summary": "Receives VNPay IPN webhook parameters and converts service-level webhook outcomes into VNPay response codes. It keeps gateway protocol mapping separate from PaymentWebhookService processing.",
+      "tags": [
+        "api-handler",
+        "rest-controller",
+        "order-payment",
+        "spring-web"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java:PaymentWebhookController",
+      "type": "class",
+      "name": "PaymentWebhookController",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java",
+      "lineRange": [
+        20,
+        62
+      ],
+      "summary": "PaymentWebhookController is a Spring REST controller that exposes user-facing order and payment operations and delegates business work to its service dependency.",
+      "tags": [
+        "api-handler",
+        "rest-controller",
+        "spring-web"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java:handleVNPayWebhook",
+      "type": "function",
+      "name": "handleVNPayWebhook",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java",
+      "lineRange": [
+        31,
+        36
+      ],
+      "summary": "handleVNPayWebhook implements a focused operation in the order and payment workflow.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java:toVNPayResponse",
+      "type": "function",
+      "name": "toVNPayResponse",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java",
+      "lineRange": [
+        46,
+        61
+      ],
+      "summary": "toVNPayResponse maps internal webhook outcomes to VNPay-compatible response code and message pairs.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "delegation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "type": "file",
+      "name": "PaymentWebhookResult.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "summary": "Defines immutable webhook processing outcomes used by the VNPay webhook flow. Static factory methods represent processed, idempotent, invalid-signature, amount-mismatch, and order-not-found results.",
+      "tags": [
+        "data-transfer",
+        "webhook",
+        "result-model",
+        "payment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:PaymentWebhookResult",
+      "type": "class",
+      "name": "PaymentWebhookResult",
+      "filePath": "src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "lineRange": [
+        6,
+        40
+      ],
+      "summary": "PaymentWebhookResult models normalized payment webhook outcomes so the controller can map service results to gateway response codes.",
+      "tags": [
+        "data-transfer",
+        "api-contract",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:processed",
+      "type": "function",
+      "name": "processed",
+      "filePath": "src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "lineRange": [
+        21,
+        23
+      ],
+      "summary": "processed creates a named PaymentWebhookResult outcome used by webhook response handling.",
+      "tags": [
+        "factory",
+        "data-transfer",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:idempotent",
+      "type": "function",
+      "name": "idempotent",
+      "filePath": "src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "lineRange": [
+        25,
+        27
+      ],
+      "summary": "idempotent creates a named PaymentWebhookResult outcome used by webhook response handling.",
+      "tags": [
+        "factory",
+        "data-transfer",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:invalidSignature",
+      "type": "function",
+      "name": "invalidSignature",
+      "filePath": "src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "lineRange": [
+        29,
+        31
+      ],
+      "summary": "invalidSignature creates a named PaymentWebhookResult outcome used by webhook response handling.",
+      "tags": [
+        "factory",
+        "data-transfer",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:amountMismatch",
+      "type": "function",
+      "name": "amountMismatch",
+      "filePath": "src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "lineRange": [
+        33,
+        35
+      ],
+      "summary": "amountMismatch creates a named PaymentWebhookResult outcome used by webhook response handling.",
+      "tags": [
+        "factory",
+        "data-transfer",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:orderNotFound",
+      "type": "function",
+      "name": "orderNotFound",
+      "filePath": "src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "lineRange": [
+        37,
+        39
+      ],
+      "summary": "orderNotFound creates a named PaymentWebhookResult outcome used by webhook response handling.",
+      "tags": [
+        "factory",
+        "data-transfer",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/OrderRequest.java",
+      "type": "file",
+      "name": "OrderRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/OrderRequest.java",
+      "summary": "Carries checkout input including optional coupon, shipping address, and desired payment provider. Validation annotations enforce required shipping details and provider presence.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "request-model",
+        "api-contract"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/OrderRequest.java:OrderRequest",
+      "type": "class",
+      "name": "OrderRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/OrderRequest.java",
+      "lineRange": [
+        10,
+        20
+      ],
+      "summary": "OrderRequest is a request DTO carrying validated API input for the order and payment workflow.",
+      "tags": [
+        "data-transfer",
+        "api-contract",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/OrderStatusUpdateRequest.java",
+      "type": "file",
+      "name": "OrderStatusUpdateRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/OrderStatusUpdateRequest.java",
+      "summary": "Carries an administrative order status change request. Validation ensures the requested target OrderStatus is present.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "request-model",
+        "api-contract"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/OrderStatusUpdateRequest.java:OrderStatusUpdateRequest",
+      "type": "class",
+      "name": "OrderStatusUpdateRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/OrderStatusUpdateRequest.java",
+      "lineRange": [
+        7,
+        13
+      ],
+      "summary": "OrderStatusUpdateRequest is a request DTO carrying validated API input for the order and payment workflow.",
+      "tags": [
+        "data-transfer",
+        "api-contract",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/PaymentCallbackRequest.java",
+      "type": "file",
+      "name": "PaymentCallbackRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/PaymentCallbackRequest.java",
+      "summary": "Carries payment callback update data for admin-driven payment status changes. It validates transaction number, amount, provider, and status fields.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "request-model",
+        "api-contract"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/PaymentCallbackRequest.java:PaymentCallbackRequest",
+      "type": "class",
+      "name": "PaymentCallbackRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/PaymentCallbackRequest.java",
+      "lineRange": [
+        9,
+        21
+      ],
+      "summary": "PaymentCallbackRequest is a request DTO carrying validated API input for the order and payment workflow.",
+      "tags": [
+        "data-transfer",
+        "api-contract",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/PaymentCreateRequest.java",
+      "type": "file",
+      "name": "PaymentCreateRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/PaymentCreateRequest.java",
+      "summary": "Carries customer payment creation input for an order and selected payment provider. It validates both the target order id and provider.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "request-model",
+        "api-contract"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/PaymentCreateRequest.java:PaymentCreateRequest",
+      "type": "class",
+      "name": "PaymentCreateRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/PaymentCreateRequest.java",
+      "lineRange": [
+        7,
+        14
+      ],
+      "summary": "PaymentCreateRequest is a request DTO carrying validated API input for the order and payment workflow.",
+      "tags": [
+        "data-transfer",
+        "api-contract",
+        "serialization"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/OrderRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/OrderStatusUpdateRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/OrderStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/OrderService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java:AdminOrderController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java:AdminOrderController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java:getAllOrders",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java:getAllOrders",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java:getOrdersByStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java:getOrdersByStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java:updateOrderStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderController.java:updateOrderStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/PaymentCallbackRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PaymentStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/PaymentService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:AdminPaymentController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:AdminPaymentController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:getAllPayments",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:getAllPayments",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:getPaymentsByOrderId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:getPaymentsByOrderId",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:getPaymentById",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:getPaymentById",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:getPaymentsByStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:getPaymentsByStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:updatePayment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminPaymentController.java:updatePayment",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/OrderRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/model/UserPrincipal.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/OrderService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/OrderController.java:OrderController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/OrderController.java:OrderController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/OrderController.java:getOrderById",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/OrderController.java:getOrderById",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/OrderController.java:getOrdersByUserId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/OrderController.java:getOrdersByUserId",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/OrderController.java:createOrder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/OrderController.java:createOrder",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/OrderController.java:retryPayment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/OrderController.java:retryPayment",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/PaymentCreateRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "target": "file:src/main/java/org/akira/ladux/model/UserPrincipal.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PaymentStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/PaymentService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/PaymentController.java:PaymentController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/PaymentController.java:PaymentController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/PaymentController.java:getMyPayments",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/PaymentController.java:getMyPayments",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/PaymentController.java:getMyPaymentsByOrderId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/PaymentController.java:getMyPaymentsByOrderId",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/PaymentController.java:getMyPaymentsByStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/PaymentController.java:getMyPaymentsByStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/PaymentController.java:createPayment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/PaymentController.java:createPayment",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/PaymentWebhookService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java:PaymentWebhookController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java:PaymentWebhookController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java:handleVNPayWebhook",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java:handleVNPayWebhook",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/PaymentWebhookController.java:toVNPayResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:PaymentWebhookResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:PaymentWebhookResult",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:processed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:processed",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:idempotent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:idempotent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:invalidSignature",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:invalidSignature",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:amountMismatch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:amountMismatch",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:orderNotFound",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/PaymentWebhookResult.java:orderNotFound",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/OrderRequest.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PaymentProvider.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/OrderRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/OrderRequest.java:OrderRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/OrderRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/OrderRequest.java:OrderRequest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/OrderStatusUpdateRequest.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/OrderStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/OrderStatusUpdateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/OrderStatusUpdateRequest.java:OrderStatusUpdateRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/OrderStatusUpdateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/OrderStatusUpdateRequest.java:OrderStatusUpdateRequest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PaymentCallbackRequest.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PaymentProvider.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PaymentCallbackRequest.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PaymentStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PaymentCallbackRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/PaymentCallbackRequest.java:PaymentCallbackRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PaymentCallbackRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/PaymentCallbackRequest.java:PaymentCallbackRequest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PaymentCreateRequest.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PaymentProvider.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PaymentCreateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/PaymentCreateRequest.java:PaymentCreateRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/PaymentCreateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/PaymentCreateRequest.java:PaymentCreateRequest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

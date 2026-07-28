@@ -1,0 +1,462 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/StockMovementRequest.java",
+      "type": "file",
+      "name": "StockMovementRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/StockMovementRequest.java",
+      "summary": "Defines the validated request body for manual stock adjustments. It captures product, quantity, movement type, and explanatory note data used by admin inventory operations.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "request-model",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/StockMovementRequest.java:StockMovementRequest",
+      "type": "class",
+      "name": "StockMovementRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/StockMovementRequest.java",
+      "lineRange": [
+        13,
+        27
+      ],
+      "summary": "StockMovementRequest is a request DTO carrying validated input for purchase-order or stock-movement operations.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "request-model",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderItemResponse.java",
+      "type": "file",
+      "name": "PurchaseOrderItemResponse.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/PurchaseOrderItemResponse.java",
+      "summary": "Serializes purchase-order line items for API responses. Its mapper flattens product details, ordered quantities, received quantities, and unit costs from the entity model.",
+      "tags": [
+        "data-transfer",
+        "serialization",
+        "response-model",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/response/PurchaseOrderItemResponse.java:PurchaseOrderItemResponse",
+      "type": "class",
+      "name": "PurchaseOrderItemResponse",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/PurchaseOrderItemResponse.java",
+      "lineRange": [
+        8,
+        31
+      ],
+      "summary": "PurchaseOrderItemResponse is an API response DTO with mapping logic from persistence entities into client-facing records.",
+      "tags": [
+        "data-transfer",
+        "serialization",
+        "response-model",
+        "mapping"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/response/PurchaseOrderItemResponse.java:fromEntity",
+      "type": "function",
+      "name": "fromEntity",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/PurchaseOrderItemResponse.java",
+      "lineRange": [
+        17,
+        30
+      ],
+      "summary": "Maps a persistence entity into a client-facing response DTO while preserving relevant inventory and audit fields.",
+      "tags": [
+        "serialization",
+        "mapping",
+        "response-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java",
+      "type": "file",
+      "name": "PurchaseOrderResponse.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java",
+      "summary": "Serializes purchase orders into detailed and summary API response records. It maps supplier, status, totals, item lines, and audit timestamps from purchase-order entities.",
+      "tags": [
+        "data-transfer",
+        "serialization",
+        "response-model",
+        "inventory"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java:PurchaseOrderResponse",
+      "type": "class",
+      "name": "PurchaseOrderResponse",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java",
+      "lineRange": [
+        11,
+        65
+      ],
+      "summary": "PurchaseOrderResponse is an API response DTO with mapping logic from persistence entities into client-facing records.",
+      "tags": [
+        "data-transfer",
+        "serialization",
+        "response-model",
+        "mapping"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java:fromEntity",
+      "type": "function",
+      "name": "fromEntity",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java",
+      "lineRange": [
+        25,
+        44
+      ],
+      "summary": "Maps a persistence entity into a client-facing response DTO while preserving relevant inventory and audit fields.",
+      "tags": [
+        "serialization",
+        "mapping",
+        "response-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java:summaryFromEntity",
+      "type": "function",
+      "name": "summaryFromEntity",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java",
+      "lineRange": [
+        47,
+        64
+      ],
+      "summary": "Builds a compact purchase-order response for list views without expanding every line-item detail.",
+      "tags": [
+        "serialization",
+        "mapping",
+        "response-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java",
+      "type": "file",
+      "name": "StockMovementResponse.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java",
+      "summary": "Serializes stock movement ledger entries for API responses. The mapper exposes product, signed quantity, movement type, reference, note, actor, and timestamp data.",
+      "tags": [
+        "data-transfer",
+        "serialization",
+        "response-model",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java:StockMovementResponse",
+      "type": "class",
+      "name": "StockMovementResponse",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java",
+      "lineRange": [
+        10,
+        39
+      ],
+      "summary": "StockMovementResponse is an API response DTO with mapping logic from persistence entities into client-facing records.",
+      "tags": [
+        "data-transfer",
+        "serialization",
+        "response-model",
+        "mapping"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java:fromEntity",
+      "type": "function",
+      "name": "fromEntity",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java",
+      "lineRange": [
+        22,
+        38
+      ],
+      "summary": "Maps a persistence entity into a client-facing response DTO while preserving relevant inventory and audit fields.",
+      "tags": [
+        "serialization",
+        "mapping",
+        "response-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/exception/InsufficientStockException.java",
+      "type": "file",
+      "name": "InsufficientStockException.java",
+      "filePath": "src/main/java/org/akira/ladux/exception/InsufficientStockException.java",
+      "summary": "Provides a domain exception for stock checks that fail because available inventory cannot satisfy a requested operation.",
+      "tags": [
+        "error-handling",
+        "domain-exception",
+        "validation",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/exception/InsufficientStockException.java:InsufficientStockException",
+      "type": "class",
+      "name": "InsufficientStockException",
+      "filePath": "src/main/java/org/akira/ladux/exception/InsufficientStockException.java",
+      "lineRange": [
+        3,
+        7
+      ],
+      "summary": "InsufficientStockException signals an inventory domain failure that should be translated into an API error response.",
+      "tags": [
+        "error-handling",
+        "domain-exception",
+        "inventory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/PurchaseOrder.java",
+      "type": "file",
+      "name": "PurchaseOrder.java",
+      "filePath": "src/main/java/org/akira/ladux/model/PurchaseOrder.java",
+      "summary": "Models a supplier purchase order as a JPA entity with status, totals, received counts, audit users, and owned line items. It anchors the inbound inventory replenishment workflow.",
+      "tags": [
+        "data-model",
+        "jpa-entity",
+        "database",
+        "inventory"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses Lombok with JPA annotations to keep entity classes compact while preserving ORM mapping metadata."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/PurchaseOrder.java:PurchaseOrder",
+      "type": "class",
+      "name": "PurchaseOrder",
+      "filePath": "src/main/java/org/akira/ladux/model/PurchaseOrder.java",
+      "lineRange": [
+        34,
+        87
+      ],
+      "summary": "PurchaseOrder is a JPA domain entity for the inventory and purchasing data model.",
+      "tags": [
+        "data-model",
+        "jpa-entity",
+        "database",
+        "inventory"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/StockMovementRequest.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/StockMovementType.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/StockMovementRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/StockMovementRequest.java:StockMovementRequest",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/StockMovementRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/StockMovementRequest.java:StockMovementRequest",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderItemResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/PurchaseOrderItem.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderItemResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/PurchaseOrderItemResponse.java:PurchaseOrderItemResponse",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderItemResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/PurchaseOrderItemResponse.java:PurchaseOrderItemResponse",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderItemResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/PurchaseOrderItemResponse.java:fromEntity",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderItemResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/PurchaseOrderItemResponse.java:fromEntity",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/PurchaseOrder.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PurchaseOrderStatus.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java:PurchaseOrderResponse",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java:PurchaseOrderResponse",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java:fromEntity",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java:fromEntity",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java:summaryFromEntity",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/PurchaseOrderResponse.java:summaryFromEntity",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/StockMovement.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/StockMovementType.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/StockReferenceType.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java:StockMovementResponse",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java:StockMovementResponse",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java:fromEntity",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/StockMovementResponse.java:fromEntity",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/exception/InsufficientStockException.java",
+      "target": "class:src/main/java/org/akira/ladux/exception/InsufficientStockException.java:InsufficientStockException",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/exception/InsufficientStockException.java",
+      "target": "class:src/main/java/org/akira/ladux/exception/InsufficientStockException.java:InsufficientStockException",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/PurchaseOrder.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PurchaseOrderStatus.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/PurchaseOrder.java",
+      "target": "class:src/main/java/org/akira/ladux/model/PurchaseOrder.java:PurchaseOrder",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/PurchaseOrder.java",
+      "target": "class:src/main/java/org/akira/ladux/model/PurchaseOrder.java:PurchaseOrder",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    }
+  ]
+}

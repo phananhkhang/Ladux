@@ -1,0 +1,93 @@
+{
+    "projectRoot":  "C:\\Users\\ADMIN\\OneDrive\\Desktop\\Ladux\\backend",
+    "batchFiles":  [
+                       {
+                           "path":  "src/main/java/org/akira/ladux/controller/admin/AdminCustomerController.java",
+                           "language":  "java",
+                           "sizeLines":  59,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/dto/request/CustomerUpdateRequest.java",
+                           "language":  "java",
+                           "sizeLines":  31,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/dto/response/CustomerResponse.java",
+                           "language":  "java",
+                           "sizeLines":  39,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/model/Customer.java",
+                           "language":  "java",
+                           "sizeLines":  69,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/model/enums/CustomerLevel.java",
+                           "language":  "java",
+                           "sizeLines":  8,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/repository/CustomerRepository.java",
+                           "language":  "java",
+                           "sizeLines":  33,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/service/CustomerService.java",
+                           "language":  "java",
+                           "sizeLines":  20,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/service/impl/CustomerServiceImpl.java",
+                           "language":  "java",
+                           "sizeLines":  76,
+                           "fileCategory":  "code"
+                       }
+                   ],
+    "batchImportData":  {
+                            "src/main/java/org/akira/ladux/controller/admin/AdminCustomerController.java":  [
+                                                                                                                "src/main/java/org/akira/ladux/dto/request/CustomerUpdateRequest.java",
+                                                                                                                "src/main/java/org/akira/ladux/dto/response/CustomerResponse.java",
+                                                                                                                "src/main/java/org/akira/ladux/model/enums/CustomerLevel.java",
+                                                                                                                "src/main/java/org/akira/ladux/service/CustomerService.java"
+                                                                                                            ],
+                            "src/main/java/org/akira/ladux/dto/request/CustomerUpdateRequest.java":  [
+                                                                                                         "src/main/java/org/akira/ladux/model/enums/CustomerLevel.java"
+                                                                                                     ],
+                            "src/main/java/org/akira/ladux/dto/response/CustomerResponse.java":  [
+                                                                                                     "src/main/java/org/akira/ladux/model/Customer.java",
+                                                                                                     "src/main/java/org/akira/ladux/model/enums/CustomerLevel.java"
+                                                                                                 ],
+                            "src/main/java/org/akira/ladux/model/Customer.java":  [
+                                                                                      "src/main/java/org/akira/ladux/model/enums/CustomerLevel.java"
+                                                                                  ],
+                            "src/main/java/org/akira/ladux/model/enums/CustomerLevel.java":  [
+
+                                                                                             ],
+                            "src/main/java/org/akira/ladux/repository/CustomerRepository.java":  [
+                                                                                                     "src/main/java/org/akira/ladux/dto/response/CustomerResponse.java",
+                                                                                                     "src/main/java/org/akira/ladux/model/Customer.java",
+                                                                                                     "src/main/java/org/akira/ladux/model/enums/CustomerLevel.java"
+                                                                                                 ],
+                            "src/main/java/org/akira/ladux/service/CustomerService.java":  [
+                                                                                               "src/main/java/org/akira/ladux/dto/request/CustomerUpdateRequest.java",
+                                                                                               "src/main/java/org/akira/ladux/dto/response/CustomerResponse.java",
+                                                                                               "src/main/java/org/akira/ladux/model/enums/CustomerLevel.java"
+                                                                                           ],
+                            "src/main/java/org/akira/ladux/service/impl/CustomerServiceImpl.java":  [
+                                                                                                        "src/main/java/org/akira/ladux/dto/request/CustomerUpdateRequest.java",
+                                                                                                        "src/main/java/org/akira/ladux/dto/response/CustomerResponse.java",
+                                                                                                        "src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+                                                                                                        "src/main/java/org/akira/ladux/model/Customer.java",
+                                                                                                        "src/main/java/org/akira/ladux/model/enums/CustomerLevel.java",
+                                                                                                        "src/main/java/org/akira/ladux/repository/CustomerRepository.java",
+                                                                                                        "src/main/java/org/akira/ladux/service/CustomerService.java"
+                                                                                                    ]
+                        }
+}

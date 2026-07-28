@@ -2,16 +2,13 @@ package org.akira.ladux.service;
 
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
-import org.akira.ladux.model.Coupon;
-import org.akira.ladux.model.Order;
-import org.akira.ladux.model.OrderHistory;
-import org.akira.ladux.model.OrderItem;
-import org.akira.ladux.model.Product;
+import org.akira.ladux.model.*;
 import org.akira.ladux.model.enums.OrderStatus;
 import org.akira.ladux.model.enums.StockMovementType;
 import org.akira.ladux.model.enums.StockReferenceType;
 import org.akira.ladux.repository.CouponRepository;
 import org.akira.ladux.repository.ProductRepository;
+import org.akira.ladux.repository.ProductVariantRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class OrderLifecycleService {
-    private final ProductRepository productRepository;
+    private final ProductVariantRepository productVariantRepository;
     private final CouponRepository couponRepository;
     private final StockMovementService stockMovementService;
 
@@ -51,7 +48,7 @@ public class OrderLifecycleService {
         order.getHistories().add(OrderHistory.builder()
                 .order(order)
                 .user(order.getUser())
-                .status(OrderStatus.CONFIRMED.name())
+                .status(OrderStatus.CONFIRMED)
                 .description("Payment succeeded")
                 .build());
     }
@@ -74,22 +71,22 @@ public class OrderLifecycleService {
         order.getHistories().add(OrderHistory.builder()
                 .order(order)
                 .user(order.getUser())
-                .status(OrderStatus.CANCELLED.name())
+                .status(OrderStatus.CANCELLED)
                 .description(description)
                 .build());
     }
 
     // Hoan ton kho khi huy don: cong lai so luong da tru luc checkout, ghi so cai RETURN_IN (chi ghi so).
     private void releaseReservedInventory(Order order) {
-        Long orderRef = order.getId() == null ? null : order.getId().longValue();
+        Integer orderRef = order.getId() == null ? null : order.getId().intValue();
         for (OrderItem item : order.getItems()) {
-            Integer productId = item.getProduct().getId();
-            Product product = productRepository.findByIdForUpdate(productId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + productId));
-            product.setStockQuantity(product.getStockQuantity() + item.getQuantity());
+            Integer productVariantId = item.getProductVariant().getId();
+            ProductVariant productVariant = productVariantRepository.findByIdForUpdate(productVariantId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product variant voi id = " + productVariantId));
+            productVariant.setStockQuantity(productVariant.getStockQuantity() + item.getQuantity());
             // Ton kho da duoc cong lai o tren -> chi GHI SO (RETURN_IN), tranh cong kep.
             stockMovementService.recordLedgerEntry(
-                    product,
+                    productVariant,
                     item.getQuantity(),
                     StockMovementType.RETURN_IN,
                     StockReferenceType.ORDER,

@@ -1,0 +1,595 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "type": "file",
+      "name": "AdminOrderHistoryController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "summary": "Exposes administrator-only REST endpoints for browsing all order history records, fetching a specific history entry, and listing history by order. The controller delegates order-history retrieval to the shared service layer and returns paged response DTOs.",
+      "tags": ["api-handler", "admin-api", "order-history", "security"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java:AdminOrderHistoryController",
+      "type": "class",
+      "name": "AdminOrderHistoryController",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "lineRange": [15, 36],
+      "summary": "Spring REST controller mapped under the admin order-history API and guarded by an ADMIN role pre-authorization check.",
+      "tags": ["api-handler", "admin-api", "rest-controller", "security"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java:getAllOrderHistories",
+      "type": "function",
+      "name": "getAllOrderHistories",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "lineRange": [22, 25],
+      "summary": "Handles the admin endpoint for paginated retrieval of every order-history record.",
+      "tags": ["api-handler", "pagination", "order-history"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java:getOrderHistoryById",
+      "type": "function",
+      "name": "getOrderHistoryById",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "lineRange": [27, 30],
+      "summary": "Handles the admin endpoint for retrieving one order-history response by history identifier.",
+      "tags": ["api-handler", "lookup", "order-history"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java:getOrderHistoriesByOrderId",
+      "type": "function",
+      "name": "getOrderHistoriesByOrderId",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "lineRange": [32, 35],
+      "summary": "Handles the admin endpoint for paginated order-history records belonging to a specific order.",
+      "tags": ["api-handler", "pagination", "order-history"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java",
+      "type": "file",
+      "name": "OrderHistoryController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java",
+      "summary": "Exposes the authenticated user's order-history endpoint and derives the user id from the Spring Security principal. It delegates paged history retrieval to the shared order-history service.",
+      "tags": ["api-handler", "user-api", "order-history", "security"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java:OrderHistoryController",
+      "type": "class",
+      "name": "OrderHistoryController",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java",
+      "lineRange": [15, 28],
+      "summary": "Spring REST controller for authenticated user access to personal order-history data.",
+      "tags": ["api-handler", "user-api", "rest-controller"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java:getOrdersHistoryByUser",
+      "type": "function",
+      "name": "getOrdersHistoryByUser",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java",
+      "lineRange": [21, 27],
+      "summary": "Handles the current-user order-history endpoint by passing the authenticated principal id and pagination parameters to the service layer.",
+      "tags": ["api-handler", "authentication", "pagination", "order-history"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+      "type": "file",
+      "name": "OrderHistoryResponse.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+      "summary": "Defines the serializable response record returned by order-history APIs. Its factory method maps an OrderHistory entity into scalar response fields while tolerating a missing order reference.",
+      "tags": ["data-transfer", "serialization", "order-history", "mapper"],
+      "complexity": "simple",
+      "languageNotes": "Uses a Java record to model an immutable API response DTO."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java:OrderHistoryResponse",
+      "type": "class",
+      "name": "OrderHistoryResponse",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+      "lineRange": [7, 26],
+      "summary": "Immutable Java record carrying order-history id, order id, status, description, and creation timestamp for API responses.",
+      "tags": ["data-transfer", "record", "serialization"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java:fromEntity",
+      "type": "function",
+      "name": "fromEntity",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+      "lineRange": [14, 25],
+      "summary": "Converts an OrderHistory entity into an OrderHistoryResponse record, including null handling for the entity and its order association.",
+      "tags": ["mapper", "serialization", "order-history"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/OrderHistory.java",
+      "type": "file",
+      "name": "OrderHistory.java",
+      "filePath": "src/main/java/org/akira/ladux/model/OrderHistory.java",
+      "summary": "Defines the JPA entity persisted in the order_histories table with user, order, status, description, and creation timestamp fields. It uses auditing for createdAt and lazy many-to-one associations to User and Order.",
+      "tags": ["data-model", "jpa-entity", "database", "order-history"],
+      "complexity": "simple",
+      "languageNotes": "Combines Jakarta Persistence annotations with Spring Data auditing and Lombok-generated accessors."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/OrderHistory.java:OrderHistory",
+      "type": "class",
+      "name": "OrderHistory",
+      "filePath": "src/main/java/org/akira/ladux/model/OrderHistory.java",
+      "lineRange": [17, 51],
+      "summary": "JPA entity representing one recorded status change or descriptive event for an order.",
+      "tags": ["data-model", "jpa-entity", "order-history"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/repository/OrderHistoryRepository.java",
+      "type": "file",
+      "name": "OrderHistoryRepository.java",
+      "filePath": "src/main/java/org/akira/ladux/repository/OrderHistoryRepository.java",
+      "summary": "Provides Spring Data JPA access for order-history entities, including paged lookups by order id and user id. Entity graphs eagerly fetch the related order for query results.",
+      "tags": ["repository", "database", "jpa", "order-history"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/repository/OrderHistoryRepository.java:OrderHistoryRepository",
+      "type": "class",
+      "name": "OrderHistoryRepository",
+      "filePath": "src/main/java/org/akira/ladux/repository/OrderHistoryRepository.java",
+      "lineRange": [12, 29],
+      "summary": "Spring Data repository interface for paginated order-history queries and single-record lookup.",
+      "tags": ["repository", "jpa", "database"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/service/OrderHistoryService.java",
+      "type": "file",
+      "name": "OrderHistoryService.java",
+      "filePath": "src/main/java/org/akira/ladux/service/OrderHistoryService.java",
+      "summary": "Declares the order-history service contract used by admin and user controllers. The interface covers all histories, single history lookup, order-scoped histories, and user-scoped histories.",
+      "tags": ["service", "interface", "order-history", "api-contract"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/service/OrderHistoryService.java:OrderHistoryService",
+      "type": "class",
+      "name": "OrderHistoryService",
+      "filePath": "src/main/java/org/akira/ladux/service/OrderHistoryService.java",
+      "lineRange": [7, 15],
+      "summary": "Service interface defining read operations for order-history data across admin and current-user workflows.",
+      "tags": ["service", "interface", "api-contract"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "type": "file",
+      "name": "OrderHistoryServiceImpl.java",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "summary": "Implements cached, read-only order-history queries backed by OrderHistoryRepository and maps entities into response DTOs. Missing single-record lookups are translated into ResourceNotFoundException.",
+      "tags": ["service", "cache", "repository", "order-history"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:OrderHistoryServiceImpl",
+      "type": "class",
+      "name": "OrderHistoryServiceImpl",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "lineRange": [14, 49],
+      "summary": "Spring service implementation that fulfills the order-history service contract using repository queries, DTO mapping, transactions, and cache keys.",
+      "tags": ["service", "cache", "transactional", "repository"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getAllOrderHistories",
+      "type": "function",
+      "name": "getAllOrderHistories",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "lineRange": [19, 25],
+      "summary": "Fetches all order-history entities as a page and maps each entity into an API response DTO.",
+      "tags": ["service", "pagination", "mapper", "cache"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getOrderHistoryById",
+      "type": "function",
+      "name": "getOrderHistoryById",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "lineRange": [27, 33],
+      "summary": "Fetches one order-history entity by id, raises ResourceNotFoundException when absent, and maps the entity to a response DTO.",
+      "tags": ["service", "lookup", "exception-handling", "cache"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getOrderHistoriesByOrderId",
+      "type": "function",
+      "name": "getOrderHistoriesByOrderId",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "lineRange": [35, 41],
+      "summary": "Fetches a paginated list of order-history records for a specific order and maps them to response DTOs.",
+      "tags": ["service", "pagination", "order-history", "cache"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getOrdersHistoryByUser",
+      "type": "function",
+      "name": "getOrdersHistoryByUser",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "lineRange": [42, 48],
+      "summary": "Fetches a paginated list of order-history records for a specific user and maps them to response DTOs.",
+      "tags": ["service", "pagination", "user-data", "cache"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/OrderHistoryService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java",
+      "target": "file:src/main/java/org/akira/ladux/model/UserPrincipal.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/OrderHistoryService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/OrderHistory.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/OrderHistory.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/OrderStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/OrderHistoryRepository.java",
+      "target": "file:src/main/java/org/akira/ladux/model/OrderHistory.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/OrderHistoryService.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/repository/OrderHistoryRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/service/OrderHistoryService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java:AdminOrderHistoryController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java:getAllOrderHistories",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java:getOrderHistoryById",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java:getOrderHistoriesByOrderId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java:OrderHistoryController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java:getOrdersHistoryByUser",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java:OrderHistoryResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java:fromEntity",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/OrderHistory.java",
+      "target": "class:src/main/java/org/akira/ladux/model/OrderHistory.java:OrderHistory",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/OrderHistoryRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/OrderHistoryRepository.java:OrderHistoryRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/OrderHistoryService.java",
+      "target": "class:src/main/java/org/akira/ladux/service/OrderHistoryService.java:OrderHistoryService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "target": "class:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:OrderHistoryServiceImpl",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getAllOrderHistories",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getOrderHistoryById",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getOrderHistoriesByOrderId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getOrdersHistoryByUser",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java:AdminOrderHistoryController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java:getAllOrderHistories",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java:getOrderHistoryById",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminOrderHistoryController.java:getOrderHistoriesByOrderId",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java:OrderHistoryController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java:getOrdersHistoryByUser",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java:OrderHistoryResponse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java:fromEntity",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/OrderHistory.java",
+      "target": "class:src/main/java/org/akira/ladux/model/OrderHistory.java:OrderHistory",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/OrderHistoryRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/OrderHistoryRepository.java:OrderHistoryRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/OrderHistoryService.java",
+      "target": "class:src/main/java/org/akira/ladux/service/OrderHistoryService.java:OrderHistoryService",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "target": "class:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:OrderHistoryServiceImpl",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getAllOrderHistories",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getOrderHistoryById",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getOrderHistoriesByOrderId",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getOrdersHistoryByUser",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:OrderHistoryServiceImpl",
+      "target": "class:src/main/java/org/akira/ladux/service/OrderHistoryService.java:OrderHistoryService",
+      "type": "implements",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/controller/user/OrderHistoryController.java:getOrdersHistoryByUser",
+      "target": "function:src/main/java/org/akira/ladux/model/UserPrincipal.java:getId",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getAllOrderHistories",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java:fromEntity",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getOrderHistoryById",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java:fromEntity",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getOrderHistoryById",
+      "target": "class:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java:ResourceNotFoundException",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getOrderHistoriesByOrderId",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java:fromEntity",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/OrderHistoryServiceImpl.java:getOrdersHistoryByUser",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/OrderHistoryResponse.java:fromEntity",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 
-import org.akira.ladux.model.Product;
+import org.akira.ladux.model.ProductVariant;
 import org.akira.ladux.service.impl.PricingServiceImpl;
 import org.junit.jupiter.api.Test;
 
@@ -17,8 +17,8 @@ class PricingServiceImplTest {
 
     @Test
     void usesDiscountPrice_whenPresent() {
-        Product product = Product.builder()
-                .basePrice(new BigDecimal("100.00"))
+        ProductVariant product = ProductVariant.builder()
+                .price(new BigDecimal("100.00"))
                 .discountPrice(new BigDecimal("80.00"))
                 .build();
         assertEquals(0, new BigDecimal("80.00").compareTo(pricingService.sellingPrice(product)));
@@ -26,8 +26,8 @@ class PricingServiceImplTest {
 
     @Test
     void usesBasePrice_whenNoDiscount() {
-        Product product = Product.builder()
-                .basePrice(new BigDecimal("100.00"))
+        ProductVariant product = ProductVariant.builder()
+                .price(new BigDecimal("100.00"))
                 .discountPrice(null)
                 .build();
         assertEquals(0, new BigDecimal("100.00").compareTo(pricingService.sellingPrice(product)));

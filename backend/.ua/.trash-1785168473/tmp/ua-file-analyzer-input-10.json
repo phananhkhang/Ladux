@@ -1,0 +1,119 @@
+{
+    "projectRoot":  "C:\\Users\\ADMIN\\OneDrive\\Desktop\\Ladux\\backend",
+    "batchFiles":  [
+                       {
+                           "path":  "src/main/java/org/akira/ladux/controller/user/CartController.java",
+                           "language":  "java",
+                           "sizeLines":  46,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/dto/request/CartItemRequest.java",
+                           "language":  "java",
+                           "sizeLines":  14,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/dto/request/CartQuantityRequest.java",
+                           "language":  "java",
+                           "sizeLines":  10,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/dto/response/CartItemResponse.java",
+                           "language":  "java",
+                           "sizeLines":  22,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+                           "language":  "java",
+                           "sizeLines":  36,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/model/Cart.java",
+                           "language":  "java",
+                           "sizeLines":  31,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/model/CartItem.java",
+                           "language":  "java",
+                           "sizeLines":  40,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/repository/CartItemRepository.java",
+                           "language":  "java",
+                           "sizeLines":  16,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/repository/CartRepository.java",
+                           "language":  "java",
+                           "sizeLines":  23,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/service/CartService.java",
+                           "language":  "java",
+                           "sizeLines":  14,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                           "language":  "java",
+                           "sizeLines":  120,
+                           "fileCategory":  "code"
+                       }
+                   ],
+    "batchImportData":  {
+                            "src/main/java/org/akira/ladux/controller/user/CartController.java":  [
+                                                                                                      "src/main/java/org/akira/ladux/dto/request/CartItemRequest.java",
+                                                                                                      "src/main/java/org/akira/ladux/dto/request/CartQuantityRequest.java",
+                                                                                                      "src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+                                                                                                      "src/main/java/org/akira/ladux/model/UserPrincipal.java",
+                                                                                                      "src/main/java/org/akira/ladux/service/CartService.java"
+                                                                                                  ],
+                            "src/main/java/org/akira/ladux/dto/request/CartItemRequest.java":  [
+
+                                                                                               ],
+                            "src/main/java/org/akira/ladux/dto/request/CartQuantityRequest.java":  [
+
+                                                                                                   ],
+                            "src/main/java/org/akira/ladux/dto/response/CartItemResponse.java":  [
+                                                                                                     "src/main/java/org/akira/ladux/model/CartItem.java"
+                                                                                                 ],
+                            "src/main/java/org/akira/ladux/dto/response/CartResponse.java":  [
+                                                                                                 "src/main/java/org/akira/ladux/model/Cart.java"
+                                                                                             ],
+                            "src/main/java/org/akira/ladux/model/Cart.java":  [
+
+                                                                              ],
+                            "src/main/java/org/akira/ladux/model/CartItem.java":  [
+
+                                                                                  ],
+                            "src/main/java/org/akira/ladux/repository/CartItemRepository.java":  [
+                                                                                                     "src/main/java/org/akira/ladux/model/CartItem.java"
+                                                                                                 ],
+                            "src/main/java/org/akira/ladux/repository/CartRepository.java":  [
+                                                                                                 "src/main/java/org/akira/ladux/model/Cart.java"
+                                                                                             ],
+                            "src/main/java/org/akira/ladux/service/CartService.java":  [
+                                                                                           "src/main/java/org/akira/ladux/dto/response/CartResponse.java"
+                                                                                       ],
+                            "src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java":  [
+                                                                                                    "src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+                                                                                                    "src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+                                                                                                    "src/main/java/org/akira/ladux/model/Cart.java",
+                                                                                                    "src/main/java/org/akira/ladux/model/CartItem.java",
+                                                                                                    "src/main/java/org/akira/ladux/model/Product.java",
+                                                                                                    "src/main/java/org/akira/ladux/model/User.java",
+                                                                                                    "src/main/java/org/akira/ladux/repository/CartRepository.java",
+                                                                                                    "src/main/java/org/akira/ladux/repository/ProductRepository.java",
+                                                                                                    "src/main/java/org/akira/ladux/repository/UserRepository.java",
+                                                                                                    "src/main/java/org/akira/ladux/service/CartService.java"
+                                                                                                ]
+                        }
+}

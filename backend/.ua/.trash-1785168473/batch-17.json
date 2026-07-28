@@ -1,0 +1,1497 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/resources/db/migration/V10__harden_category_delete_constraints.sql",
+      "type": "file",
+      "name": "V10__harden_category_delete_constraints.sql",
+      "filePath": "src/main/resources/db/migration/V10__harden_category_delete_constraints.sql",
+      "summary": "Hardens category delete behavior by replacing category foreign keys on products and category hierarchy rows with explicit ON DELETE SET NULL handling, then recreates supporting indexes.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V11__create_shedlock_table.sql",
+      "type": "file",
+      "name": "V11__create_shedlock_table.sql",
+      "filePath": "src/main/resources/db/migration/V11__create_shedlock_table.sql",
+      "summary": "Creates the ShedLock coordination table used by scheduled Spring jobs to persist distributed lock ownership and expiry timestamps.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V11__create_shedlock_table.sql:shedlock",
+      "type": "table",
+      "name": "shedlock",
+      "filePath": "src/main/resources/db/migration/V11__create_shedlock_table.sql",
+      "lineRange": [
+        1,
+        7
+      ],
+      "summary": "Defines the shedlock database table with columns for name, lock_until, locked_at, locked_by used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V12__enable_pg_trgm_extension.sql",
+      "type": "file",
+      "name": "V12__enable_pg_trgm_extension.sql",
+      "filePath": "src/main/resources/db/migration/V12__enable_pg_trgm_extension.sql",
+      "summary": "Enables the PostgreSQL pg_trgm extension so later migrations can create trigram indexes for product name search.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V13__add_trigram_index_on_products.sql",
+      "type": "file",
+      "name": "V13__add_trigram_index_on_products.sql",
+      "filePath": "src/main/resources/db/migration/V13__add_trigram_index_on_products.sql",
+      "summary": "Adds a GIN trigram index on product names to accelerate fuzzy or contains-style product search.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V14__rename_updated_at_to_update_at.sql",
+      "type": "file",
+      "name": "V14__rename_updated_at_to_update_at.sql",
+      "filePath": "src/main/resources/db/migration/V14__rename_updated_at_to_update_at.sql",
+      "summary": "Renames updated_at audit columns to update_at across core order, coupon, payment, and supply-chain tables for compatibility with an earlier entity mapping.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V15__add_created_at_to_coupons.sql",
+      "type": "file",
+      "name": "V15__add_created_at_to_coupons.sql",
+      "filePath": "src/main/resources/db/migration/V15__add_created_at_to_coupons.sql",
+      "summary": "Adds a created_at timestamp to coupons so coupon records carry creation audit metadata.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V16__add_rating_check_constraint_on_reviews.sql",
+      "type": "file",
+      "name": "V16__add_rating_check_constraint_on_reviews.sql",
+      "filePath": "src/main/resources/db/migration/V16__add_rating_check_constraint_on_reviews.sql",
+      "summary": "Adds a check constraint enforcing review ratings between one and five.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V17__add_user_id_to_order_histories.sql",
+      "type": "file",
+      "name": "V17__add_user_id_to_order_histories.sql",
+      "filePath": "src/main/resources/db/migration/V17__add_user_id_to_order_histories.sql",
+      "summary": "Backfills and enforces user ownership on order history rows, including a foreign key to users and an index for user-based lookup.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V18__drop_wishlists_added_at.sql",
+      "type": "file",
+      "name": "V18__drop_wishlists_added_at.sql",
+      "filePath": "src/main/resources/db/migration/V18__drop_wishlists_added_at.sql",
+      "summary": "Drops the added_at timestamp from wishlists to align the table with the current wishlist entity.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V19__fix_trigram_index_to_lower_name.sql",
+      "type": "file",
+      "name": "V19__fix_trigram_index_to_lower_name.sql",
+      "filePath": "src/main/resources/db/migration/V19__fix_trigram_index_to_lower_name.sql",
+      "summary": "Replaces the product name trigram index with a lower(name) expression index for case-insensitive search.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "type": "file",
+      "name": "V1__init_schema.sql",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "summary": "Initializes the core Ladux ecommerce schema, including users, catalog, cart, order, payment, review, and wishlist tables with primary foreign-key relationships.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:roles",
+      "type": "table",
+      "name": "roles",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        3,
+        6
+      ],
+      "summary": "Defines the roles database table with columns for id, name used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:users",
+      "type": "table",
+      "name": "users",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        8,
+        18
+      ],
+      "summary": "Defines the users database table with columns for id, email, username, password, full_name, phone, and related attributes used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:brands",
+      "type": "table",
+      "name": "brands",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        20,
+        24
+      ],
+      "summary": "Defines the brands database table with columns for id, name, slug used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:categories",
+      "type": "table",
+      "name": "categories",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        26,
+        33
+      ],
+      "summary": "Defines the categories database table with columns for id, name, slug, parent_id used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:coupons",
+      "type": "table",
+      "name": "coupons",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        35,
+        44
+      ],
+      "summary": "Defines the coupons database table with columns for id, code, discount_type, discount_value, min_order_value, usage_limit, and related attributes used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:products",
+      "type": "table",
+      "name": "products",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        46,
+        64
+      ],
+      "summary": "Defines the products database table with columns for id, brand_id, category_id, sku, name, slug, and related attributes used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:carts",
+      "type": "table",
+      "name": "carts",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        66,
+        71
+      ],
+      "summary": "Defines the carts database table with columns for id, user_id used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:user_roles",
+      "type": "table",
+      "name": "user_roles",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        73,
+        81
+      ],
+      "summary": "Defines the user roles database table with columns for user_id, role_id used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:user_addresses",
+      "type": "table",
+      "name": "user_addresses",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        83,
+        94
+      ],
+      "summary": "Defines the user addresses database table with columns for id, user_id, receiver_name, phone, street, district, and related attributes used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:orders",
+      "type": "table",
+      "name": "orders",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        96,
+        112
+      ],
+      "summary": "Defines the orders database table with columns for id, user_id, coupon_id, sub_total, discount_amount, final_amount, and related attributes used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:product_images",
+      "type": "table",
+      "name": "product_images",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        114,
+        121
+      ],
+      "summary": "Defines the product images database table with columns for id, product_id, image_url, is_primary used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:cart_items",
+      "type": "table",
+      "name": "cart_items",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        123,
+        133
+      ],
+      "summary": "Defines the cart items database table with columns for id, cart_id, product_id, quantity used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:order_items",
+      "type": "table",
+      "name": "order_items",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        135,
+        145
+      ],
+      "summary": "Defines the order items database table with columns for id, order_id, product_id, quantity, price_at_purchase used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:order_histories",
+      "type": "table",
+      "name": "order_histories",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        147,
+        155
+      ],
+      "summary": "Defines the order histories database table with columns for id, order_id, status, description, created_at used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:payments",
+      "type": "table",
+      "name": "payments",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        157,
+        167
+      ],
+      "summary": "Defines the payments database table with columns for id, order_id, provider, transaction_no, amount, status, and related attributes used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:reviews",
+      "type": "table",
+      "name": "reviews",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        169,
+        181
+      ],
+      "summary": "Defines the reviews database table with columns for id, user_id, product_id, rating, comment, created_at used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V1__init_schema.sql:wishlists",
+      "type": "table",
+      "name": "wishlists",
+      "filePath": "src/main/resources/db/migration/V1__init_schema.sql",
+      "lineRange": [
+        183,
+        193
+      ],
+      "summary": "Defines the wishlists database table with columns for id, user_id, product_id, added_at used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V20__create_refresh_tokens.sql",
+      "type": "file",
+      "name": "V20__create_refresh_tokens.sql",
+      "filePath": "src/main/resources/db/migration/V20__create_refresh_tokens.sql",
+      "summary": "Creates persistent refresh token storage with token uniqueness, user linkage, revocation state, expiry, and a user lookup index.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V20__create_refresh_tokens.sql:refresh_tokens",
+      "type": "table",
+      "name": "refresh_tokens",
+      "filePath": "src/main/resources/db/migration/V20__create_refresh_tokens.sql",
+      "lineRange": [
+        2,
+        11
+      ],
+      "summary": "Defines the refresh tokens database table with columns for id, token, user_id, expiry_date, revoked, created_at used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V21__add_token_version_to_users.sql",
+      "type": "file",
+      "name": "V21__add_token_version_to_users.sql",
+      "filePath": "src/main/resources/db/migration/V21__add_token_version_to_users.sql",
+      "summary": "Adds token_version to users so JWT sessions can be invalidated by incrementing a per-user version.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "type": "file",
+      "name": "V22__add_customer_and_supply_chain.sql",
+      "filePath": "src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "summary": "Adds customer profile data and supply-chain tables for suppliers, product sourcing, purchase orders, purchase-order items, and stock movement tracking.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:customers",
+      "type": "table",
+      "name": "customers",
+      "filePath": "src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "lineRange": [
+        12,
+        22
+      ],
+      "summary": "Defines the customers database table with columns for user_id, full_name, phone, avatar_url, loyalty_points, level, and related attributes used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:suppliers",
+      "type": "table",
+      "name": "suppliers",
+      "filePath": "src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "lineRange": [
+        48,
+        57
+      ],
+      "summary": "Defines the suppliers database table with columns for id, name, address, phone, email, is_active, and related attributes used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:product_suppliers",
+      "type": "table",
+      "name": "product_suppliers",
+      "filePath": "src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "lineRange": [
+        62,
+        71
+      ],
+      "summary": "Defines the product suppliers database table with columns for id, product_id, supplier_id, cost_price, lead_time_days used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:purchase_orders",
+      "type": "table",
+      "name": "purchase_orders",
+      "filePath": "src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "lineRange": [
+        78,
+        90
+      ],
+      "summary": "Defines the purchase orders database table with columns for id, supplier_id, status, expected_delivery_date, total_amount, note, and related attributes used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:purchase_order_items",
+      "type": "table",
+      "name": "purchase_order_items",
+      "filePath": "src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "lineRange": [
+        97,
+        107
+      ],
+      "summary": "Defines the purchase order items database table with columns for id, purchase_order_id, product_id, quantity, cost_price, received_quantity, and related attributes used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:stock_movements",
+      "type": "table",
+      "name": "stock_movements",
+      "filePath": "src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "lineRange": [
+        113,
+        125
+      ],
+      "summary": "Defines the stock movements database table with columns for id, product_id, quantity, movement_type, reference_type, reference_id, and related attributes used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V23__insert_supply_chain_mock_data.sql",
+      "type": "file",
+      "name": "V23__insert_supply_chain_mock_data.sql",
+      "filePath": "src/main/resources/db/migration/V23__insert_supply_chain_mock_data.sql",
+      "summary": "Seeds mock suppliers, product-supplier links, purchase orders, purchase-order items, and stock movements for development supply-chain workflows.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V24__link_local_product_images.sql",
+      "type": "file",
+      "name": "V24__link_local_product_images.sql",
+      "filePath": "src/main/resources/db/migration/V24__link_local_product_images.sql",
+      "summary": "Links local static product image assets to products and their gallery rows for seeded catalog content.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V25__update_category_images.sql",
+      "type": "file",
+      "name": "V25__update_category_images.sql",
+      "filePath": "src/main/resources/db/migration/V25__update_category_images.sql",
+      "summary": "Updates category image URLs to local category image assets for laptop category presentation.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V26__add_image_to_categories.sql",
+      "type": "file",
+      "name": "V26__add_image_to_categories.sql",
+      "filePath": "src/main/resources/db/migration/V26__add_image_to_categories.sql",
+      "summary": "Adds an image_url column to categories, indexes it, and backfills category image paths with normalized defaults.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V27__drop_brand_logo_url.sql",
+      "type": "file",
+      "name": "V27__drop_brand_logo_url.sql",
+      "filePath": "src/main/resources/db/migration/V27__drop_brand_logo_url.sql",
+      "summary": "Drops the obsolete logo_url column from brands after brand logos were removed from the current model.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "type": "file",
+      "name": "V28__sync_schema_with_current_entities.sql",
+      "filePath": "src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "summary": "Synchronizes the database with current JPA entities by introducing product variants and notifications, relaxing legacy product columns, and aligning audit, address, payment, and supply-chain columns.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql:product_variants",
+      "type": "table",
+      "name": "product_variants",
+      "filePath": "src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "lineRange": [
+        16,
+        28
+      ],
+      "summary": "Defines the product variants database table with columns for id, product_id, sku, color, storage, price, and related attributes used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql:notifications",
+      "type": "table",
+      "name": "notifications",
+      "filePath": "src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "lineRange": [
+        149,
+        161
+      ],
+      "summary": "Defines the notifications database table with columns for id, user_id, title, message, is_read, type, and related attributes used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V29__align_schema_with_current_models.sql",
+      "type": "file",
+      "name": "V29__align_schema_with_current_models.sql",
+      "filePath": "src/main/resources/db/migration/V29__align_schema_with_current_models.sql",
+      "summary": "Completes the product variant refactor by adding colors, variant color linkage, product specification columns, embedded order shipping columns, and ProductVariant foreign keys for cart and order items.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "table:src/main/resources/db/migration/V29__align_schema_with_current_models.sql:colors",
+      "type": "table",
+      "name": "colors",
+      "filePath": "src/main/resources/db/migration/V29__align_schema_with_current_models.sql",
+      "lineRange": [
+        14,
+        18
+      ],
+      "summary": "Defines the colors database table with columns for id, name, hex_code used by the Ladux persistence model.",
+      "tags": [
+        "database",
+        "schema-definition",
+        "postgresql",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V2__add_hot_path_indexes.sql",
+      "type": "file",
+      "name": "V2__add_hot_path_indexes.sql",
+      "filePath": "src/main/resources/db/migration/V2__add_hot_path_indexes.sql",
+      "summary": "Adds indexes for common catalog, cart, order, payment, address, review, and wishlist query paths.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V4__fix_seed_user_passwords.sql",
+      "type": "file",
+      "name": "V4__fix_seed_user_passwords.sql",
+      "filePath": "src/main/resources/db/migration/V4__fix_seed_user_passwords.sql",
+      "summary": "Updates seeded user password values to corrected encoded password data.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V5__disable_seed_user_passwords.sql",
+      "type": "file",
+      "name": "V5__disable_seed_user_passwords.sql",
+      "filePath": "src/main/resources/db/migration/V5__disable_seed_user_passwords.sql",
+      "summary": "Disables seeded user password updates that are no longer needed for the current seed strategy.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V6__set_dev_admin_bcrypt_password.sql",
+      "type": "file",
+      "name": "V6__set_dev_admin_bcrypt_password.sql",
+      "filePath": "src/main/resources/db/migration/V6__set_dev_admin_bcrypt_password.sql",
+      "summary": "Sets the development admin user's password to a BCrypt hash for local authentication testing.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V7__add_payment_gateway_transaction_no_unique.sql",
+      "type": "file",
+      "name": "V7__add_payment_gateway_transaction_no_unique.sql",
+      "filePath": "src/main/resources/db/migration/V7__add_payment_gateway_transaction_no_unique.sql",
+      "summary": "Adds a partial unique index for non-null payment gateway transaction numbers to preserve idempotent payment tracking.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V8__add_updated_at_to_core_tables.sql",
+      "type": "file",
+      "name": "V8__add_updated_at_to_core_tables.sql",
+      "filePath": "src/main/resources/db/migration/V8__add_updated_at_to_core_tables.sql",
+      "summary": "Adds updated_at audit timestamps to core order, coupon, payment, and supply-chain tables.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    },
+    {
+      "id": "file:src/main/resources/db/migration/V9__add_stock_quantity_check.sql",
+      "type": "file",
+      "name": "V9__add_stock_quantity_check.sql",
+      "filePath": "src/main/resources/db/migration/V9__add_stock_quantity_check.sql",
+      "summary": "Adds a non-negative stock quantity check constraint to products.",
+      "tags": [
+        "database",
+        "migration",
+        "flyway",
+        "postgresql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Flyway versioned SQL migration for PostgreSQL."
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/resources/db/migration/V10__harden_category_delete_constraints.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:products",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V10__harden_category_delete_constraints.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:categories",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V11__create_shedlock_table.sql",
+      "target": "table:src/main/resources/db/migration/V11__create_shedlock_table.sql:shedlock",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V13__add_trigram_index_on_products.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:products",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V15__add_created_at_to_coupons.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:coupons",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V16__add_rating_check_constraint_on_reviews.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:reviews",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V17__add_user_id_to_order_histories.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:order_histories",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V18__drop_wishlists_added_at.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:wishlists",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V19__fix_trigram_index_to_lower_name.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:products",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:roles",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:users",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:brands",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:categories",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:coupons",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:products",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:carts",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:user_roles",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:user_addresses",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:orders",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:product_images",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:cart_items",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:order_items",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:order_histories",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:payments",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:reviews",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:wishlists",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V20__create_refresh_tokens.sql",
+      "target": "table:src/main/resources/db/migration/V20__create_refresh_tokens.sql:refresh_tokens",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V21__add_token_version_to_users.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:users",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "target": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:customers",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "target": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:suppliers",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "target": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:product_suppliers",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "target": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:purchase_orders",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "target": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:purchase_order_items",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "target": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:stock_movements",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:users",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:products",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V23__insert_supply_chain_mock_data.sql",
+      "target": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:suppliers",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V23__insert_supply_chain_mock_data.sql",
+      "target": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:product_suppliers",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V24__link_local_product_images.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:products",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V24__link_local_product_images.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:product_images",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V25__update_category_images.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:categories",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V26__add_image_to_categories.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:categories",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V27__drop_brand_logo_url.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:brands",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "target": "table:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql:product_variants",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "target": "table:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql:notifications",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:products",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:categories",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:coupons",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "target": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:customers",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "target": "table:src/main/resources/db/migration/V20__create_refresh_tokens.sql:refresh_tokens",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:user_addresses",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:payments",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "target": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:product_suppliers",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "target": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:purchase_orders",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "target": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:purchase_order_items",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql",
+      "target": "table:src/main/resources/db/migration/V22__add_customer_and_supply_chain.sql:stock_movements",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V29__align_schema_with_current_models.sql",
+      "target": "table:src/main/resources/db/migration/V29__align_schema_with_current_models.sql:colors",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V29__align_schema_with_current_models.sql",
+      "target": "table:src/main/resources/db/migration/V28__sync_schema_with_current_entities.sql:product_variants",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V29__align_schema_with_current_models.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:products",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V29__align_schema_with_current_models.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:orders",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V29__align_schema_with_current_models.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:cart_items",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V29__align_schema_with_current_models.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:order_items",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V2__add_hot_path_indexes.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:products",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V2__add_hot_path_indexes.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:product_images",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V2__add_hot_path_indexes.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:cart_items",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V2__add_hot_path_indexes.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:orders",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V2__add_hot_path_indexes.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:order_items",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V2__add_hot_path_indexes.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:order_histories",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V2__add_hot_path_indexes.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:payments",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V2__add_hot_path_indexes.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:user_addresses",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V2__add_hot_path_indexes.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:reviews",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V2__add_hot_path_indexes.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:wishlists",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V5__disable_seed_user_passwords.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:users",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V6__set_dev_admin_bcrypt_password.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:users",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V7__add_payment_gateway_transaction_no_unique.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:payments",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V8__add_updated_at_to_core_tables.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:products",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V8__add_updated_at_to_core_tables.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:orders",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V8__add_updated_at_to_core_tables.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:coupons",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V8__add_updated_at_to_core_tables.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:users",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V8__add_updated_at_to_core_tables.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:payments",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/resources/db/migration/V9__add_stock_quantity_check.sql",
+      "target": "table:src/main/resources/db/migration/V1__init_schema.sql:products",
+      "type": "migrates",
+      "weight": 0.7,
+      "direction": "forward"
+    }
+  ]
+}

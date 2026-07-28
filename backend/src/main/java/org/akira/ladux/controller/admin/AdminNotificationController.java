@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,29 +18,34 @@ public class AdminNotificationController {
     private final NotificationService notificationService;
     // Admin gửi thong báo để tất cả mọi người
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> broadcastNotification(@RequestBody NotificationRequest request) {
         notificationService.broadcastNotification(request);
         return ResponseEntity.ok("Thông báo đã được gửi đến tất cả người dùng.");
     }
     // Admin gửi thong báo để 1 người dùng cụ thể
     @PostMapping("/user/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> sendNotificationToUser(@RequestBody NotificationRequest request, @PathVariable Integer id) {
         notificationService.sendNotificationToUser(request, id);
         return ResponseEntity.ok("Thông báo đã được gửi đến người dùng.");
     }
     // Admin xem lai toan bo thong báo
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<NotificationResponse>> getAllNotifications(@RequestParam(defaultValue = "0") int page,
                                                                           @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(notificationService.getAllNotificationsForAdmin(pageable));
     }
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteNotification(@PathVariable Integer id) {
         notificationService.deleteNotificationForAdmin(id);
         return ResponseEntity.ok("Thông báo đã được xóa!");
     }
     @DeleteMapping("/delete-all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteAllNotifications() {
         notificationService.deleteAllNotificationsForAdmin();
         return ResponseEntity.ok("Tất cả thông báo đã được xóa!");

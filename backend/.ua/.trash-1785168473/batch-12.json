@@ -1,0 +1,1116 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java",
+      "type": "file",
+      "name": "AdminReviewController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java",
+      "summary": "Admin REST controller exposing paginated review moderation queries, including all reviews and reviews filtered by user. It delegates review retrieval to the review service and wraps results in Spring ResponseEntity responses.",
+      "tags": [
+        "api-handler",
+        "admin-api",
+        "review",
+        "pagination"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Java Spring Boot component using Lombok and framework annotations to reduce boilerplate."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java:AdminReviewController",
+      "type": "class",
+      "name": "AdminReviewController",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java",
+      "lineRange": [
+        12,
+        28
+      ],
+      "summary": "Admin controller class that exposes read-only review moderation endpoints backed by ReviewService.",
+      "tags": [
+        "api-handler",
+        "admin-api",
+        "review"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java:getAllReviews",
+      "type": "function",
+      "name": "getAllReviews",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java",
+      "lineRange": [
+        18,
+        22
+      ],
+      "summary": "Returns a paginated list of all reviews through the review service or repository-backed mapper.",
+      "tags": [
+        "query",
+        "pagination",
+        "review"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java:getReviewsByUserId",
+      "type": "function",
+      "name": "getReviewsByUserId",
+      "filePath": "src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java",
+      "lineRange": [
+        23,
+        27
+      ],
+      "summary": "Returns paginated reviews for a specific user id.",
+      "tags": [
+        "query",
+        "pagination",
+        "review"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "type": "file",
+      "name": "ReviewController.java",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "summary": "User-facing REST controller for product reviews, covering product review listings plus authenticated create, update, and delete actions. It uses the authenticated UserPrincipal id to scope mutations to the current user.",
+      "tags": [
+        "api-handler",
+        "user-api",
+        "review",
+        "security"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Java Spring Boot component using Lombok and framework annotations to reduce boilerplate."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/controller/user/ReviewController.java:ReviewController",
+      "type": "class",
+      "name": "ReviewController",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "lineRange": [
+        17,
+        53
+      ],
+      "summary": "User review controller class that exposes product review reads and authenticated review mutation endpoints.",
+      "tags": [
+        "api-handler",
+        "user-api",
+        "review",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/ReviewController.java:getReviewsByProductId",
+      "type": "function",
+      "name": "getReviewsByProductId",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "lineRange": [
+        23,
+        26
+      ],
+      "summary": "Returns paginated reviews associated with a product id.",
+      "tags": [
+        "query",
+        "pagination",
+        "review"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/ReviewController.java:createReview",
+      "type": "function",
+      "name": "createReview",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "lineRange": [
+        28,
+        34
+      ],
+      "summary": "Creates a review after loading the user and product, checking duplicate review and purchase eligibility rules, validating the rating, and saving the entity.",
+      "tags": [
+        "command",
+        "validation",
+        "review",
+        "business-rule"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/ReviewController.java:updateReview",
+      "type": "function",
+      "name": "updateReview",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "lineRange": [
+        36,
+        43
+      ],
+      "summary": "Updates a user-owned review by applying valid rating and comment changes and returning the mapped response.",
+      "tags": [
+        "command",
+        "validation",
+        "review",
+        "ownership"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/controller/user/ReviewController.java:deleteReviewById",
+      "type": "function",
+      "name": "deleteReviewById",
+      "filePath": "src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "lineRange": [
+        45,
+        52
+      ],
+      "summary": "Deletes a review only when it belongs to the requesting user.",
+      "tags": [
+        "command",
+        "review",
+        "ownership"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/ReviewCreateRequest.java",
+      "type": "file",
+      "name": "ReviewCreateRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/ReviewCreateRequest.java",
+      "summary": "Request DTO for creating product reviews with a product id, rating, and optional comment. Jakarta validation annotations enforce required product and rating fields with valid rating bounds.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "review",
+        "request-dto"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Java Spring Boot component using Lombok and framework annotations to reduce boilerplate."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/ReviewCreateRequest.java:ReviewCreateRequest",
+      "type": "class",
+      "name": "ReviewCreateRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/ReviewCreateRequest.java",
+      "lineRange": [
+        9,
+        21
+      ],
+      "summary": "Immutable create-review request record carrying product id, rating, and comment validation data.",
+      "tags": [
+        "request-dto",
+        "validation",
+        "review"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/request/ReviewUpdateRequest.java",
+      "type": "file",
+      "name": "ReviewUpdateRequest.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/ReviewUpdateRequest.java",
+      "summary": "Request DTO for partial review updates with nullable rating and comment fields. Rating validation is bounded at the DTO level while service logic decides which fields to apply.",
+      "tags": [
+        "data-transfer",
+        "validation",
+        "review",
+        "request-dto"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Java Spring Boot component using Lombok and framework annotations to reduce boilerplate."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/request/ReviewUpdateRequest.java:ReviewUpdateRequest",
+      "type": "class",
+      "name": "ReviewUpdateRequest",
+      "filePath": "src/main/java/org/akira/ladux/dto/request/ReviewUpdateRequest.java",
+      "lineRange": [
+        7,
+        14
+      ],
+      "summary": "Immutable update-review request record carrying optional rating and comment changes.",
+      "tags": [
+        "request-dto",
+        "validation",
+        "review"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java",
+      "type": "file",
+      "name": "ReviewResponse.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/ReviewResponse.java",
+      "summary": "Response DTO for projecting review entities into API payloads with user display metadata, rating, comment, and creation timestamp. Its mapper derives the reviewer name and avatar from the associated user customer profile when available.",
+      "tags": [
+        "data-transfer",
+        "serialization",
+        "review",
+        "response-dto"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Java Spring Boot component using Lombok and framework annotations to reduce boilerplate."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java:ReviewResponse",
+      "type": "class",
+      "name": "ReviewResponse",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/ReviewResponse.java",
+      "lineRange": [
+        8,
+        40
+      ],
+      "summary": "Immutable review response record with a static mapper from Review entities to API-safe review payloads.",
+      "tags": [
+        "response-dto",
+        "serialization",
+        "review"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java:fromEntity",
+      "type": "function",
+      "name": "fromEntity",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/ReviewResponse.java",
+      "lineRange": [
+        16,
+        39
+      ],
+      "summary": "Maps a Review entity into a ReviewResponse, including reviewer display name and avatar metadata.",
+      "tags": [
+        "mapper",
+        "serialization",
+        "review"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/Review.java",
+      "type": "file",
+      "name": "Review.java",
+      "filePath": "src/main/java/org/akira/ladux/model/Review.java",
+      "summary": "JPA entity representing a product review authored by a user, including product linkage, rating, comment, and creation timestamp. It maps the reviews table and owns mandatory user and product relationships.",
+      "tags": [
+        "data-model",
+        "jpa-entity",
+        "review",
+        "database"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Java Spring Boot component using Lombok and framework annotations to reduce boilerplate."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/Review.java:Review",
+      "type": "class",
+      "name": "Review",
+      "filePath": "src/main/java/org/akira/ladux/model/Review.java",
+      "lineRange": [
+        9,
+        42
+      ],
+      "summary": "Review JPA entity class mapping reviewer, product, rating, comment, and creation timestamp fields.",
+      "tags": [
+        "data-model",
+        "jpa-entity",
+        "review"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/repository/ReviewRepository.java",
+      "type": "file",
+      "name": "ReviewRepository.java",
+      "filePath": "src/main/java/org/akira/ladux/repository/ReviewRepository.java",
+      "summary": "Spring Data repository for Review entities with paginated lookup methods by product and user, duplicate-review checks, and ownership-aware lookup by user and review id. It customizes fetch behavior for page queries with entity graphs.",
+      "tags": [
+        "repository",
+        "database",
+        "review",
+        "pagination"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Java Spring Boot component using Lombok and framework annotations to reduce boilerplate."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/repository/ReviewRepository.java:ReviewRepository",
+      "type": "class",
+      "name": "ReviewRepository",
+      "filePath": "src/main/java/org/akira/ladux/repository/ReviewRepository.java",
+      "lineRange": [
+        14,
+        34
+      ],
+      "summary": "Repository interface defining review paging, ownership lookup, and duplicate detection queries.",
+      "tags": [
+        "repository",
+        "database",
+        "review"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/service/ReviewService.java",
+      "type": "file",
+      "name": "ReviewService.java",
+      "filePath": "src/main/java/org/akira/ladux/service/ReviewService.java",
+      "summary": "Service contract for review retrieval, creation, update, deletion, and rating validation. It defines the review business API consumed by admin and user controllers.",
+      "tags": [
+        "service",
+        "interface",
+        "review",
+        "business-logic"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Java Spring Boot component using Lombok and framework annotations to reduce boilerplate."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/service/ReviewService.java:ReviewService",
+      "type": "class",
+      "name": "ReviewService",
+      "filePath": "src/main/java/org/akira/ladux/service/ReviewService.java",
+      "lineRange": [
+        9,
+        25
+      ],
+      "summary": "Review service interface defining the contract used by controllers for review workflows.",
+      "tags": [
+        "service",
+        "interface",
+        "review"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "type": "file",
+      "name": "ReviewServiceImpl.java",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "summary": "Review service implementation enforcing ownership, duplicate review prevention, purchase verification, and rating validation before persisting review changes. It coordinates review, user, product, and order repositories and maps entities to ReviewResponse DTOs.",
+      "tags": [
+        "service",
+        "business-logic",
+        "review",
+        "validation",
+        "database"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Java Spring Boot component using Lombok and framework annotations to reduce boilerplate."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:ReviewServiceImpl",
+      "type": "class",
+      "name": "ReviewServiceImpl",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "lineRange": [
+        25,
+        122
+      ],
+      "summary": "Concrete review service implementing validation-heavy review read and write workflows.",
+      "tags": [
+        "service",
+        "business-logic",
+        "review",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:getAllReviews",
+      "type": "function",
+      "name": "getAllReviews",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "lineRange": [
+        33,
+        39
+      ],
+      "summary": "Returns a paginated list of all reviews through the review service or repository-backed mapper.",
+      "tags": [
+        "query",
+        "pagination",
+        "review"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:getReviewById",
+      "type": "function",
+      "name": "getReviewById",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "lineRange": [
+        41,
+        47
+      ],
+      "summary": "Loads a review by id and maps it to a response, raising not-found when absent.",
+      "tags": [
+        "query",
+        "review",
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:getReviewsByProductId",
+      "type": "function",
+      "name": "getReviewsByProductId",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "lineRange": [
+        49,
+        55
+      ],
+      "summary": "Returns paginated reviews associated with a product id.",
+      "tags": [
+        "query",
+        "pagination",
+        "review"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:getReviewsByUserId",
+      "type": "function",
+      "name": "getReviewsByUserId",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "lineRange": [
+        57,
+        63
+      ],
+      "summary": "Returns paginated reviews for a specific user id.",
+      "tags": [
+        "query",
+        "pagination",
+        "review"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:createReview",
+      "type": "function",
+      "name": "createReview",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "lineRange": [
+        65,
+        89
+      ],
+      "summary": "Creates a review after loading the user and product, checking duplicate review and purchase eligibility rules, validating the rating, and saving the entity.",
+      "tags": [
+        "command",
+        "validation",
+        "review",
+        "business-rule"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:updateReview",
+      "type": "function",
+      "name": "updateReview",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "lineRange": [
+        91,
+        107
+      ],
+      "summary": "Updates a user-owned review by applying valid rating and comment changes and returning the mapped response.",
+      "tags": [
+        "command",
+        "validation",
+        "review",
+        "ownership"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:deleteReviewById",
+      "type": "function",
+      "name": "deleteReviewById",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "lineRange": [
+        109,
+        116
+      ],
+      "summary": "Deletes a review only when it belongs to the requesting user.",
+      "tags": [
+        "command",
+        "review",
+        "ownership"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:validateReviewRating",
+      "type": "function",
+      "name": "validateReviewRating",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "lineRange": [
+        118,
+        121
+      ],
+      "summary": "Checks that a rating is inside the accepted one-to-five range.",
+      "tags": [
+        "validation",
+        "review",
+        "business-rule"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java:AdminReviewController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java:AdminReviewController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java:getAllReviews",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java:getAllReviews",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java:getReviewsByUserId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java:getReviewsByUserId",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/ReviewController.java:ReviewController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "target": "class:src/main/java/org/akira/ladux/controller/user/ReviewController.java:ReviewController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/ReviewController.java:getReviewsByProductId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/ReviewController.java:getReviewsByProductId",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/ReviewController.java:createReview",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/ReviewController.java:createReview",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/ReviewController.java:updateReview",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/ReviewController.java:updateReview",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/ReviewController.java:deleteReviewById",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "target": "function:src/main/java/org/akira/ladux/controller/user/ReviewController.java:deleteReviewById",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/ReviewCreateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/ReviewCreateRequest.java:ReviewCreateRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/ReviewCreateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/ReviewCreateRequest.java:ReviewCreateRequest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/ReviewUpdateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/ReviewUpdateRequest.java:ReviewUpdateRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/request/ReviewUpdateRequest.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/request/ReviewUpdateRequest.java:ReviewUpdateRequest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java:ReviewResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java:ReviewResponse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java:fromEntity",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java:fromEntity",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/Review.java",
+      "target": "class:src/main/java/org/akira/ladux/model/Review.java:Review",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/Review.java",
+      "target": "class:src/main/java/org/akira/ladux/model/Review.java:Review",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/ReviewRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/ReviewRepository.java:ReviewRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/ReviewRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/ReviewRepository.java:ReviewRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/ReviewService.java",
+      "target": "class:src/main/java/org/akira/ladux/service/ReviewService.java:ReviewService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/ReviewService.java",
+      "target": "class:src/main/java/org/akira/ladux/service/ReviewService.java:ReviewService",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "class:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:ReviewServiceImpl",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "class:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:ReviewServiceImpl",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:getAllReviews",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:getAllReviews",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:getReviewById",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:getReviewById",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:getReviewsByProductId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:getReviewsByProductId",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:getReviewsByUserId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:getReviewsByUserId",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:createReview",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:createReview",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:updateReview",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:updateReview",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:deleteReviewById",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:deleteReviewById",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:validateReviewRating",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:validateReviewRating",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/admin/AdminReviewController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/ReviewService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/ReviewCreateRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/ReviewUpdateRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "target": "file:src/main/java/org/akira/ladux/model/UserPrincipal.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/controller/user/ReviewController.java",
+      "target": "file:src/main/java/org/akira/ladux/service/ReviewService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/Review.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/ReviewRepository.java",
+      "target": "file:src/main/java/org/akira/ladux/model/Review.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/ReviewService.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/ReviewCreateRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/ReviewService.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/ReviewUpdateRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/ReviewService.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/ReviewCreateRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/ReviewUpdateRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/exception/BusinessRuleException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/model/Product.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/model/Review.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/model/User.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/OrderStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/repository/OrderRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/repository/ProductRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/repository/ReviewRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/repository/UserRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/service/ReviewService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "class:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:ReviewServiceImpl",
+      "target": "class:src/main/java/org/akira/ladux/service/ReviewService.java:ReviewService",
+      "type": "implements",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:getReviewById",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java:fromEntity",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:createReview",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java:fromEntity",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:updateReview",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/ReviewResponse.java:fromEntity",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:createReview",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:validateReviewRating",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:updateReview",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/ReviewServiceImpl.java:validateReviewRating",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

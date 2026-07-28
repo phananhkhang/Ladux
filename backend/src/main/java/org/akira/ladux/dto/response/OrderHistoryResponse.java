@@ -18,7 +18,7 @@ public record OrderHistoryResponse(
         return new OrderHistoryResponse(
                 history.getId(),
                 history.getOrder() == null ? null : history.getOrder().getId(),
-                history.getStatus(),
+                history.getStatus().name(),
                 history.getDescription(),
                 history.getCreatedAt()
         );

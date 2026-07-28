@@ -1,0 +1,28 @@
+{
+  "projectRoot": "C:/Users/ADMIN/OneDrive/Desktop/Ladux/backend",
+  "batchFiles": [
+    {
+      "path": "src/main/resources/application-dev.properties",
+      "language": "properties",
+      "sizeLines": 28,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/main/resources/application-prod.properties",
+      "language": "properties",
+      "sizeLines": 8,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/main/resources/application.properties",
+      "language": "properties",
+      "sizeLines": 59,
+      "fileCategory": "config"
+    }
+  ],
+  "batchImportData": {
+    "src/main/resources/application-dev.properties": [],
+    "src/main/resources/application-prod.properties": [],
+    "src/main/resources/application.properties": []
+  }
+}

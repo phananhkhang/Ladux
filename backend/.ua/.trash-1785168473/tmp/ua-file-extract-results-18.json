@@ -1,0 +1,563 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 5,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 5,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 0,
+      "failed": 0,
+      "skipped": 5
+    }
+  },
+  "results": [
+    {
+      "path": "docs/BACKEND_UPGRADE_PLAN.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 236,
+      "nonEmptyLines": 185,
+      "sections": [
+        {
+          "heading": "Ladux Backend — Kế hoạch nâng cấp lên Production",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "0. Bối cảnh & nguyên tắc",
+          "level": 2,
+          "line": 10
+        },
+        {
+          "heading": "1. Bảng lỗi & việc cần fix (Backlog)",
+          "level": 2,
+          "line": 29
+        },
+        {
+          "heading": "2. Lộ trình triển khai (theo giai đoạn)",
+          "level": 2,
+          "line": 62
+        },
+        {
+          "heading": "Giai đoạn P0 — Bắt buộc trước khi go-live",
+          "level": 3,
+          "line": 64
+        },
+        {
+          "heading": "Giai đoạn P1 — Trước khi mở tải thật",
+          "level": 3,
+          "line": 105
+        },
+        {
+          "heading": "Giai đoạn P2 — Tăng trưởng & độ tin cậy",
+          "level": 3,
+          "line": 128
+        },
+        {
+          "heading": "3. Kiến thức cần học (theo chủ đề, ánh xạ vào backlog)",
+          "level": 2,
+          "line": 141
+        },
+        {
+          "heading": "3.1 Bảo mật ứng dụng",
+          "level": 3,
+          "line": 143
+        },
+        {
+          "heading": "3.2 Cơ sở dữ liệu & dữ liệu",
+          "level": 3,
+          "line": 151
+        },
+        {
+          "heading": "3.3 Kiến trúc & độ tin cậy",
+          "level": 3,
+          "line": 159
+        },
+        {
+          "heading": "3.4 Vận hành (Ops/SRE)",
+          "level": 3,
+          "line": 167
+        },
+        {
+          "heading": "3.5 Kiểm thử",
+          "level": 3,
+          "line": 174
+        },
+        {
+          "heading": "4. Công cụ cần học / bổ sung vào dự án",
+          "level": 2,
+          "line": 182
+        },
+        {
+          "heading": "5. Thứ tự thực thi đề xuất (đường đi ngắn nhất)",
+          "level": 2,
+          "line": 204
+        },
+        {
+          "heading": "6. Định nghĩa \"Done\" cho production (Definition of Ready to Ship)",
+          "level": 2,
+          "line": 220
+        },
+        {
+          "heading": "7. Ghi chú phát hiện trong quá trình review",
+          "level": 2,
+          "line": 232
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 17
+      }
+    },
+    {
+      "path": "docs/bai-giang-access-refresh-token.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 518,
+      "nonEmptyLines": 433,
+      "sections": [
+        {
+          "heading": "Bài giảng: Access Token & Refresh Token trong Ladux",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Phần 0 — Nền tảng lý thuyết (đọc trước khi vào code)",
+          "level": 2,
+          "line": 11
+        },
+        {
+          "heading": "0.1 Authentication vs Authorization",
+          "level": 3,
+          "line": 13
+        },
+        {
+          "heading": "0.2 Vì sao cần token? Vấn đề của HTTP",
+          "level": 3,
+          "line": 19
+        },
+        {
+          "heading": "0.3 Hai loại token và lý do tồn tại",
+          "level": 3,
+          "line": 32
+        },
+        {
+          "heading": "Phần 1 — Bản đồ các file (ai làm gì)",
+          "level": 2,
+          "line": 54
+        },
+        {
+          "heading": "Phần 2 — Access token (JWT): `JwtService`",
+          "level": 2,
+          "line": 109
+        },
+        {
+          "heading": "2.1 JWT trông như thế nào?",
+          "level": 3,
+          "line": 111
+        },
+        {
+          "heading": "2.2 Phát hành access token",
+          "level": 3,
+          "line": 115
+        },
+        {
+          "heading": "2.3 Khóa ký (`getKey` / `resolveKeyBytes`)",
+          "level": 3,
+          "line": 139
+        },
+        {
+          "heading": "2.4 Kiểm định token",
+          "level": 3,
+          "line": 153
+        },
+        {
+          "heading": "Phần 3 — Refresh token (opaque): `RefreshToken` + `RefreshTokenService`",
+          "level": 2,
+          "line": 171
+        },
+        {
+          "heading": "3.1 Vì sao refresh token KHÔNG phải JWT?",
+          "level": 3,
+          "line": 173
+        },
+        {
+          "heading": "3.2 Entity & bảng",
+          "level": 3,
+          "line": 177
+        },
+        {
+          "heading": "3.3 Tạo token — chuỗi ngẫu nhiên mạnh",
+          "level": 3,
+          "line": 192
+        },
+        {
+          "heading": "3.4 Xoay vòng — chống replay (quan trọng nhất)",
+          "level": 3,
+          "line": 202
+        },
+        {
+          "heading": "3.5 Các kiểu thu hồi",
+          "level": 3,
+          "line": 222
+        },
+        {
+          "heading": "Phần 4 — Đóng gói cookie: `AuthCookieService`",
+          "level": 2,
+          "line": 238
+        },
+        {
+          "heading": "Phần 5 — Các luồng hoàn chỉnh (sequence)",
+          "level": 2,
+          "line": 262
+        },
+        {
+          "heading": "5.1 Đăng nhập (`AuthController.login`)",
+          "level": 3,
+          "line": 264
+        },
+        {
+          "heading": "5.2 Gọi API đã đăng nhập (`JwtFilter`)",
+          "level": 3,
+          "line": 296
+        },
+        {
+          "heading": "5.3 Refresh — xin access token mới (`AuthController.refresh`)",
+          "level": 3,
+          "line": 313
+        },
+        {
+          "heading": "5.4 Đăng xuất (`AuthController.logout`)",
+          "level": 3,
+          "line": 328
+        },
+        {
+          "heading": "5.5 OAuth2 Google (`OAuth2SuccessHandler`)",
+          "level": 3,
+          "line": 340
+        },
+        {
+          "heading": "Phần 6 — `tokenVersion`: trái tim của thu hồi tức thì",
+          "level": 2,
+          "line": 354
+        },
+        {
+          "heading": "6.1 Vấn đề",
+          "level": 3,
+          "line": 356
+        },
+        {
+          "heading": "6.2 Giải pháp: một con số phiên bản",
+          "level": 3,
+          "line": 361
+        },
+        {
+          "heading": "6.3 Ai tăng tokenVersion?",
+          "level": 3,
+          "line": 379
+        },
+        {
+          "heading": "6.4 `incrementTokenVersion` — UPDATE nguyên tử",
+          "level": 3,
+          "line": 397
+        },
+        {
+          "heading": "Phần 7 — `JwtFilter` đọc kỹ từng bước",
+          "level": 2,
+          "line": 407
+        },
+        {
+          "heading": "Phần 8 — `SecurityConfig`: nơi ráp mọi thứ lại",
+          "level": 2,
+          "line": 459
+        },
+        {
+          "heading": "Phần 9 — Tổng kết & câu hỏi ôn tập",
+          "level": 2,
+          "line": 478
+        },
+        {
+          "heading": "9.1 Bảng so sánh chốt hạ",
+          "level": 3,
+          "line": 480
+        },
+        {
+          "heading": "9.2 Ba kỹ thuật bảo mật cốt lõi",
+          "level": 3,
+          "line": 490
+        },
+        {
+          "heading": "9.3 Tự kiểm tra (thử trả lời)",
+          "level": 3,
+          "line": 495
+        },
+        {
+          "heading": "9.4 Gợi ý trả lời nhanh",
+          "level": 3,
+          "line": 503
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 36
+      }
+    },
+    {
+      "path": "docs/dac-ta-giao-dien-figma.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 9,
+      "nonEmptyLines": 6,
+      "sections": [
+        {
+          "heading": "Ladux - Đặc tả giao diện cho Figma / AI Design",
+          "level": 1,
+          "line": 1
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    },
+    {
+      "path": "docs/kien-truc-backend.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 537,
+      "nonEmptyLines": 415,
+      "sections": [
+        {
+          "heading": "Ladux Backend — Tài liệu Kiến trúc & Tri thức Hệ thống",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. Tổng quan hệ thống",
+          "level": 2,
+          "line": 11
+        },
+        {
+          "heading": "2. Technology Stack",
+          "level": 2,
+          "line": 35
+        },
+        {
+          "heading": "3. Kiến trúc phân lớp & Cấu trúc Package",
+          "level": 2,
+          "line": 66
+        },
+        {
+          "heading": "3.1 Cấu trúc package hiện tại (cập nhật)",
+          "level": 3,
+          "line": 93
+        },
+        {
+          "heading": "4. Mô hình dữ liệu (Domain Model)",
+          "level": 2,
+          "line": 134
+        },
+        {
+          "heading": "4.1 ERD logic (cập nhật)",
+          "level": 3,
+          "line": 136
+        },
+        {
+          "heading": "4.2 Bảng thực thể chính (cập nhật chi tiết)",
+          "level": 3,
+          "line": 163
+        },
+        {
+          "heading": "4.3 Domain logic & Inventory Ledger (sâu sắc)",
+          "level": 3,
+          "line": 181
+        },
+        {
+          "heading": "5. Schema & Flyway Migrations",
+          "level": 2,
+          "line": 200
+        },
+        {
+          "heading": "6. Bảo mật (Security)",
+          "level": 2,
+          "line": 225
+        },
+        {
+          "heading": "6.1 Hai token + Token Versioning (vẫn mạnh)",
+          "level": 3,
+          "line": 229
+        },
+        {
+          "heading": "6.2 Rate Limiting Login (mới, quan trọng)",
+          "level": 3,
+          "line": 236
+        },
+        {
+          "heading": "6.3 OAuth2, CSRF, CORS, Cookie",
+          "level": 3,
+          "line": 247
+        },
+        {
+          "heading": "6.4 Phân quyền & Chống IDOR",
+          "level": 3,
+          "line": 254
+        },
+        {
+          "heading": "6.5 Vấn đề còn tồn (cần fix)",
+          "level": 3,
+          "line": 261
+        },
+        {
+          "heading": "7. Luồng nghiệp vụ trọng tâm (cập nhật)",
+          "level": 2,
+          "line": 268
+        },
+        {
+          "heading": "7.1 Checkout (OrderServiceImpl.createOrder) — @Transactional",
+          "level": 3,
+          "line": 270
+        },
+        {
+          "heading": "7.2 Hủy đơn & Hoàn tác (OrderLifecycleService + StateMachine)",
+          "level": 3,
+          "line": 281
+        },
+        {
+          "heading": "7.3 Thanh toán + Webhook VNPay (vẫn production-grade)",
+          "level": 3,
+          "line": 290
+        },
+        {
+          "heading": "7.4 Supply Chain — Luồng nhập hàng (mới)",
+          "level": 3,
+          "line": 298
+        },
+        {
+          "heading": "7.5 Định giá & Kho",
+          "level": 3,
+          "line": 316
+        },
+        {
+          "heading": "8. Caching (Redis)",
+          "level": 2,
+          "line": 323
+        },
+        {
+          "heading": "9. Xử lý lỗi",
+          "level": 2,
+          "line": 331
+        },
+        {
+          "heading": "10. Cấu hình & Profiles",
+          "level": 2,
+          "line": 345
+        },
+        {
+          "heading": "11. Triển khai",
+          "level": 2,
+          "line": 355
+        },
+        {
+          "heading": "12. API Surface (tổng quan)",
+          "level": 2,
+          "line": 365
+        },
+        {
+          "heading": "13. Điểm mạnh, Nợ kỹ thuật & Tiến độ Upgrade Plan",
+          "level": 2,
+          "line": 382
+        },
+        {
+          "heading": "14. Hướng đi tiếp theo (Roadmap chi tiết từ góc nhìn Senior System Architect)",
+          "level": 2,
+          "line": 416
+        },
+        {
+          "heading": "Giai đoạn Ngắn hạn (1–4 tuần — Production Hardening)",
+          "level": 3,
+          "line": 420
+        },
+        {
+          "heading": "Giai đoạn Trung hạn (1–3 tháng — Reliability & Efficiency)",
+          "level": 3,
+          "line": 457
+        },
+        {
+          "heading": "Giai đoạn Dài hạn (3–9 tháng — Growth & Evolution)",
+          "level": 3,
+          "line": 485
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 32
+      }
+    },
+    {
+      "path": "docs/prompt-figma-ai-full-ui.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 246,
+      "nonEmptyLines": 185,
+      "sections": [
+        {
+          "heading": "Project Overview",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Required Design System (Create this first as a dedicated page/frame)",
+          "level": 2,
+          "line": 43
+        },
+        {
+          "heading": "Complete Sitemap & Screens to Generate",
+          "level": 2,
+          "line": 75
+        },
+        {
+          "heading": "1. Storefront / Customer Interface (User-facing)",
+          "level": 3,
+          "line": 77
+        },
+        {
+          "heading": "2. Admin Interface (Management)",
+          "level": 3,
+          "line": 145
+        },
+        {
+          "heading": "Additional Instructions for Figma AI",
+          "level": 2,
+          "line": 204
+        },
+        {
+          "heading": "Key API Reference (use correct endpoints and response shapes)",
+          "level": 2,
+          "line": 217
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    }
+  ]
+}

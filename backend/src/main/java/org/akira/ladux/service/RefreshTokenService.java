@@ -1,5 +1,8 @@
 package org.akira.ladux.service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
@@ -36,13 +39,17 @@ public class RefreshTokenService {
 
     @Transactional
     public RefreshToken create(User user) {
+        String rawToken = generateOpaqueToken();
+        String hashedToken = hashToken(rawToken);
         RefreshToken token = RefreshToken.builder()
-                .token(generateOpaqueToken())
+                .token(hashedToken)
                 .user(user)
                 .expiryDate(Instant.now().plusMillis(refreshExpirationMs))
                 .revoked(false)
                 .build();
-        return repo.save(token);
+        RefreshToken savedToken = repo.save(token);
+        savedToken.setToken(rawToken); // Tra ve token MOI (chua hash)
+        return savedToken;
     }
 
     /**
@@ -54,7 +61,8 @@ public class RefreshTokenService {
         if (rawToken == null || rawToken.isBlank()) {
             throw new BusinessRuleException("Thieu refresh token");
         }
-        RefreshToken current = repo.findByToken(rawToken)
+        String hashedToken = hashToken(rawToken);
+        RefreshToken current = repo.findByToken(hashedToken)
                 .orElseThrow(() -> new BusinessRuleException("Refresh token khong hop le"));
         if (!current.isUsable()) {
             throw new BusinessRuleException("Refresh token da het han hoac da bi thu hoi");
@@ -68,20 +76,18 @@ public class RefreshTokenService {
         if (rawToken == null || rawToken.isBlank()) {
             return;
         }
-        repo.findByToken(rawToken).ifPresent(token -> token.setRevoked(true));
+        String hashedToken = hashToken(rawToken);
+        repo.findByToken(hashedToken).ifPresent(token -> token.setRevoked(true));
     }
 
-    /**
-     * Logout: thu hoi refresh token cua phien hien tai VA tang tokenVersion cua user
-     * de access token cu chet ngay lap tuc (luu y: dieu nay dang xuat tat ca thiet bi cua user).
-     * An toan vi transaction nay khong co User entity nao bi "dirty".
-     */
+   // Thu hoi dong thoi tăng tokenVersion cho user -> vo hieu hoa TUC THI access token cu cua user.
     @Transactional
     public void revokeSessionAndBump(String rawToken) {
         if (rawToken == null || rawToken.isBlank()) {
             return;
         }
-        repo.findByToken(rawToken).ifPresent(token -> {
+        String hashedToken = hashToken(rawToken);
+        repo.findByToken(hashedToken).ifPresent(token -> {
             token.setRevoked(true);
             userRepository.incrementTokenVersion(token.getUser().getId());
         });
@@ -101,5 +107,15 @@ public class RefreshTokenService {
         byte[] bytes = new byte[48];
         RANDOM.nextBytes(bytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+    private String hashToken(String rawToken) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashedBytes = digest.digest(rawToken.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(hashedBytes);
+        }
+        catch(NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 algorithm not found", e);
+        }
     }
 }

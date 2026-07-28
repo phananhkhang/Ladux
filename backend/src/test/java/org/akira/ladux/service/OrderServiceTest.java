@@ -11,19 +11,23 @@ import java.util.UUID;
 import org.akira.ladux.AbstractIntegrationTest;
 import org.akira.ladux.dto.request.OrderRequest;
 import org.akira.ladux.dto.request.OrderStatusUpdateRequest;
+import org.akira.ladux.dto.request.ShippingAddressRequest;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.model.Cart;
 import org.akira.ladux.model.CartItem;
 import org.akira.ladux.model.Order;
 import org.akira.ladux.model.Product;
+import org.akira.ladux.model.ProductVariant;
 import org.akira.ladux.model.enums.OrderStatus;
 import org.akira.ladux.model.enums.PaymentProvider;
 import org.akira.ladux.repository.BrandRepository;
 import org.akira.ladux.repository.CartRepository;
 import org.akira.ladux.repository.CategoryRepository;
+import org.akira.ladux.repository.ColorRepository;
 import org.akira.ladux.repository.CouponRepository;
 import org.akira.ladux.repository.OrderRepository;
 import org.akira.ladux.repository.ProductRepository;
+import org.akira.ladux.repository.ProductVariantRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -50,30 +54,37 @@ class OrderServiceTest extends AbstractIntegrationTest {
     @Autowired OrderRepository orderRepository;
     @Autowired BrandRepository brandRepository;
     @Autowired CategoryRepository categoryRepository;
+    @Autowired ColorRepository colorRepository;
+    @Autowired ProductVariantRepository productVariantRepository;
 
     @PersistenceContext
     EntityManager em;
 
     private static final int USER_ID = 2; // user seed: quang_huy
 
-    private Product newProduct(int stock, String price) {
+    private ProductVariant newVariant(int stock, String price) {
         String unique = UUID.randomUUID().toString().substring(0, 8);
-        return productRepository.save(Product.builder()
+        Product product = productRepository.save(Product.builder()
                 .brand(brandRepository.findAll().get(0))
                 .category(categoryRepository.findAll().get(0))
-                .sku("IT-" + unique)
                 .name("IT Product " + unique)
                 .slug("it-product-" + unique)
-                .basePrice(new BigDecimal(price))
+                .isActive(true)
+                .build());
+        return productVariantRepository.save(ProductVariant.builder()
+                .product(product)
+                .color(colorRepository.findAll().get(0))
+                .sku("IT-" + unique)
+                .price(new BigDecimal(price))
                 .stockQuantity(stock)
                 .isActive(true)
                 .build());
     }
 
-    private void setCartSingleItem(int userId, Product product, int qty) {
+    private void setCartSingleItem(int userId, ProductVariant productVariant, int qty) {
         Cart cart = cartRepository.findByUserIdForUpdate(userId).orElseThrow();
         cart.getItems().clear();
-        cart.getItems().add(CartItem.builder().cart(cart).product(product).quantity(qty).build());
+        cart.getItems().add(CartItem.builder().cart(cart).productVariant(productVariant).quantity(qty).build());
         cartRepository.save(cart);
     }
 
@@ -84,23 +95,27 @@ class OrderServiceTest extends AbstractIntegrationTest {
                 .get(0);
     }
 
-    private int stockOf(int productId) {
-        return productRepository.findById(productId).orElseThrow().getStockQuantity();
+    private int stockOf(int productVariantId) {
+        return productVariantRepository.findById(productVariantId).orElseThrow().getStockQuantity();
+    }
+
+    private OrderRequest orderRequest(String couponCode, PaymentProvider paymentProvider) {
+        return new OrderRequest(couponCode, paymentProvider,
+                new ShippingAddressRequest("Test User", "0900000000", "123 Test Street", "Ward 1", "District 1", "HCM"));
     }
 
     @Test
     void checkout_deductsStock_clearsCart_andCreatesPendingOrder() {
-        Product product = newProduct(10, "500.00");
-        setCartSingleItem(USER_ID, product, 3);
+        ProductVariant productVariant = newVariant(10, "500.00");
+        setCartSingleItem(USER_ID, productVariant, 3);
 
-        orderService.createOrder(USER_ID,
-                new OrderRequest(null, PaymentProvider.COD, "123 Test Street"));
+        orderService.createOrder(USER_ID, orderRequest(null, PaymentProvider.COD));
 
         em.flush();
         em.clear();
 
         // 1. Ton kho giam dung 3.
-        assertEquals(7, stockOf(product.getId()), "Checkout phai tru kho theo so luong mua");
+        assertEquals(7, stockOf(productVariant.getId()), "Checkout phai tru kho theo so luong mua");
         // 2. Gio hang duoc don sach sau khi dat hang.
         assertTrue(cartRepository.findByUserId(USER_ID).getItems().isEmpty(), "Gio hang phai rong sau checkout");
         // 3. Don moi o trang thai PENDING, subTotal = 3 * 500.
@@ -111,12 +126,11 @@ class OrderServiceTest extends AbstractIntegrationTest {
 
     @Test
     void checkout_withValidCoupon_appliesDiscount_andIncrementsUsedCount() {
-        Product product = newProduct(10, "1000.00");
-        setCartSingleItem(USER_ID, product, 1);
+        ProductVariant productVariant = newVariant(10, "1000.00");
+        setCartSingleItem(USER_ID, productVariant, 1);
         int usedBefore = couponRepository.findByCode("GIAM10").getUsedCount();
 
-        orderService.createOrder(USER_ID,
-                new OrderRequest("GIAM10", PaymentProvider.COD, "addr"));
+        orderService.createOrder(USER_ID, orderRequest("GIAM10", PaymentProvider.COD));
 
         em.flush();
         em.clear();
@@ -131,18 +145,17 @@ class OrderServiceTest extends AbstractIntegrationTest {
 
     @Test
     void cancelOrder_restocksProduct_andRollsBackCouponUsage() {
-        Product product = newProduct(10, "1000.00");
-        setCartSingleItem(USER_ID, product, 4);
+        ProductVariant productVariant = newVariant(10, "1000.00");
+        setCartSingleItem(USER_ID, productVariant, 4);
         int usedBefore = couponRepository.findByCode("GIAM10").getUsedCount();
 
-        orderService.createOrder(USER_ID,
-                new OrderRequest("GIAM10", PaymentProvider.COD, "addr"));
+        orderService.createOrder(USER_ID, orderRequest("GIAM10", PaymentProvider.COD));
 
         em.flush();
         em.clear();
 
         Order order = newestOrderOf(USER_ID);
-        assertEquals(6, stockOf(product.getId()), "Sau checkout: 10 - 4 = 6");
+        assertEquals(6, stockOf(productVariant.getId()), "Sau checkout: 10 - 4 = 6");
         assertEquals(usedBefore + 1, couponRepository.findByCode("GIAM10").getUsedCount());
 
         orderService.updateOrderStatus(order.getId(),
@@ -151,7 +164,7 @@ class OrderServiceTest extends AbstractIntegrationTest {
         em.flush();
         em.clear();
 
-        assertEquals(10, stockOf(product.getId()), "Huy don -> hoan kho ve 10");
+        assertEquals(10, stockOf(productVariant.getId()), "Huy don -> hoan kho ve 10");
         assertEquals(usedBefore, couponRepository.findByCode("GIAM10").getUsedCount(), "Huy don -> hoan luot coupon");
         assertEquals(OrderStatus.CANCELLED, orderRepository.findById(order.getId()).orElseThrow().getStatus());
     }
@@ -164,25 +177,25 @@ class OrderServiceTest extends AbstractIntegrationTest {
         em.flush();
 
         assertThrows(BusinessRuleException.class, () ->
-                orderService.createOrder(USER_ID, new OrderRequest(null, PaymentProvider.COD, "addr")));
+                orderService.createOrder(USER_ID, orderRequest(null, PaymentProvider.COD)));
     }
 
     @Test
     void checkout_setsPaymentExpiry_forOnlineProvider_butNotForCod() {
-        Product product = newProduct(10, "500.00");
+        ProductVariant productVariant = newVariant(10, "500.00");
 
         // COD: khong co han thanh toan.
-        setCartSingleItem(USER_ID, product, 1);
-        orderService.createOrder(USER_ID, new OrderRequest(null, PaymentProvider.COD, "addr"));
+        setCartSingleItem(USER_ID, productVariant, 1);
+        orderService.createOrder(USER_ID, orderRequest(null, PaymentProvider.COD));
         em.flush();
         em.clear();
         assertNotNull(newestOrderOf(USER_ID));
         assertTrue(newestOrderOf(USER_ID).getPaymentExpiresAt() == null, "COD khong dat han thanh toan");
 
         // VNPAY: co han thanh toan.
-        Product product2 = newProduct(10, "500.00");
-        setCartSingleItem(USER_ID, product2, 1);
-        orderService.createOrder(USER_ID, new OrderRequest(null, PaymentProvider.VNPAY, "addr"));
+        ProductVariant productVariant2 = newVariant(10, "500.00");
+        setCartSingleItem(USER_ID, productVariant2, 1);
+        orderService.createOrder(USER_ID, orderRequest(null, PaymentProvider.VNPAY));
         em.flush();
         em.clear();
         assertNotNull(newestOrderOf(USER_ID).getPaymentExpiresAt(), "VNPAY phai dat han thanh toan");

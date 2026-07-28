@@ -1,0 +1,748 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/Wishlist.java",
+      "type": "file",
+      "name": "Wishlist.java",
+      "filePath": "src/main/java/org/akira/ladux/model/Wishlist.java",
+      "summary": "JPA entity representing a user-product wishlist entry with a uniqueness constraint to prevent duplicate saved products.",
+      "tags": [
+        "data-model",
+        "wishlist",
+        "jpa",
+        "persistence"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Java Spring backend source using annotations, repositories, services, and DTO mapping patterns."
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/enums/RoleName.java",
+      "type": "file",
+      "name": "RoleName.java",
+      "filePath": "src/main/java/org/akira/ladux/model/enums/RoleName.java",
+      "summary": "Role enum defining the supported application authorities for customers and administrators.",
+      "tags": [
+        "data-model",
+        "security",
+        "authorization",
+        "enum"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Java Spring backend source using annotations, repositories, services, and DTO mapping patterns."
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/repository/RefreshTokenRepository.java",
+      "type": "file",
+      "name": "RefreshTokenRepository.java",
+      "filePath": "src/main/java/org/akira/ladux/repository/RefreshTokenRepository.java",
+      "summary": "Spring Data repository for refresh tokens, including token lookup with user roles and bulk revocation by user.",
+      "tags": [
+        "repository",
+        "security",
+        "refresh-token",
+        "persistence"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Java Spring backend source using annotations, repositories, services, and DTO mapping patterns."
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/repository/RoleRepository.java",
+      "type": "file",
+      "name": "RoleRepository.java",
+      "filePath": "src/main/java/org/akira/ladux/repository/RoleRepository.java",
+      "summary": "Spring Data repository for role lookup by role name during registration and account management.",
+      "tags": [
+        "repository",
+        "security",
+        "authorization",
+        "persistence"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Java Spring backend source using annotations, repositories, services, and DTO mapping patterns."
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/repository/UserRepository.java",
+      "type": "file",
+      "name": "UserRepository.java",
+      "filePath": "src/main/java/org/akira/ladux/repository/UserRepository.java",
+      "summary": "Spring Data repository for user queries with role eager-loading, uniqueness checks, active-user pagination, and token-version invalidation.",
+      "tags": [
+        "repository",
+        "user-management",
+        "security",
+        "persistence"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Java Spring backend source using annotations, repositories, services, and DTO mapping patterns."
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/repository/WishlistRepository.java",
+      "type": "file",
+      "name": "WishlistRepository.java",
+      "filePath": "src/main/java/org/akira/ladux/repository/WishlistRepository.java",
+      "summary": "Spring Data repository for wishlist lookups by user/product with entity graphs optimized for product display data.",
+      "tags": [
+        "repository",
+        "wishlist",
+        "persistence",
+        "query"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Java Spring backend source using annotations, repositories, services, and DTO mapping patterns."
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "type": "file",
+      "name": "AuthCookieService.java",
+      "filePath": "src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "summary": "Builds HttpOnly access-token and refresh-token cookies using configurable names, paths, SameSite, secure, and expiration settings.",
+      "tags": [
+        "service",
+        "security",
+        "cookies",
+        "authentication"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Java Spring backend source using annotations, repositories, services, and DTO mapping patterns."
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/service/FileStorageService.java",
+      "type": "file",
+      "name": "FileStorageService.java",
+      "filePath": "src/main/java/org/akira/ladux/service/FileStorageService.java",
+      "summary": "Defines the application contract for storing uploaded files and removing local upload URLs.",
+      "tags": [
+        "service",
+        "file-storage",
+        "interface",
+        "uploads"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Java Spring backend source using annotations, repositories, services, and DTO mapping patterns."
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "type": "file",
+      "name": "FileStorageServiceImpl.java",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "summary": "Stores validated image uploads under local upload directories and removes previously stored local files safely.",
+      "tags": [
+        "service",
+        "file-storage",
+        "uploads",
+        "validation"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Java Spring backend source using annotations, repositories, services, and DTO mapping patterns."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/Wishlist.java:Wishlist",
+      "type": "class",
+      "name": "Wishlist",
+      "filePath": "src/main/java/org/akira/ladux/model/Wishlist.java",
+      "lineRange": [
+        6,
+        30
+      ],
+      "summary": "Wishlist entity linking a user to a product with lazy relationships and database uniqueness on the pair.",
+      "tags": [
+        "data-model",
+        "wishlist",
+        "jpa"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/enums/RoleName.java:RoleName",
+      "type": "class",
+      "name": "RoleName",
+      "filePath": "src/main/java/org/akira/ladux/model/enums/RoleName.java",
+      "lineRange": [
+        3,
+        8
+      ],
+      "summary": "Enumeration of built-in role names used by security and role assignment logic.",
+      "tags": [
+        "enum",
+        "security",
+        "authorization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/repository/RefreshTokenRepository.java:RefreshTokenRepository",
+      "type": "class",
+      "name": "RefreshTokenRepository",
+      "filePath": "src/main/java/org/akira/ladux/repository/RefreshTokenRepository.java",
+      "lineRange": [
+        12,
+        21
+      ],
+      "summary": "Repository interface for finding refresh tokens with user roles and revoking outstanding user tokens.",
+      "tags": [
+        "repository",
+        "refresh-token",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/repository/RoleRepository.java:RoleRepository",
+      "type": "class",
+      "name": "RoleRepository",
+      "filePath": "src/main/java/org/akira/ladux/repository/RoleRepository.java",
+      "lineRange": [
+        8,
+        10
+      ],
+      "summary": "Repository interface for resolving Role entities by RoleName.",
+      "tags": [
+        "repository",
+        "security",
+        "authorization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/repository/UserRepository.java:UserRepository",
+      "type": "class",
+      "name": "UserRepository",
+      "filePath": "src/main/java/org/akira/ladux/repository/UserRepository.java",
+      "lineRange": [
+        17,
+        51
+      ],
+      "summary": "Repository interface exposing user lookup, role eager-loading, uniqueness checks, pessimistic locking, and token-version updates.",
+      "tags": [
+        "repository",
+        "user-management",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/repository/WishlistRepository.java:WishlistRepository",
+      "type": "class",
+      "name": "WishlistRepository",
+      "filePath": "src/main/java/org/akira/ladux/repository/WishlistRepository.java",
+      "lineRange": [
+        9,
+        20
+      ],
+      "summary": "Repository interface for wishlist queries with entity graphs and duplicate checks.",
+      "tags": [
+        "repository",
+        "wishlist",
+        "query"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/service/AuthCookieService.java:AuthCookieService",
+      "type": "class",
+      "name": "AuthCookieService",
+      "filePath": "src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "lineRange": [
+        14,
+        77
+      ],
+      "summary": "Service that centralizes access and refresh cookie creation and clearing for token-based authentication.",
+      "tags": [
+        "service",
+        "security",
+        "cookies"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:accessCookieName",
+      "type": "function",
+      "name": "accessCookieName",
+      "filePath": "src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "lineRange": [
+        46,
+        48
+      ],
+      "summary": "Returns the configured access-token cookie name used by authentication responses.",
+      "tags": [
+        "accessor",
+        "security",
+        "cookies"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:refreshCookieName",
+      "type": "function",
+      "name": "refreshCookieName",
+      "filePath": "src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "lineRange": [
+        50,
+        52
+      ],
+      "summary": "Returns the configured refresh-token cookie name used by refresh and logout flows.",
+      "tags": [
+        "accessor",
+        "security",
+        "cookies"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:createAccessCookie",
+      "type": "function",
+      "name": "createAccessCookie",
+      "filePath": "src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "lineRange": [
+        54,
+        56
+      ],
+      "summary": "Creates an HttpOnly access-token cookie with the configured path, SameSite, secure flag, and max age.",
+      "tags": [
+        "factory",
+        "security",
+        "cookies"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:clearAccessCookie",
+      "type": "function",
+      "name": "clearAccessCookie",
+      "filePath": "src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "lineRange": [
+        58,
+        60
+      ],
+      "summary": "Creates an expired access-token cookie so clients remove the stored access token.",
+      "tags": [
+        "factory",
+        "security",
+        "cookies"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:createRefreshCookie",
+      "type": "function",
+      "name": "createRefreshCookie",
+      "filePath": "src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "lineRange": [
+        62,
+        64
+      ],
+      "summary": "Creates an HttpOnly refresh-token cookie scoped to the configured refresh endpoint path.",
+      "tags": [
+        "factory",
+        "security",
+        "cookies"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:clearRefreshCookie",
+      "type": "function",
+      "name": "clearRefreshCookie",
+      "filePath": "src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "lineRange": [
+        66,
+        68
+      ],
+      "summary": "Creates an expired refresh-token cookie so clients remove the stored refresh token.",
+      "tags": [
+        "factory",
+        "security",
+        "cookies"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/service/FileStorageService.java:FileStorageService",
+      "type": "class",
+      "name": "FileStorageService",
+      "filePath": "src/main/java/org/akira/ladux/service/FileStorageService.java",
+      "lineRange": [
+        9,
+        22
+      ],
+      "summary": "Interface describing upload storage and local-file deletion operations.",
+      "tags": [
+        "interface",
+        "file-storage",
+        "uploads"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java:FileStorageServiceImpl",
+      "type": "class",
+      "name": "FileStorageServiceImpl",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "lineRange": [
+        17,
+        95
+      ],
+      "summary": "Concrete local filesystem image storage service with content-type validation and path traversal safeguards.",
+      "tags": [
+        "service",
+        "file-storage",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java:store",
+      "type": "function",
+      "name": "store",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "lineRange": [
+        33,
+        64
+      ],
+      "summary": "Validates an uploaded image, normalizes its target directory, writes it under the upload root, and returns a public upload URL.",
+      "tags": [
+        "file-storage",
+        "uploads",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java:deleteIfLocal",
+      "type": "function",
+      "name": "deleteIfLocal",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "lineRange": [
+        66,
+        82
+      ],
+      "summary": "Deletes an existing local upload file only when the public URL belongs under the configured uploads path.",
+      "tags": [
+        "file-storage",
+        "cleanup",
+        "safety"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java:normalizeSubDir",
+      "type": "function",
+      "name": "normalizeSubDir",
+      "filePath": "src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "lineRange": [
+        85,
+        94
+      ],
+      "summary": "Validates upload subdirectories as a single safe path segment to prevent traversal or hidden path writes.",
+      "tags": [
+        "file-storage",
+        "validation",
+        "security"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/Wishlist.java",
+      "target": "class:src/main/java/org/akira/ladux/model/Wishlist.java:Wishlist",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/Wishlist.java",
+      "target": "class:src/main/java/org/akira/ladux/model/Wishlist.java:Wishlist",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/enums/RoleName.java",
+      "target": "class:src/main/java/org/akira/ladux/model/enums/RoleName.java:RoleName",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/enums/RoleName.java",
+      "target": "class:src/main/java/org/akira/ladux/model/enums/RoleName.java:RoleName",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/RefreshTokenRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/RefreshTokenRepository.java:RefreshTokenRepository",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/RefreshTokenRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/RefreshTokenRepository.java:RefreshTokenRepository",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/RoleRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/RoleRepository.java:RoleRepository",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/RoleRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/RoleRepository.java:RoleRepository",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/UserRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/UserRepository.java:UserRepository",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/UserRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/UserRepository.java:UserRepository",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/WishlistRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/WishlistRepository.java:WishlistRepository",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/WishlistRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/WishlistRepository.java:WishlistRepository",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "target": "class:src/main/java/org/akira/ladux/service/AuthCookieService.java:AuthCookieService",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "target": "class:src/main/java/org/akira/ladux/service/AuthCookieService.java:AuthCookieService",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "target": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:accessCookieName",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "target": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:accessCookieName",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "target": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:refreshCookieName",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "target": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:refreshCookieName",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "target": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:createAccessCookie",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "target": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:createAccessCookie",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "target": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:clearAccessCookie",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "target": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:clearAccessCookie",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "target": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:createRefreshCookie",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "target": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:createRefreshCookie",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "target": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:clearRefreshCookie",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/AuthCookieService.java",
+      "target": "function:src/main/java/org/akira/ladux/service/AuthCookieService.java:clearRefreshCookie",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/FileStorageService.java",
+      "target": "class:src/main/java/org/akira/ladux/service/FileStorageService.java:FileStorageService",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/FileStorageService.java",
+      "target": "class:src/main/java/org/akira/ladux/service/FileStorageService.java:FileStorageService",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "target": "class:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java:FileStorageServiceImpl",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "target": "class:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java:FileStorageServiceImpl",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java:store",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java:store",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java:deleteIfLocal",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java:deleteIfLocal",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "target": "function:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java:normalizeSubDir",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/RefreshTokenRepository.java",
+      "target": "file:src/main/java/org/akira/ladux/model/RefreshToken.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/RoleRepository.java",
+      "target": "file:src/main/java/org/akira/ladux/model/Role.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/RoleRepository.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/RoleName.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/UserRepository.java",
+      "target": "file:src/main/java/org/akira/ladux/model/User.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/WishlistRepository.java",
+      "target": "file:src/main/java/org/akira/ladux/model/Wishlist.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/exception/BusinessRuleException.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "target": "file:src/main/java/org/akira/ladux/service/FileStorageService.java",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/impl/FileStorageServiceImpl.java",
+      "target": "file:src/test/java/org/akira/ladux/service/FileStorageServiceImplTest.java",
+      "type": "tested_by",
+      "weight": 0.5,
+      "direction": "forward"
+    }
+  ]
+}

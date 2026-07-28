@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 // Don hang — aggregate root cua luong checkout.
 // Tien te: subTotal (truoc giam), discountAmount, finalAmount (sau giam).
@@ -30,6 +31,7 @@ import lombok.ToString;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EnableJpaAuditing
 public class Order {
 
     @Id
@@ -65,6 +67,8 @@ public class Order {
     private ShippingAddress shippingAddress;
 
     private String trackingNumber;
+
+    private String carrierName;
 
     @Column(nullable = false, updatable = false)
     @CreatedDate

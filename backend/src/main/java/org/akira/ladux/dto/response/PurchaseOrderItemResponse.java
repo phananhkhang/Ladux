@@ -7,7 +7,7 @@ import org.akira.ladux.model.PurchaseOrderItem;
 
 public record PurchaseOrderItemResponse(
         Integer id,
-        Integer productId,
+        Integer productVariantId,
         String productName,
         Integer quantity,
         BigDecimal costPrice,
@@ -20,8 +20,8 @@ public record PurchaseOrderItemResponse(
         }
         return new PurchaseOrderItemResponse(
                 item.getId(),
-                item.getProduct() == null ? null : item.getProduct().getId(),
-                item.getProduct() == null ? null : item.getProduct().getName(),
+                item.getProductVariant() == null ? null : item.getProductVariant().getId(),
+                item.getProductVariant() == null ? null : item.getProductVariant().getProduct().getName(),
                 item.getQuantity(),
                 item.getCostPrice(),
                 item.getReceivedQuantity(),

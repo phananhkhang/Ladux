@@ -1,0 +1,5152 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 34,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 34,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 34,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "src/main/java/org/akira/ladux/controller/admin/AdminColorController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 40,
+      "nonEmptyLines": 36,
+      "functions": [
+        {
+          "name": "addColor",
+          "startLine": 25,
+          "endLine": 29,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "updateColor",
+          "startLine": 30,
+          "endLine": 34,
+          "params": [
+            "id",
+            "request"
+          ]
+        },
+        {
+          "name": "deleteColor",
+          "startLine": 35,
+          "endLine": 39,
+          "params": [
+            "id"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AdminColorController",
+          "startLine": 18,
+          "endLine": 40,
+          "methods": [
+            "addColor",
+            "updateColor",
+            "deleteColor"
+          ],
+          "properties": [
+            "colorService"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "addColor",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "updateColor",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "deleteColor",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "AdminColorController",
+          "line": 18,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "addColor",
+          "callee": "colorService.addColor",
+          "lineNumber": 27
+        },
+        {
+          "caller": "addColor",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 28
+        },
+        {
+          "caller": "addColor",
+          "callee": "ColorResponse.fromEntity",
+          "lineNumber": 28
+        },
+        {
+          "caller": "updateColor",
+          "callee": "colorService.updateColor",
+          "lineNumber": 32
+        },
+        {
+          "caller": "updateColor",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 33
+        },
+        {
+          "caller": "updateColor",
+          "callee": "ColorResponse.fromEntity",
+          "lineNumber": 33
+        },
+        {
+          "caller": "deleteColor",
+          "callee": "colorService.deleteColor",
+          "lineNumber": 37
+        },
+        {
+          "caller": "deleteColor",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 38
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/controller/admin/AdminProductController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 37,
+      "nonEmptyLines": 32,
+      "functions": [
+        {
+          "name": "createProduct",
+          "startLine": 19,
+          "endLine": 23,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "updateProduct",
+          "startLine": 25,
+          "endLine": 29,
+          "params": [
+            "id",
+            "request"
+          ]
+        },
+        {
+          "name": "deleteProductById",
+          "startLine": 31,
+          "endLine": 36,
+          "params": [
+            "id"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AdminProductController",
+          "startLine": 13,
+          "endLine": 37,
+          "methods": [
+            "createProduct",
+            "updateProduct",
+            "deleteProductById"
+          ],
+          "properties": [
+            "service"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "createProduct",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "updateProduct",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "deleteProductById",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "AdminProductController",
+          "line": 13,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "createProduct",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 22
+        },
+        {
+          "caller": "createProduct",
+          "callee": "service.createProduct",
+          "lineNumber": 22
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 28
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "service.updateProduct",
+          "lineNumber": 28
+        },
+        {
+          "caller": "deleteProductById",
+          "callee": "service.deleteProductById",
+          "lineNumber": 34
+        },
+        {
+          "caller": "deleteProductById",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 35
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/controller/admin/AdminProductVariantController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 53,
+      "nonEmptyLines": 51,
+      "functions": [
+        {
+          "name": "addProductVariant",
+          "startLine": 17,
+          "endLine": 31,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "updateProductVariant",
+          "startLine": 32,
+          "endLine": 46,
+          "params": [
+            "id",
+            "request"
+          ]
+        },
+        {
+          "name": "deleteProductVariant",
+          "startLine": 47,
+          "endLine": 52,
+          "params": [
+            "variantId"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AdminProductVariantController",
+          "startLine": 11,
+          "endLine": 53,
+          "methods": [
+            "addProductVariant",
+            "updateProductVariant",
+            "deleteProductVariant"
+          ],
+          "properties": [
+            "service"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "addProductVariant",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "updateProductVariant",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "deleteProductVariant",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "AdminProductVariantController",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "addProductVariant",
+          "callee": "service.addProductVariant",
+          "lineNumber": 20
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "request.getProductId",
+          "lineNumber": 21
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "request.getColorId",
+          "lineNumber": 22
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "request.getRam",
+          "lineNumber": 23
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "request.getRom",
+          "lineNumber": 24
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "request.getPrice",
+          "lineNumber": 25
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "request.getDiscountPrice",
+          "lineNumber": 26
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "request.getStockQuantity",
+          "lineNumber": 27
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "request.isActive",
+          "lineNumber": 28
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 30
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "service.updateProductVariant",
+          "lineNumber": 35
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "request.getColorId",
+          "lineNumber": 37
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "request.getRam",
+          "lineNumber": 38
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "request.getRom",
+          "lineNumber": 39
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "request.getPrice",
+          "lineNumber": 40
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "request.getDiscountPrice",
+          "lineNumber": 41
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "request.getStockQuantity",
+          "lineNumber": 42
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "request.isActive",
+          "lineNumber": 43
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 45
+        },
+        {
+          "caller": "deleteProductVariant",
+          "callee": "service.deleteProductVariant",
+          "lineNumber": 50
+        },
+        {
+          "caller": "deleteProductVariant",
+          "callee": "ResponseEntity.noContent().build",
+          "lineNumber": 51
+        },
+        {
+          "caller": "deleteProductVariant",
+          "callee": "ResponseEntity.noContent",
+          "lineNumber": 51
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/controller/user/ProductController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 53,
+      "nonEmptyLines": 46,
+      "functions": [
+        {
+          "name": "getAllProducts",
+          "startLine": 18,
+          "endLine": 27,
+          "params": [
+            "search",
+            "pageable"
+          ]
+        },
+        {
+          "name": "getProductById",
+          "startLine": 29,
+          "endLine": 32,
+          "params": [
+            "id"
+          ]
+        },
+        {
+          "name": "getProductsByBrandId",
+          "startLine": 34,
+          "endLine": 37,
+          "params": [
+            "brandId",
+            "pageable"
+          ]
+        },
+        {
+          "name": "getProductsByCategoryId",
+          "startLine": 39,
+          "endLine": 42,
+          "params": [
+            "categoryId",
+            "pageable"
+          ]
+        },
+        {
+          "name": "getActiveProducts",
+          "startLine": 44,
+          "endLine": 47,
+          "params": [
+            "pageable"
+          ]
+        },
+        {
+          "name": "getProductVariantById",
+          "startLine": 49,
+          "endLine": 52,
+          "params": [
+            "variantId"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProductController",
+          "startLine": 12,
+          "endLine": 53,
+          "methods": [
+            "getAllProducts",
+            "getProductById",
+            "getProductsByBrandId",
+            "getProductsByCategoryId",
+            "getActiveProducts",
+            "getProductVariantById"
+          ],
+          "properties": [
+            "service"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getAllProducts",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "getProductById",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "getProductsByBrandId",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "getProductsByCategoryId",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "getActiveProducts",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "getProductVariantById",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "ProductController",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getAllProducts",
+          "callee": "search.isBlank",
+          "lineNumber": 23
+        },
+        {
+          "caller": "getAllProducts",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 24
+        },
+        {
+          "caller": "getAllProducts",
+          "callee": "service.getAllProducts",
+          "lineNumber": 24
+        },
+        {
+          "caller": "getAllProducts",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 26
+        },
+        {
+          "caller": "getAllProducts",
+          "callee": "service.searchProducts",
+          "lineNumber": 26
+        },
+        {
+          "caller": "getProductById",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 31
+        },
+        {
+          "caller": "getProductById",
+          "callee": "service.getProductById",
+          "lineNumber": 31
+        },
+        {
+          "caller": "getProductsByBrandId",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 36
+        },
+        {
+          "caller": "getProductsByBrandId",
+          "callee": "service.getProductsByBrandId",
+          "lineNumber": 36
+        },
+        {
+          "caller": "getProductsByCategoryId",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 41
+        },
+        {
+          "caller": "getProductsByCategoryId",
+          "callee": "service.getProductsByCategoryId",
+          "lineNumber": 41
+        },
+        {
+          "caller": "getActiveProducts",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getActiveProducts",
+          "callee": "service.getActiveProducts",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getProductVariantById",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 51
+        },
+        {
+          "caller": "getProductVariantById",
+          "callee": "service.getProductVariantById",
+          "lineNumber": 51
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 7,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/LineDraft.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 15,
+      "nonEmptyLines": 12,
+      "classes": [
+        {
+          "name": "LineDraft",
+          "startLine": 10,
+          "endLine": 15,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "LineDraft",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/request/ColorRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 13,
+      "nonEmptyLines": 11,
+      "classes": [
+        {
+          "name": "ColorRequest",
+          "startLine": 6,
+          "endLine": 13,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ColorRequest",
+          "line": 6,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/request/OrderLineRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 14,
+      "nonEmptyLines": 11,
+      "classes": [
+        {
+          "name": "OrderLineRequest",
+          "startLine": 6,
+          "endLine": 14,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "OrderLineRequest",
+          "line": 6,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/request/ProductRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 50,
+      "nonEmptyLines": 38,
+      "classes": [
+        {
+          "name": "ProductRequest",
+          "startLine": 13,
+          "endLine": 50,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ProductRequest",
+          "line": 13,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/request/ProductVariantRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 20,
+      "nonEmptyLines": 16,
+      "classes": [
+        {
+          "name": "ProductVariantRequest",
+          "startLine": 9,
+          "endLine": 20,
+          "methods": [],
+          "properties": [
+            "productId",
+            "colorId",
+            "ram",
+            "rom",
+            "price",
+            "discountPrice",
+            "stockQuantity",
+            "isActive"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ProductVariantRequest",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/response/ColorResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 22,
+      "nonEmptyLines": 19,
+      "functions": [
+        {
+          "name": "fromEntity",
+          "startLine": 12,
+          "endLine": 21,
+          "params": [
+            "color"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ColorResponse",
+          "startLine": 7,
+          "endLine": 22,
+          "methods": [
+            "fromEntity"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "fromEntity",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "ColorResponse",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "fromEntity",
+          "callee": "new ColorResponse",
+          "lineNumber": 16
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "color.getId",
+          "lineNumber": 17
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "color.getName",
+          "lineNumber": 18
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "color.getHexCode",
+          "lineNumber": 19
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/response/ProductResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 68,
+      "nonEmptyLines": 65,
+      "functions": [
+        {
+          "name": "fromEntity",
+          "startLine": 25,
+          "endLine": 46,
+          "params": [
+            "product"
+          ]
+        },
+        {
+          "name": "summaryFromEntity",
+          "startLine": 48,
+          "endLine": 67,
+          "params": [
+            "product"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProductResponse",
+          "startLine": 8,
+          "endLine": 68,
+          "methods": [
+            "fromEntity",
+            "summaryFromEntity"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "fromEntity",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "summaryFromEntity",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "ProductResponse",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "fromEntity",
+          "callee": "new ProductResponse",
+          "lineNumber": 27
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getId",
+          "lineNumber": 28
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getBrand",
+          "lineNumber": 29
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "BrandResponse.fromEntity",
+          "lineNumber": 29
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getBrand",
+          "lineNumber": 29
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getCategory",
+          "lineNumber": 30
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "CategoryResponse.fromEntity",
+          "lineNumber": 30
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getCategory",
+          "lineNumber": 30
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getName",
+          "lineNumber": 31
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getSlug",
+          "lineNumber": 32
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getCpu",
+          "lineNumber": 33
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getGpu",
+          "lineNumber": 34
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getDisplay",
+          "lineNumber": 35
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getBattery",
+          "lineNumber": 36
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getWeight",
+          "lineNumber": 37
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getNumberOfFans",
+          "lineNumber": 38
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getOs",
+          "lineNumber": 39
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.isActive",
+          "lineNumber": 40
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getCreatedAt",
+          "lineNumber": 41
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getImages",
+          "lineNumber": 42
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "List.of",
+          "lineNumber": 42
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getImages().stream()\r\n                        .map(ProductImageResponse::fromEntity).toList",
+          "lineNumber": 42
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getImages().stream().map",
+          "lineNumber": 42
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getImages().stream",
+          "lineNumber": 42
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "product.getImages",
+          "lineNumber": 42
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "new ProductResponse",
+          "lineNumber": 50
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.getId",
+          "lineNumber": 51
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.getBrand",
+          "lineNumber": 52
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "BrandResponse.fromEntity",
+          "lineNumber": 52
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.getBrand",
+          "lineNumber": 52
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.getCategory",
+          "lineNumber": 53
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "CategoryResponse.fromEntity",
+          "lineNumber": 53
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.getCategory",
+          "lineNumber": 53
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.getName",
+          "lineNumber": 54
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.getSlug",
+          "lineNumber": 55
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.getCpu",
+          "lineNumber": 56
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.getGpu",
+          "lineNumber": 57
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.getDisplay",
+          "lineNumber": 58
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.getBattery",
+          "lineNumber": 59
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.getWeight",
+          "lineNumber": 60
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.getNumberOfFans",
+          "lineNumber": 61
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.getOs",
+          "lineNumber": 62
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.isActive",
+          "lineNumber": 63
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "product.getCreatedAt",
+          "lineNumber": 64
+        },
+        {
+          "caller": "summaryFromEntity",
+          "callee": "List.of",
+          "lineNumber": 65
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/response/ProductVariantResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 40,
+      "nonEmptyLines": 35,
+      "functions": [
+        {
+          "name": "fromEntity",
+          "startLine": 23,
+          "endLine": 39,
+          "params": [
+            "variant"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProductVariantResponse",
+          "startLine": 9,
+          "endLine": 40,
+          "methods": [
+            "fromEntity"
+          ],
+          "properties": [
+            "serialVersionUID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "fromEntity",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "ProductVariantResponse",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "fromEntity",
+          "callee": "new ProductVariantResponse",
+          "lineNumber": 27
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "variant.getId",
+          "lineNumber": 28
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "variant.getProduct",
+          "lineNumber": 29
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "variant.getProduct().getId",
+          "lineNumber": 29
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "variant.getProduct",
+          "lineNumber": 29
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "variant.getSku",
+          "lineNumber": 30
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "variant.getColor",
+          "lineNumber": 31
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "variant.getRam",
+          "lineNumber": 32
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "variant.getRom",
+          "lineNumber": 33
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "variant.getPrice",
+          "lineNumber": 34
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "variant.getDiscountPrice",
+          "lineNumber": 35
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "variant.getStockQuantity",
+          "lineNumber": 36
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "variant.isActive",
+          "lineNumber": 37
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/model/Color.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 21,
+      "nonEmptyLines": 19,
+      "classes": [
+        {
+          "name": "Color",
+          "startLine": 6,
+          "endLine": 21,
+          "methods": [],
+          "properties": [
+            "id",
+            "name",
+            "hexCode"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Color",
+          "line": 6,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/model/Product.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 113,
+      "nonEmptyLines": 94,
+      "functions": [
+        {
+          "name": "addVariant",
+          "startLine": 104,
+          "endLine": 107,
+          "params": [
+            "variant"
+          ]
+        },
+        {
+          "name": "removeVariant",
+          "startLine": 109,
+          "endLine": 112,
+          "params": [
+            "variant"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Product",
+          "startLine": 28,
+          "endLine": 113,
+          "methods": [
+            "addVariant",
+            "removeVariant"
+          ],
+          "properties": [
+            "id",
+            "brand",
+            "category",
+            "name",
+            "slug",
+            "description",
+            "cpu",
+            "gpu",
+            "display",
+            "battery",
+            "weight",
+            "numberOfFans",
+            "os",
+            "isActive",
+            "createdAt",
+            "updatedAt",
+            "reviews",
+            "wishlists",
+            "variants",
+            "images"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "addVariant",
+          "line": 104,
+          "isDefault": false
+        },
+        {
+          "name": "removeVariant",
+          "line": 109,
+          "isDefault": false
+        },
+        {
+          "name": "Product",
+          "line": 28,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "addVariant",
+          "callee": "variants.add",
+          "lineNumber": 105
+        },
+        {
+          "caller": "addVariant",
+          "callee": "variant.setProduct",
+          "lineNumber": 106
+        },
+        {
+          "caller": "removeVariant",
+          "callee": "variants.remove",
+          "lineNumber": 110
+        },
+        {
+          "caller": "removeVariant",
+          "callee": "variant.setProduct",
+          "lineNumber": 111
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/model/ProductVariant.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 65,
+      "nonEmptyLines": 50,
+      "classes": [
+        {
+          "name": "ProductVariant",
+          "startLine": 10,
+          "endLine": 65,
+          "methods": [],
+          "properties": [
+            "id",
+            "product",
+            "sku",
+            "color",
+            "ram",
+            "rom",
+            "price",
+            "discountPrice",
+            "stockQuantity",
+            "isActive",
+            "cartItems",
+            "orderItems"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ProductVariant",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/repository/ColorRepository.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 10,
+      "nonEmptyLines": 8,
+      "classes": [
+        {
+          "name": "ColorRepository",
+          "startLine": 8,
+          "endLine": 10,
+          "methods": [
+            "existsByName"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ColorRepository",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/repository/ProductVariantRepository.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 19,
+      "nonEmptyLines": 15,
+      "classes": [
+        {
+          "name": "ProductVariantRepository",
+          "startLine": 10,
+          "endLine": 19,
+          "methods": [
+            "existsBySku",
+            "deductStockAtomically",
+            "existsByColorId"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ProductVariantRepository",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/ColorService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 12,
+      "nonEmptyLines": 8,
+      "classes": [
+        {
+          "name": "ColorService",
+          "startLine": 6,
+          "endLine": 12,
+          "methods": [
+            "addColor",
+            "updateColor",
+            "deleteColor"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ColorService",
+          "line": 6,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/InventoryService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 11,
+      "nonEmptyLines": 7,
+      "classes": [
+        {
+          "name": "InventoryService",
+          "startLine": 8,
+          "endLine": 10,
+          "methods": [
+            "reserveStockAndPriceLines"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "InventoryService",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/PricingService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 11,
+      "nonEmptyLines": 7,
+      "classes": [
+        {
+          "name": "PricingService",
+          "startLine": 8,
+          "endLine": 10,
+          "methods": [
+            "sellingPrice"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "PricingService",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/ProductService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 31,
+      "nonEmptyLines": 19,
+      "classes": [
+        {
+          "name": "ProductService",
+          "startLine": 9,
+          "endLine": 31,
+          "methods": [
+            "getAllProducts",
+            "getProductById",
+            "getProductBySlug",
+            "getProductsByBrandId",
+            "getProductsByCategoryId",
+            "getActiveProducts",
+            "searchProducts",
+            "createProduct",
+            "updateProduct",
+            "deleteProductById",
+            "getProductVariantById"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ProductService",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/ProductVariantService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 14,
+      "nonEmptyLines": 9,
+      "classes": [
+        {
+          "name": "ProductVariantService",
+          "startLine": 8,
+          "endLine": 14,
+          "methods": [
+            "addProductVariant",
+            "updateProductVariant",
+            "deleteProductVariant"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ProductVariantService",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/impl/ColorServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 61,
+      "nonEmptyLines": 59,
+      "functions": [
+        {
+          "name": "addColor",
+          "startLine": 18,
+          "endLine": 36,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "updateColor",
+          "startLine": 37,
+          "endLine": 50,
+          "params": [
+            "id",
+            "request"
+          ]
+        },
+        {
+          "name": "deleteColor",
+          "startLine": 51,
+          "endLine": 60,
+          "params": [
+            "id"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ColorServiceImpl",
+          "startLine": 13,
+          "endLine": 61,
+          "methods": [
+            "addColor",
+            "updateColor",
+            "deleteColor"
+          ],
+          "properties": [
+            "colorRepository",
+            "productVariantRepository"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "addColor",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "updateColor",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "deleteColor",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "ColorServiceImpl",
+          "line": 13,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "addColor",
+          "callee": "request.name",
+          "lineNumber": 21
+        },
+        {
+          "caller": "addColor",
+          "callee": "request.name().isBlank",
+          "lineNumber": 21
+        },
+        {
+          "caller": "addColor",
+          "callee": "request.name",
+          "lineNumber": 21
+        },
+        {
+          "caller": "addColor",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 22
+        },
+        {
+          "caller": "addColor",
+          "callee": "request.hexCode",
+          "lineNumber": 24
+        },
+        {
+          "caller": "addColor",
+          "callee": "request.hexCode().isBlank",
+          "lineNumber": 24
+        },
+        {
+          "caller": "addColor",
+          "callee": "request.hexCode",
+          "lineNumber": 24
+        },
+        {
+          "caller": "addColor",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 25
+        },
+        {
+          "caller": "addColor",
+          "callee": "colorRepository.existsByName",
+          "lineNumber": 28
+        },
+        {
+          "caller": "addColor",
+          "callee": "request.name",
+          "lineNumber": 28
+        },
+        {
+          "caller": "addColor",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 29
+        },
+        {
+          "caller": "addColor",
+          "callee": "Color.builder()\r\n                .name(request.name())\r\n                .hexCode(request.hexCode()).build",
+          "lineNumber": 31
+        },
+        {
+          "caller": "addColor",
+          "callee": "Color.builder()\r\n                .name(request.name()).hexCode",
+          "lineNumber": 31
+        },
+        {
+          "caller": "addColor",
+          "callee": "Color.builder().name",
+          "lineNumber": 31
+        },
+        {
+          "caller": "addColor",
+          "callee": "Color.builder",
+          "lineNumber": 31
+        },
+        {
+          "caller": "addColor",
+          "callee": "request.name",
+          "lineNumber": 32
+        },
+        {
+          "caller": "addColor",
+          "callee": "request.hexCode",
+          "lineNumber": 33
+        },
+        {
+          "caller": "addColor",
+          "callee": "colorRepository.save",
+          "lineNumber": 35
+        },
+        {
+          "caller": "updateColor",
+          "callee": "request.name",
+          "lineNumber": 40
+        },
+        {
+          "caller": "updateColor",
+          "callee": "request.name().isBlank",
+          "lineNumber": 40
+        },
+        {
+          "caller": "updateColor",
+          "callee": "request.name",
+          "lineNumber": 40
+        },
+        {
+          "caller": "updateColor",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 41
+        },
+        {
+          "caller": "updateColor",
+          "callee": "request.hexCode",
+          "lineNumber": 43
+        },
+        {
+          "caller": "updateColor",
+          "callee": "request.hexCode().isBlank",
+          "lineNumber": 43
+        },
+        {
+          "caller": "updateColor",
+          "callee": "request.hexCode",
+          "lineNumber": 43
+        },
+        {
+          "caller": "updateColor",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 44
+        },
+        {
+          "caller": "updateColor",
+          "callee": "colorRepository.findById(id).orElseThrow",
+          "lineNumber": 46
+        },
+        {
+          "caller": "updateColor",
+          "callee": "colorRepository.findById",
+          "lineNumber": 46
+        },
+        {
+          "caller": "updateColor",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 46
+        },
+        {
+          "caller": "updateColor",
+          "callee": "color.setName",
+          "lineNumber": 47
+        },
+        {
+          "caller": "updateColor",
+          "callee": "request.name",
+          "lineNumber": 47
+        },
+        {
+          "caller": "updateColor",
+          "callee": "color.setHexCode",
+          "lineNumber": 48
+        },
+        {
+          "caller": "updateColor",
+          "callee": "request.hexCode",
+          "lineNumber": 48
+        },
+        {
+          "caller": "deleteColor",
+          "callee": "colorRepository.findById(id).orElseThrow",
+          "lineNumber": 54
+        },
+        {
+          "caller": "deleteColor",
+          "callee": "colorRepository.findById",
+          "lineNumber": 54
+        },
+        {
+          "caller": "deleteColor",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 54
+        },
+        {
+          "caller": "deleteColor",
+          "callee": "productVariantRepository.existsByColorId",
+          "lineNumber": 56
+        },
+        {
+          "caller": "deleteColor",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 57
+        },
+        {
+          "caller": "deleteColor",
+          "callee": "colorRepository.delete",
+          "lineNumber": 59
+        }
+      ],
+      "metrics": {
+        "importCount": 6,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/impl/InventoryServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 61,
+      "nonEmptyLines": 53,
+      "functions": [
+        {
+          "name": "reserveStockAndPriceLines",
+          "startLine": 34,
+          "endLine": 60,
+          "params": [
+            "items"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "InventoryServiceImpl",
+          "startLine": 28,
+          "endLine": 61,
+          "methods": [
+            "reserveStockAndPriceLines"
+          ],
+          "properties": [
+            "productVariantRepository",
+            "pricingService"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "reserveStockAndPriceLines",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "InventoryServiceImpl",
+          "line": 28,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "new ArrayList<>",
+          "lineNumber": 38
+        },
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "productVariantRepository.deductStockAtomically",
+          "lineNumber": 44
+        },
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "item.productId",
+          "lineNumber": 44
+        },
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "item.quantity",
+          "lineNumber": 44
+        },
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "new InsufficientStockException",
+          "lineNumber": 46
+        },
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "productVariantRepository.findById(item.productId()).orElseThrow",
+          "lineNumber": 51
+        },
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "productVariantRepository.findById",
+          "lineNumber": 51
+        },
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "item.productId",
+          "lineNumber": 51
+        },
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 52
+        },
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "pricingService.sellingPrice",
+          "lineNumber": 54
+        },
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "price.multiply",
+          "lineNumber": 55
+        },
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "BigDecimal.valueOf",
+          "lineNumber": 55
+        },
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "item.quantity",
+          "lineNumber": 55
+        },
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "drafts.add",
+          "lineNumber": 57
+        },
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "new LineDraft",
+          "lineNumber": 57
+        },
+        {
+          "caller": "reserveStockAndPriceLines",
+          "callee": "item.quantity",
+          "lineNumber": 57
+        }
+      ],
+      "metrics": {
+        "importCount": 10,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/impl/PricingServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 20,
+      "nonEmptyLines": 16,
+      "functions": [
+        {
+          "name": "sellingPrice",
+          "startLine": 15,
+          "endLine": 18,
+          "params": [
+            "productVariant"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "PricingServiceImpl",
+          "startLine": 13,
+          "endLine": 19,
+          "methods": [
+            "sellingPrice"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "sellingPrice",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "PricingServiceImpl",
+          "line": 13,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "sellingPrice",
+          "callee": "productVariant.getDiscountPrice",
+          "lineNumber": 17
+        },
+        {
+          "caller": "sellingPrice",
+          "callee": "productVariant.getDiscountPrice",
+          "lineNumber": 17
+        },
+        {
+          "caller": "sellingPrice",
+          "callee": "productVariant.getPrice",
+          "lineNumber": 17
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/impl/ProductServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 264,
+      "nonEmptyLines": 242,
+      "functions": [
+        {
+          "name": "getAllProducts",
+          "startLine": 34,
+          "endLine": 40,
+          "params": [
+            "pageable"
+          ]
+        },
+        {
+          "name": "getProductById",
+          "startLine": 42,
+          "endLine": 48,
+          "params": [
+            "id"
+          ]
+        },
+        {
+          "name": "getProductBySlug",
+          "startLine": 50,
+          "endLine": 59,
+          "params": [
+            "slug"
+          ]
+        },
+        {
+          "name": "getProductsByBrandId",
+          "startLine": 62,
+          "endLine": 68,
+          "params": [
+            "brandId",
+            "pageable"
+          ]
+        },
+        {
+          "name": "getProductsByCategoryId",
+          "startLine": 70,
+          "endLine": 76,
+          "params": [
+            "categoryId",
+            "pageable"
+          ]
+        },
+        {
+          "name": "getActiveProducts",
+          "startLine": 78,
+          "endLine": 84,
+          "params": [
+            "pageable"
+          ]
+        },
+        {
+          "name": "searchProducts",
+          "startLine": 86,
+          "endLine": 95,
+          "params": [
+            "search",
+            "pageable"
+          ]
+        },
+        {
+          "name": "createProduct",
+          "startLine": 97,
+          "endLine": 140,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "updateProduct",
+          "startLine": 142,
+          "endLine": 196,
+          "params": [
+            "id",
+            "request"
+          ]
+        },
+        {
+          "name": "deleteProductById",
+          "startLine": 198,
+          "endLine": 203,
+          "params": [
+            "id"
+          ]
+        },
+        {
+          "name": "resolveSku",
+          "startLine": 205,
+          "endLine": 222,
+          "params": [
+            "requestedSku",
+            "fallbackName"
+          ]
+        },
+        {
+          "name": "ensureUniqueSku",
+          "startLine": 225,
+          "endLine": 241,
+          "params": [
+            "rawBase"
+          ]
+        },
+        {
+          "name": "validateProductPricing",
+          "startLine": 242,
+          "endLine": 246,
+          "params": [
+            "basePrice",
+            "discountPrice"
+          ]
+        },
+        {
+          "name": "replaceProductImages",
+          "startLine": 248,
+          "endLine": 257,
+          "params": [
+            "product",
+            "imageUrls"
+          ]
+        },
+        {
+          "name": "getProductVariantById",
+          "startLine": 259,
+          "endLine": 263,
+          "params": [
+            "variantId"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProductServiceImpl",
+          "startLine": 25,
+          "endLine": 264,
+          "methods": [
+            "getAllProducts",
+            "getProductById",
+            "getProductBySlug",
+            "getProductsByBrandId",
+            "getProductsByCategoryId",
+            "getActiveProducts",
+            "searchProducts",
+            "createProduct",
+            "updateProduct",
+            "deleteProductById",
+            "resolveSku",
+            "ensureUniqueSku",
+            "validateProductPricing",
+            "replaceProductImages",
+            "getProductVariantById"
+          ],
+          "properties": [
+            "repo",
+            "brandRepository",
+            "categoryRepository",
+            "productVariantRepository",
+            "colorRepository"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getAllProducts",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "getProductById",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "getProductBySlug",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "getProductsByBrandId",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "getProductsByCategoryId",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "getActiveProducts",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "searchProducts",
+          "line": 86,
+          "isDefault": false
+        },
+        {
+          "name": "createProduct",
+          "line": 97,
+          "isDefault": false
+        },
+        {
+          "name": "updateProduct",
+          "line": 142,
+          "isDefault": false
+        },
+        {
+          "name": "deleteProductById",
+          "line": 198,
+          "isDefault": false
+        },
+        {
+          "name": "getProductVariantById",
+          "line": 259,
+          "isDefault": false
+        },
+        {
+          "name": "ProductServiceImpl",
+          "line": 25,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getAllProducts",
+          "callee": "repo.findAll(pageable).map",
+          "lineNumber": 38
+        },
+        {
+          "caller": "getAllProducts",
+          "callee": "repo.findAll",
+          "lineNumber": 38
+        },
+        {
+          "caller": "getProductById",
+          "callee": "ProductResponse.fromEntity",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getProductById",
+          "callee": "repo.findById(id).orElseThrow",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getProductById",
+          "callee": "repo.findById",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getProductById",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 47
+        },
+        {
+          "caller": "getProductBySlug",
+          "callee": "repo.findBySlug",
+          "lineNumber": 54
+        },
+        {
+          "caller": "getProductBySlug",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getProductBySlug",
+          "callee": "ProductResponse.fromEntity",
+          "lineNumber": 58
+        },
+        {
+          "caller": "getProductsByBrandId",
+          "callee": "repo.findByBrandId(brandId, pageable).map",
+          "lineNumber": 66
+        },
+        {
+          "caller": "getProductsByBrandId",
+          "callee": "repo.findByBrandId",
+          "lineNumber": 66
+        },
+        {
+          "caller": "getProductsByCategoryId",
+          "callee": "repo.findByCategoryId(categoryId, pageable).map",
+          "lineNumber": 74
+        },
+        {
+          "caller": "getProductsByCategoryId",
+          "callee": "repo.findByCategoryId",
+          "lineNumber": 74
+        },
+        {
+          "caller": "getActiveProducts",
+          "callee": "repo.findByIsActiveTrue(pageable).map",
+          "lineNumber": 82
+        },
+        {
+          "caller": "getActiveProducts",
+          "callee": "repo.findByIsActiveTrue",
+          "lineNumber": 82
+        },
+        {
+          "caller": "searchProducts",
+          "callee": "search.isBlank",
+          "lineNumber": 90
+        },
+        {
+          "caller": "searchProducts",
+          "callee": "getAllProducts",
+          "lineNumber": 91
+        },
+        {
+          "caller": "searchProducts",
+          "callee": "repo.search(search.trim(), pageable).map",
+          "lineNumber": 93
+        },
+        {
+          "caller": "searchProducts",
+          "callee": "repo.search",
+          "lineNumber": 93
+        },
+        {
+          "caller": "searchProducts",
+          "callee": "search.trim",
+          "lineNumber": 93
+        },
+        {
+          "caller": "createProduct",
+          "callee": "brandRepository.findById(request.brandId()).orElseThrow",
+          "lineNumber": 101
+        },
+        {
+          "caller": "createProduct",
+          "callee": "brandRepository.findById",
+          "lineNumber": 101
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.brandId",
+          "lineNumber": 101
+        },
+        {
+          "caller": "createProduct",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 102
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.brandId",
+          "lineNumber": 102
+        },
+        {
+          "caller": "createProduct",
+          "callee": "categoryRepository.findById(request.categoryId()).orElseThrow",
+          "lineNumber": 103
+        },
+        {
+          "caller": "createProduct",
+          "callee": "categoryRepository.findById",
+          "lineNumber": 103
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.categoryId",
+          "lineNumber": 103
+        },
+        {
+          "caller": "createProduct",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 104
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.categoryId",
+          "lineNumber": 104
+        },
+        {
+          "caller": "createProduct",
+          "callee": "Product.builder()\r\n                .description(request.description())\r\n                .brand(brand)\r\n                .category(category)\r\n                .name(request.name())\r\n                .cpu(request.cpu())\r\n                .gpu(request.gpu())\r\n                .display(request.display())\r\n                .battery(request.battery())\r\n                .weight(request.weight())\r\n                .numberOfFans(request.numberOfFans())\r\n                .os(request.os())\r\n                .isActive(request.isActive() == null ? true : request.isActive())\r\n                .slug(SlugUtils.toSlug(request.name())).build",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createProduct",
+          "callee": "Product.builder()\r\n                .description(request.description())\r\n                .brand(brand)\r\n                .category(category)\r\n                .name(request.name())\r\n                .cpu(request.cpu())\r\n                .gpu(request.gpu())\r\n                .display(request.display())\r\n                .battery(request.battery())\r\n                .weight(request.weight())\r\n                .numberOfFans(request.numberOfFans())\r\n                .os(request.os())\r\n                .isActive(request.isActive() == null ? true : request.isActive()).slug",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createProduct",
+          "callee": "Product.builder()\r\n                .description(request.description())\r\n                .brand(brand)\r\n                .category(category)\r\n                .name(request.name())\r\n                .cpu(request.cpu())\r\n                .gpu(request.gpu())\r\n                .display(request.display())\r\n                .battery(request.battery())\r\n                .weight(request.weight())\r\n                .numberOfFans(request.numberOfFans())\r\n                .os(request.os()).isActive",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createProduct",
+          "callee": "Product.builder()\r\n                .description(request.description())\r\n                .brand(brand)\r\n                .category(category)\r\n                .name(request.name())\r\n                .cpu(request.cpu())\r\n                .gpu(request.gpu())\r\n                .display(request.display())\r\n                .battery(request.battery())\r\n                .weight(request.weight())\r\n                .numberOfFans(request.numberOfFans()).os",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createProduct",
+          "callee": "Product.builder()\r\n                .description(request.description())\r\n                .brand(brand)\r\n                .category(category)\r\n                .name(request.name())\r\n                .cpu(request.cpu())\r\n                .gpu(request.gpu())\r\n                .display(request.display())\r\n                .battery(request.battery())\r\n                .weight(request.weight()).numberOfFans",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createProduct",
+          "callee": "Product.builder()\r\n                .description(request.description())\r\n                .brand(brand)\r\n                .category(category)\r\n                .name(request.name())\r\n                .cpu(request.cpu())\r\n                .gpu(request.gpu())\r\n                .display(request.display())\r\n                .battery(request.battery()).weight",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createProduct",
+          "callee": "Product.builder()\r\n                .description(request.description())\r\n                .brand(brand)\r\n                .category(category)\r\n                .name(request.name())\r\n                .cpu(request.cpu())\r\n                .gpu(request.gpu())\r\n                .display(request.display()).battery",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createProduct",
+          "callee": "Product.builder()\r\n                .description(request.description())\r\n                .brand(brand)\r\n                .category(category)\r\n                .name(request.name())\r\n                .cpu(request.cpu())\r\n                .gpu(request.gpu()).display",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createProduct",
+          "callee": "Product.builder()\r\n                .description(request.description())\r\n                .brand(brand)\r\n                .category(category)\r\n                .name(request.name())\r\n                .cpu(request.cpu()).gpu",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createProduct",
+          "callee": "Product.builder()\r\n                .description(request.description())\r\n                .brand(brand)\r\n                .category(category)\r\n                .name(request.name()).cpu",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createProduct",
+          "callee": "Product.builder()\r\n                .description(request.description())\r\n                .brand(brand)\r\n                .category(category).name",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createProduct",
+          "callee": "Product.builder()\r\n                .description(request.description())\r\n                .brand(brand).category",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createProduct",
+          "callee": "Product.builder()\r\n                .description(request.description()).brand",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createProduct",
+          "callee": "Product.builder().description",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createProduct",
+          "callee": "Product.builder",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.description",
+          "lineNumber": 106
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.name",
+          "lineNumber": 109
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.cpu",
+          "lineNumber": 110
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.gpu",
+          "lineNumber": 111
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.display",
+          "lineNumber": 112
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.battery",
+          "lineNumber": 113
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.weight",
+          "lineNumber": 114
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.numberOfFans",
+          "lineNumber": 115
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.os",
+          "lineNumber": 116
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.isActive",
+          "lineNumber": 117
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.isActive",
+          "lineNumber": 117
+        },
+        {
+          "caller": "createProduct",
+          "callee": "SlugUtils.toSlug",
+          "lineNumber": 118
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.name",
+          "lineNumber": 118
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.variants",
+          "lineNumber": 120
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.variants().isEmpty",
+          "lineNumber": 120
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.variants",
+          "lineNumber": 120
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.variants",
+          "lineNumber": 121
+        },
+        {
+          "caller": "createProduct",
+          "callee": "colorRepository.findById(variantRequest.getColorId()).orElseThrow",
+          "lineNumber": 122
+        },
+        {
+          "caller": "createProduct",
+          "callee": "colorRepository.findById",
+          "lineNumber": 122
+        },
+        {
+          "caller": "createProduct",
+          "callee": "variantRequest.getColorId",
+          "lineNumber": 122
+        },
+        {
+          "caller": "createProduct",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 122
+        },
+        {
+          "caller": "createProduct",
+          "callee": "variantRequest.getColorId",
+          "lineNumber": 122
+        },
+        {
+          "caller": "createProduct",
+          "callee": "product.getName",
+          "lineNumber": 123
+        },
+        {
+          "caller": "createProduct",
+          "callee": "variantRequest.getRam",
+          "lineNumber": 123
+        },
+        {
+          "caller": "createProduct",
+          "callee": "variantRequest.getRom",
+          "lineNumber": 123
+        },
+        {
+          "caller": "createProduct",
+          "callee": "color.getName",
+          "lineNumber": 123
+        },
+        {
+          "caller": "createProduct",
+          "callee": "resolveSku",
+          "lineNumber": 124
+        },
+        {
+          "caller": "createProduct",
+          "callee": "ProductVariant.builder()\r\n                        .color(color)\r\n                        .ram(variantRequest.getRam())\r\n                        .rom(variantRequest.getRom())\r\n                        .price(variantRequest.getPrice())\r\n                        .discountPrice(variantRequest.getDiscountPrice())\r\n                        .stockQuantity(variantRequest.getStockQuantity())\r\n                        .sku(sku)\r\n                        .isActive(variantRequest.isActive()).build",
+          "lineNumber": 125
+        },
+        {
+          "caller": "createProduct",
+          "callee": "ProductVariant.builder()\r\n                        .color(color)\r\n                        .ram(variantRequest.getRam())\r\n                        .rom(variantRequest.getRom())\r\n                        .price(variantRequest.getPrice())\r\n                        .discountPrice(variantRequest.getDiscountPrice())\r\n                        .stockQuantity(variantRequest.getStockQuantity())\r\n                        .sku(sku).isActive",
+          "lineNumber": 125
+        },
+        {
+          "caller": "createProduct",
+          "callee": "ProductVariant.builder()\r\n                        .color(color)\r\n                        .ram(variantRequest.getRam())\r\n                        .rom(variantRequest.getRom())\r\n                        .price(variantRequest.getPrice())\r\n                        .discountPrice(variantRequest.getDiscountPrice())\r\n                        .stockQuantity(variantRequest.getStockQuantity()).sku",
+          "lineNumber": 125
+        },
+        {
+          "caller": "createProduct",
+          "callee": "ProductVariant.builder()\r\n                        .color(color)\r\n                        .ram(variantRequest.getRam())\r\n                        .rom(variantRequest.getRom())\r\n                        .price(variantRequest.getPrice())\r\n                        .discountPrice(variantRequest.getDiscountPrice()).stockQuantity",
+          "lineNumber": 125
+        },
+        {
+          "caller": "createProduct",
+          "callee": "ProductVariant.builder()\r\n                        .color(color)\r\n                        .ram(variantRequest.getRam())\r\n                        .rom(variantRequest.getRom())\r\n                        .price(variantRequest.getPrice()).discountPrice",
+          "lineNumber": 125
+        },
+        {
+          "caller": "createProduct",
+          "callee": "ProductVariant.builder()\r\n                        .color(color)\r\n                        .ram(variantRequest.getRam())\r\n                        .rom(variantRequest.getRom()).price",
+          "lineNumber": 125
+        },
+        {
+          "caller": "createProduct",
+          "callee": "ProductVariant.builder()\r\n                        .color(color)\r\n                        .ram(variantRequest.getRam()).rom",
+          "lineNumber": 125
+        },
+        {
+          "caller": "createProduct",
+          "callee": "ProductVariant.builder()\r\n                        .color(color).ram",
+          "lineNumber": 125
+        },
+        {
+          "caller": "createProduct",
+          "callee": "ProductVariant.builder().color",
+          "lineNumber": 125
+        },
+        {
+          "caller": "createProduct",
+          "callee": "ProductVariant.builder",
+          "lineNumber": 125
+        },
+        {
+          "caller": "createProduct",
+          "callee": "variantRequest.getRam",
+          "lineNumber": 127
+        },
+        {
+          "caller": "createProduct",
+          "callee": "variantRequest.getRom",
+          "lineNumber": 128
+        },
+        {
+          "caller": "createProduct",
+          "callee": "variantRequest.getPrice",
+          "lineNumber": 129
+        },
+        {
+          "caller": "createProduct",
+          "callee": "variantRequest.getDiscountPrice",
+          "lineNumber": 130
+        },
+        {
+          "caller": "createProduct",
+          "callee": "variantRequest.getStockQuantity",
+          "lineNumber": 131
+        },
+        {
+          "caller": "createProduct",
+          "callee": "variantRequest.isActive",
+          "lineNumber": 133
+        },
+        {
+          "caller": "createProduct",
+          "callee": "product.addVariant",
+          "lineNumber": 135
+        },
+        {
+          "caller": "createProduct",
+          "callee": "replaceProductImages",
+          "lineNumber": 138
+        },
+        {
+          "caller": "createProduct",
+          "callee": "request.imageUrls",
+          "lineNumber": 138
+        },
+        {
+          "caller": "createProduct",
+          "callee": "ProductResponse.fromEntity",
+          "lineNumber": 139
+        },
+        {
+          "caller": "createProduct",
+          "callee": "repo.save",
+          "lineNumber": 139
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "repo.findById(id).orElseThrow",
+          "lineNumber": 146
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "repo.findById",
+          "lineNumber": 146
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 147
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.brandId",
+          "lineNumber": 148
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "brandRepository.findById(request.brandId()).orElseThrow",
+          "lineNumber": 149
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "brandRepository.findById",
+          "lineNumber": 149
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.brandId",
+          "lineNumber": 149
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 150
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.brandId",
+          "lineNumber": 150
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "product.setBrand",
+          "lineNumber": 151
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.categoryId",
+          "lineNumber": 153
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "categoryRepository.findById(request.categoryId()).orElseThrow",
+          "lineNumber": 154
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "categoryRepository.findById",
+          "lineNumber": 154
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.categoryId",
+          "lineNumber": 154
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 155
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.categoryId",
+          "lineNumber": 155
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "product.setCategory",
+          "lineNumber": 156
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.name",
+          "lineNumber": 158
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "product.setName",
+          "lineNumber": 159
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.name",
+          "lineNumber": 159
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "product.setSlug",
+          "lineNumber": 160
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "SlugUtils.toSlug",
+          "lineNumber": 160
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.name",
+          "lineNumber": 160
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.isActive",
+          "lineNumber": 162
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "product.setActive",
+          "lineNumber": 163
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.isActive",
+          "lineNumber": 163
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.imageUrls",
+          "lineNumber": 165
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "replaceProductImages",
+          "lineNumber": 166
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.imageUrls",
+          "lineNumber": 166
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.description",
+          "lineNumber": 168
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "product.setDescription",
+          "lineNumber": 169
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.description",
+          "lineNumber": 169
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.cpu",
+          "lineNumber": 171
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "product.setCpu",
+          "lineNumber": 172
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.cpu",
+          "lineNumber": 172
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.gpu",
+          "lineNumber": 174
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "product.setGpu",
+          "lineNumber": 175
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.gpu",
+          "lineNumber": 175
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.display",
+          "lineNumber": 177
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "product.setDisplay",
+          "lineNumber": 178
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.display",
+          "lineNumber": 178
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.battery",
+          "lineNumber": 180
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "product.setBattery",
+          "lineNumber": 181
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.battery",
+          "lineNumber": 181
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.weight",
+          "lineNumber": 183
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "product.setWeight",
+          "lineNumber": 184
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.weight",
+          "lineNumber": 184
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.numberOfFans",
+          "lineNumber": 186
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "product.setNumberOfFans",
+          "lineNumber": 187
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.numberOfFans",
+          "lineNumber": 187
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.os",
+          "lineNumber": 189
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "product.setOs",
+          "lineNumber": 190
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.os",
+          "lineNumber": 190
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.imageUrls",
+          "lineNumber": 192
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "replaceProductImages",
+          "lineNumber": 193
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "request.imageUrls",
+          "lineNumber": 193
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "ProductResponse.fromEntity",
+          "lineNumber": 195
+        },
+        {
+          "caller": "updateProduct",
+          "callee": "repo.save",
+          "lineNumber": 195
+        },
+        {
+          "caller": "deleteProductById",
+          "callee": "repo.deleteById",
+          "lineNumber": 202
+        },
+        {
+          "caller": "resolveSku",
+          "callee": "requestedSku.isBlank",
+          "lineNumber": 207
+        },
+        {
+          "caller": "resolveSku",
+          "callee": "SlugUtils.toSlug",
+          "lineNumber": 208
+        },
+        {
+          "caller": "resolveSku",
+          "callee": "base.isBlank",
+          "lineNumber": 209
+        },
+        {
+          "caller": "resolveSku",
+          "callee": "SlugUtils.toSlug",
+          "lineNumber": 210
+        },
+        {
+          "caller": "resolveSku",
+          "callee": "SlugUtils.toSlug",
+          "lineNumber": 213
+        },
+        {
+          "caller": "resolveSku",
+          "callee": "base.isBlank",
+          "lineNumber": 216
+        },
+        {
+          "caller": "resolveSku",
+          "callee": "ensureUniqueSku",
+          "lineNumber": 221
+        },
+        {
+          "caller": "resolveSku",
+          "callee": "base.toUpperCase",
+          "lineNumber": 221
+        },
+        {
+          "caller": "ensureUniqueSku",
+          "callee": "rawBase.length",
+          "lineNumber": 226
+        },
+        {
+          "caller": "ensureUniqueSku",
+          "callee": "rawBase.substring(0, 40).replaceAll",
+          "lineNumber": 226
+        },
+        {
+          "caller": "ensureUniqueSku",
+          "callee": "rawBase.substring",
+          "lineNumber": 226
+        },
+        {
+          "caller": "ensureUniqueSku",
+          "callee": "base.isBlank",
+          "lineNumber": 227
+        },
+        {
+          "caller": "ensureUniqueSku",
+          "callee": "base.length",
+          "lineNumber": 231
+        },
+        {
+          "caller": "ensureUniqueSku",
+          "callee": "base.substring",
+          "lineNumber": 231
+        },
+        {
+          "caller": "ensureUniqueSku",
+          "callee": "productVariantRepository.existsBySku",
+          "lineNumber": 235
+        },
+        {
+          "caller": "ensureUniqueSku",
+          "callee": "withSuffix.length",
+          "lineNumber": 237
+        },
+        {
+          "caller": "ensureUniqueSku",
+          "callee": "withSuffix.substring",
+          "lineNumber": 237
+        },
+        {
+          "caller": "validateProductPricing",
+          "callee": "discountPrice.compareTo",
+          "lineNumber": 243
+        },
+        {
+          "caller": "validateProductPricing",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 244
+        },
+        {
+          "caller": "replaceProductImages",
+          "callee": "product.getImages().clear",
+          "lineNumber": 252
+        },
+        {
+          "caller": "replaceProductImages",
+          "callee": "product.getImages",
+          "lineNumber": 252
+        },
+        {
+          "caller": "replaceProductImages",
+          "callee": "imageUrls.forEach",
+          "lineNumber": 253
+        },
+        {
+          "caller": "replaceProductImages",
+          "callee": "product.getImages().add",
+          "lineNumber": 253
+        },
+        {
+          "caller": "replaceProductImages",
+          "callee": "product.getImages",
+          "lineNumber": 253
+        },
+        {
+          "caller": "replaceProductImages",
+          "callee": "ProductImage.builder()\r\n                .product(product)\r\n                .imageUrl(imageUrl).build",
+          "lineNumber": 253
+        },
+        {
+          "caller": "replaceProductImages",
+          "callee": "ProductImage.builder()\r\n                .product(product).imageUrl",
+          "lineNumber": 253
+        },
+        {
+          "caller": "replaceProductImages",
+          "callee": "ProductImage.builder().product",
+          "lineNumber": 253
+        },
+        {
+          "caller": "replaceProductImages",
+          "callee": "ProductImage.builder",
+          "lineNumber": 253
+        },
+        {
+          "caller": "getProductVariantById",
+          "callee": "productVariantRepository.findById(variantId).orElseThrow",
+          "lineNumber": 260
+        },
+        {
+          "caller": "getProductVariantById",
+          "callee": "productVariantRepository.findById",
+          "lineNumber": 260
+        },
+        {
+          "caller": "getProductVariantById",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 261
+        },
+        {
+          "caller": "getProductVariantById",
+          "callee": "ProductVariantResponse.fromEntity",
+          "lineNumber": 262
+        }
+      ],
+      "metrics": {
+        "importCount": 8,
+        "exportCount": 12,
+        "functionCount": 15,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/impl/ProductVariantServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 100,
+      "nonEmptyLines": 93,
+      "functions": [
+        {
+          "name": "addProductVariant",
+          "startLine": 28,
+          "endLine": 56,
+          "params": [
+            "productId",
+            "colorId",
+            "ram",
+            "rom",
+            "price",
+            "discountPrice",
+            "stockQuantity",
+            "active"
+          ]
+        },
+        {
+          "name": "updateProductVariant",
+          "startLine": 57,
+          "endLine": 79,
+          "params": [
+            "id",
+            "colorId",
+            "ram",
+            "rom",
+            "price",
+            "discountPrice",
+            "stockQuantity",
+            "active"
+          ]
+        },
+        {
+          "name": "deleteProductVariant",
+          "startLine": 80,
+          "endLine": 99,
+          "params": [
+            "variantId"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProductVariantServiceImpl",
+          "startLine": 19,
+          "endLine": 100,
+          "methods": [
+            "addProductVariant",
+            "updateProductVariant",
+            "deleteProductVariant"
+          ],
+          "properties": [
+            "productRepository",
+            "productVariantRepository",
+            "colorRepository",
+            "cartItemRepository"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "addProductVariant",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "updateProductVariant",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "deleteProductVariant",
+          "line": 80,
+          "isDefault": false
+        },
+        {
+          "name": "ProductVariantServiceImpl",
+          "line": 19,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "addProductVariant",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 32
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 35
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "discountPrice.compareTo",
+          "lineNumber": 37
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 38
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "productRepository.findById(productId).orElseThrow",
+          "lineNumber": 40
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "productRepository.findById",
+          "lineNumber": 40
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 41
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "colorRepository.findById(colorId).orElseThrow",
+          "lineNumber": 42
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "colorRepository.findById",
+          "lineNumber": 42
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 43
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "ProductVariant.builder()\r\n                .product(product)\r\n                .sku(generateSku(product.getName(), ram, rom, color.getName()))\r\n                .color(color)\r\n                .ram(ram)\r\n                .rom(rom)\r\n                .price(price)\r\n                .discountPrice(discountPrice)\r\n                .stockQuantity(stockQuantity)\r\n                .isActive(active).build",
+          "lineNumber": 44
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "ProductVariant.builder()\r\n                .product(product)\r\n                .sku(generateSku(product.getName(), ram, rom, color.getName()))\r\n                .color(color)\r\n                .ram(ram)\r\n                .rom(rom)\r\n                .price(price)\r\n                .discountPrice(discountPrice)\r\n                .stockQuantity(stockQuantity).isActive",
+          "lineNumber": 44
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "ProductVariant.builder()\r\n                .product(product)\r\n                .sku(generateSku(product.getName(), ram, rom, color.getName()))\r\n                .color(color)\r\n                .ram(ram)\r\n                .rom(rom)\r\n                .price(price)\r\n                .discountPrice(discountPrice).stockQuantity",
+          "lineNumber": 44
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "ProductVariant.builder()\r\n                .product(product)\r\n                .sku(generateSku(product.getName(), ram, rom, color.getName()))\r\n                .color(color)\r\n                .ram(ram)\r\n                .rom(rom)\r\n                .price(price).discountPrice",
+          "lineNumber": 44
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "ProductVariant.builder()\r\n                .product(product)\r\n                .sku(generateSku(product.getName(), ram, rom, color.getName()))\r\n                .color(color)\r\n                .ram(ram)\r\n                .rom(rom).price",
+          "lineNumber": 44
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "ProductVariant.builder()\r\n                .product(product)\r\n                .sku(generateSku(product.getName(), ram, rom, color.getName()))\r\n                .color(color)\r\n                .ram(ram).rom",
+          "lineNumber": 44
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "ProductVariant.builder()\r\n                .product(product)\r\n                .sku(generateSku(product.getName(), ram, rom, color.getName()))\r\n                .color(color).ram",
+          "lineNumber": 44
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "ProductVariant.builder()\r\n                .product(product)\r\n                .sku(generateSku(product.getName(), ram, rom, color.getName())).color",
+          "lineNumber": 44
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "ProductVariant.builder()\r\n                .product(product).sku",
+          "lineNumber": 44
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "ProductVariant.builder().product",
+          "lineNumber": 44
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "ProductVariant.builder",
+          "lineNumber": 44
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "generateSku",
+          "lineNumber": 46
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "product.getName",
+          "lineNumber": 46
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "color.getName",
+          "lineNumber": 46
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "ProductVariantResponse.fromEntity",
+          "lineNumber": 55
+        },
+        {
+          "caller": "addProductVariant",
+          "callee": "productVariantRepository.save",
+          "lineNumber": 55
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 60
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "productVariantRepository.findById(id).orElseThrow",
+          "lineNumber": 62
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "productVariantRepository.findById",
+          "lineNumber": 62
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 62
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "colorRepository.findById(colorId).orElseThrow",
+          "lineNumber": 63
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "colorRepository.findById",
+          "lineNumber": 63
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 64
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "discountPrice.compareTo",
+          "lineNumber": 65
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 66
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "existingVariant.setColor",
+          "lineNumber": 69
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "existingVariant.setRam",
+          "lineNumber": 70
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "existingVariant.setRom",
+          "lineNumber": 71
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "existingVariant.setPrice",
+          "lineNumber": 72
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "existingVariant.setDiscountPrice",
+          "lineNumber": 73
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "existingVariant.setStockQuantity",
+          "lineNumber": 74
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "existingVariant.setActive",
+          "lineNumber": 75
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "existingVariant.setSku",
+          "lineNumber": 76
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "SkuUtils.generateSku",
+          "lineNumber": 76
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "existingVariant.getProduct().getName",
+          "lineNumber": 76
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "existingVariant.getProduct",
+          "lineNumber": 76
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "color.getName",
+          "lineNumber": 76
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "productVariantRepository.save",
+          "lineNumber": 77
+        },
+        {
+          "caller": "updateProductVariant",
+          "callee": "ProductVariantResponse.fromEntity",
+          "lineNumber": 78
+        },
+        {
+          "caller": "deleteProductVariant",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 84
+        },
+        {
+          "caller": "deleteProductVariant",
+          "callee": "productVariantRepository.findById(variantId).orElseThrow",
+          "lineNumber": 86
+        },
+        {
+          "caller": "deleteProductVariant",
+          "callee": "productVariantRepository.findById",
+          "lineNumber": 86
+        },
+        {
+          "caller": "deleteProductVariant",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 87
+        },
+        {
+          "caller": "deleteProductVariant",
+          "callee": "productVariantExisting.getOrderItems().isEmpty",
+          "lineNumber": 89
+        },
+        {
+          "caller": "deleteProductVariant",
+          "callee": "productVariantExisting.getOrderItems",
+          "lineNumber": 89
+        },
+        {
+          "caller": "deleteProductVariant",
+          "callee": "productVariantExisting.setActive",
+          "lineNumber": 90
+        },
+        {
+          "caller": "deleteProductVariant",
+          "callee": "productVariantExisting.setStockQuantity",
+          "lineNumber": 91
+        },
+        {
+          "caller": "deleteProductVariant",
+          "callee": "productVariantRepository.save",
+          "lineNumber": 92
+        },
+        {
+          "caller": "deleteProductVariant",
+          "callee": "cartItemRepository.deleteByProductVariantId",
+          "lineNumber": 96
+        },
+        {
+          "caller": "deleteProductVariant",
+          "callee": "productVariantRepository.delete",
+          "lineNumber": 98
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/utils/SkuUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 94,
+      "nonEmptyLines": 88,
+      "functions": [
+        {
+          "name": "generateSku",
+          "startLine": 10,
+          "endLine": 34,
+          "params": [
+            "productName",
+            "ram",
+            "rom",
+            "colorName"
+          ]
+        },
+        {
+          "name": "generateColorCode",
+          "startLine": 36,
+          "endLine": 52,
+          "params": [
+            "colorName"
+          ]
+        },
+        {
+          "name": "generateConfigCode",
+          "startLine": 54,
+          "endLine": 65,
+          "params": [
+            "ram",
+            "rom"
+          ]
+        },
+        {
+          "name": "generateProductCode",
+          "startLine": 67,
+          "endLine": 93,
+          "params": [
+            "productName"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SkuUtils",
+          "startLine": 7,
+          "endLine": 94,
+          "methods": [
+            "generateSku",
+            "generateColorCode",
+            "generateConfigCode",
+            "generateProductCode"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "generateSku",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "SkuUtils",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "generateSku",
+          "callee": "generateProductCode",
+          "lineNumber": 11
+        },
+        {
+          "caller": "generateSku",
+          "callee": "generateConfigCode",
+          "lineNumber": 12
+        },
+        {
+          "caller": "generateSku",
+          "callee": "generateColorCode",
+          "lineNumber": 13
+        },
+        {
+          "caller": "generateSku",
+          "callee": "new StringBuilder",
+          "lineNumber": 14
+        },
+        {
+          "caller": "generateSku",
+          "callee": "productCode.isEmpty",
+          "lineNumber": 15
+        },
+        {
+          "caller": "generateSku",
+          "callee": "configCode.isEmpty",
+          "lineNumber": 15
+        },
+        {
+          "caller": "generateSku",
+          "callee": "colorCode.isEmpty",
+          "lineNumber": 15
+        },
+        {
+          "caller": "generateSku",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 16
+        },
+        {
+          "caller": "generateSku",
+          "callee": "sku.append",
+          "lineNumber": 19
+        },
+        {
+          "caller": "generateSku",
+          "callee": "sku.length",
+          "lineNumber": 22
+        },
+        {
+          "caller": "generateSku",
+          "callee": "sku.append",
+          "lineNumber": 23
+        },
+        {
+          "caller": "generateSku",
+          "callee": "sku.append",
+          "lineNumber": 25
+        },
+        {
+          "caller": "generateSku",
+          "callee": "sku.length",
+          "lineNumber": 28
+        },
+        {
+          "caller": "generateSku",
+          "callee": "sku.append",
+          "lineNumber": 29
+        },
+        {
+          "caller": "generateSku",
+          "callee": "sku.append",
+          "lineNumber": 31
+        },
+        {
+          "caller": "generateSku",
+          "callee": "sku.toString",
+          "lineNumber": 33
+        },
+        {
+          "caller": "generateColorCode",
+          "callee": "colorName.isBlank",
+          "lineNumber": 37
+        },
+        {
+          "caller": "generateColorCode",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 38
+        },
+        {
+          "caller": "generateColorCode",
+          "callee": "colorName.toUpperCase(Locale.ROOT).replaceAll(\"[^a-zA-Z0-9\\\\s]\", \"\").trim",
+          "lineNumber": 40
+        },
+        {
+          "caller": "generateColorCode",
+          "callee": "colorName.toUpperCase(Locale.ROOT).replaceAll",
+          "lineNumber": 40
+        },
+        {
+          "caller": "generateColorCode",
+          "callee": "colorName.toUpperCase",
+          "lineNumber": 40
+        },
+        {
+          "caller": "generateColorCode",
+          "callee": "colorClean.split",
+          "lineNumber": 41
+        },
+        {
+          "caller": "generateColorCode",
+          "callee": "words[0].substring",
+          "lineNumber": 43
+        },
+        {
+          "caller": "generateColorCode",
+          "callee": "Math.min",
+          "lineNumber": 43
+        },
+        {
+          "caller": "generateColorCode",
+          "callee": "words[0].length",
+          "lineNumber": 43
+        },
+        {
+          "caller": "generateColorCode",
+          "callee": "new StringBuilder",
+          "lineNumber": 45
+        },
+        {
+          "caller": "generateColorCode",
+          "callee": "word.isEmpty",
+          "lineNumber": 47
+        },
+        {
+          "caller": "generateColorCode",
+          "callee": "colorCode.append",
+          "lineNumber": 48
+        },
+        {
+          "caller": "generateColorCode",
+          "callee": "word.charAt",
+          "lineNumber": 48
+        },
+        {
+          "caller": "generateColorCode",
+          "callee": "colorCode.toString",
+          "lineNumber": 51
+        },
+        {
+          "caller": "generateConfigCode",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 56
+        },
+        {
+          "caller": "generateConfigCode",
+          "callee": "ram.isBlank",
+          "lineNumber": 58
+        },
+        {
+          "caller": "generateConfigCode",
+          "callee": "rom.isBlank",
+          "lineNumber": 58
+        },
+        {
+          "caller": "generateConfigCode",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 59
+        },
+        {
+          "caller": "generateConfigCode",
+          "callee": "ram.toUpperCase(Locale.ROOT).replaceAll",
+          "lineNumber": 61
+        },
+        {
+          "caller": "generateConfigCode",
+          "callee": "ram.toUpperCase",
+          "lineNumber": 61
+        },
+        {
+          "caller": "generateConfigCode",
+          "callee": "rom.toUpperCase(Locale.ROOT).replaceAll",
+          "lineNumber": 62
+        },
+        {
+          "caller": "generateConfigCode",
+          "callee": "rom.toUpperCase",
+          "lineNumber": 62
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "productName.isBlank",
+          "lineNumber": 68
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "productName.toUpperCase(Locale.ROOT).replaceAll(\"[^a-zA-Z0-9\\\\s]\", \"\").trim",
+          "lineNumber": 71
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "productName.toUpperCase(Locale.ROOT).replaceAll",
+          "lineNumber": 71
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "productName.toUpperCase",
+          "lineNumber": 71
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "productClean.split",
+          "lineNumber": 72
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "words[0].substring",
+          "lineNumber": 74
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "Math.min",
+          "lineNumber": 74
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "words[0].length",
+          "lineNumber": 74
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "new StringBuilder",
+          "lineNumber": 76
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "word.isEmpty",
+          "lineNumber": 78
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "word.matches",
+          "lineNumber": 79
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "productCode.append",
+          "lineNumber": 81
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "productCode.append",
+          "lineNumber": 84
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "word.charAt",
+          "lineNumber": 84
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "word.replaceAll",
+          "lineNumber": 85
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "digit.isEmpty",
+          "lineNumber": 86
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "productCode.append",
+          "lineNumber": 87
+        },
+        {
+          "caller": "generateProductCode",
+          "callee": "productCode.toString",
+          "lineNumber": 92
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/test/java/org/akira/ladux/AbstractIntegrationTest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 51,
+      "nonEmptyLines": 45,
+      "functions": [
+        {
+          "name": "configureProperties",
+          "startLine": 43,
+          "endLine": 50,
+          "params": [
+            "registry"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AbstractIntegrationTest",
+          "startLine": 25,
+          "endLine": 51,
+          "methods": [
+            "configureProperties"
+          ],
+          "properties": [
+            "POSTGRES",
+            "REDIS"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "AbstractIntegrationTest",
+          "line": 25,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "configureProperties",
+          "callee": "registry.add",
+          "lineNumber": 45
+        },
+        {
+          "caller": "configureProperties",
+          "callee": "registry.add",
+          "lineNumber": 46
+        },
+        {
+          "caller": "configureProperties",
+          "callee": "registry.add",
+          "lineNumber": 47
+        },
+        {
+          "caller": "configureProperties",
+          "callee": "registry.add",
+          "lineNumber": 48
+        },
+        {
+          "caller": "configureProperties",
+          "callee": "registry.add",
+          "lineNumber": 49
+        },
+        {
+          "caller": "configureProperties",
+          "callee": "REDIS.getMappedPort",
+          "lineNumber": 49
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/test/java/org/akira/ladux/controller/BrandControllerTest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 49,
+      "nonEmptyLines": 38,
+      "functions": [
+        {
+          "name": "shouldReturnBrands",
+          "startLine": 31,
+          "endLine": 48,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "BrandControllerTest",
+          "startLine": 24,
+          "endLine": 49,
+          "methods": [
+            "shouldReturnBrands"
+          ],
+          "properties": [
+            "port",
+            "objectMapper"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "HttpClient.newHttpClient",
+          "lineNumber": 33
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "HttpRequest.newBuilder()\n                .uri(URI.create(\"http://localhost:\" + port + \"/api/v1/brands\"))\n                .GET().build",
+          "lineNumber": 34
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "HttpRequest.newBuilder()\n                .uri(URI.create(\"http://localhost:\" + port + \"/api/v1/brands\")).GET",
+          "lineNumber": 34
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "HttpRequest.newBuilder().uri",
+          "lineNumber": 34
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "HttpRequest.newBuilder",
+          "lineNumber": 34
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "URI.create",
+          "lineNumber": 35
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "client.send",
+          "lineNumber": 39
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "HttpResponse.BodyHandlers.ofString",
+          "lineNumber": 39
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "assertEquals",
+          "lineNumber": 42
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "response.statusCode",
+          "lineNumber": 42
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "objectMapper.readTree",
+          "lineNumber": 45
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "response.body",
+          "lineNumber": 45
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "assertTrue",
+          "lineNumber": 46
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "body.get(\"content\").isArray",
+          "lineNumber": 46
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "body.get",
+          "lineNumber": 46
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "assertTrue",
+          "lineNumber": 47
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "body.get(\"content\").size",
+          "lineNumber": 47
+        },
+        {
+          "caller": "shouldReturnBrands",
+          "callee": "body.get",
+          "lineNumber": 47
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/test/java/org/akira/ladux/controller/LoginRateLimitTest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 50,
+      "nonEmptyLines": 41,
+      "functions": [
+        {
+          "name": "blocksLoginAfterExceedingLimit",
+          "startLine": 26,
+          "endLine": 40,
+          "params": []
+        },
+        {
+          "name": "postLogin",
+          "startLine": 42,
+          "endLine": 49,
+          "params": [
+            "client",
+            "body"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "LoginRateLimitTest",
+          "startLine": 21,
+          "endLine": 50,
+          "methods": [
+            "blocksLoginAfterExceedingLimit",
+            "postLogin"
+          ],
+          "properties": [
+            "port"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "blocksLoginAfterExceedingLimit",
+          "callee": "HttpClient.newHttpClient",
+          "lineNumber": 28
+        },
+        {
+          "caller": "blocksLoginAfterExceedingLimit",
+          "callee": "postLogin",
+          "lineNumber": 33
+        },
+        {
+          "caller": "blocksLoginAfterExceedingLimit",
+          "callee": "assertNotEquals",
+          "lineNumber": 34
+        },
+        {
+          "caller": "blocksLoginAfterExceedingLimit",
+          "callee": "postLogin",
+          "lineNumber": 38
+        },
+        {
+          "caller": "blocksLoginAfterExceedingLimit",
+          "callee": "assertEquals",
+          "lineNumber": 39
+        },
+        {
+          "caller": "postLogin",
+          "callee": "HttpRequest.newBuilder()\n                .uri(URI.create(\"http://localhost:\" + port + \"/api/v1/auth/login\"))\n                .header(\"Content-Type\", \"application/json\")\n                .POST(HttpRequest.BodyPublishers.ofString(body)).build",
+          "lineNumber": 43
+        },
+        {
+          "caller": "postLogin",
+          "callee": "HttpRequest.newBuilder()\n                .uri(URI.create(\"http://localhost:\" + port + \"/api/v1/auth/login\"))\n                .header(\"Content-Type\", \"application/json\").POST",
+          "lineNumber": 43
+        },
+        {
+          "caller": "postLogin",
+          "callee": "HttpRequest.newBuilder()\n                .uri(URI.create(\"http://localhost:\" + port + \"/api/v1/auth/login\")).header",
+          "lineNumber": 43
+        },
+        {
+          "caller": "postLogin",
+          "callee": "HttpRequest.newBuilder().uri",
+          "lineNumber": 43
+        },
+        {
+          "caller": "postLogin",
+          "callee": "HttpRequest.newBuilder",
+          "lineNumber": 43
+        },
+        {
+          "caller": "postLogin",
+          "callee": "URI.create",
+          "lineNumber": 44
+        },
+        {
+          "caller": "postLogin",
+          "callee": "HttpRequest.BodyPublishers.ofString",
+          "lineNumber": 46
+        },
+        {
+          "caller": "postLogin",
+          "callee": "client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode",
+          "lineNumber": 48
+        },
+        {
+          "caller": "postLogin",
+          "callee": "client.send",
+          "lineNumber": 48
+        },
+        {
+          "caller": "postLogin",
+          "callee": "HttpResponse.BodyHandlers.ofString",
+          "lineNumber": 48
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 0,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/test/java/org/akira/ladux/repository/ProductRepositoryTest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 117,
+      "nonEmptyLines": 101,
+      "functions": [
+        {
+          "name": "cleanup",
+          "startLine": 38,
+          "endLine": 44,
+          "params": []
+        },
+        {
+          "name": "newProduct",
+          "startLine": 46,
+          "endLine": 61,
+          "params": [
+            "stock"
+          ]
+        },
+        {
+          "name": "deductInOwnTx",
+          "startLine": 63,
+          "endLine": 66,
+          "params": [
+            "productId",
+            "qty"
+          ]
+        },
+        {
+          "name": "deductStock_succeeds_whenEnoughStock",
+          "startLine": 68,
+          "endLine": 74,
+          "params": []
+        },
+        {
+          "name": "deductStock_fails_whenInsufficientStock",
+          "startLine": 76,
+          "endLine": 83,
+          "params": []
+        },
+        {
+          "name": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "startLine": 85,
+          "endLine": 116,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProductRepositoryTest",
+          "startLine": 29,
+          "endLine": 117,
+          "methods": [
+            "cleanup",
+            "newProduct",
+            "deductInOwnTx",
+            "deductStock_succeeds_whenEnoughStock",
+            "deductStock_fails_whenInsufficientStock",
+            "deductStock_isAtomic_noOverselling_underConcurrency"
+          ],
+          "properties": [
+            "productRepository",
+            "brandRepository",
+            "categoryRepository",
+            "txManager",
+            "createdProductId"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "cleanup",
+          "callee": "productRepository.deleteById",
+          "lineNumber": 41
+        },
+        {
+          "caller": "newProduct",
+          "callee": "UUID.randomUUID().toString().substring",
+          "lineNumber": 47
+        },
+        {
+          "caller": "newProduct",
+          "callee": "UUID.randomUUID().toString",
+          "lineNumber": 47
+        },
+        {
+          "caller": "newProduct",
+          "callee": "UUID.randomUUID",
+          "lineNumber": 47
+        },
+        {
+          "caller": "newProduct",
+          "callee": "Product.builder()\n                .brand(brandRepository.findAll().get(0))\n                .category(categoryRepository.findAll().get(0))\n                .sku(\"TEST-\" + unique)\n                .name(\"Test Product \" + unique)\n                .slug(\"test-product-\" + unique)\n                .basePrice(new BigDecimal(\"100.00\"))\n                .stockQuantity(stock)\n                .isActive(true).build",
+          "lineNumber": 48
+        },
+        {
+          "caller": "newProduct",
+          "callee": "Product.builder()\n                .brand(brandRepository.findAll().get(0))\n                .category(categoryRepository.findAll().get(0))\n                .sku(\"TEST-\" + unique)\n                .name(\"Test Product \" + unique)\n                .slug(\"test-product-\" + unique)\n                .basePrice(new BigDecimal(\"100.00\"))\n                .stockQuantity(stock).isActive",
+          "lineNumber": 48
+        },
+        {
+          "caller": "newProduct",
+          "callee": "Product.builder()\n                .brand(brandRepository.findAll().get(0))\n                .category(categoryRepository.findAll().get(0))\n                .sku(\"TEST-\" + unique)\n                .name(\"Test Product \" + unique)\n                .slug(\"test-product-\" + unique)\n                .basePrice(new BigDecimal(\"100.00\")).stockQuantity",
+          "lineNumber": 48
+        },
+        {
+          "caller": "newProduct",
+          "callee": "Product.builder()\n                .brand(brandRepository.findAll().get(0))\n                .category(categoryRepository.findAll().get(0))\n                .sku(\"TEST-\" + unique)\n                .name(\"Test Product \" + unique)\n                .slug(\"test-product-\" + unique).basePrice",
+          "lineNumber": 48
+        },
+        {
+          "caller": "newProduct",
+          "callee": "Product.builder()\n                .brand(brandRepository.findAll().get(0))\n                .category(categoryRepository.findAll().get(0))\n                .sku(\"TEST-\" + unique)\n                .name(\"Test Product \" + unique).slug",
+          "lineNumber": 48
+        },
+        {
+          "caller": "newProduct",
+          "callee": "Product.builder()\n                .brand(brandRepository.findAll().get(0))\n                .category(categoryRepository.findAll().get(0))\n                .sku(\"TEST-\" + unique).name",
+          "lineNumber": 48
+        },
+        {
+          "caller": "newProduct",
+          "callee": "Product.builder()\n                .brand(brandRepository.findAll().get(0))\n                .category(categoryRepository.findAll().get(0)).sku",
+          "lineNumber": 48
+        },
+        {
+          "caller": "newProduct",
+          "callee": "Product.builder()\n                .brand(brandRepository.findAll().get(0)).category",
+          "lineNumber": 48
+        },
+        {
+          "caller": "newProduct",
+          "callee": "Product.builder().brand",
+          "lineNumber": 48
+        },
+        {
+          "caller": "newProduct",
+          "callee": "Product.builder",
+          "lineNumber": 48
+        },
+        {
+          "caller": "newProduct",
+          "callee": "brandRepository.findAll().get",
+          "lineNumber": 49
+        },
+        {
+          "caller": "newProduct",
+          "callee": "brandRepository.findAll",
+          "lineNumber": 49
+        },
+        {
+          "caller": "newProduct",
+          "callee": "categoryRepository.findAll().get",
+          "lineNumber": 50
+        },
+        {
+          "caller": "newProduct",
+          "callee": "categoryRepository.findAll",
+          "lineNumber": 50
+        },
+        {
+          "caller": "newProduct",
+          "callee": "new BigDecimal",
+          "lineNumber": 54
+        },
+        {
+          "caller": "newProduct",
+          "callee": "productRepository.save",
+          "lineNumber": 58
+        },
+        {
+          "caller": "newProduct",
+          "callee": "product.getId",
+          "lineNumber": 59
+        },
+        {
+          "caller": "deductInOwnTx",
+          "callee": "new TransactionTemplate",
+          "lineNumber": 64
+        },
+        {
+          "caller": "deductInOwnTx",
+          "callee": "tx.execute",
+          "lineNumber": 65
+        },
+        {
+          "caller": "deductInOwnTx",
+          "callee": "productRepository.deductStockAtomically",
+          "lineNumber": 65
+        },
+        {
+          "caller": "deductStock_succeeds_whenEnoughStock",
+          "callee": "newProduct",
+          "lineNumber": 70
+        },
+        {
+          "caller": "deductStock_succeeds_whenEnoughStock",
+          "callee": "deductInOwnTx",
+          "lineNumber": 71
+        },
+        {
+          "caller": "deductStock_succeeds_whenEnoughStock",
+          "callee": "product.getId",
+          "lineNumber": 71
+        },
+        {
+          "caller": "deductStock_succeeds_whenEnoughStock",
+          "callee": "assertEquals",
+          "lineNumber": 72
+        },
+        {
+          "caller": "deductStock_succeeds_whenEnoughStock",
+          "callee": "assertEquals",
+          "lineNumber": 73
+        },
+        {
+          "caller": "deductStock_succeeds_whenEnoughStock",
+          "callee": "productRepository.findById(product.getId()).orElseThrow().getStockQuantity",
+          "lineNumber": 73
+        },
+        {
+          "caller": "deductStock_succeeds_whenEnoughStock",
+          "callee": "productRepository.findById(product.getId()).orElseThrow",
+          "lineNumber": 73
+        },
+        {
+          "caller": "deductStock_succeeds_whenEnoughStock",
+          "callee": "productRepository.findById",
+          "lineNumber": 73
+        },
+        {
+          "caller": "deductStock_succeeds_whenEnoughStock",
+          "callee": "product.getId",
+          "lineNumber": 73
+        },
+        {
+          "caller": "deductStock_fails_whenInsufficientStock",
+          "callee": "newProduct",
+          "lineNumber": 78
+        },
+        {
+          "caller": "deductStock_fails_whenInsufficientStock",
+          "callee": "deductInOwnTx",
+          "lineNumber": 79
+        },
+        {
+          "caller": "deductStock_fails_whenInsufficientStock",
+          "callee": "product.getId",
+          "lineNumber": 79
+        },
+        {
+          "caller": "deductStock_fails_whenInsufficientStock",
+          "callee": "assertEquals",
+          "lineNumber": 80
+        },
+        {
+          "caller": "deductStock_fails_whenInsufficientStock",
+          "callee": "assertEquals",
+          "lineNumber": 81
+        },
+        {
+          "caller": "deductStock_fails_whenInsufficientStock",
+          "callee": "productRepository.findById(product.getId()).orElseThrow().getStockQuantity",
+          "lineNumber": 81
+        },
+        {
+          "caller": "deductStock_fails_whenInsufficientStock",
+          "callee": "productRepository.findById(product.getId()).orElseThrow",
+          "lineNumber": 81
+        },
+        {
+          "caller": "deductStock_fails_whenInsufficientStock",
+          "callee": "productRepository.findById",
+          "lineNumber": 81
+        },
+        {
+          "caller": "deductStock_fails_whenInsufficientStock",
+          "callee": "product.getId",
+          "lineNumber": 81
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "newProduct",
+          "lineNumber": 89
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "Executors.newFixedThreadPool",
+          "lineNumber": 91
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "new CountDownLatch",
+          "lineNumber": 92
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "new AtomicInteger",
+          "lineNumber": 93
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "CompletableFuture.runAsync",
+          "lineNumber": 97
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "startGate.await",
+          "lineNumber": 99
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "deductInOwnTx",
+          "lineNumber": 100
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "product.getId",
+          "lineNumber": 100
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "successCount.incrementAndGet",
+          "lineNumber": 101
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "Thread.currentThread().interrupt",
+          "lineNumber": 104
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "Thread.currentThread",
+          "lineNumber": 104
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "startGate.countDown",
+          "lineNumber": 109
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "CompletableFuture.allOf(futures).get",
+          "lineNumber": 110
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "CompletableFuture.allOf",
+          "lineNumber": 110
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "pool.shutdown",
+          "lineNumber": 111
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "assertEquals",
+          "lineNumber": 113
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "successCount.get",
+          "lineNumber": 113
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "assertEquals",
+          "lineNumber": 114
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "productRepository.findById(product.getId()).orElseThrow().getStockQuantity",
+          "lineNumber": 114
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "productRepository.findById(product.getId()).orElseThrow",
+          "lineNumber": 114
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "productRepository.findById",
+          "lineNumber": 114
+        },
+        {
+          "caller": "deductStock_isAtomic_noOverselling_underConcurrency",
+          "callee": "product.getId",
+          "lineNumber": 114
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 0,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/test/java/org/akira/ladux/repository/SeedDataPersistenceTest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 70,
+      "nonEmptyLines": 62,
+      "functions": [
+        {
+          "name": "seedDataIsLoadedForAllKeyEntities",
+          "startLine": 37,
+          "endLine": 60,
+          "params": []
+        },
+        {
+          "name": "productMappingLoadsBrandAndCategoryRelations",
+          "startLine": 62,
+          "endLine": 69,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "SeedDataPersistenceTest",
+          "startLine": 19,
+          "endLine": 70,
+          "methods": [
+            "seedDataIsLoadedForAllKeyEntities",
+            "productMappingLoadsBrandAndCategoryRelations"
+          ],
+          "properties": [
+            "roleRepository",
+            "brandRepository",
+            "categoryRepository",
+            "productRepository",
+            "couponRepository",
+            "userRepository",
+            "customerRepository",
+            "orderRepository",
+            "orderItemRepository",
+            "paymentRepository",
+            "reviewRepository",
+            "userAddressRepository",
+            "cartRepository",
+            "supplierRepository",
+            "productSupplierRepository"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "assertEquals",
+          "lineNumber": 39
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "roleRepository.count",
+          "lineNumber": 39
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "assertEquals",
+          "lineNumber": 40
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "brandRepository.count",
+          "lineNumber": 40
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "assertEquals",
+          "lineNumber": 41
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "categoryRepository.count",
+          "lineNumber": 41
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "assertEquals",
+          "lineNumber": 42
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "productRepository.count",
+          "lineNumber": 42
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "assertEquals",
+          "lineNumber": 43
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "couponRepository.count",
+          "lineNumber": 43
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "assertEquals",
+          "lineNumber": 44
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "userRepository.count",
+          "lineNumber": 44
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "assertEquals",
+          "lineNumber": 45
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "customerRepository.count",
+          "lineNumber": 45
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "assertEquals",
+          "lineNumber": 47
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "orderRepository.count",
+          "lineNumber": 47
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "assertEquals",
+          "lineNumber": 48
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "paymentRepository.count",
+          "lineNumber": 48
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "assertTrue",
+          "lineNumber": 51
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "orderItemRepository.count",
+          "lineNumber": 51
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "assertTrue",
+          "lineNumber": 52
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "reviewRepository.count",
+          "lineNumber": 52
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "assertTrue",
+          "lineNumber": 53
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "userAddressRepository.count",
+          "lineNumber": 53
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "assertTrue",
+          "lineNumber": 54
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "cartRepository.count",
+          "lineNumber": 54
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "assertEquals",
+          "lineNumber": 57
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "supplierRepository.count",
+          "lineNumber": 57
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "assertEquals",
+          "lineNumber": 58
+        },
+        {
+          "caller": "seedDataIsLoadedForAllKeyEntities",
+          "callee": "productSupplierRepository.count",
+          "lineNumber": 58
+        },
+        {
+          "caller": "productMappingLoadsBrandAndCategoryRelations",
+          "callee": "productRepository.findBySlug",
+          "lineNumber": 64
+        },
+        {
+          "caller": "productMappingLoadsBrandAndCategoryRelations",
+          "callee": "assertNotNull",
+          "lineNumber": 65
+        },
+        {
+          "caller": "productMappingLoadsBrandAndCategoryRelations",
+          "callee": "assertEquals",
+          "lineNumber": 67
+        },
+        {
+          "caller": "productMappingLoadsBrandAndCategoryRelations",
+          "callee": "product.getBrand().getName",
+          "lineNumber": 67
+        },
+        {
+          "caller": "productMappingLoadsBrandAndCategoryRelations",
+          "callee": "product.getBrand",
+          "lineNumber": 67
+        },
+        {
+          "caller": "productMappingLoadsBrandAndCategoryRelations",
+          "callee": "assertNotNull",
+          "lineNumber": 68
+        },
+        {
+          "caller": "productMappingLoadsBrandAndCategoryRelations",
+          "callee": "product.getCategory",
+          "lineNumber": 68
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 0,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/test/java/org/akira/ladux/service/PricingServiceImplTest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 35,
+      "nonEmptyLines": 28,
+      "functions": [
+        {
+          "name": "usesDiscountPrice_whenPresent",
+          "startLine": 18,
+          "endLine": 25,
+          "params": []
+        },
+        {
+          "name": "usesBasePrice_whenNoDiscount",
+          "startLine": 27,
+          "endLine": 34,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "PricingServiceImplTest",
+          "startLine": 14,
+          "endLine": 35,
+          "methods": [
+            "usesDiscountPrice_whenPresent",
+            "usesBasePrice_whenNoDiscount"
+          ],
+          "properties": [
+            "pricingService"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "usesDiscountPrice_whenPresent",
+          "callee": "Product.builder()\n                .basePrice(new BigDecimal(\"100.00\"))\n                .discountPrice(new BigDecimal(\"80.00\")).build",
+          "lineNumber": 20
+        },
+        {
+          "caller": "usesDiscountPrice_whenPresent",
+          "callee": "Product.builder()\n                .basePrice(new BigDecimal(\"100.00\")).discountPrice",
+          "lineNumber": 20
+        },
+        {
+          "caller": "usesDiscountPrice_whenPresent",
+          "callee": "Product.builder().basePrice",
+          "lineNumber": 20
+        },
+        {
+          "caller": "usesDiscountPrice_whenPresent",
+          "callee": "Product.builder",
+          "lineNumber": 20
+        },
+        {
+          "caller": "usesDiscountPrice_whenPresent",
+          "callee": "new BigDecimal",
+          "lineNumber": 21
+        },
+        {
+          "caller": "usesDiscountPrice_whenPresent",
+          "callee": "new BigDecimal",
+          "lineNumber": 22
+        },
+        {
+          "caller": "usesDiscountPrice_whenPresent",
+          "callee": "assertEquals",
+          "lineNumber": 24
+        },
+        {
+          "caller": "usesDiscountPrice_whenPresent",
+          "callee": "new BigDecimal(\"80.00\").compareTo",
+          "lineNumber": 24
+        },
+        {
+          "caller": "usesDiscountPrice_whenPresent",
+          "callee": "new BigDecimal",
+          "lineNumber": 24
+        },
+        {
+          "caller": "usesDiscountPrice_whenPresent",
+          "callee": "pricingService.sellingPrice",
+          "lineNumber": 24
+        },
+        {
+          "caller": "usesBasePrice_whenNoDiscount",
+          "callee": "Product.builder()\n                .basePrice(new BigDecimal(\"100.00\"))\n                .discountPrice(null).build",
+          "lineNumber": 29
+        },
+        {
+          "caller": "usesBasePrice_whenNoDiscount",
+          "callee": "Product.builder()\n                .basePrice(new BigDecimal(\"100.00\")).discountPrice",
+          "lineNumber": 29
+        },
+        {
+          "caller": "usesBasePrice_whenNoDiscount",
+          "callee": "Product.builder().basePrice",
+          "lineNumber": 29
+        },
+        {
+          "caller": "usesBasePrice_whenNoDiscount",
+          "callee": "Product.builder",
+          "lineNumber": 29
+        },
+        {
+          "caller": "usesBasePrice_whenNoDiscount",
+          "callee": "new BigDecimal",
+          "lineNumber": 30
+        },
+        {
+          "caller": "usesBasePrice_whenNoDiscount",
+          "callee": "assertEquals",
+          "lineNumber": 33
+        },
+        {
+          "caller": "usesBasePrice_whenNoDiscount",
+          "callee": "new BigDecimal(\"100.00\").compareTo",
+          "lineNumber": 33
+        },
+        {
+          "caller": "usesBasePrice_whenNoDiscount",
+          "callee": "new BigDecimal",
+          "lineNumber": 33
+        },
+        {
+          "caller": "usesBasePrice_whenNoDiscount",
+          "callee": "pricingService.sellingPrice",
+          "lineNumber": 33
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 0,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    }
+  ]
+}

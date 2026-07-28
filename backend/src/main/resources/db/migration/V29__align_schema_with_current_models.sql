@@ -199,6 +199,7 @@ ALTER TABLE products
 -- 3) ORDER embedded ShippingAddress columns.
 -- ---------------------------------------------------------------------------
 ALTER TABLE orders
+    ADD COLUMN IF NOT EXISTS carrier_name VARCHAR(255),
     ADD COLUMN IF NOT EXISTS shipping_receiver_name VARCHAR(150),
     ADD COLUMN IF NOT EXISTS shipping_phone VARCHAR(20),
     ADD COLUMN IF NOT EXISTS shipping_street VARCHAR(255),

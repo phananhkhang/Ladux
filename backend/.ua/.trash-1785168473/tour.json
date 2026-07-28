@@ -1,0 +1,138 @@
+[
+  {
+    "order": 1,
+    "title": "Application Start",
+    "description": "Begin at the Spring Boot entry point because this repository has no root README. This file launches the Ladux backend runtime and enables scheduling, giving newcomers the smallest reliable view of how the application starts before exploring the layers around it.",
+    "nodeIds": [
+      "file:src/main/java/org/akira/ladux/LaduxApplication.java"
+    ],
+    "languageLesson": "In Spring Boot, the application class is intentionally small: annotations declare framework behavior, while component scanning wires controllers, services, repositories, and configuration classes at runtime."
+  },
+  {
+    "order": 2,
+    "title": "Architecture Map",
+    "description": "With the entry point in mind, use the backend architecture document as the conceptual map for the modular monolith. It explains the technology stack, package layers, domain model, migrations, security, business workflows, caching, deployment, API surface, and roadmap that the rest of the tour will make concrete.",
+    "nodeIds": [
+      "document:docs/kien-truc-backend.md"
+    ]
+  },
+  {
+    "order": 3,
+    "title": "Build And Configuration",
+    "description": "The Maven descriptor defines the backend's platform: Java 21, Spring Web, JPA, PostgreSQL, Redis, Flyway, JWT, OpenAPI, ShedLock, Actuator, validation, and testing support. The shared and profile-specific application properties then bind those capabilities to runtime settings such as datasource access, Redis, uploads, JWT/OAuth, health probes, SQL logging, and production schema validation.",
+    "nodeIds": [
+      "config:pom.xml",
+      "config:src/main/resources/application.properties",
+      "config:src/main/resources/application-dev.properties",
+      "config:src/main/resources/application-prod.properties"
+    ],
+    "languageLesson": "Spring profiles let one codebase run with different operational defaults; common properties define the baseline, while dev and prod files override environment-sensitive behavior."
+  },
+  {
+    "order": 4,
+    "title": "Security Boundary",
+    "description": "After the runtime configuration, the security layer shows how requests become authenticated application calls. SecurityConfig defines CORS, CSRF, OAuth2 login, JWT integration, exception handling, and route authorization, while JwtFilter and JwtService resolve, validate, and install authenticated principals for downstream controllers.",
+    "nodeIds": [
+      "file:src/main/java/org/akira/ladux/config/SecurityConfig.java",
+      "file:src/main/java/org/akira/ladux/config/JwtFilter.java",
+      "file:src/main/java/org/akira/ladux/service/JwtService.java"
+    ],
+    "languageLesson": "A Spring Security filter runs before controller methods, so authentication state can be established once and then reused by endpoint handlers through the security context."
+  },
+  {
+    "order": 5,
+    "title": "Authentication Flow",
+    "description": "The authentication controller turns the security boundary into public API behavior for registration, login, refresh rotation, logout, and CSRF retrieval. User and refresh-token persistence support that flow with role loading, token-version revocation, opaque refresh-token storage, and session-wide or user-wide revocation.",
+    "nodeIds": [
+      "file:src/main/java/org/akira/ladux/controller/AuthController.java",
+      "file:src/main/java/org/akira/ladux/model/User.java",
+      "file:src/main/java/org/akira/ladux/repository/UserRepository.java",
+      "file:src/main/java/org/akira/ladux/service/RefreshTokenService.java",
+      "file:src/main/java/org/akira/ladux/model/RefreshToken.java"
+    ]
+  },
+  {
+    "order": 6,
+    "title": "API Contracts",
+    "description": "Once identity is established, controllers expose separate customer and admin surfaces for catalog and order workflows. Request and response DTOs define the payload contracts between clients and services, keeping validation, serialization, and entity mapping explicit at the application edge.",
+    "nodeIds": [
+      "file:src/main/java/org/akira/ladux/controller/user/ProductController.java",
+      "file:src/main/java/org/akira/ladux/controller/user/OrderController.java",
+      "file:src/main/java/org/akira/ladux/controller/admin/AdminProductController.java",
+      "file:src/main/java/org/akira/ladux/dto/request/OrderRequest.java",
+      "file:src/main/java/org/akira/ladux/dto/response/OrderResponse.java"
+    ],
+    "languageLesson": "Java records and validation annotations are a compact way to express immutable API payloads with framework-enforced input rules."
+  },
+  {
+    "order": 7,
+    "title": "Catalog Core",
+    "description": "The product domain is a high-importance center of the graph because many services and endpoints depend on it. ProductServiceImpl coordinates catalog filtering, search, create/update workflows, SKU generation, pricing validation, images, and variant lookup, while Product and ProductRepository define the persistence model and query surface behind those operations.",
+    "nodeIds": [
+      "file:src/main/java/org/akira/ladux/service/impl/ProductServiceImpl.java",
+      "file:src/main/java/org/akira/ladux/model/Product.java",
+      "file:src/main/java/org/akira/ladux/repository/ProductRepository.java",
+      "file:src/main/java/org/akira/ladux/dto/response/ProductResponse.java"
+    ]
+  },
+  {
+    "order": 8,
+    "title": "Checkout Workflow",
+    "description": "Building on the catalog, the order service is the main transactional workflow for checkout and order management. It validates carts, reserves stock, redeems coupons, persists orders, creates payment attempts, and delegates expiry behavior while the Order aggregate and OrderRepository encode ownership, locking, status transitions, and expired-order scanning.",
+    "nodeIds": [
+      "file:src/main/java/org/akira/ladux/service/impl/OrderServiceImpl.java",
+      "file:src/main/java/org/akira/ladux/model/Order.java",
+      "file:src/main/java/org/akira/ladux/repository/OrderRepository.java",
+      "file:src/main/java/org/akira/ladux/service/impl/InventoryServiceImpl.java"
+    ],
+    "languageLesson": "Transactional service methods protect multi-step business workflows by committing stock, coupon, order, and payment state together or rolling them back together on failure."
+  },
+  {
+    "order": 9,
+    "title": "Payment Lifecycle",
+    "description": "PaymentServiceImpl extends checkout into payment creation and callback handling for customers and admins. It validates order ownership, prevents duplicate active payments, records payment updates, and triggers order confirmation when a payment succeeds, so it is the bridge between order state and payment provider state.",
+    "nodeIds": [
+      "file:src/main/java/org/akira/ladux/service/impl/PaymentServiceImpl.java",
+      "file:src/main/java/org/akira/ladux/model/enums/PaymentProvider.java",
+      "file:src/main/java/org/akira/ladux/model/enums/PaymentStatus.java",
+      "file:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java"
+    ]
+  },
+  {
+    "order": 10,
+    "title": "Database Evolution",
+    "description": "The Flyway migrations are the durable contract underneath the JPA entities and repositories introduced earlier. The initial schema creates users, catalog, cart, order, payment, review, and wishlist tables, while later migrations add refresh tokens, supply-chain data, product variants, notifications, colors, and model-alignment changes.",
+    "nodeIds": [
+      "file:src/main/resources/db/migration/V1__init_schema.sql",
+      "table:src/main/resources/db/migration/V1__init_schema.sql:products",
+      "table:src/main/resources/db/migration/V1__init_schema.sql:orders",
+      "file:src/main/resources/db/migration/V20__create_refresh_tokens.sql",
+      "file:src/main/resources/db/migration/V29__align_schema_with_current_models.sql"
+    ],
+    "languageLesson": "Flyway applies versioned SQL migrations in order, making database structure evolve alongside application releases instead of relying on implicit ORM-generated schema changes."
+  },
+  {
+    "order": 11,
+    "title": "Errors And Verification",
+    "description": "GlobalExceptionHandler centralizes how validation, authentication, authorization, business, data integrity, and unexpected failures become structured REST responses. The integration tests then verify the highest-risk flows from earlier steps, including checkout stock deduction, coupon redemption, cancellation rollback, payment expiry, purchase-order receipt, and stock ledger side effects.",
+    "nodeIds": [
+      "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+      "file:src/main/java/org/akira/ladux/exception/BusinessRuleException.java",
+      "file:src/test/java/org/akira/ladux/service/OrderServiceTest.java",
+      "file:src/test/java/org/akira/ladux/service/StockMovementFlowTest.java"
+    ]
+  },
+  {
+    "order": 12,
+    "title": "Container Runtime",
+    "description": "The deployment stop shows how the application and its dependencies run outside the IDE. The Dockerfile packages the Spring Boot jar with a Maven build stage and a smaller non-root JRE runtime stage, while Docker Compose wires the app to PostgreSQL and Redis with persistent volumes, bridge networking, health checks, and environment-driven secrets.",
+    "nodeIds": [
+      "service:Dockerfile",
+      "service:Dockerfile:builder",
+      "service:Dockerfile:eclipse-temurin",
+      "service:docker-compose.yml",
+      "service:docker-compose.yml:app"
+    ],
+    "languageLesson": "Docker multi-stage builds separate compilation from runtime, and Compose health checks make dependent services wait for PostgreSQL and Redis readiness instead of only container startup."
+  }
+]

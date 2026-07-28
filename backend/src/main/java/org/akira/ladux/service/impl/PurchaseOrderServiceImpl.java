@@ -9,18 +9,11 @@ import org.akira.ladux.dto.request.PurchaseOrderStatusUpdateRequest;
 import org.akira.ladux.dto.response.PurchaseOrderResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
-import org.akira.ladux.model.Product;
-import org.akira.ladux.model.PurchaseOrder;
-import org.akira.ladux.model.PurchaseOrderItem;
-import org.akira.ladux.model.Supplier;
-import org.akira.ladux.model.User;
+import org.akira.ladux.model.*;
 import org.akira.ladux.model.enums.PurchaseOrderStatus;
 import org.akira.ladux.model.enums.StockMovementType;
 import org.akira.ladux.model.enums.StockReferenceType;
-import org.akira.ladux.repository.ProductRepository;
-import org.akira.ladux.repository.PurchaseOrderRepository;
-import org.akira.ladux.repository.SupplierRepository;
-import org.akira.ladux.repository.UserRepository;
+import org.akira.ladux.repository.*;
 import org.akira.ladux.service.PurchaseOrderService;
 import org.akira.ladux.service.StockMovementService;
 import org.springframework.data.domain.Page;
@@ -39,7 +32,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     private final PurchaseOrderRepository repo;
     private final SupplierRepository supplierRepository;
-    private final ProductRepository productRepository;
+    private final ProductVariantRepository productVariantRepository;
     private final UserRepository userRepository;
     private final StockMovementService stockMovementService;
 
@@ -62,11 +55,11 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
         BigDecimal total = BigDecimal.ZERO;
         for (PurchaseOrderItemRequest line : request.items()) {
-            Product product = productRepository.findById(line.productId())
+            ProductVariant productVariant = productVariantRepository.findById(line.productId())
                     .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham id = " + line.productId()));
             PurchaseOrderItem item = PurchaseOrderItem.builder()
                     .purchaseOrder(po)
-                    .product(product)
+                    .productVariant(productVariant)
                     .quantity(line.quantity())
                     .costPrice(line.costPrice())
                     .receivedQuantity(0)
@@ -158,15 +151,15 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
             }
 
             // Cong ton kho + ghi stock movement (PURCHASE_IN), khoa product de tranh race. 
-            Product product = productRepository.findByIdForUpdate(item.getProduct().getId())
+            ProductVariant productVariant = productVariantRepository.findByIdForUpdate(item.getProductVariant().getId())
                     .orElseThrow(() -> new ResourceNotFoundException(
-                            "Khong tim thay san pham id = " + item.getProduct().getId()));
+                            "Khong tim thay san pham id = " + item.getProductVariant().getId()));
             stockMovementService.recordMovement(
-                    product,
+                    productVariant,
                     line.receivedQuantity(),
                     StockMovementType.PURCHASE_IN,
                     StockReferenceType.PURCHASE_ORDER,
-                    po.getId().longValue(),
+                    po.getId().intValue(),
                     "Nhan hang tu don mua #" + po.getId(),
                     receivedBy);
 

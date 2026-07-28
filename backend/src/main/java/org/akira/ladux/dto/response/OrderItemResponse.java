@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 public record OrderItemResponse(
         Integer id,
         Integer orderId,
-        Integer productId,
+        Integer productVariantId,
         int quantity,
         BigDecimal priceAtPurchase
 ) implements Serializable {
@@ -18,7 +18,7 @@ public record OrderItemResponse(
         return new OrderItemResponse(
                 item.getId(),
                 item.getOrder() == null ? null : item.getOrder().getId(),
-                item.getProduct() == null ? null : item.getProduct().getId(),
+                item.getProductVariant() == null ? null : item.getProductVariant().getId(),
                 item.getQuantity(),
                 item.getPriceAtPurchase()
         );

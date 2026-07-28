@@ -1,0 +1,1099 @@
+{
+    "nodes":  [
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "type":  "file",
+                      "name":  "CartController.java",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "summary":  "Exposes authenticated user cart REST endpoints for reading a cart, adding items, updating quantities, removing items, and clearing the cart. It delegates cart behavior to CartService and uses the authenticated UserPrincipal id for user scoping.",
+                      "tags":  [
+                                   "api-handler",
+                                   "cart",
+                                   "rest-controller",
+                                   "security"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/dto/request/CartItemRequest.java",
+                      "type":  "file",
+                      "name":  "CartItemRequest.java",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/request/CartItemRequest.java",
+                      "summary":  "Defines the request payload for adding an item to a cart, carrying product id and quantity fields. Bean validation enforces a positive product id and a quantity of at least one.",
+                      "tags":  [
+                                   "data-transfer",
+                                   "validation",
+                                   "cart",
+                                   "request-model"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/dto/request/CartQuantityRequest.java",
+                      "type":  "file",
+                      "name":  "CartQuantityRequest.java",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/request/CartQuantityRequest.java",
+                      "summary":  "Defines the request payload for changing the quantity of an existing cart item. It uses Bean Validation to require a non-negative quantity so zero can represent removal.",
+                      "tags":  [
+                                   "data-transfer",
+                                   "validation",
+                                   "cart",
+                                   "request-model"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/dto/response/CartItemResponse.java",
+                      "type":  "file",
+                      "name":  "CartItemResponse.java",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/response/CartItemResponse.java",
+                      "summary":  "Defines the serialized representation of a cart item and maps CartItem entities to response records. The mapper includes a summarized product payload and item quantity.",
+                      "tags":  [
+                                   "data-transfer",
+                                   "serialization",
+                                   "cart",
+                                   "response-model"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+                      "type":  "file",
+                      "name":  "CartResponse.java",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+                      "summary":  "Defines the serialized cart response and calculates a cart total from product variant prices and discounts. It safely handles null carts or item lists while mapping items through CartItemResponse.",
+                      "tags":  [
+                                   "data-transfer",
+                                   "serialization",
+                                   "cart",
+                                   "pricing"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/model/Cart.java",
+                      "type":  "file",
+                      "name":  "Cart.java",
+                      "filePath":  "src/main/java/org/akira/ladux/model/Cart.java",
+                      "summary":  "Models the shopping cart entity with a one-to-one user relationship and a cascading collection of cart items. The entity is persisted to the carts table and owns item lifecycle through orphan removal.",
+                      "tags":  [
+                                   "data-model",
+                                   "jpa-entity",
+                                   "cart",
+                                   "persistence"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/model/CartItem.java",
+                      "type":  "file",
+                      "name":  "CartItem.java",
+                      "filePath":  "src/main/java/org/akira/ladux/model/CartItem.java",
+                      "summary":  "Models an item in a shopping cart with cart, product variant, and quantity relationships. It enforces a positive quantity and provides a helper for incrementing existing quantities.",
+                      "tags":  [
+                                   "data-model",
+                                   "jpa-entity",
+                                   "cart",
+                                   "validation"
+                               ],
+                      "complexity":  "simple",
+                      "languageNotes":  "The unique constraint is declared on cart_id and product_id while the entity field maps productVariant to the product_id join column."
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/repository/CartItemRepository.java",
+                      "type":  "file",
+                      "name":  "CartItemRepository.java",
+                      "filePath":  "src/main/java/org/akira/ladux/repository/CartItemRepository.java",
+                      "summary":  "Defines Spring Data access methods for cart items by cart id, product id, and product variant id. It supports querying and cleanup operations around cart item persistence.",
+                      "tags":  [
+                                   "repository",
+                                   "spring-data",
+                                   "cart",
+                                   "persistence"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/repository/CartRepository.java",
+                      "type":  "file",
+                      "name":  "CartRepository.java",
+                      "filePath":  "src/main/java/org/akira/ladux/repository/CartRepository.java",
+                      "summary":  "Defines cart persistence access by user id, including a pessimistic write-lock query for transactional cart mutation. It backs the cart service\u0027s read and write workflows.",
+                      "tags":  [
+                                   "repository",
+                                   "spring-data",
+                                   "cart",
+                                   "locking"
+                               ],
+                      "complexity":  "simple",
+                      "languageNotes":  "The repository uses @Lock(PESSIMISTIC_WRITE) with a fetch join to guard cart item mutations during concurrent operations."
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/service/CartService.java",
+                      "type":  "file",
+                      "name":  "CartService.java",
+                      "filePath":  "src/main/java/org/akira/ladux/service/CartService.java",
+                      "summary":  "Declares the cart service contract for reading, adding, updating, removing, and clearing user cart contents. Controllers and implementations use this interface as the cart workflow boundary.",
+                      "tags":  [
+                                   "service",
+                                   "interface",
+                                   "cart",
+                                   "business-logic"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "type":  "file",
+                      "name":  "CartServiceImpl.java",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "summary":  "Implements transactional cart workflows with user and cart row locking, cache eviction, product lookup, and cart response mapping. It creates carts on demand, mutates item quantities, removes items, and clears carts after user-scoped validation.",
+                      "tags":  [
+                                   "service",
+                                   "business-logic",
+                                   "cart",
+                                   "transactional"
+                               ],
+                      "complexity":  "moderate",
+                      "languageNotes":  "Spring cache annotations are paired with transactional methods so cart reads can be cached while all mutations evict cached cart entries."
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/controller/user/CartController.java:CartController",
+                      "type":  "class",
+                      "name":  "CartController",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "lineRange":  [
+                                        15,
+                                        46
+                                    ],
+                      "summary":  "REST controller coordinating user cart HTTP requests with CartService operations. It exposes five cart endpoints under the user API surface.",
+                      "tags":  [
+                                   "api-handler",
+                                   "rest-controller",
+                                   "cart",
+                                   "security"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/dto/request/CartItemRequest.java:CartItemRequest",
+                      "type":  "class",
+                      "name":  "CartItemRequest",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/request/CartItemRequest.java",
+                      "lineRange":  [
+                                        6,
+                                        14
+                                    ],
+                      "summary":  "Request record carrying product id and quantity when adding a cart item. Validation annotations constrain both fields before service logic runs.",
+                      "tags":  [
+                                   "request-model",
+                                   "validation",
+                                   "cart",
+                                   "record"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/dto/request/CartQuantityRequest.java:CartQuantityRequest",
+                      "type":  "class",
+                      "name":  "CartQuantityRequest",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/request/CartQuantityRequest.java",
+                      "lineRange":  [
+                                        6,
+                                        10
+                                    ],
+                      "summary":  "Request record carrying a replacement cart item quantity. Its minimum value allows zero for removal-oriented quantity updates.",
+                      "tags":  [
+                                   "request-model",
+                                   "validation",
+                                   "cart",
+                                   "record"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/dto/response/CartItemResponse.java:CartItemResponse",
+                      "type":  "class",
+                      "name":  "CartItemResponse",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/response/CartItemResponse.java",
+                      "lineRange":  [
+                                        7,
+                                        22
+                                    ],
+                      "summary":  "Response record for one cart line item. It exposes item id, summarized product data, and quantity for API clients.",
+                      "tags":  [
+                                   "response-model",
+                                   "serialization",
+                                   "cart",
+                                   "record"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/dto/response/CartResponse.java:CartResponse",
+                      "type":  "class",
+                      "name":  "CartResponse",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+                      "lineRange":  [
+                                        9,
+                                        36
+                                    ],
+                      "summary":  "Response record for a user\u0027s full cart, including item responses and computed total price. It implements Serializable for cache-friendly response storage.",
+                      "tags":  [
+                                   "response-model",
+                                   "serialization",
+                                   "cart",
+                                   "pricing"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/model/Cart.java:Cart",
+                      "type":  "class",
+                      "name":  "Cart",
+                      "filePath":  "src/main/java/org/akira/ladux/model/Cart.java",
+                      "lineRange":  [
+                                        9,
+                                        31
+                                    ],
+                      "summary":  "JPA cart aggregate root tied to exactly one user and many cart items. Cascade and orphan removal make the cart responsible for item persistence lifecycle.",
+                      "tags":  [
+                                   "data-model",
+                                   "jpa-entity",
+                                   "cart",
+                                   "aggregate"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/model/CartItem.java:CartItem",
+                      "type":  "class",
+                      "name":  "CartItem",
+                      "filePath":  "src/main/java/org/akira/ladux/model/CartItem.java",
+                      "lineRange":  [
+                                        7,
+                                        40
+                                    ],
+                      "summary":  "JPA cart item entity that joins a cart to a product variant with a validated quantity. It provides a quantity increment helper for merging duplicate cart additions.",
+                      "tags":  [
+                                   "data-model",
+                                   "jpa-entity",
+                                   "cart",
+                                   "quantity"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/repository/CartItemRepository.java:CartItemRepository",
+                      "type":  "class",
+                      "name":  "CartItemRepository",
+                      "filePath":  "src/main/java/org/akira/ladux/repository/CartItemRepository.java",
+                      "lineRange":  [
+                                        9,
+                                        15
+                                    ],
+                      "summary":  "Spring Data repository interface for CartItem queries and deletes. Method names derive lookup behavior from cart and product identifiers.",
+                      "tags":  [
+                                   "repository",
+                                   "spring-data",
+                                   "cart",
+                                   "persistence"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/repository/CartRepository.java:CartRepository",
+                      "type":  "class",
+                      "name":  "CartRepository",
+                      "filePath":  "src/main/java/org/akira/ladux/repository/CartRepository.java",
+                      "lineRange":  [
+                                        13,
+                                        22
+                                    ],
+                      "summary":  "Spring Data repository interface for Cart lookup by user id. It includes a pessimistic-lock variant that fetches item collections for safe writes.",
+                      "tags":  [
+                                   "repository",
+                                   "spring-data",
+                                   "cart",
+                                   "locking"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/service/CartService.java:CartService",
+                      "type":  "class",
+                      "name":  "CartService",
+                      "filePath":  "src/main/java/org/akira/ladux/service/CartService.java",
+                      "lineRange":  [
+                                        4,
+                                        14
+                                    ],
+                      "summary":  "Service interface defining the cart use cases exposed to controllers. It returns CartResponse for reads and uses void commands for mutations.",
+                      "tags":  [
+                                   "service",
+                                   "interface",
+                                   "cart",
+                                   "contract"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:CartServiceImpl",
+                      "type":  "class",
+                      "name":  "CartServiceImpl",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "lineRange":  [
+                                        24,
+                                        120
+                                    ],
+                      "summary":  "Concrete CartService implementation that coordinates repositories, transactions, locking, and cache invalidation. It centralizes cart mutation rules for authenticated users.",
+                      "tags":  [
+                                   "service",
+                                   "implementation",
+                                   "cart",
+                                   "transactional"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/user/CartController.java:getCartByUserId",
+                      "type":  "function",
+                      "name":  "getCartByUserId",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "lineRange":  [
+                                        21,
+                                        25
+                                    ],
+                      "summary":  "Handles the current user\u0027s cart retrieval and returns the service response with HTTP 200. The user id is read from the authenticated principal.",
+                      "tags":  [
+                                   "api-handler",
+                                   "cart",
+                                   "read-operation",
+                                   "security"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/user/CartController.java:addItemToCart",
+                      "type":  "function",
+                      "name":  "addItemToCart",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "lineRange":  [
+                                        26,
+                                        30
+                                    ],
+                      "summary":  "Handles cart item creation from a validated request payload. It delegates item insertion to the service and returns HTTP 201 on success.",
+                      "tags":  [
+                                   "api-handler",
+                                   "cart",
+                                   "write-operation",
+                                   "validation"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/user/CartController.java:updateQuantity",
+                      "type":  "function",
+                      "name":  "updateQuantity",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "lineRange":  [
+                                        31,
+                                        35
+                                    ],
+                      "summary":  "Handles quantity replacement for a product already in the authenticated user\u0027s cart. It delegates the update and returns an empty HTTP 200 response.",
+                      "tags":  [
+                                   "api-handler",
+                                   "cart",
+                                   "write-operation",
+                                   "validation"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/user/CartController.java:removeItemFromCart",
+                      "type":  "function",
+                      "name":  "removeItemFromCart",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "lineRange":  [
+                                        36,
+                                        40
+                                    ],
+                      "summary":  "Handles deletion of a product from the authenticated user\u0027s cart. It delegates removal to the cart service and returns HTTP 204.",
+                      "tags":  [
+                                   "api-handler",
+                                   "cart",
+                                   "delete-operation",
+                                   "security"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/controller/user/CartController.java:clearCart",
+                      "type":  "function",
+                      "name":  "clearCart",
+                      "filePath":  "src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "lineRange":  [
+                                        41,
+                                        45
+                                    ],
+                      "summary":  "Handles clearing all items from the authenticated user\u0027s cart. It delegates to CartService and returns HTTP 204 after mutation.",
+                      "tags":  [
+                                   "api-handler",
+                                   "cart",
+                                   "delete-operation",
+                                   "security"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/dto/response/CartItemResponse.java:fromEntity",
+                      "type":  "function",
+                      "name":  "fromEntity",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/response/CartItemResponse.java",
+                      "lineRange":  [
+                                        12,
+                                        21
+                                    ],
+                      "summary":  "Maps a CartItem entity into a cart item response record. It returns null for null input and delegates product shaping to ProductResponse.summaryFromEntity.",
+                      "tags":  [
+                                   "serialization",
+                                   "mapper",
+                                   "cart",
+                                   "response-model"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/dto/response/CartResponse.java:fromEntity",
+                      "type":  "function",
+                      "name":  "fromEntity",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+                      "lineRange":  [
+                                        15,
+                                        35
+                                    ],
+                      "summary":  "Maps a Cart entity into a full cart response and computes the total price from variant prices or discount prices. It also converts cart items into nested CartItemResponse records.",
+                      "tags":  [
+                                   "serialization",
+                                   "mapper",
+                                   "cart",
+                                   "pricing"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/model/CartItem.java:incrementQuantity",
+                      "type":  "function",
+                      "name":  "incrementQuantity",
+                      "filePath":  "src/main/java/org/akira/ladux/model/CartItem.java",
+                      "lineRange":  [
+                                        37,
+                                        39
+                                    ],
+                      "summary":  "Adds the provided amount to the existing cart item quantity. The helper is used when an added product is already present in the cart.",
+                      "tags":  [
+                                   "domain-helper",
+                                   "cart",
+                                   "quantity",
+                                   "mutation"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:getCartByUserId",
+                      "type":  "function",
+                      "name":  "getCartByUserId",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "lineRange":  [
+                                        30,
+                                        39
+                                    ],
+                      "summary":  "Loads a user\u0027s cart, raises ResourceNotFoundException when absent, and maps it to CartResponse. The read-only transactional method is cacheable by user id.",
+                      "tags":  [
+                                   "service",
+                                   "cart",
+                                   "read-operation",
+                                   "caching"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:addItemToCart",
+                      "type":  "function",
+                      "name":  "addItemToCart",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "lineRange":  [
+                                        40,
+                                        73
+                                    ],
+                      "summary":  "Locks the user and cart, creates a cart if needed, validates the product, and either increments an existing cart item or appends a new one. It saves the cart and evicts cart cache entries after mutation.",
+                      "tags":  [
+                                   "service",
+                                   "cart",
+                                   "write-operation",
+                                   "locking"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:updateQuantity",
+                      "type":  "function",
+                      "name":  "updateQuantity",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "lineRange":  [
+                                        74,
+                                        93
+                                    ],
+                      "summary":  "Locks the user cart, locates the requested item, and either removes it for non-positive quantities or updates its quantity. The method persists the cart and evicts cached cart data.",
+                      "tags":  [
+                                   "service",
+                                   "cart",
+                                   "write-operation",
+                                   "locking"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:removeItemFromCart",
+                      "type":  "function",
+                      "name":  "removeItemFromCart",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "lineRange":  [
+                                        94,
+                                        108
+                                    ],
+                      "summary":  "Locks and loads the user cart, finds the matching product item, removes it, and saves the cart. Missing users, carts, or products are reported through ResourceNotFoundException.",
+                      "tags":  [
+                                   "service",
+                                   "cart",
+                                   "delete-operation",
+                                   "locking"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:clearCart",
+                      "type":  "function",
+                      "name":  "clearCart",
+                      "filePath":  "src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "lineRange":  [
+                                        109,
+                                        119
+                                    ],
+                      "summary":  "Locks the user cart, clears all cart items, and saves the aggregate. Cache eviction keeps future cart reads from returning stale contents.",
+                      "tags":  [
+                                   "service",
+                                   "cart",
+                                   "delete-operation",
+                                   "caching"
+                               ],
+                      "complexity":  "simple"
+                  }
+              ],
+    "edges":  [
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/request/CartItemRequest.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/request/CartQuantityRequest.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/UserPrincipal.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "file:src/main/java/org/akira/ladux/service/CartService.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/CartItemResponse.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/CartItem.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/Cart.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/repository/CartItemRepository.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/CartItem.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/repository/CartRepository.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/Cart.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/CartService.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/Cart.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/CartItem.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/Product.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/model/User.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/repository/CartRepository.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/repository/ProductRepository.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/repository/UserRepository.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "file:src/main/java/org/akira/ladux/service/CartService.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "class:src/main/java/org/akira/ladux/controller/user/CartController.java:CartController",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/request/CartItemRequest.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/request/CartItemRequest.java:CartItemRequest",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/request/CartQuantityRequest.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/request/CartQuantityRequest.java:CartQuantityRequest",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/CartItemResponse.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/response/CartItemResponse.java:CartItemResponse",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/response/CartResponse.java:CartResponse",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/model/Cart.java",
+                      "target":  "class:src/main/java/org/akira/ladux/model/Cart.java:Cart",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/model/CartItem.java",
+                      "target":  "class:src/main/java/org/akira/ladux/model/CartItem.java:CartItem",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/repository/CartItemRepository.java",
+                      "target":  "class:src/main/java/org/akira/ladux/repository/CartItemRepository.java:CartItemRepository",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/repository/CartRepository.java",
+                      "target":  "class:src/main/java/org/akira/ladux/repository/CartRepository.java:CartRepository",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/CartService.java",
+                      "target":  "class:src/main/java/org/akira/ladux/service/CartService.java:CartService",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "class:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:CartServiceImpl",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/user/CartController.java:getCartByUserId",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/user/CartController.java:addItemToCart",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/user/CartController.java:updateQuantity",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/user/CartController.java:removeItemFromCart",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/user/CartController.java:clearCart",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/CartItemResponse.java",
+                      "target":  "function:src/main/java/org/akira/ladux/dto/response/CartItemResponse.java:fromEntity",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+                      "target":  "function:src/main/java/org/akira/ladux/dto/response/CartResponse.java:fromEntity",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/model/CartItem.java",
+                      "target":  "function:src/main/java/org/akira/ladux/model/CartItem.java:incrementQuantity",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:getCartByUserId",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:addItemToCart",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:updateQuantity",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:removeItemFromCart",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:clearCart",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "class:src/main/java/org/akira/ladux/controller/user/CartController.java:CartController",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/request/CartItemRequest.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/request/CartItemRequest.java:CartItemRequest",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/request/CartQuantityRequest.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/request/CartQuantityRequest.java:CartQuantityRequest",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/CartItemResponse.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/response/CartItemResponse.java:CartItemResponse",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/response/CartResponse.java:CartResponse",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/model/Cart.java",
+                      "target":  "class:src/main/java/org/akira/ladux/model/Cart.java:Cart",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/model/CartItem.java",
+                      "target":  "class:src/main/java/org/akira/ladux/model/CartItem.java:CartItem",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/repository/CartItemRepository.java",
+                      "target":  "class:src/main/java/org/akira/ladux/repository/CartItemRepository.java:CartItemRepository",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/repository/CartRepository.java",
+                      "target":  "class:src/main/java/org/akira/ladux/repository/CartRepository.java:CartRepository",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/CartService.java",
+                      "target":  "class:src/main/java/org/akira/ladux/service/CartService.java:CartService",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "class:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:CartServiceImpl",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/user/CartController.java:getCartByUserId",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/user/CartController.java:addItemToCart",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/user/CartController.java:updateQuantity",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/user/CartController.java:removeItemFromCart",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/controller/user/CartController.java",
+                      "target":  "function:src/main/java/org/akira/ladux/controller/user/CartController.java:clearCart",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/CartItemResponse.java",
+                      "target":  "function:src/main/java/org/akira/ladux/dto/response/CartItemResponse.java:fromEntity",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/response/CartResponse.java",
+                      "target":  "function:src/main/java/org/akira/ladux/dto/response/CartResponse.java:fromEntity",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/model/CartItem.java",
+                      "target":  "function:src/main/java/org/akira/ladux/model/CartItem.java:incrementQuantity",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:getCartByUserId",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:addItemToCart",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:updateQuantity",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:removeItemFromCart",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java",
+                      "target":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:clearCart",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "class:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:CartServiceImpl",
+                      "target":  "class:src/main/java/org/akira/ladux/service/CartService.java:CartService",
+                      "type":  "implements",
+                      "direction":  "forward",
+                      "weight":  0.9
+                  },
+                  {
+                      "source":  "function:src/main/java/org/akira/ladux/dto/response/CartResponse.java:fromEntity",
+                      "target":  "function:src/main/java/org/akira/ladux/dto/response/CartItemResponse.java:fromEntity",
+                      "type":  "calls",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:getCartByUserId",
+                      "target":  "function:src/main/java/org/akira/ladux/dto/response/CartResponse.java:fromEntity",
+                      "type":  "calls",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "function:src/main/java/org/akira/ladux/service/impl/CartServiceImpl.java:addItemToCart",
+                      "target":  "function:src/main/java/org/akira/ladux/model/CartItem.java:incrementQuantity",
+                      "type":  "calls",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  }
+              ]
+}

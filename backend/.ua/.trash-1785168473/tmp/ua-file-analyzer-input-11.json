@@ -1,0 +1,113 @@
+{
+    "projectRoot":  "C:\\Users\\ADMIN\\OneDrive\\Desktop\\Ladux\\backend",
+    "batchFiles":  [
+                       {
+                           "path":  "src/main/java/org/akira/ladux/controller/admin/AdminNotificationController.java",
+                           "language":  "java",
+                           "sizeLines":  47,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/controller/user/NotificationController.java",
+                           "language":  "java",
+                           "sizeLines":  79,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/dto/request/NotificationRequest.java",
+                           "language":  "java",
+                           "sizeLines":  15,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/dto/response/NotificationResponse.java",
+                           "language":  "java",
+                           "sizeLines":  32,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/model/Notification.java",
+                           "language":  "java",
+                           "sizeLines":  60,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/model/enums/NotificationTargetType.java",
+                           "language":  "java",
+                           "sizeLines":  8,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/model/enums/NotificationType.java",
+                           "language":  "java",
+                           "sizeLines":  9,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/repository/NotificationRepository.java",
+                           "language":  "java",
+                           "sizeLines":  30,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/service/NotificationService.java",
+                           "language":  "java",
+                           "sizeLines":  37,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/service/impl/NotificationServiceImpl.java",
+                           "language":  "java",
+                           "sizeLines":  137,
+                           "fileCategory":  "code"
+                       }
+                   ],
+    "batchImportData":  {
+                            "src/main/java/org/akira/ladux/controller/admin/AdminNotificationController.java":  [
+                                                                                                                    "src/main/java/org/akira/ladux/dto/request/NotificationRequest.java",
+                                                                                                                    "src/main/java/org/akira/ladux/dto/response/NotificationResponse.java",
+                                                                                                                    "src/main/java/org/akira/ladux/service/NotificationService.java"
+                                                                                                                ],
+                            "src/main/java/org/akira/ladux/controller/user/NotificationController.java":  [
+                                                                                                              "src/main/java/org/akira/ladux/dto/response/NotificationResponse.java",
+                                                                                                              "src/main/java/org/akira/ladux/service/NotificationService.java"
+                                                                                                          ],
+                            "src/main/java/org/akira/ladux/dto/request/NotificationRequest.java":  [
+                                                                                                       "src/main/java/org/akira/ladux/model/enums/NotificationTargetType.java",
+                                                                                                       "src/main/java/org/akira/ladux/model/enums/NotificationType.java"
+                                                                                                   ],
+                            "src/main/java/org/akira/ladux/dto/response/NotificationResponse.java":  [
+                                                                                                         "src/main/java/org/akira/ladux/model/Notification.java",
+                                                                                                         "src/main/java/org/akira/ladux/model/enums/NotificationTargetType.java",
+                                                                                                         "src/main/java/org/akira/ladux/model/enums/NotificationType.java"
+                                                                                                     ],
+                            "src/main/java/org/akira/ladux/model/Notification.java":  [
+                                                                                          "src/main/java/org/akira/ladux/model/enums/NotificationTargetType.java",
+                                                                                          "src/main/java/org/akira/ladux/model/enums/NotificationType.java"
+                                                                                      ],
+                            "src/main/java/org/akira/ladux/model/enums/NotificationTargetType.java":  [
+
+                                                                                                      ],
+                            "src/main/java/org/akira/ladux/model/enums/NotificationType.java":  [
+
+                                                                                                ],
+                            "src/main/java/org/akira/ladux/repository/NotificationRepository.java":  [
+                                                                                                         "src/main/java/org/akira/ladux/model/Notification.java"
+                                                                                                     ],
+                            "src/main/java/org/akira/ladux/service/NotificationService.java":  [
+                                                                                                   "src/main/java/org/akira/ladux/dto/request/NotificationRequest.java",
+                                                                                                   "src/main/java/org/akira/ladux/dto/response/NotificationResponse.java"
+                                                                                               ],
+                            "src/main/java/org/akira/ladux/service/impl/NotificationServiceImpl.java":  [
+                                                                                                            "src/main/java/org/akira/ladux/dto/request/NotificationRequest.java",
+                                                                                                            "src/main/java/org/akira/ladux/dto/response/NotificationResponse.java",
+                                                                                                            "src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+                                                                                                            "src/main/java/org/akira/ladux/model/Notification.java",
+                                                                                                            "src/main/java/org/akira/ladux/model/User.java",
+                                                                                                            "src/main/java/org/akira/ladux/repository/NotificationRepository.java",
+                                                                                                            "src/main/java/org/akira/ladux/repository/UserRepository.java",
+                                                                                                            "src/main/java/org/akira/ladux/service/NotificationService.java",
+                                                                                                            "src/main/java/org/akira/ladux/utils/SecurityUtils.java"
+                                                                                                        ]
+                        }
+}

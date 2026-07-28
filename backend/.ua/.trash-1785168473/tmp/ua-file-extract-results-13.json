@@ -1,0 +1,724 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 8,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 8,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 8,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "src/main/java/org/akira/ladux/controller/admin/AdminCustomerController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 59,
+      "nonEmptyLines": 49,
+      "functions": [
+        {
+          "name": "getAllCustomers",
+          "startLine": 30,
+          "endLine": 33,
+          "params": [
+            "pageable"
+          ]
+        },
+        {
+          "name": "searchCustomers",
+          "startLine": 35,
+          "endLine": 42,
+          "params": [
+            "name",
+            "phone",
+            "pageable"
+          ]
+        },
+        {
+          "name": "getByLevel",
+          "startLine": 44,
+          "endLine": 47,
+          "params": [
+            "level",
+            "pageable"
+          ]
+        },
+        {
+          "name": "getByUserId",
+          "startLine": 49,
+          "endLine": 52,
+          "params": [
+            "customerId"
+          ]
+        },
+        {
+          "name": "updateCustomer",
+          "startLine": 54,
+          "endLine": 58,
+          "params": [
+            "customerId",
+            "request"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AdminCustomerController",
+          "startLine": 22,
+          "endLine": 59,
+          "methods": [
+            "getAllCustomers",
+            "searchCustomers",
+            "getByLevel",
+            "getByUserId",
+            "updateCustomer"
+          ],
+          "properties": [
+            "service"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getAllCustomers",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "searchCustomers",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "getByLevel",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "getByUserId",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "updateCustomer",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "AdminCustomerController",
+          "line": 22,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getAllCustomers",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 32
+        },
+        {
+          "caller": "getAllCustomers",
+          "callee": "service.getAllCustomers",
+          "lineNumber": 32
+        },
+        {
+          "caller": "searchCustomers",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 41
+        },
+        {
+          "caller": "searchCustomers",
+          "callee": "service.searchCustomers",
+          "lineNumber": 41
+        },
+        {
+          "caller": "getByLevel",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getByLevel",
+          "callee": "service.getCustomersByLevel",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getByUserId",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 51
+        },
+        {
+          "caller": "getByUserId",
+          "callee": "service.getCustomerByUserId",
+          "lineNumber": 51
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 57
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "service.updateCustomer",
+          "lineNumber": 57
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 6,
+        "functionCount": 5,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/request/CustomerUpdateRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 31,
+      "nonEmptyLines": 22,
+      "classes": [
+        {
+          "name": "CustomerUpdateRequest",
+          "startLine": 14,
+          "endLine": 31,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "CustomerUpdateRequest",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/response/CustomerResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 39,
+      "nonEmptyLines": 36,
+      "functions": [
+        {
+          "name": "fromEntity",
+          "startLine": 21,
+          "endLine": 38,
+          "params": [
+            "customer"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CustomerResponse",
+          "startLine": 9,
+          "endLine": 39,
+          "methods": [
+            "fromEntity"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "fromEntity",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "CustomerResponse",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "fromEntity",
+          "callee": "customer.getUser",
+          "lineNumber": 25
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "new CustomerResponse",
+          "lineNumber": 26
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "customer.getId",
+          "lineNumber": 27
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "user.getId",
+          "lineNumber": 28
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "user.getEmail",
+          "lineNumber": 29
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "user.getUsername",
+          "lineNumber": 30
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "customer.getFullName",
+          "lineNumber": 31
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "customer.getPhone",
+          "lineNumber": 32
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "customer.getAvatarUrl",
+          "lineNumber": 33
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "customer.getLoyaltyPoints",
+          "lineNumber": 34
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "customer.getLevel",
+          "lineNumber": 35
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "customer.getTotalSpent",
+          "lineNumber": 36
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/model/Customer.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 69,
+      "nonEmptyLines": 57,
+      "classes": [
+        {
+          "name": "Customer",
+          "startLine": 29,
+          "endLine": 69,
+          "methods": [],
+          "properties": [
+            "id",
+            "user",
+            "fullName",
+            "phone",
+            "avatarUrl",
+            "loyaltyPoints",
+            "level",
+            "totalSpent"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Customer",
+          "line": 29,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/model/enums/CustomerLevel.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 8,
+      "nonEmptyLines": 7,
+      "classes": [
+        {
+          "name": "CustomerLevel",
+          "startLine": 3,
+          "endLine": 8,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "CustomerLevel",
+          "line": 3,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/repository/CustomerRepository.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 33,
+      "nonEmptyLines": 27,
+      "classes": [
+        {
+          "name": "CustomerRepository",
+          "startLine": 15,
+          "endLine": 33,
+          "methods": [
+            "findByUserId",
+            "findByLevel",
+            "findByNameOrPhone"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "CustomerRepository",
+          "line": 15,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/CustomerService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 20,
+      "nonEmptyLines": 13,
+      "classes": [
+        {
+          "name": "CustomerService",
+          "startLine": 9,
+          "endLine": 20,
+          "methods": [
+            "getAllCustomers",
+            "getCustomersByLevel",
+            "getCustomerByUserId",
+            "updateCustomer",
+            "searchCustomers"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "CustomerService",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/impl/CustomerServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 76,
+      "nonEmptyLines": 66,
+      "functions": [
+        {
+          "name": "getAllCustomers",
+          "startLine": 23,
+          "endLine": 27,
+          "params": [
+            "pageable"
+          ]
+        },
+        {
+          "name": "getCustomersByLevel",
+          "startLine": 29,
+          "endLine": 33,
+          "params": [
+            "level",
+            "pageable"
+          ]
+        },
+        {
+          "name": "getCustomerByUserId",
+          "startLine": 35,
+          "endLine": 39,
+          "params": [
+            "userId"
+          ]
+        },
+        {
+          "name": "searchCustomers",
+          "startLine": 41,
+          "endLine": 45,
+          "params": [
+            "name",
+            "phone",
+            "pageable"
+          ]
+        },
+        {
+          "name": "updateCustomer",
+          "startLine": 47,
+          "endLine": 70,
+          "params": [
+            "userId",
+            "request"
+          ]
+        },
+        {
+          "name": "findOrThrow",
+          "startLine": 72,
+          "endLine": 75,
+          "params": [
+            "userId"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CustomerServiceImpl",
+          "startLine": 17,
+          "endLine": 76,
+          "methods": [
+            "getAllCustomers",
+            "getCustomersByLevel",
+            "getCustomerByUserId",
+            "searchCustomers",
+            "updateCustomer",
+            "findOrThrow"
+          ],
+          "properties": [
+            "repo"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getAllCustomers",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "getCustomersByLevel",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "getCustomerByUserId",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "searchCustomers",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "updateCustomer",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "CustomerServiceImpl",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getAllCustomers",
+          "callee": "repo.findAll(pageable).map",
+          "lineNumber": 26
+        },
+        {
+          "caller": "getAllCustomers",
+          "callee": "repo.findAll",
+          "lineNumber": 26
+        },
+        {
+          "caller": "getCustomersByLevel",
+          "callee": "repo.findByLevel(level, pageable).map",
+          "lineNumber": 32
+        },
+        {
+          "caller": "getCustomersByLevel",
+          "callee": "repo.findByLevel",
+          "lineNumber": 32
+        },
+        {
+          "caller": "getCustomerByUserId",
+          "callee": "CustomerResponse.fromEntity",
+          "lineNumber": 38
+        },
+        {
+          "caller": "getCustomerByUserId",
+          "callee": "findOrThrow",
+          "lineNumber": 38
+        },
+        {
+          "caller": "searchCustomers",
+          "callee": "repo.findByNameOrPhone",
+          "lineNumber": 44
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "findOrThrow",
+          "lineNumber": 50
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "request.fullName",
+          "lineNumber": 51
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "customer.setFullName",
+          "lineNumber": 52
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "request.fullName().trim",
+          "lineNumber": 52
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "request.fullName",
+          "lineNumber": 52
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "request.phone",
+          "lineNumber": 54
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "customer.setPhone",
+          "lineNumber": 55
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "request.phone",
+          "lineNumber": 55
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "request.avatarUrl",
+          "lineNumber": 57
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "customer.setAvatarUrl",
+          "lineNumber": 58
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "request.avatarUrl",
+          "lineNumber": 58
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "request.level",
+          "lineNumber": 60
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "customer.setLevel",
+          "lineNumber": 61
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "request.level",
+          "lineNumber": 61
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "request.loyaltyPoints",
+          "lineNumber": 63
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "customer.setLoyaltyPoints",
+          "lineNumber": 64
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "request.loyaltyPoints",
+          "lineNumber": 64
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "request.totalSpent",
+          "lineNumber": 66
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "customer.setTotalSpent",
+          "lineNumber": 67
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "request.totalSpent",
+          "lineNumber": 67
+        },
+        {
+          "caller": "updateCustomer",
+          "callee": "CustomerResponse.fromEntity",
+          "lineNumber": 69
+        },
+        {
+          "caller": "findOrThrow",
+          "callee": "repo.findByUserId(userId).orElseThrow",
+          "lineNumber": 73
+        },
+        {
+          "caller": "findOrThrow",
+          "callee": "repo.findByUserId",
+          "lineNumber": 73
+        },
+        {
+          "caller": "findOrThrow",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 74
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 6,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    }
+  ]
+}

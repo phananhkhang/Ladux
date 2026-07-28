@@ -79,22 +79,14 @@ public class NotificationServiceImpl implements NotificationService {
     // Admin gửi thông báo đến tất cả người dùng
     @Override
     public String broadcastNotification(NotificationRequest request) {
-        // Keo tat ca user len
-        List<User> allUsers = userRepository.findAll();
-        List<Notification> notifications = allUsers.stream()
-                .map(user -> Notification.builder()
-                        .recipient(user)
-                        .title(request.title())
-                        .message(request.message())
-                        .isRead(false)
-                        .type(request.type())
-                        .targetType(request.targetType())
-                        .targetId(request.targetId())
-                        .createdAt(Instant.now())
-                        .build())
-                        .toList();
-        notificationRepository.saveAll(notifications);
-        return "Thông báo đã được gửi đến tất cả người dùng.";
+        int count = notificationRepository.insertBroadcastNotifications(
+                request.title(),
+                request.message(),
+                request.type().name(),
+                request.targetType() != null ? request.targetType().name() : null,
+                request.targetId()
+        );
+        return "Đã gửi thông báo thành công tới " + count + " người dùng.";
     }
     // Admin gửi thông báo đến 1 người dùng cụ thể
     @Override

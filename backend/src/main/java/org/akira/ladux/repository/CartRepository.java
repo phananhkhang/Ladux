@@ -11,10 +11,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface CartRepository extends JpaRepository<Cart, Integer> {
-    @EntityGraph(attributePaths = {"items", "items.product", "items.product.brand", "items.product.category"})
+    @EntityGraph(attributePaths = {"items", "items.productVariant", "items.productVariant.product",
+            "items.productVariant.product.brand", "items.productVariant.product.category"})
     Cart findByUserId(Integer userId);
 
-    @EntityGraph(attributePaths = {"items", "items.product", "items.product.brand", "items.product.category"})
+    @EntityGraph(attributePaths = {"items", "items.productVariant", "items.productVariant.product",
+            "items.productVariant.product.brand", "items.productVariant.product.category"})
     @Lock(LockModeType.PESSIMISTIC_WRITE) // Cái này ngon khi đọc dữ liệu lên để sửa, xóa, nếu chỉ đọc thông thường thì không Lock cũng được
     @Query("select c from Cart c where c.user.id = :userId")
     Optional<Cart> findByUserIdForUpdate(@Param("userId") Integer userId);

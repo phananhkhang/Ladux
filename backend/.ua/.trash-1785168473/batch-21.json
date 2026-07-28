@@ -1,0 +1,1482 @@
+{
+    "nodes":  [
+                  {
+                      "id":  "file:.gitattributes",
+                      "type":  "file",
+                      "name":  ".gitattributes",
+                      "filePath":  ".gitattributes",
+                      "summary":  "Defines repository text normalization rules for the Maven wrapper scripts, keeping Unix and Windows launcher line endings stable across checkouts.",
+                      "tags":  [
+                                   "repository-settings",
+                                   "line-endings",
+                                   "source-control"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:.ua/.understandignore",
+                      "type":  "file",
+                      "name":  ".understandignore",
+                      "filePath":  ".ua/.understandignore",
+                      "summary":  "Provides optional Understand-Anything ignore patterns copied from project defaults, detected directories, and common test-file conventions.",
+                      "tags":  [
+                                   "analysis-config",
+                                   "ignore-rules",
+                                   "tooling"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "config:.ua/config.json",
+                      "type":  "config",
+                      "name":  "config.json",
+                      "filePath":  ".ua/config.json",
+                      "summary":  "Stores Understand-Anything project analysis configuration for this backend workspace.",
+                      "tags":  [
+                                   "configuration",
+                                   "analysis-config",
+                                   "tooling"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:mvnw",
+                      "type":  "file",
+                      "name":  "mvnw",
+                      "filePath":  "mvnw",
+                      "summary":  "Unix Maven Wrapper launcher that locates Java, resolves Maven Wrapper assets, and starts Maven commands consistently for the project.",
+                      "tags":  [
+                                   "build-system",
+                                   "maven-wrapper",
+                                   "script"
+                               ],
+                      "complexity":  "complex",
+                      "languageNotes":  "POSIX shell wrapper with platform-specific path handling for Cygwin and MinGW."
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/LaduxApplication.java",
+                      "type":  "file",
+                      "name":  "LaduxApplication.java",
+                      "filePath":  "src/main/java/org/akira/ladux/LaduxApplication.java",
+                      "summary":  "Spring Boot application entry point that enables scheduling and launches the Ladux backend runtime.",
+                      "tags":  [
+                                   "entry-point",
+                                   "spring-boot",
+                                   "scheduling"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/config/JacksonConfig.java",
+                      "type":  "file",
+                      "name":  "JacksonConfig.java",
+                      "filePath":  "src/main/java/org/akira/ladux/config/JacksonConfig.java",
+                      "summary":  "Customizes Jackson JSON serialization for Java time types, including application timezone handling and stable date-time formatting.",
+                      "tags":  [
+                                   "configuration",
+                                   "serialization",
+                                   "json"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java",
+                      "type":  "file",
+                      "name":  "LoginRateLimitFilter.java",
+                      "filePath":  "src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java",
+                      "summary":  "Implements a servlet filter that rate limits login attempts per client IP using Bucket4j and Redis-backed proxy management.",
+                      "tags":  [
+                                   "security",
+                                   "rate-limiting",
+                                   "filter"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/config/RateLimitConfig.java",
+                      "type":  "file",
+                      "name":  "RateLimitConfig.java",
+                      "filePath":  "src/main/java/org/akira/ladux/config/RateLimitConfig.java",
+                      "summary":  "Creates Redis and Bucket4j proxy-manager beans used by login rate limiting.",
+                      "tags":  [
+                                   "configuration",
+                                   "redis",
+                                   "rate-limiting"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "type":  "file",
+                      "name":  "SecurityConfig.java",
+                      "filePath":  "src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "summary":  "Configures Spring Security for JWT, OAuth2 login, CORS, CSRF, authentication exceptions, and route authorization rules.",
+                      "tags":  [
+                                   "security",
+                                   "configuration",
+                                   "jwt"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/config/ShedLockConfig.java",
+                      "type":  "file",
+                      "name":  "ShedLockConfig.java",
+                      "filePath":  "src/main/java/org/akira/ladux/config/ShedLockConfig.java",
+                      "summary":  "Provides a JDBC-backed ShedLock LockProvider so scheduled jobs can coordinate execution through the database.",
+                      "tags":  [
+                                   "configuration",
+                                   "scheduling",
+                                   "database-locking"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/config/WebConfig.java",
+                      "type":  "file",
+                      "name":  "WebConfig.java",
+                      "filePath":  "src/main/java/org/akira/ladux/config/WebConfig.java",
+                      "summary":  "Configures MVC behavior for trailing slash handling, pageable request defaults, and static serving of uploaded files.",
+                      "tags":  [
+                                   "configuration",
+                                   "web-mvc",
+                                   "static-resources"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/dto/request/ShippingAddressRequest.java",
+                      "type":  "file",
+                      "name":  "ShippingAddressRequest.java",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/request/ShippingAddressRequest.java",
+                      "summary":  "Request DTO carrying receiver and address fields for shipping-address input.",
+                      "tags":  [
+                                   "dto",
+                                   "request-model",
+                                   "validation"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/dto/request/UserRequest.java",
+                      "type":  "file",
+                      "name":  "UserRequest.java",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/request/UserRequest.java",
+                      "summary":  "Request DTO for user account fields such as email, username, password, full name, phone, avatar, and active status.",
+                      "tags":  [
+                                   "dto",
+                                   "request-model",
+                                   "user-data"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/exception/ErrorResponse.java",
+                      "type":  "file",
+                      "name":  "ErrorResponse.java",
+                      "filePath":  "src/main/java/org/akira/ladux/exception/ErrorResponse.java",
+                      "summary":  "Compact error response record used to return timestamped HTTP error details to clients.",
+                      "tags":  [
+                                   "dto",
+                                   "error-handling",
+                                   "api-response"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "type":  "file",
+                      "name":  "GlobalExceptionHandler.java",
+                      "filePath":  "src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "summary":  "Central REST exception advice that maps validation, authentication, authorization, business, data integrity, and unexpected errors to structured responses.",
+                      "tags":  [
+                                   "error-handling",
+                                   "api-handler",
+                                   "validation"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "file:src/main/java/org/akira/ladux/model/ShippingAddress.java",
+                      "type":  "file",
+                      "name":  "ShippingAddress.java",
+                      "filePath":  "src/main/java/org/akira/ladux/model/ShippingAddress.java",
+                      "summary":  "Embeddable shipping-address value object with receiver, phone, street, ward, district, and city fields.",
+                      "tags":  [
+                                   "data-model",
+                                   "jpa",
+                                   "value-object"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "config:src/main/resources/META-INF/additional-spring-configuration-metadata.json",
+                      "type":  "config",
+                      "name":  "additional-spring-configuration-metadata.json",
+                      "filePath":  "src/main/resources/META-INF/additional-spring-configuration-metadata.json",
+                      "summary":  "Adds Spring Boot configuration metadata entries for application authentication, OAuth2, datasource, and JWT properties.",
+                      "tags":  [
+                                   "configuration",
+                                   "spring-boot",
+                                   "metadata"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "table:src/main/resources/db/devdata/V3__insert_mock_data.sql:devdata_seed",
+                      "type":  "table",
+                      "name":  "V3__insert_mock_data.sql",
+                      "filePath":  "src/main/resources/db/devdata/V3__insert_mock_data.sql",
+                      "summary":  "Flyway devdata seed script that truncates existing rows and inserts mock roles, brands, categories, users, products, orders, and related commerce data.",
+                      "tags":  [
+                                   "database",
+                                   "seed-data",
+                                   "flyway"
+                               ],
+                      "complexity":  "complex"
+                  },
+                  {
+                      "id":  "file:src/test/java/org/akira/ladux/LaduxApplicationTests.java",
+                      "type":  "file",
+                      "name":  "LaduxApplicationTests.java",
+                      "filePath":  "src/test/java/org/akira/ladux/LaduxApplicationTests.java",
+                      "summary":  "Spring Boot smoke test that verifies the application context can start under the test profile.",
+                      "tags":  [
+                                   "test",
+                                   "spring-boot",
+                                   "context-load"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/test/java/org/akira/ladux/model/RefreshTokenTest.java",
+                      "type":  "file",
+                      "name":  "RefreshTokenTest.java",
+                      "filePath":  "src/test/java/org/akira/ladux/model/RefreshTokenTest.java",
+                      "summary":  "Unit tests covering RefreshToken usability when valid, revoked, or expired.",
+                      "tags":  [
+                                   "test",
+                                   "data-model",
+                                   "token-lifecycle"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "config:src/test/resources/application-test.properties",
+                      "type":  "config",
+                      "name":  "application-test.properties",
+                      "filePath":  "src/test/resources/application-test.properties",
+                      "summary":  "Test profile configuration supplies dummy JWT, payment, OAuth2, Flyway, JPA, and cache settings for integration tests.",
+                      "tags":  [
+                                   "configuration",
+                                   "test",
+                                   "spring-profile"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/LaduxApplication.java:LaduxApplication",
+                      "type":  "class",
+                      "name":  "LaduxApplication",
+                      "filePath":  "src/main/java/org/akira/ladux/LaduxApplication.java",
+                      "lineRange":  [
+                                        16,
+                                        25
+                                    ],
+                      "summary":  "Bootstraps the Spring Boot application and enables scheduled tasks.",
+                      "tags":  [
+                                   "entry-point",
+                                   "spring-boot",
+                                   "scheduling"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/config/JacksonConfig.java:JacksonConfig",
+                      "type":  "class",
+                      "name":  "JacksonConfig",
+                      "filePath":  "src/main/java/org/akira/ladux/config/JacksonConfig.java",
+                      "lineRange":  [
+                                        21,
+                                        77
+                                    ],
+                      "summary":  "Holds Jackson customization beans and shared date-time formatting constants.",
+                      "tags":  [
+                                   "configuration",
+                                   "serialization",
+                                   "json"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java:LoginRateLimitFilter",
+                      "type":  "class",
+                      "name":  "LoginRateLimitFilter",
+                      "filePath":  "src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java",
+                      "lineRange":  [
+                                        30,
+                                        96
+                                    ],
+                      "summary":  "Once-per-request filter that enforces per-IP throttling for login requests.",
+                      "tags":  [
+                                   "security",
+                                   "rate-limiting",
+                                   "filter"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/config/RateLimitConfig.java:RateLimitConfig",
+                      "type":  "class",
+                      "name":  "RateLimitConfig",
+                      "filePath":  "src/main/java/org/akira/ladux/config/RateLimitConfig.java",
+                      "lineRange":  [
+                                        25,
+                                        49
+                                    ],
+                      "summary":  "Defines Redis-backed Bucket4j infrastructure for rate-limit state sharing.",
+                      "tags":  [
+                                   "configuration",
+                                   "redis",
+                                   "rate-limiting"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/config/SecurityConfig.java:SecurityConfig",
+                      "type":  "class",
+                      "name":  "SecurityConfig",
+                      "filePath":  "src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "lineRange":  [
+                                        39,
+                                        146
+                                    ],
+                      "summary":  "Assembles the Spring Security filter chain and supporting authentication beans.",
+                      "tags":  [
+                                   "security",
+                                   "configuration",
+                                   "jwt"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/config/ShedLockConfig.java:ShedLockConfig",
+                      "type":  "class",
+                      "name":  "ShedLockConfig",
+                      "filePath":  "src/main/java/org/akira/ladux/config/ShedLockConfig.java",
+                      "lineRange":  [
+                                        12,
+                                        20
+                                    ],
+                      "summary":  "Supplies ShedLock database coordination for scheduled jobs.",
+                      "tags":  [
+                                   "configuration",
+                                   "scheduling",
+                                   "database-locking"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/config/WebConfig.java:WebConfig",
+                      "type":  "class",
+                      "name":  "WebConfig",
+                      "filePath":  "src/main/java/org/akira/ladux/config/WebConfig.java",
+                      "lineRange":  [
+                                        16,
+                                        53
+                                    ],
+                      "summary":  "Customizes Spring MVC request handling and uploaded-file resource mapping.",
+                      "tags":  [
+                                   "configuration",
+                                   "web-mvc",
+                                   "static-resources"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/dto/request/ShippingAddressRequest.java:ShippingAddressRequest",
+                      "type":  "class",
+                      "name":  "ShippingAddressRequest",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/request/ShippingAddressRequest.java",
+                      "lineRange":  [
+                                        6,
+                                        30
+                                    ],
+                      "summary":  "Record DTO for shipping recipient and address request data.",
+                      "tags":  [
+                                   "dto",
+                                   "request-model",
+                                   "validation"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/dto/request/UserRequest.java:UserRequest",
+                      "type":  "class",
+                      "name":  "UserRequest",
+                      "filePath":  "src/main/java/org/akira/ladux/dto/request/UserRequest.java",
+                      "lineRange":  [
+                                        8,
+                                        32
+                                    ],
+                      "summary":  "Record DTO for user profile and account request payloads.",
+                      "tags":  [
+                                   "dto",
+                                   "request-model",
+                                   "user-data"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/exception/ErrorResponse.java:ErrorResponse",
+                      "type":  "class",
+                      "name":  "ErrorResponse",
+                      "filePath":  "src/main/java/org/akira/ladux/exception/ErrorResponse.java",
+                      "lineRange":  [
+                                        8,
+                                        16
+                                    ],
+                      "summary":  "Record DTO representing standardized API error payloads.",
+                      "tags":  [
+                                   "dto",
+                                   "error-handling",
+                                   "api-response"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:GlobalExceptionHandler",
+                      "type":  "class",
+                      "name":  "GlobalExceptionHandler",
+                      "filePath":  "src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "lineRange":  [
+                                        26,
+                                        187
+                                    ],
+                      "summary":  "REST controller advice containing exception-specific handlers and SQL constraint message resolution helpers.",
+                      "tags":  [
+                                   "error-handling",
+                                   "api-handler",
+                                   "validation"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "class:src/main/java/org/akira/ladux/model/ShippingAddress.java:ShippingAddress",
+                      "type":  "class",
+                      "name":  "ShippingAddress",
+                      "filePath":  "src/main/java/org/akira/ladux/model/ShippingAddress.java",
+                      "lineRange":  [
+                                        7,
+                                        32
+                                    ],
+                      "summary":  "Embeddable JPA value object for shipping address details.",
+                      "tags":  [
+                                   "data-model",
+                                   "jpa",
+                                   "value-object"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/test/java/org/akira/ladux/LaduxApplicationTests.java:LaduxApplicationTests",
+                      "type":  "class",
+                      "name":  "LaduxApplicationTests",
+                      "filePath":  "src/test/java/org/akira/ladux/LaduxApplicationTests.java",
+                      "lineRange":  [
+                                        10,
+                                        15
+                                    ],
+                      "summary":  "Smoke-test class for Spring application context startup.",
+                      "tags":  [
+                                   "test",
+                                   "spring-boot",
+                                   "context-load"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/test/java/org/akira/ladux/model/RefreshTokenTest.java:RefreshTokenTest",
+                      "type":  "class",
+                      "name":  "RefreshTokenTest",
+                      "filePath":  "src/test/java/org/akira/ladux/model/RefreshTokenTest.java",
+                      "lineRange":  [
+                                        14,
+                                        45
+                                    ],
+                      "summary":  "Unit-test class validating refresh token usability rules.",
+                      "tags":  [
+                                   "test",
+                                   "data-model",
+                                   "token-lifecycle"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/LaduxApplication.java:main",
+                      "type":  "function",
+                      "name":  "main",
+                      "filePath":  "src/main/java/org/akira/ladux/LaduxApplication.java",
+                      "lineRange":  [
+                                        22,
+                                        24
+                                    ],
+                      "summary":  "Starts the Ladux Spring Boot application from command-line arguments.",
+                      "tags":  [
+                                   "entry-point",
+                                   "spring-boot",
+                                   "bootstrap"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/config/JacksonConfig.java:jsonCustomizer",
+                      "type":  "function",
+                      "name":  "jsonCustomizer",
+                      "filePath":  "src/main/java/org/akira/ladux/config/JacksonConfig.java",
+                      "lineRange":  [
+                                        28,
+                                        76
+                                    ],
+                      "summary":  "Registers Java time serializers and deserializers with application timezone normalization.",
+                      "tags":  [
+                                   "configuration",
+                                   "serialization",
+                                   "json"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java:LoginRateLimitFilter",
+                      "type":  "function",
+                      "name":  "LoginRateLimitFilter",
+                      "filePath":  "src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java",
+                      "lineRange":  [
+                                        42,
+                                        49
+                                    ],
+                      "summary":  "Initializes the rate-limit filter with Redis proxy manager settings and refill duration.",
+                      "tags":  [
+                                   "constructor",
+                                   "rate-limiting",
+                                   "configuration"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java:doFilterInternal",
+                      "type":  "function",
+                      "name":  "doFilterInternal",
+                      "filePath":  "src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java",
+                      "lineRange":  [
+                                        59,
+                                        77
+                                    ],
+                      "summary":  "Consumes rate-limit tokens for login attempts and returns HTTP 429 when a client exceeds its bucket.",
+                      "tags":  [
+                                   "security",
+                                   "rate-limiting",
+                                   "filter"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/config/RateLimitConfig.java:rateLimitRedisClient",
+                      "type":  "function",
+                      "name":  "rateLimitRedisClient",
+                      "filePath":  "src/main/java/org/akira/ladux/config/RateLimitConfig.java",
+                      "lineRange":  [
+                                        29,
+                                        34
+                                    ],
+                      "summary":  "Creates the Lettuce Redis client used for shared rate-limit storage.",
+                      "tags":  [
+                                   "configuration",
+                                   "redis",
+                                   "factory"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/config/RateLimitConfig.java:loginRateLimitProxyManager",
+                      "type":  "function",
+                      "name":  "loginRateLimitProxyManager",
+                      "filePath":  "src/main/java/org/akira/ladux/config/RateLimitConfig.java",
+                      "lineRange":  [
+                                        40,
+                                        48
+                                    ],
+                      "summary":  "Builds the Bucket4j Redis proxy manager for login throttling buckets.",
+                      "tags":  [
+                                   "configuration",
+                                   "rate-limiting",
+                                   "factory"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/config/SecurityConfig.java:passwordEncoder",
+                      "type":  "function",
+                      "name":  "passwordEncoder",
+                      "filePath":  "src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "lineRange":  [
+                                        55,
+                                        58
+                                    ],
+                      "summary":  "Exposes BCrypt password encoding for authentication and credential storage.",
+                      "tags":  [
+                                   "security",
+                                   "passwords",
+                                   "factory"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/config/SecurityConfig.java:authenticationManager",
+                      "type":  "function",
+                      "name":  "authenticationManager",
+                      "filePath":  "src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "lineRange":  [
+                                        60,
+                                        63
+                                    ],
+                      "summary":  "Provides Spring AuthenticationManager from the framework authentication configuration.",
+                      "tags":  [
+                                   "security",
+                                   "authentication",
+                                   "factory"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/config/SecurityConfig.java:securityFilterChain",
+                      "type":  "function",
+                      "name":  "securityFilterChain",
+                      "filePath":  "src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "lineRange":  [
+                                        65,
+                                        128
+                                    ],
+                      "summary":  "Defines CSRF, CORS, JWT filter placement, OAuth2 success handling, logout, and endpoint authorization behavior.",
+                      "tags":  [
+                                   "security",
+                                   "jwt",
+                                   "authorization"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/config/SecurityConfig.java:corsConfigurationSource",
+                      "type":  "function",
+                      "name":  "corsConfigurationSource",
+                      "filePath":  "src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "lineRange":  [
+                                        134,
+                                        145
+                                    ],
+                      "summary":  "Creates CORS settings for frontend origins, allowed methods, headers, credentials, and exposed headers.",
+                      "tags":  [
+                                   "security",
+                                   "cors",
+                                   "configuration"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/config/ShedLockConfig.java:lockProvider",
+                      "type":  "function",
+                      "name":  "lockProvider",
+                      "filePath":  "src/main/java/org/akira/ladux/config/ShedLockConfig.java",
+                      "lineRange":  [
+                                        16,
+                                        19
+                                    ],
+                      "summary":  "Creates the JDBC ShedLock provider from the application DataSource.",
+                      "tags":  [
+                                   "configuration",
+                                   "scheduling",
+                                   "factory"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/config/WebConfig.java:trailingSlashHandlerFilter",
+                      "type":  "function",
+                      "name":  "trailingSlashHandlerFilter",
+                      "filePath":  "src/main/java/org/akira/ladux/config/WebConfig.java",
+                      "lineRange":  [
+                                        23,
+                                        32
+                                    ],
+                      "summary":  "Registers URL handling that treats trailing slash variants consistently.",
+                      "tags":  [
+                                   "web-mvc",
+                                   "routing",
+                                   "configuration"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/config/WebConfig.java:customizePageable",
+                      "type":  "function",
+                      "name":  "customizePageable",
+                      "filePath":  "src/main/java/org/akira/ladux/config/WebConfig.java",
+                      "lineRange":  [
+                                        33,
+                                        42
+                                    ],
+                      "summary":  "Sets pageable request parameter names and one-indexed page numbering.",
+                      "tags":  [
+                                   "web-mvc",
+                                   "pagination",
+                                   "configuration"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/config/WebConfig.java:addResourceHandlers",
+                      "type":  "function",
+                      "name":  "addResourceHandlers",
+                      "filePath":  "src/main/java/org/akira/ladux/config/WebConfig.java",
+                      "lineRange":  [
+                                        43,
+                                        52
+                                    ],
+                      "summary":  "Maps uploaded files from the configured filesystem root to public static resource URLs.",
+                      "tags":  [
+                                   "web-mvc",
+                                   "static-resources",
+                                   "configuration"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleResourceNotFound",
+                      "type":  "function",
+                      "name":  "handleResourceNotFound",
+                      "filePath":  "src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "lineRange":  [
+                                        32,
+                                        41
+                                    ],
+                      "summary":  "Returns a 404 response for missing domain resources.",
+                      "tags":  [
+                                   "error-handling",
+                                   "api-response",
+                                   "exception-handler"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleValidationException",
+                      "type":  "function",
+                      "name":  "handleValidationException",
+                      "filePath":  "src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "lineRange":  [
+                                        43,
+                                        56
+                                    ],
+                      "summary":  "Collects field validation errors and returns a bad-request response.",
+                      "tags":  [
+                                   "error-handling",
+                                   "validation",
+                                   "exception-handler"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleBusinessRuleException",
+                      "type":  "function",
+                      "name":  "handleBusinessRuleException",
+                      "filePath":  "src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "lineRange":  [
+                                        58,
+                                        67
+                                    ],
+                      "summary":  "Maps business rule violations to HTTP 400 API errors.",
+                      "tags":  [
+                                   "error-handling",
+                                   "business-rules",
+                                   "exception-handler"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleConstraintViolation",
+                      "type":  "function",
+                      "name":  "handleConstraintViolation",
+                      "filePath":  "src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "lineRange":  [
+                                        69,
+                                        81
+                                    ],
+                      "summary":  "Formats bean validation constraint violations into an HTTP 400 response.",
+                      "tags":  [
+                                   "error-handling",
+                                   "validation",
+                                   "exception-handler"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleUsernameNotFound",
+                      "type":  "function",
+                      "name":  "handleUsernameNotFound",
+                      "filePath":  "src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "lineRange":  [
+                                        83,
+                                        92
+                                    ],
+                      "summary":  "Returns a normalized unauthorized response when a user principal cannot be found.",
+                      "tags":  [
+                                   "error-handling",
+                                   "authentication",
+                                   "exception-handler"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleBadCredentials",
+                      "type":  "function",
+                      "name":  "handleBadCredentials",
+                      "filePath":  "src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "lineRange":  [
+                                        94,
+                                        103
+                                    ],
+                      "summary":  "Returns a normalized unauthorized response for invalid credentials.",
+                      "tags":  [
+                                   "error-handling",
+                                   "authentication",
+                                   "exception-handler"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleAccessDenied",
+                      "type":  "function",
+                      "name":  "handleAccessDenied",
+                      "filePath":  "src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "lineRange":  [
+                                        105,
+                                        114
+                                    ],
+                      "summary":  "Returns a forbidden response for access-denied failures.",
+                      "tags":  [
+                                   "error-handling",
+                                   "authorization",
+                                   "exception-handler"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleDataIntegrityViolation",
+                      "type":  "function",
+                      "name":  "handleDataIntegrityViolation",
+                      "filePath":  "src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "lineRange":  [
+                                        116,
+                                        125
+                                    ],
+                      "summary":  "Converts database integrity errors into user-facing bad-request messages.",
+                      "tags":  [
+                                   "error-handling",
+                                   "database",
+                                   "exception-handler"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleGlobalException",
+                      "type":  "function",
+                      "name":  "handleGlobalException",
+                      "filePath":  "src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "lineRange":  [
+                                        127,
+                                        137
+                                    ],
+                      "summary":  "Logs unexpected exceptions and returns a generic internal-server-error response.",
+                      "tags":  [
+                                   "error-handling",
+                                   "logging",
+                                   "exception-handler"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:resolveDataIntegrityMessage",
+                      "type":  "function",
+                      "name":  "resolveDataIntegrityMessage",
+                      "filePath":  "src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "lineRange":  [
+                                        139,
+                                        151
+                                    ],
+                      "summary":  "Chooses a friendly database constraint message by inspecting nested SQL exceptions.",
+                      "tags":  [
+                                   "error-handling",
+                                   "database",
+                                   "message-formatting"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:resolveUniqueConstraintMessage",
+                      "type":  "function",
+                      "name":  "resolveUniqueConstraintMessage",
+                      "filePath":  "src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "lineRange":  [
+                                        162,
+                                        175
+                                    ],
+                      "summary":  "Maps unique constraint names to domain-specific duplicate-value messages.",
+                      "tags":  [
+                                   "error-handling",
+                                   "database",
+                                   "message-formatting"
+                               ],
+                      "complexity":  "simple"
+                  }
+              ],
+    "edges":  [
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/LaduxApplication.java",
+                      "target":  "class:src/main/java/org/akira/ladux/LaduxApplication.java:LaduxApplication",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/JacksonConfig.java",
+                      "target":  "class:src/main/java/org/akira/ladux/config/JacksonConfig.java:JacksonConfig",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java",
+                      "target":  "class:src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java:LoginRateLimitFilter",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/RateLimitConfig.java",
+                      "target":  "class:src/main/java/org/akira/ladux/config/RateLimitConfig.java:RateLimitConfig",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "target":  "class:src/main/java/org/akira/ladux/config/SecurityConfig.java:SecurityConfig",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/ShedLockConfig.java",
+                      "target":  "class:src/main/java/org/akira/ladux/config/ShedLockConfig.java:ShedLockConfig",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/WebConfig.java",
+                      "target":  "class:src/main/java/org/akira/ladux/config/WebConfig.java:WebConfig",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/request/ShippingAddressRequest.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/request/ShippingAddressRequest.java:ShippingAddressRequest",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/request/UserRequest.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/request/UserRequest.java:UserRequest",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/ErrorResponse.java",
+                      "target":  "class:src/main/java/org/akira/ladux/exception/ErrorResponse.java:ErrorResponse",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "class:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:GlobalExceptionHandler",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/model/ShippingAddress.java",
+                      "target":  "class:src/main/java/org/akira/ladux/model/ShippingAddress.java:ShippingAddress",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/test/java/org/akira/ladux/LaduxApplicationTests.java",
+                      "target":  "class:src/test/java/org/akira/ladux/LaduxApplicationTests.java:LaduxApplicationTests",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/test/java/org/akira/ladux/model/RefreshTokenTest.java",
+                      "target":  "class:src/test/java/org/akira/ladux/model/RefreshTokenTest.java:RefreshTokenTest",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/LaduxApplication.java",
+                      "target":  "function:src/main/java/org/akira/ladux/LaduxApplication.java:main",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/JacksonConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/JacksonConfig.java:jsonCustomizer",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java:LoginRateLimitFilter",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java:doFilterInternal",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/RateLimitConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/RateLimitConfig.java:rateLimitRedisClient",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/RateLimitConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/RateLimitConfig.java:loginRateLimitProxyManager",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/SecurityConfig.java:passwordEncoder",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/SecurityConfig.java:authenticationManager",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/SecurityConfig.java:securityFilterChain",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/SecurityConfig.java:corsConfigurationSource",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/ShedLockConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/ShedLockConfig.java:lockProvider",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/WebConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/WebConfig.java:trailingSlashHandlerFilter",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/WebConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/WebConfig.java:customizePageable",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/WebConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/WebConfig.java:addResourceHandlers",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleResourceNotFound",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleValidationException",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleBusinessRuleException",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleConstraintViolation",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleUsernameNotFound",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleBadCredentials",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleAccessDenied",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleDataIntegrityViolation",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleGlobalException",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:resolveDataIntegrityMessage",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:resolveUniqueConstraintMessage",
+                      "type":  "contains",
+                      "direction":  "forward",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "target":  "file:src/main/java/org/akira/ladux/exception/ErrorResponse.java",
+                      "type":  "imports",
+                      "direction":  "forward",
+                      "weight":  0.7
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/LaduxApplication.java",
+                      "target":  "class:src/main/java/org/akira/ladux/LaduxApplication.java:LaduxApplication",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/LaduxApplication.java",
+                      "target":  "function:src/main/java/org/akira/ladux/LaduxApplication.java:main",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/JacksonConfig.java",
+                      "target":  "class:src/main/java/org/akira/ladux/config/JacksonConfig.java:JacksonConfig",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/JacksonConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/JacksonConfig.java:jsonCustomizer",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java",
+                      "target":  "class:src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java:LoginRateLimitFilter",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/LoginRateLimitFilter.java:LoginRateLimitFilter",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/RateLimitConfig.java",
+                      "target":  "class:src/main/java/org/akira/ladux/config/RateLimitConfig.java:RateLimitConfig",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/RateLimitConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/RateLimitConfig.java:rateLimitRedisClient",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/RateLimitConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/RateLimitConfig.java:loginRateLimitProxyManager",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "target":  "class:src/main/java/org/akira/ladux/config/SecurityConfig.java:SecurityConfig",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/SecurityConfig.java:passwordEncoder",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/SecurityConfig.java:authenticationManager",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/SecurityConfig.java:securityFilterChain",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/SecurityConfig.java:corsConfigurationSource",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/ShedLockConfig.java",
+                      "target":  "class:src/main/java/org/akira/ladux/config/ShedLockConfig.java:ShedLockConfig",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/ShedLockConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/ShedLockConfig.java:lockProvider",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/WebConfig.java",
+                      "target":  "class:src/main/java/org/akira/ladux/config/WebConfig.java:WebConfig",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/WebConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/WebConfig.java:trailingSlashHandlerFilter",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/WebConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/WebConfig.java:customizePageable",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/config/WebConfig.java",
+                      "target":  "function:src/main/java/org/akira/ladux/config/WebConfig.java:addResourceHandlers",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/request/ShippingAddressRequest.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/request/ShippingAddressRequest.java:ShippingAddressRequest",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/dto/request/UserRequest.java",
+                      "target":  "class:src/main/java/org/akira/ladux/dto/request/UserRequest.java:UserRequest",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/ErrorResponse.java",
+                      "target":  "class:src/main/java/org/akira/ladux/exception/ErrorResponse.java:ErrorResponse",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "class:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:GlobalExceptionHandler",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleResourceNotFound",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleValidationException",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleBusinessRuleException",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleConstraintViolation",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleUsernameNotFound",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleBadCredentials",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleAccessDenied",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleDataIntegrityViolation",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java",
+                      "target":  "function:src/main/java/org/akira/ladux/exception/GlobalExceptionHandler.java:handleGlobalException",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "file:src/main/java/org/akira/ladux/model/ShippingAddress.java",
+                      "target":  "class:src/main/java/org/akira/ladux/model/ShippingAddress.java:ShippingAddress",
+                      "type":  "exports",
+                      "direction":  "forward",
+                      "weight":  0.8
+                  },
+                  {
+                      "source":  "config:src/test/resources/application-test.properties",
+                      "target":  "file:src/test/java/org/akira/ladux/LaduxApplicationTests.java",
+                      "type":  "configures",
+                      "direction":  "forward",
+                      "weight":  0.6
+                  },
+                  {
+                      "source":  "config:src/test/resources/application-test.properties",
+                      "target":  "file:src/test/java/org/akira/ladux/model/RefreshTokenTest.java",
+                      "type":  "configures",
+                      "direction":  "forward",
+                      "weight":  0.6
+                  },
+                  {
+                      "source":  "config:src/main/resources/META-INF/additional-spring-configuration-metadata.json",
+                      "target":  "file:src/main/java/org/akira/ladux/config/SecurityConfig.java",
+                      "type":  "configures",
+                      "direction":  "forward",
+                      "weight":  0.6
+                  }
+              ]
+}

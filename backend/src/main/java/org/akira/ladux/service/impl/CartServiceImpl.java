@@ -2,12 +2,10 @@ package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.response.CartResponse;
-import org.akira.ladux.model.Cart;
-import org.akira.ladux.model.CartItem;
-import org.akira.ladux.model.Product;
-import org.akira.ladux.model.User;
+import org.akira.ladux.model.*;
 import org.akira.ladux.repository.CartRepository;
 import org.akira.ladux.repository.ProductRepository;
+import org.akira.ladux.repository.ProductVariantRepository;
 import org.akira.ladux.repository.UserRepository;
 import org.akira.ladux.service.CartService;
 import org.akira.ladux.exception.ResourceNotFoundException;
@@ -26,7 +24,7 @@ import java.util.Optional;
 public class CartServiceImpl implements CartService {
     private final CartRepository repo;
     private final UserRepository userRepository;
-    private final ProductRepository productRepository;
+    private final ProductVariantRepository productVariantRepository;
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "carts", key = "'user:' + #userId")
@@ -49,12 +47,12 @@ public class CartServiceImpl implements CartService {
                         .build());
 
         // 2. Tìm sản phẩm để đảm bảo nó tồn tại
-        Product product = productRepository.findById(productId)
+        ProductVariant productVariant = productVariantRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham id = " + productId));
 
         // 3. Logic xử lý Item: Tìm xem trong giỏ đã có món này chưa
         Optional<CartItem> existingItem = cart.getItems().stream()
-                .filter(item -> item.getProduct().getId().equals(productId))
+                .filter(item -> item.getProductVariant().getId().equals(productId))
                 .findFirst();
 
         if (existingItem.isPresent()) {
@@ -64,7 +62,7 @@ public class CartServiceImpl implements CartService {
             // Nếu chưa có: Tạo mới một CartItem và add vào giỏ
             CartItem newItem = CartItem.builder()
                     .cart(cart)
-                    .product(product)
+                    .productVariant(productVariant)
                     .quantity(quantity)
                     .build();
             cart.getItems().add(newItem);
@@ -80,7 +78,7 @@ public class CartServiceImpl implements CartService {
         Cart cart = repo.findByUserIdForUpdate(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart voi userId = " + userId));
         CartItem item = cart.getItems().stream()
-                .filter(i -> i.getProduct().getId().equals(productId))
+                .filter(i -> i.getProductVariant().getId().equals(productId))
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham trong giỏ"));
 
@@ -100,7 +98,7 @@ public class CartServiceImpl implements CartService {
         Cart cart = repo.findByUserIdForUpdate(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay cart voi userId = " + userId));
         CartItem item = cart.getItems().stream()
-                .filter(i -> i.getProduct().getId().equals(productId))
+                .filter(i -> i.getProductVariant().getId().equals(productId))
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham trong giỏ"));
         cart.getItems().remove(item);

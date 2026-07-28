@@ -1,0 +1,13 @@
+﻿{
+    "fixedSectionOk":  true,
+    "nodesRecovered":  1,
+    "edgesRestored":  1,
+    "crossBatchEdgesAdded":  0,
+    "typesRemapped":  0,
+    "complexityRemapped":  0,
+    "notes":  [
+                  "Recovered real UserPrincipal.getId method node required by a dropped calls edge.",
+                  "Import map verification found no missing file-to-file imports edges.",
+                  "No unknown node types or complexity values were present in the merge report."
+              ]
+}

@@ -84,8 +84,8 @@ public class ProductImageServiceImpl implements ProductImageService {
                     .imageUrl(url)
                     .build();
             responses.add(ProductImageResponse.fromEntity(repo.save(image)));
-            if (!thumbnailAssigned && (product.getThumbnail() == null || product.getThumbnail().isBlank())) {
-                product.setThumbnail(url);
+            if (!thumbnailAssigned && (product.getImages().get(0) == null || product.getImages().get(0).getImageUrl().isBlank())) {
+                product.setImages(List.of(image));
                 productRepo.save(product);
                 thumbnailAssigned = true;
             }

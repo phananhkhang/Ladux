@@ -1,0 +1,687 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "type": "file",
+      "name": "OrderResponse.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "summary": "Maps Order entities to detailed and summary response records for order APIs. It includes order totals, status, payment expiry, item responses, and inferred payment provider information.",
+      "tags": [
+        "data-transfer",
+        "serialization",
+        "response-model",
+        "api-contract"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/response/OrderResponse.java:OrderResponse",
+      "type": "class",
+      "name": "OrderResponse",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "lineRange": [
+        11,
+        79
+      ],
+      "summary": "OrderResponse is a response DTO that serializes domain entities into API-facing payment or order payloads.",
+      "tags": [
+        "data-transfer",
+        "api-contract",
+        "serialization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/response/OrderResponse.java:fromEntity",
+      "type": "function",
+      "name": "fromEntity",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "lineRange": [
+        26,
+        48
+      ],
+      "summary": "fromEntity converts persisted domain entities into API response records with the fields required by clients.",
+      "tags": [
+        "factory",
+        "data-transfer",
+        "serialization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/response/OrderResponse.java:summaryFromEntity",
+      "type": "function",
+      "name": "summaryFromEntity",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "lineRange": [
+        50,
+        70
+      ],
+      "summary": "summaryFromEntity converts persisted domain entities into API response records with the fields required by clients.",
+      "tags": [
+        "factory",
+        "data-transfer",
+        "serialization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java",
+      "type": "file",
+      "name": "PaymentCallbackResponse.java",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java",
+      "summary": "Maps Payment entities into API response records with transaction, amount, provider, and status details. It is shared by payment creation, callbacks, and payment query endpoints.",
+      "tags": [
+        "data-transfer",
+        "serialization",
+        "response-model",
+        "api-contract"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java:PaymentCallbackResponse",
+      "type": "class",
+      "name": "PaymentCallbackResponse",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java",
+      "lineRange": [
+        10,
+        33
+      ],
+      "summary": "PaymentCallbackResponse is a response DTO that serializes domain entities into API-facing payment or order payloads.",
+      "tags": [
+        "data-transfer",
+        "api-contract",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java:fromEntity",
+      "type": "function",
+      "name": "fromEntity",
+      "filePath": "src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java",
+      "lineRange": [
+        19,
+        32
+      ],
+      "summary": "fromEntity converts persisted domain entities into API response records with the fields required by clients.",
+      "tags": [
+        "factory",
+        "data-transfer",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/Order.java",
+      "type": "file",
+      "name": "Order.java",
+      "filePath": "src/main/java/org/akira/ladux/model/Order.java",
+      "summary": "Defines the JPA order aggregate with user, coupon, monetary totals, status, shipping, expiry, and related order item/history/payment collections. Entity mappings establish cascade and foreign-key relationships for checkout persistence.",
+      "tags": [
+        "data-model",
+        "jpa-entity",
+        "persistence",
+        "domain-model"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses Spring/JPA annotations and Lombok-style model declarations to keep persistence mapping concise."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/Order.java:Order",
+      "type": "class",
+      "name": "Order",
+      "filePath": "src/main/java/org/akira/ladux/model/Order.java",
+      "lineRange": [
+        25,
+        93
+      ],
+      "summary": "Order is a JPA domain entity that persists order or payment state and relationships.",
+      "tags": [
+        "jpa-entity",
+        "data-model",
+        "persistence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/Payment.java",
+      "type": "file",
+      "name": "Payment.java",
+      "filePath": "src/main/java/org/akira/ladux/model/Payment.java",
+      "summary": "Defines the JPA payment entity linked to an order with provider, transaction number, amount, status, payment URL, and audit timestamps. It stores gateway-facing payment attempts and callback state.",
+      "tags": [
+        "data-model",
+        "jpa-entity",
+        "persistence",
+        "domain-model"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses Spring/JPA annotations and Lombok-style model declarations to keep persistence mapping concise."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/Payment.java:Payment",
+      "type": "class",
+      "name": "Payment",
+      "filePath": "src/main/java/org/akira/ladux/model/Payment.java",
+      "lineRange": [
+        32,
+        80
+      ],
+      "summary": "Payment is a JPA domain entity that persists order or payment state and relationships.",
+      "tags": [
+        "jpa-entity",
+        "data-model",
+        "persistence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/enums/OrderStatus.java",
+      "type": "file",
+      "name": "OrderStatus.java",
+      "filePath": "src/main/java/org/akira/ladux/model/enums/OrderStatus.java",
+      "summary": "Enumerates the supported order lifecycle states from pending through confirmed, shipping, completed, cancelled, and expired. These values drive state-machine validation and order filtering.",
+      "tags": [
+        "data-model",
+        "enum",
+        "state",
+        "domain-model"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses Spring/JPA annotations and Lombok-style model declarations to keep persistence mapping concise."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/enums/OrderStatus.java:OrderStatus",
+      "type": "class",
+      "name": "OrderStatus",
+      "filePath": "src/main/java/org/akira/ladux/model/enums/OrderStatus.java",
+      "lineRange": [
+        6,
+        12
+      ],
+      "summary": "OrderStatus enumerates domain states used by order or payment workflow decisions.",
+      "tags": [
+        "enum",
+        "state",
+        "domain-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/enums/PaymentProvider.java",
+      "type": "file",
+      "name": "PaymentProvider.java",
+      "filePath": "src/main/java/org/akira/ladux/model/enums/PaymentProvider.java",
+      "summary": "Enumerates supported payment providers, including COD and VNPay. The enum standardizes provider selection across order and payment DTOs.",
+      "tags": [
+        "data-model",
+        "enum",
+        "state",
+        "domain-model"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses Spring/JPA annotations and Lombok-style model declarations to keep persistence mapping concise."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/enums/PaymentProvider.java:PaymentProvider",
+      "type": "class",
+      "name": "PaymentProvider",
+      "filePath": "src/main/java/org/akira/ladux/model/enums/PaymentProvider.java",
+      "lineRange": [
+        3,
+        7
+      ],
+      "summary": "PaymentProvider enumerates domain states used by order or payment workflow decisions.",
+      "tags": [
+        "enum",
+        "state",
+        "domain-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/model/enums/PaymentStatus.java",
+      "type": "file",
+      "name": "PaymentStatus.java",
+      "filePath": "src/main/java/org/akira/ladux/model/enums/PaymentStatus.java",
+      "summary": "Enumerates payment lifecycle states for pending, success, failed, cancelled, and expired payments. These values drive callback handling and payment filtering.",
+      "tags": [
+        "data-model",
+        "enum",
+        "state",
+        "domain-model"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses Spring/JPA annotations and Lombok-style model declarations to keep persistence mapping concise."
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/model/enums/PaymentStatus.java:PaymentStatus",
+      "type": "class",
+      "name": "PaymentStatus",
+      "filePath": "src/main/java/org/akira/ladux/model/enums/PaymentStatus.java",
+      "lineRange": [
+        4,
+        8
+      ],
+      "summary": "PaymentStatus enumerates domain states used by order or payment workflow decisions.",
+      "tags": [
+        "enum",
+        "state",
+        "domain-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/repository/OrderRepository.java",
+      "type": "file",
+      "name": "OrderRepository.java",
+      "filePath": "src/main/java/org/akira/ladux/repository/OrderRepository.java",
+      "summary": "Defines Spring Data queries for order lookup, ownership checks, pessimistic locking, product-in-order checks, and expired-order scanning. It supports checkout, status transitions, and scheduled expiry workflows.",
+      "tags": [
+        "repository",
+        "persistence",
+        "spring-data",
+        "database-query"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/repository/OrderRepository.java:OrderRepository",
+      "type": "class",
+      "name": "OrderRepository",
+      "filePath": "src/main/java/org/akira/ladux/repository/OrderRepository.java",
+      "lineRange": [
+        19,
+        73
+      ],
+      "summary": "OrderRepository is a Spring Data repository exposing derived and annotated queries for persistence operations.",
+      "tags": [
+        "repository",
+        "spring-data",
+        "database-query"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/repository/PaymentRepository.java",
+      "type": "file",
+      "name": "PaymentRepository.java",
+      "filePath": "src/main/java/org/akira/ladux/repository/PaymentRepository.java",
+      "summary": "Defines Spring Data queries for payment lookup by order, transaction number, status, and owning user. It supports admin payment management, customer payment history, and webhook idempotency.",
+      "tags": [
+        "repository",
+        "persistence",
+        "spring-data",
+        "database-query"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/repository/PaymentRepository.java:PaymentRepository",
+      "type": "class",
+      "name": "PaymentRepository",
+      "filePath": "src/main/java/org/akira/ladux/repository/PaymentRepository.java",
+      "lineRange": [
+        18,
+        55
+      ],
+      "summary": "PaymentRepository is a Spring Data repository exposing derived and annotated queries for persistence operations.",
+      "tags": [
+        "repository",
+        "spring-data",
+        "database-query"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/org/akira/ladux/service/OrderService.java",
+      "type": "file",
+      "name": "OrderService.java",
+      "filePath": "src/main/java/org/akira/ladux/service/OrderService.java",
+      "summary": "Declares the order application-service contract for admin and customer order workflows. It covers order queries, checkout creation, status updates, payment retry, and pending-order expiry.",
+      "tags": [
+        "service-contract",
+        "business-logic",
+        "interface",
+        "workflow"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/org/akira/ladux/service/OrderService.java:OrderService",
+      "type": "class",
+      "name": "OrderService",
+      "filePath": "src/main/java/org/akira/ladux/service/OrderService.java",
+      "lineRange": [
+        11,
+        27
+      ],
+      "summary": "OrderService declares the service contract for order and payment workflow operations.",
+      "tags": [
+        "service-contract",
+        "interface",
+        "workflow"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/Order.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/OrderStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PaymentProvider.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/OrderResponse.java:OrderResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/OrderResponse.java:OrderResponse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/OrderResponse.java:fromEntity",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/OrderResponse.java:fromEntity",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/OrderResponse.java:summaryFromEntity",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/OrderResponse.java:summaryFromEntity",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/Payment.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PaymentProvider.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PaymentStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java:PaymentCallbackResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java",
+      "target": "class:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java:PaymentCallbackResponse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java:fromEntity",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java",
+      "target": "function:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java:fromEntity",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/Order.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/OrderStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/Order.java",
+      "target": "class:src/main/java/org/akira/ladux/model/Order.java:Order",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/Order.java",
+      "target": "class:src/main/java/org/akira/ladux/model/Order.java:Order",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/Payment.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PaymentProvider.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/Payment.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PaymentStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/Payment.java",
+      "target": "class:src/main/java/org/akira/ladux/model/Payment.java:Payment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/Payment.java",
+      "target": "class:src/main/java/org/akira/ladux/model/Payment.java:Payment",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/enums/OrderStatus.java",
+      "target": "class:src/main/java/org/akira/ladux/model/enums/OrderStatus.java:OrderStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/enums/OrderStatus.java",
+      "target": "class:src/main/java/org/akira/ladux/model/enums/OrderStatus.java:OrderStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/enums/PaymentProvider.java",
+      "target": "class:src/main/java/org/akira/ladux/model/enums/PaymentProvider.java:PaymentProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/enums/PaymentProvider.java",
+      "target": "class:src/main/java/org/akira/ladux/model/enums/PaymentProvider.java:PaymentProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/enums/PaymentStatus.java",
+      "target": "class:src/main/java/org/akira/ladux/model/enums/PaymentStatus.java:PaymentStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/model/enums/PaymentStatus.java",
+      "target": "class:src/main/java/org/akira/ladux/model/enums/PaymentStatus.java:PaymentStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/OrderRepository.java",
+      "target": "file:src/main/java/org/akira/ladux/model/Order.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/OrderRepository.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/OrderStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/OrderRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/OrderRepository.java:OrderRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/OrderRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/OrderRepository.java:OrderRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/PaymentRepository.java",
+      "target": "file:src/main/java/org/akira/ladux/model/Payment.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/PaymentRepository.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/PaymentStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/PaymentRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/PaymentRepository.java:PaymentRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/repository/PaymentRepository.java",
+      "target": "class:src/main/java/org/akira/ladux/repository/PaymentRepository.java:PaymentRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/OrderService.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/OrderRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/OrderService.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/request/OrderStatusUpdateRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/OrderService.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/OrderResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/OrderService.java",
+      "target": "file:src/main/java/org/akira/ladux/dto/response/PaymentCallbackResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/OrderService.java",
+      "target": "file:src/main/java/org/akira/ladux/model/enums/OrderStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/OrderService.java",
+      "target": "class:src/main/java/org/akira/ladux/service/OrderService.java:OrderService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/OrderService.java",
+      "target": "class:src/main/java/org/akira/ladux/service/OrderService.java:OrderService",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/main/java/org/akira/ladux/service/OrderService.java",
+      "target": "file:src/test/java/org/akira/ladux/service/OrderServiceTest.java",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

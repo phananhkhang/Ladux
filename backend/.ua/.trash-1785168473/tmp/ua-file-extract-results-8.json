@@ -1,0 +1,1172 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 14,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 14,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 14,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "src/main/java/org/akira/ladux/controller/admin/AdminOrderItemController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 38,
+      "nonEmptyLines": 33,
+      "functions": [
+        {
+          "name": "getAllOrderItems",
+          "startLine": 21,
+          "endLine": 25,
+          "params": [
+            "pageable"
+          ]
+        },
+        {
+          "name": "getOrderItemById",
+          "startLine": 27,
+          "endLine": 31,
+          "params": [
+            "id"
+          ]
+        },
+        {
+          "name": "getOrderItemsByOrderId",
+          "startLine": 33,
+          "endLine": 37,
+          "params": [
+            "orderId",
+            "pageable"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AdminOrderItemController",
+          "startLine": 15,
+          "endLine": 38,
+          "methods": [
+            "getAllOrderItems",
+            "getOrderItemById",
+            "getOrderItemsByOrderId"
+          ],
+          "properties": [
+            "service"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getAllOrderItems",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "getOrderItemById",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "getOrderItemsByOrderId",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "AdminOrderItemController",
+          "line": 15,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getAllOrderItems",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 24
+        },
+        {
+          "caller": "getAllOrderItems",
+          "callee": "service.getAllOrderItems",
+          "lineNumber": 24
+        },
+        {
+          "caller": "getOrderItemById",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getOrderItemById",
+          "callee": "service.getOrderItemById",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getOrderItemsByOrderId",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 36
+        },
+        {
+          "caller": "getOrderItemsByOrderId",
+          "callee": "service.getOrderItemsByOrderId",
+          "lineNumber": 36
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/controller/admin/AdminProductImageController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 51,
+      "nonEmptyLines": 45,
+      "functions": [
+        {
+          "name": "addSecondaryImages",
+          "startLine": 26,
+          "endLine": 34,
+          "params": [
+            "productId",
+            "imageUrls"
+          ]
+        },
+        {
+          "name": "uploadProductImage",
+          "startLine": 36,
+          "endLine": 43,
+          "params": [
+            "productId",
+            "files"
+          ]
+        },
+        {
+          "name": "deleteProductImageById",
+          "startLine": 45,
+          "endLine": 50,
+          "params": [
+            "productId",
+            "imageId"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AdminProductImageController",
+          "startLine": 19,
+          "endLine": 51,
+          "methods": [
+            "addSecondaryImages",
+            "uploadProductImage",
+            "deleteProductImageById"
+          ],
+          "properties": [
+            "service"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "addSecondaryImages",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "uploadProductImage",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "deleteProductImageById",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "AdminProductImageController",
+          "line": 19,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "addSecondaryImages",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 33
+        },
+        {
+          "caller": "addSecondaryImages",
+          "callee": "service.addImages",
+          "lineNumber": 33
+        },
+        {
+          "caller": "uploadProductImage",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 42
+        },
+        {
+          "caller": "uploadProductImage",
+          "callee": "service.uploadImage",
+          "lineNumber": 42
+        },
+        {
+          "caller": "deleteProductImageById",
+          "callee": "service.deleteProductImageById",
+          "lineNumber": 48
+        },
+        {
+          "caller": "deleteProductImageById",
+          "callee": "new ResponseEntity<>",
+          "lineNumber": 49
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/controller/user/ProductImageController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 26,
+      "nonEmptyLines": 22,
+      "functions": [
+        {
+          "name": "getProductImagesByProductId",
+          "startLine": 22,
+          "endLine": 25,
+          "params": [
+            "productId"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProductImageController",
+          "startLine": 15,
+          "endLine": 26,
+          "methods": [
+            "getProductImagesByProductId"
+          ],
+          "properties": [
+            "service"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getProductImagesByProductId",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "ProductImageController",
+          "line": 15,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getProductImagesByProductId",
+          "callee": "ResponseEntity.ok",
+          "lineNumber": 24
+        },
+        {
+          "caller": "getProductImagesByProductId",
+          "callee": "service.getProductImagesByProductId",
+          "lineNumber": 24
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/response/OrderItemResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 26,
+      "nonEmptyLines": 24,
+      "functions": [
+        {
+          "name": "fromEntity",
+          "startLine": 14,
+          "endLine": 25,
+          "params": [
+            "item"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "OrderItemResponse",
+          "startLine": 7,
+          "endLine": 26,
+          "methods": [
+            "fromEntity"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "fromEntity",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "OrderItemResponse",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "fromEntity",
+          "callee": "new OrderItemResponse",
+          "lineNumber": 18
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getId",
+          "lineNumber": 19
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getOrder",
+          "lineNumber": 20
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getOrder().getId",
+          "lineNumber": 20
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getOrder",
+          "lineNumber": 20
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getProduct",
+          "lineNumber": 21
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getProduct().getId",
+          "lineNumber": 21
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getProduct",
+          "lineNumber": 21
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getQuantity",
+          "lineNumber": 22
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "item.getPriceAtPurchase",
+          "lineNumber": 23
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/dto/response/ProductImageResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 20,
+      "nonEmptyLines": 17,
+      "functions": [
+        {
+          "name": "fromEntity",
+          "startLine": 11,
+          "endLine": 19,
+          "params": [
+            "image"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProductImageResponse",
+          "startLine": 7,
+          "endLine": 20,
+          "methods": [
+            "fromEntity"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "fromEntity",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "ProductImageResponse",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "fromEntity",
+          "callee": "new ProductImageResponse",
+          "lineNumber": 15
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "image.getId",
+          "lineNumber": 16
+        },
+        {
+          "caller": "fromEntity",
+          "callee": "image.getImageUrl",
+          "lineNumber": 17
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 7,
+      "nonEmptyLines": 6,
+      "functions": [
+        {
+          "name": "ResourceNotFoundException",
+          "startLine": 4,
+          "endLine": 6,
+          "params": [
+            "message"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ResourceNotFoundException",
+          "startLine": 3,
+          "endLine": 7,
+          "methods": [
+            "ResourceNotFoundException"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ResourceNotFoundException",
+          "line": 4,
+          "isDefault": false
+        },
+        {
+          "name": "ResourceNotFoundException",
+          "line": 3,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/model/OrderItem.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 37,
+      "nonEmptyLines": 29,
+      "classes": [
+        {
+          "name": "OrderItem",
+          "startLine": 8,
+          "endLine": 37,
+          "methods": [],
+          "properties": [
+            "id",
+            "order",
+            "productVariant",
+            "quantity",
+            "priceAtPurchase"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "OrderItem",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/model/ProductImage.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 36,
+      "nonEmptyLines": 29,
+      "functions": [
+        {
+          "name": "forceSecondaryImage",
+          "startLine": 31,
+          "endLine": 35,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProductImage",
+          "startLine": 6,
+          "endLine": 36,
+          "methods": [
+            "forceSecondaryImage"
+          ],
+          "properties": [
+            "id",
+            "product",
+            "imageUrl",
+            "isPrimary"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ProductImage",
+          "line": 6,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/repository/OrderItemRepository.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 24,
+      "nonEmptyLines": 18,
+      "classes": [
+        {
+          "name": "OrderItemRepository",
+          "startLine": 12,
+          "endLine": 23,
+          "methods": [
+            "findAll",
+            "findById",
+            "findByOrderId"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "OrderItemRepository",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/repository/ProductImageRepository.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 12,
+      "nonEmptyLines": 8,
+      "classes": [
+        {
+          "name": "ProductImageRepository",
+          "startLine": 9,
+          "endLine": 11,
+          "methods": [
+            "findByProductId"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ProductImageRepository",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/OrderItemService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 13,
+      "nonEmptyLines": 9,
+      "classes": [
+        {
+          "name": "OrderItemService",
+          "startLine": 7,
+          "endLine": 13,
+          "methods": [
+            "getAllOrderItems",
+            "getOrderItemById",
+            "getOrderItemsByOrderId"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "OrderItemService",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/ProductImageService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 10,
+      "classes": [
+        {
+          "name": "ProductImageService",
+          "startLine": 8,
+          "endLine": 16,
+          "methods": [
+            "getProductImagesByProductId",
+            "addImages",
+            "uploadImage",
+            "deleteProductImageById"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ProductImageService",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/impl/OrderItemServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 43,
+      "nonEmptyLines": 37,
+      "functions": [
+        {
+          "name": "getAllOrderItems",
+          "startLine": 19,
+          "endLine": 25,
+          "params": [
+            "pageable"
+          ]
+        },
+        {
+          "name": "getOrderItemById",
+          "startLine": 27,
+          "endLine": 33,
+          "params": [
+            "id"
+          ]
+        },
+        {
+          "name": "getOrderItemsByOrderId",
+          "startLine": 35,
+          "endLine": 41,
+          "params": [
+            "orderId",
+            "pageable"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "OrderItemServiceImpl",
+          "startLine": 14,
+          "endLine": 43,
+          "methods": [
+            "getAllOrderItems",
+            "getOrderItemById",
+            "getOrderItemsByOrderId"
+          ],
+          "properties": [
+            "repo"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getAllOrderItems",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "getOrderItemById",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "getOrderItemsByOrderId",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "OrderItemServiceImpl",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getAllOrderItems",
+          "callee": "repo.findAll(pageable).map",
+          "lineNumber": 23
+        },
+        {
+          "caller": "getAllOrderItems",
+          "callee": "repo.findAll",
+          "lineNumber": 23
+        },
+        {
+          "caller": "getOrderItemById",
+          "callee": "OrderItemResponse.fromEntity",
+          "lineNumber": 31
+        },
+        {
+          "caller": "getOrderItemById",
+          "callee": "repo.findById(id).orElseThrow",
+          "lineNumber": 31
+        },
+        {
+          "caller": "getOrderItemById",
+          "callee": "repo.findById",
+          "lineNumber": 31
+        },
+        {
+          "caller": "getOrderItemById",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 32
+        },
+        {
+          "caller": "getOrderItemsByOrderId",
+          "callee": "repo.findByOrderId(orderId, pageable).map",
+          "lineNumber": 39
+        },
+        {
+          "caller": "getOrderItemsByOrderId",
+          "callee": "repo.findByOrderId",
+          "lineNumber": 39
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/org/akira/ladux/service/impl/ProductImageServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 112,
+      "nonEmptyLines": 102,
+      "functions": [
+        {
+          "name": "getProductImagesByProductId",
+          "startLine": 34,
+          "endLine": 41,
+          "params": [
+            "productId"
+          ]
+        },
+        {
+          "name": "addImages",
+          "startLine": 43,
+          "endLine": 64,
+          "params": [
+            "productId",
+            "imageUrls"
+          ]
+        },
+        {
+          "name": "uploadImage",
+          "startLine": 66,
+          "endLine": 94,
+          "params": [
+            "productId",
+            "files"
+          ]
+        },
+        {
+          "name": "deleteProductImageById",
+          "startLine": 96,
+          "endLine": 111,
+          "params": [
+            "productId",
+            "imageId"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProductImageServiceImpl",
+          "startLine": 24,
+          "endLine": 112,
+          "methods": [
+            "getProductImagesByProductId",
+            "addImages",
+            "uploadImage",
+            "deleteProductImageById"
+          ],
+          "properties": [
+            "repo",
+            "productRepo",
+            "fileStorage",
+            "productUploadDir"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getProductImagesByProductId",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "addImages",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "uploadImage",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "deleteProductImageById",
+          "line": 96,
+          "isDefault": false
+        },
+        {
+          "name": "ProductImageServiceImpl",
+          "line": 24,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getProductImagesByProductId",
+          "callee": "repo.findByProductId(productId).stream()\n                .map(ProductImageResponse::fromEntity).toList",
+          "lineNumber": 38
+        },
+        {
+          "caller": "getProductImagesByProductId",
+          "callee": "repo.findByProductId(productId).stream().map",
+          "lineNumber": 38
+        },
+        {
+          "caller": "getProductImagesByProductId",
+          "callee": "repo.findByProductId(productId).stream",
+          "lineNumber": 38
+        },
+        {
+          "caller": "getProductImagesByProductId",
+          "callee": "repo.findByProductId",
+          "lineNumber": 38
+        },
+        {
+          "caller": "addImages",
+          "callee": "productRepo.findById(productId).orElseThrow",
+          "lineNumber": 50
+        },
+        {
+          "caller": "addImages",
+          "callee": "productRepo.findById",
+          "lineNumber": 50
+        },
+        {
+          "caller": "addImages",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 51
+        },
+        {
+          "caller": "addImages",
+          "callee": "imageUrls.stream()\n                .map(imageUrl -> ProductImage.builder()\n                        .product(product)\n                        .imageUrl(imageUrl)\n                        .isPrimary(false)\n                        .build()).toList",
+          "lineNumber": 53
+        },
+        {
+          "caller": "addImages",
+          "callee": "imageUrls.stream().map",
+          "lineNumber": 53
+        },
+        {
+          "caller": "addImages",
+          "callee": "imageUrls.stream",
+          "lineNumber": 53
+        },
+        {
+          "caller": "addImages",
+          "callee": "ProductImage.builder()\n                        .product(product)\n                        .imageUrl(imageUrl)\n                        .isPrimary(false).build",
+          "lineNumber": 54
+        },
+        {
+          "caller": "addImages",
+          "callee": "ProductImage.builder()\n                        .product(product)\n                        .imageUrl(imageUrl).isPrimary",
+          "lineNumber": 54
+        },
+        {
+          "caller": "addImages",
+          "callee": "ProductImage.builder()\n                        .product(product).imageUrl",
+          "lineNumber": 54
+        },
+        {
+          "caller": "addImages",
+          "callee": "ProductImage.builder().product",
+          "lineNumber": 54
+        },
+        {
+          "caller": "addImages",
+          "callee": "ProductImage.builder",
+          "lineNumber": 54
+        },
+        {
+          "caller": "addImages",
+          "callee": "repo.saveAll(productImages).stream()\n                .map(ProductImageResponse::fromEntity).toList",
+          "lineNumber": 61
+        },
+        {
+          "caller": "addImages",
+          "callee": "repo.saveAll(productImages).stream().map",
+          "lineNumber": 61
+        },
+        {
+          "caller": "addImages",
+          "callee": "repo.saveAll(productImages).stream",
+          "lineNumber": 61
+        },
+        {
+          "caller": "addImages",
+          "callee": "repo.saveAll",
+          "lineNumber": 61
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "productRepo.findById(productId).orElseThrow",
+          "lineNumber": 73
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "productRepo.findById",
+          "lineNumber": 73
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 74
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "new ArrayList<>",
+          "lineNumber": 75
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "file.isEmpty",
+          "lineNumber": 78
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "fileStorage.store",
+          "lineNumber": 81
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "ProductImage.builder()\n                    .product(product)\n                    .imageUrl(url).build",
+          "lineNumber": 82
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "ProductImage.builder()\n                    .product(product).imageUrl",
+          "lineNumber": 82
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "ProductImage.builder().product",
+          "lineNumber": 82
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "ProductImage.builder",
+          "lineNumber": 82
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "responses.add",
+          "lineNumber": 86
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "ProductImageResponse.fromEntity",
+          "lineNumber": 86
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "repo.save",
+          "lineNumber": 86
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "product.getThumbnail",
+          "lineNumber": 87
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "product.getThumbnail().isBlank",
+          "lineNumber": 87
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "product.getThumbnail",
+          "lineNumber": 87
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "product.setThumbnail",
+          "lineNumber": 88
+        },
+        {
+          "caller": "uploadImage",
+          "callee": "productRepo.save",
+          "lineNumber": 89
+        },
+        {
+          "caller": "deleteProductImageById",
+          "callee": "repo.findById(imageId).orElseThrow",
+          "lineNumber": 103
+        },
+        {
+          "caller": "deleteProductImageById",
+          "callee": "repo.findById",
+          "lineNumber": 103
+        },
+        {
+          "caller": "deleteProductImageById",
+          "callee": "new ResourceNotFoundException",
+          "lineNumber": 104
+        },
+        {
+          "caller": "deleteProductImageById",
+          "callee": "image.getProduct",
+          "lineNumber": 105
+        },
+        {
+          "caller": "deleteProductImageById",
+          "callee": "image.getProduct().getId().equals",
+          "lineNumber": 105
+        },
+        {
+          "caller": "deleteProductImageById",
+          "callee": "image.getProduct().getId",
+          "lineNumber": 105
+        },
+        {
+          "caller": "deleteProductImageById",
+          "callee": "image.getProduct",
+          "lineNumber": 105
+        },
+        {
+          "caller": "deleteProductImageById",
+          "callee": "new BusinessRuleException",
+          "lineNumber": 106
+        },
+        {
+          "caller": "deleteProductImageById",
+          "callee": "image.getImageUrl",
+          "lineNumber": 108
+        },
+        {
+          "caller": "deleteProductImageById",
+          "callee": "repo.delete",
+          "lineNumber": 109
+        },
+        {
+          "caller": "deleteProductImageById",
+          "callee": "fileStorage.deleteIfLocal",
+          "lineNumber": 110
+        }
+      ],
+      "metrics": {
+        "importCount": 9,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    }
+  ]
+}

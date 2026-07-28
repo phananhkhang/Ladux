@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -27,4 +28,18 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     @Modifying
     @Query("UPDATE Notification n SET n.isRead = true WHERE n.recipient.id = :currentUserId AND n.isRead = false")
     void markAllAsReadByUserId(Integer currentUserId);
+
+    @Modifying
+    @Query(value = """
+    INSERT INTO notifications (recipient_id, title, message, is_read, type, target_type, target_id, created_at)
+    SELECT u.id, :title, :message, false, :type, :targetType, :targetId, NOW()
+    FROM users u
+""", nativeQuery = true)
+    int insertBroadcastNotifications(
+            @Param("title") String title,
+            @Param("message") String message,
+            @Param("type") String type,
+            @Param("targetType") String targetType,
+            @Param("targetId") Integer targetId
+    );
 }

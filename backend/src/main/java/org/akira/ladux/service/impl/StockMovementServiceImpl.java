@@ -6,11 +6,13 @@ import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.InsufficientStockException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Product;
+import org.akira.ladux.model.ProductVariant;
 import org.akira.ladux.model.StockMovement;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.enums.StockMovementType;
 import org.akira.ladux.model.enums.StockReferenceType;
 import org.akira.ladux.repository.ProductRepository;
+import org.akira.ladux.repository.ProductVariantRepository;
 import org.akira.ladux.repository.StockMovementRepository;
 import org.akira.ladux.repository.UserRepository;
 import org.akira.ladux.service.StockMovementService;
@@ -30,13 +32,13 @@ import lombok.RequiredArgsConstructor;
 public class StockMovementServiceImpl implements StockMovementService {
 
     private final StockMovementRepository repo;
-    private final ProductRepository productRepository;
+    private final ProductVariantRepository productVariantRepository;
     private final UserRepository userRepository;
 
     @Override
     @Transactional
     public StockMovementResponse createAdjustment(StockMovementRequest request, Integer createdByUserId) {
-        Product product = productRepository.findByIdForUpdate(request.productId())
+        ProductVariant productVariant = productVariantRepository.findByIdForUpdate(request.productId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham id = " + request.productId()));
 
         User createdBy = createdByUserId == null ? null
@@ -44,15 +46,15 @@ public class StockMovementServiceImpl implements StockMovementService {
 
         int signed = signedQuantity(request.movementType(), request.quantity());
         StockMovement movement = recordMovement(
-                product, signed, request.movementType(),
-                StockReferenceType.ADJUSTMENT, null, request.note(), createdBy);
+                productVariant, signed, request.movementType(),
+                StockReferenceType.ADJUSTMENT, (Integer) null, request.note(), createdBy);
         return StockMovementResponse.fromEntity(movement);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<StockMovementResponse> getMovementsByProduct(int productId, Pageable pageable) {
-        return repo.findByProductId(productId, pageable).map(StockMovementResponse::fromEntity);
+        return repo.findByProductVariantId(productId, pageable).map(StockMovementResponse::fromEntity);
     }
 
     @Override
@@ -61,28 +63,27 @@ public class StockMovementServiceImpl implements StockMovementService {
         return repo.findAll(pageable).map(StockMovementResponse::fromEntity);
     }
 
-    @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public StockMovement recordMovement(
-            Product product,
+            ProductVariant productVariant,
             int signedQuantity,
             StockMovementType movementType,
             StockReferenceType referenceType,
-            Long referenceId,
+            Integer referenceId,
             String note,
             User createdBy
     ) {
         if (signedQuantity == 0) {
             throw new BusinessRuleException("So luong bien dong khong duoc bang 0");
         }
-        int newStock = product.getStockQuantity() + signedQuantity;
+        int newStock = productVariant.getStockQuantity() + signedQuantity;
         if (newStock < 0) {
-            throw new InsufficientStockException("Ton kho khong du de xuat (san pham id = " + product.getId() + ")");
+            throw new InsufficientStockException("Ton kho khong du de xuat (san pham id = " + productVariant.getId() + ")");
         }
-        product.setStockQuantity(newStock);
+        productVariant.setStockQuantity(newStock);
 
         StockMovement movement = StockMovement.builder()
-                .product(product)
+                .productVariant(productVariant)
                 .quantity(signedQuantity)
                 .movementType(movementType)
                 .referenceType(referenceType)
@@ -96,11 +97,11 @@ public class StockMovementServiceImpl implements StockMovementService {
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public StockMovement recordLedgerEntry(
-            Product product,
+            ProductVariant productVariant,
             int signedQuantity,
             StockMovementType movementType,
             StockReferenceType referenceType,
-            Long referenceId,
+            Integer referenceId,
             String note,
             User createdBy
     ) {
@@ -109,7 +110,7 @@ public class StockMovementServiceImpl implements StockMovementService {
         }
         // KHONG dung product.setStockQuantity() — ton kho da duoc thay doi boi caller.
         StockMovement movement = StockMovement.builder()
-                .product(product)
+                .productVariant(productVariant)
                 .quantity(signedQuantity)
                 .movementType(movementType)
                 .referenceType(referenceType)

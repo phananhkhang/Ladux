@@ -12,7 +12,6 @@ import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 @Configuration
 @EnableSchedulerLock(defaultLockAtMostFor = "PT30M")  // Lock tối đa 30 phút để phòng trường hợp task bị treo
 public class ShedLockConfig {
-
     @Bean
     public LockProvider lockProvider(DataSource dataSource) { // Tạo cầu nối giữa ShedLock và database thông qua DataSource
         return new JdbcTemplateLockProvider(dataSource);

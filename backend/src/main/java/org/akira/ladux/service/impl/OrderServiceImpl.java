@@ -131,7 +131,7 @@ public class OrderServiceImpl implements OrderService {
 
         // B4: ánh xạ từng item trong giỏ thành dòng đặt hàng (user không cần nhập tay).
         List<OrderLineRequest> lineRequests = cart.getItems().stream()
-                .map(item -> new OrderLineRequest(item.getProduct().getId(), item.getQuantity()))
+                .map(item -> new OrderLineRequest(item.getProductVariant().getId(), item.getQuantity()))
                 .toList();
 
         // B5: khóa tồn kho từng sản phẩm, kiểm tra đủ số lượng, đồng thời tính giá tại thời điểm mua.
@@ -194,7 +194,7 @@ public class OrderServiceImpl implements OrderService {
 
         // B11: ghi so cai bien dong kho (SALE_OUT) cho tung dong — ton kho da bi tru atomic o B5,
         // nen chi GHI SO (recordLedgerEntry) de tranh tru kep. Tham chieu ve don hang vua tao.
-        Long orderRef = order.getId().longValue();
+        Integer orderRef = order.getId() == null ? null : order.getId().intValue();
         for (LineDraft draft : lineDrafts) {
             stockMovementService.recordLedgerEntry(
                     draft.productVariant(),

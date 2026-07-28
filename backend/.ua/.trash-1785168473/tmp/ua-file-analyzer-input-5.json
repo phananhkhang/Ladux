@@ -1,0 +1,193 @@
+{
+    "projectRoot":  "C:\\Users\\ADMIN\\OneDrive\\Desktop\\Ladux\\backend",
+    "batchFiles":  [
+                       {
+                           "path":  "src/main/java/org/akira/ladux/controller/admin/AdminBrandController.java",
+                           "language":  "java",
+                           "sizeLines":  41,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/controller/admin/AdminCategoryController.java",
+                           "language":  "java",
+                           "sizeLines":  51,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/controller/user/BrandController.java",
+                           "language":  "java",
+                           "sizeLines":  35,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/controller/user/CategoryController.java",
+                           "language":  "java",
+                           "sizeLines":  35,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/dto/request/BrandRequest.java",
+                           "language":  "java",
+                           "sizeLines":  10,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/dto/request/CategoryRequest.java",
+                           "language":  "java",
+                           "sizeLines":  18,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/dto/response/BrandResponse.java",
+                           "language":  "java",
+                           "sizeLines":  22,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/dto/response/CategoryResponse.java",
+                           "language":  "java",
+                           "sizeLines":  26,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/dto/response/UploadUrlResponse.java",
+                           "language":  "java",
+                           "sizeLines":  8,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/model/Brand.java",
+                           "language":  "java",
+                           "sizeLines":  32,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/model/Category.java",
+                           "language":  "java",
+                           "sizeLines":  52,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/repository/BrandRepository.java",
+                           "language":  "java",
+                           "sizeLines":  12,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/repository/CategoryRepository.java",
+                           "language":  "java",
+                           "sizeLines":  18,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/service/BrandService.java",
+                           "language":  "java",
+                           "sizeLines":  21,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/service/CategoryService.java",
+                           "language":  "java",
+                           "sizeLines":  31,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/service/impl/BrandServiceImpl.java",
+                           "language":  "java",
+                           "sizeLines":  85,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/service/impl/CategoryServiceImpl.java",
+                           "language":  "java",
+                           "sizeLines":  158,
+                           "fileCategory":  "code"
+                       },
+                       {
+                           "path":  "src/main/java/org/akira/ladux/utils/SlugUtils.java",
+                           "language":  "java",
+                           "sizeLines":  27,
+                           "fileCategory":  "code"
+                       }
+                   ],
+    "batchImportData":  {
+                            "src/main/java/org/akira/ladux/controller/admin/AdminBrandController.java":  [
+                                                                                                             "src/main/java/org/akira/ladux/dto/request/BrandRequest.java",
+                                                                                                             "src/main/java/org/akira/ladux/dto/response/BrandResponse.java",
+                                                                                                             "src/main/java/org/akira/ladux/service/BrandService.java"
+                                                                                                         ],
+                            "src/main/java/org/akira/ladux/controller/admin/AdminCategoryController.java":  [
+                                                                                                                "src/main/java/org/akira/ladux/dto/request/CategoryRequest.java",
+                                                                                                                "src/main/java/org/akira/ladux/dto/response/CategoryResponse.java",
+                                                                                                                "src/main/java/org/akira/ladux/dto/response/UploadUrlResponse.java",
+                                                                                                                "src/main/java/org/akira/ladux/service/CategoryService.java"
+                                                                                                            ],
+                            "src/main/java/org/akira/ladux/controller/user/BrandController.java":  [
+                                                                                                       "src/main/java/org/akira/ladux/dto/response/BrandResponse.java",
+                                                                                                       "src/main/java/org/akira/ladux/service/BrandService.java"
+                                                                                                   ],
+                            "src/main/java/org/akira/ladux/controller/user/CategoryController.java":  [
+                                                                                                          "src/main/java/org/akira/ladux/dto/response/CategoryResponse.java",
+                                                                                                          "src/main/java/org/akira/ladux/service/CategoryService.java"
+                                                                                                      ],
+                            "src/main/java/org/akira/ladux/dto/request/BrandRequest.java":  [
+
+                                                                                            ],
+                            "src/main/java/org/akira/ladux/dto/request/CategoryRequest.java":  [
+
+                                                                                               ],
+                            "src/main/java/org/akira/ladux/dto/response/BrandResponse.java":  [
+                                                                                                  "src/main/java/org/akira/ladux/model/Brand.java"
+                                                                                              ],
+                            "src/main/java/org/akira/ladux/dto/response/CategoryResponse.java":  [
+                                                                                                     "src/main/java/org/akira/ladux/model/Category.java"
+                                                                                                 ],
+                            "src/main/java/org/akira/ladux/dto/response/UploadUrlResponse.java":  [
+
+                                                                                                  ],
+                            "src/main/java/org/akira/ladux/model/Brand.java":  [
+
+                                                                               ],
+                            "src/main/java/org/akira/ladux/model/Category.java":  [
+
+                                                                                  ],
+                            "src/main/java/org/akira/ladux/repository/BrandRepository.java":  [
+                                                                                                  "src/main/java/org/akira/ladux/model/Brand.java"
+                                                                                              ],
+                            "src/main/java/org/akira/ladux/repository/CategoryRepository.java":  [
+                                                                                                     "src/main/java/org/akira/ladux/model/Category.java"
+                                                                                                 ],
+                            "src/main/java/org/akira/ladux/service/BrandService.java":  [
+                                                                                            "src/main/java/org/akira/ladux/dto/request/BrandRequest.java",
+                                                                                            "src/main/java/org/akira/ladux/dto/response/BrandResponse.java"
+                                                                                        ],
+                            "src/main/java/org/akira/ladux/service/CategoryService.java":  [
+                                                                                               "src/main/java/org/akira/ladux/dto/request/CategoryRequest.java",
+                                                                                               "src/main/java/org/akira/ladux/dto/response/CategoryResponse.java"
+                                                                                           ],
+                            "src/main/java/org/akira/ladux/service/impl/BrandServiceImpl.java":  [
+                                                                                                     "src/main/java/org/akira/ladux/dto/request/BrandRequest.java",
+                                                                                                     "src/main/java/org/akira/ladux/dto/response/BrandResponse.java",
+                                                                                                     "src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+                                                                                                     "src/main/java/org/akira/ladux/model/Brand.java",
+                                                                                                     "src/main/java/org/akira/ladux/repository/BrandRepository.java",
+                                                                                                     "src/main/java/org/akira/ladux/service/BrandService.java",
+                                                                                                     "src/main/java/org/akira/ladux/utils/SlugUtils.java"
+                                                                                                 ],
+                            "src/main/java/org/akira/ladux/service/impl/CategoryServiceImpl.java":  [
+                                                                                                        "src/main/java/org/akira/ladux/dto/request/CategoryRequest.java",
+                                                                                                        "src/main/java/org/akira/ladux/dto/response/CategoryResponse.java",
+                                                                                                        "src/main/java/org/akira/ladux/exception/BusinessRuleException.java",
+                                                                                                        "src/main/java/org/akira/ladux/exception/ResourceNotFoundException.java",
+                                                                                                        "src/main/java/org/akira/ladux/model/Category.java",
+                                                                                                        "src/main/java/org/akira/ladux/repository/CategoryRepository.java",
+                                                                                                        "src/main/java/org/akira/ladux/repository/ProductRepository.java",
+                                                                                                        "src/main/java/org/akira/ladux/service/CategoryService.java",
+                                                                                                        "src/main/java/org/akira/ladux/service/FileStorageService.java",
+                                                                                                        "src/main/java/org/akira/ladux/utils/SlugUtils.java"
+                                                                                                    ],
+                            "src/main/java/org/akira/ladux/utils/SlugUtils.java":  [
+
+                                                                                   ]
+                        }
+}

@@ -26,11 +26,11 @@ public interface StockMovementService {
      * Yeu cau chay trong transaction cua caller.
      */
     StockMovement recordMovement(
-            Product product,
+            ProductVariant productVariant,
             int signedQuantity,
             StockMovementType movementType,
             StockReferenceType referenceType,
-            Long referenceId,
+            Integer referenceId,
             String note,
             User createdBy
     );
@@ -47,7 +47,7 @@ public interface StockMovementService {
             int signedQuantity,
             StockMovementType movementType,
             StockReferenceType referenceType,
-            Long referenceId,
+            Integer referenceId,
             String note,
             User createdBy
     );

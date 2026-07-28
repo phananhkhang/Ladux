@@ -49,7 +49,6 @@ public class AuthController {
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
         return new ResponseEntity<>(userService.savedUser(request), HttpStatus.CREATED);
     }
-
     @PostMapping({"/login", "/login/"})
     public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginRequest request) {
         String username = request.username().trim();
@@ -63,19 +62,20 @@ public class AuthController {
 
         authManager.authenticate(new UsernamePasswordAuthenticationToken(username, request.password()));
 
-        // Xac thuc thanh cong -> user chac chan ton tai (kem roles do @EntityGraph).
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BusinessRuleException("Khong tim thay user sau khi xac thuc"));
 
         String accessToken = jwtService.generateAccessToken(user);
         RefreshToken refreshToken = refreshTokenService.create(user);
 
+        // Body KHÔNG TRẢ accessToken nữa!
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, authCookieService.createAccessCookie(accessToken).toString())
                 .header(HttpHeaders.SET_COOKIE, authCookieService.createRefreshCookie(refreshToken.getToken()).toString())
                 .body(Map.of(
                         "message", "Login successful",
-                        "accessToken", accessToken
+                        "userId", String.valueOf(user.getId()),
+                        "username", user.getUsername()
                 ));
     }
 
@@ -83,18 +83,17 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> refresh(HttpServletRequest request) {
         String rawRefresh = readCookie(request, authCookieService.refreshCookieName());
 
-        // Xac thuc + xoay vong: token cu bi revoke, phat hanh token moi (chong replay).
         RefreshToken rotated = refreshTokenService.verifyAndRotate(rawRefresh);
         User user = rotated.getUser();
 
         String newAccessToken = jwtService.generateAccessToken(user);
 
+        // 🟢 BẢO MẬT: Đặt access token mới vào Cookie, Body chỉ báo OK
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, authCookieService.createAccessCookie(newAccessToken).toString())
                 .header(HttpHeaders.SET_COOKIE, authCookieService.createRefreshCookie(rotated.getToken()).toString())
                 .body(Map.of(
-                        "message", "Token refreshed",
-                        "accessToken", newAccessToken
+                        "message", "Token refreshed successfully"
                 ));
     }
 
