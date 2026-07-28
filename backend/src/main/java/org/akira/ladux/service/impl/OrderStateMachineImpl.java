@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.akira.ladux.dto.request.OrderStatusUpdateRequest;
 import org.akira.ladux.dto.response.OrderResponse;
+import org.akira.ladux.event.OrderDeliveredEvent;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Order;
@@ -14,6 +15,7 @@ import org.akira.ladux.service.OrderLifecycleService;
 import org.akira.ladux.service.OrderStateMachine;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,7 @@ import java.util.List;
 public class OrderStateMachineImpl implements OrderStateMachine {
     private final OrderRepository orderRepository;
     private final OrderLifecycleService orderLifecycleService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -71,14 +74,19 @@ public class OrderStateMachineImpl implements OrderStateMachine {
                 .status(target)
                 .description("Order status changed from " + current.name() + " to " + target.name())
                 .build());
+        if (target == OrderStatus.DELIVERED) {
+            eventPublisher.publishEvent(new OrderDeliveredEvent(order));
+        }
         return OrderResponse.fromEntity(order);
     }
 
     @Override
     @Scheduled(fixedDelayString = "${ladux.order-expiration.fixed-delay-ms:60000}")
     @Transactional
-    @SchedulerLock
+    @SchedulerLock(name = "expirePendingOrdersLock", lockAtMostFor = "10m", lockAtLeastFor = "1m")
     @Caching(evict = {
+
+
             @CacheEvict(value = "orders", allEntries = true),
             @CacheEvict(value = "orderHistories", allEntries = true),
             @CacheEvict(value = "products", allEntries = true),
@@ -95,20 +103,35 @@ public class OrderStateMachineImpl implements OrderStateMachine {
 
     // Kiem tra ma tran chuyen trang thai — nem BusinessRuleException neu khong hop le.
     private void validateTransition(OrderStatus current, OrderStatus target) {
-        if (current == OrderStatus.CANCELLED || current == OrderStatus.DELIVERED) {
-            throw new BusinessRuleException("Don hang o trang thai " + current + " khong the chuyen trang thai");
+        // 1. Các trạng thái cuối cùng, hoàn tất hoàn toàn không thể chuyển tiếp
+        if (current == OrderStatus.CANCELLED || current == OrderStatus.REFUNDED) {
+            throw new BusinessRuleException("Đơn hàng ở trạng thái " + current + " không thể chuyển trạng thái nữa");
         }
+
+        // 2. Kiểm tra điều kiện HỦY ĐƠN (CANCELLED)
         if (target == OrderStatus.CANCELLED) {
             if (current == OrderStatus.PENDING || current == OrderStatus.CONFIRMED) {
                 return;
             }
-            throw new BusinessRuleException("Chi huy don khi don dang PENDING hoac CONFIRMED");
+            throw new BusinessRuleException("Chỉ hủy đơn khi đơn đang PENDING hoặc CONFIRMED");
         }
-        boolean allowed = (current == OrderStatus.PENDING && target == OrderStatus.CONFIRMED)
-                || (current == OrderStatus.CONFIRMED && target == OrderStatus.SHIPPED)
-                || (current == OrderStatus.SHIPPED && target == OrderStatus.DELIVERED);
+
+        // 3. Ma trận chuyển đổi trạng thái hợp lệ
+        boolean allowed = switch (current) {
+            case PENDING -> target == OrderStatus.CONFIRMED;
+            case CONFIRMED -> target == OrderStatus.SHIPPED;
+            case SHIPPED -> target == OrderStatus.DELIVERED;
+
+            // LUỒNG ĐỔI TRẢ & HOÀN TIỀN MỚI BỔ SUNG:
+            case DELIVERED -> target == OrderStatus.RETURN_REQUESTED || target == OrderStatus.RETURNED;
+            case RETURN_REQUESTED -> target == OrderStatus.RETURNED || target == OrderStatus.DELIVERED; // RETURNED (Duyệt) hoặc DELIVERED (Từ chối)
+            case RETURNED -> target == OrderStatus.REFUNDED;
+
+            default -> false;
+        };
+
         if (!allowed) {
-            throw new BusinessRuleException("Trang thai don hang khong duoc nhay coc tu " + current + " sang " + target);
+            throw new BusinessRuleException("Trạng thái đơn hàng không hợp lệ khi chuyển từ " + current + " sang " + target);
         }
     }
 }

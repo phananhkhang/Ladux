@@ -30,6 +30,7 @@ import org.akira.ladux.service.StockMovementService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentAttemptService paymentAttemptService;
     private final OrderStateMachine orderStateMachine;
     private final StockMovementService stockMovementService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional(readOnly = true)

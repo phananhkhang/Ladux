@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,5 +51,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 
     @EntityGraph(attributePaths = {"order"})
     Page<Payment> findByOrder_User_IdAndStatus(Integer userId, PaymentStatus status, Pageable pageable);
+
+    Optional<Payment> findFirstByOrderIdAndStatusOrderByCreatedAtDesc(int orderId, PaymentStatus paymentStatus);
 }
 

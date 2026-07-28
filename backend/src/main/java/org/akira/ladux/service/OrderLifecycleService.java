@@ -1,5 +1,6 @@
 package org.akira.ladux.service;
 
+import org.akira.ladux.dto.response.OrderResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.*;
@@ -7,13 +8,15 @@ import org.akira.ladux.model.enums.OrderStatus;
 import org.akira.ladux.model.enums.StockMovementType;
 import org.akira.ladux.model.enums.StockReferenceType;
 import org.akira.ladux.repository.CouponRepository;
-import org.akira.ladux.repository.ProductRepository;
+import org.akira.ladux.repository.OrderRepository;
 import org.akira.ladux.repository.ProductVariantRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+
+import java.math.BigDecimal;
 
 // Tach side-effect khoi state machine — xu ly hau qua khi don hang doi trang thai do thanh toan.
 // Transaction propagation = MANDATORY: bat buoc chay trong transaction cua caller (PaymentWebhook,
@@ -27,6 +30,7 @@ public class OrderLifecycleService {
     private final ProductVariantRepository productVariantRepository;
     private final CouponRepository couponRepository;
     private final StockMovementService stockMovementService;
+    private final OrderRepository orderRepository;
 
     // Xac nhan don sau thanh toan thanh cong: PENDING -> CONFIRMED, xoa han thanh toan, ghi audit trail.
     @Transactional(propagation = Propagation.MANDATORY)
@@ -75,10 +79,20 @@ public class OrderLifecycleService {
                 .description(description)
                 .build());
     }
+    // Hoàn tiền cho khách (qua refundPayment) khi đơn đã RETURNED. Không hoàn kho nữa.
+    @Transactional
+    public void refundOrder(Order order, String description) {
+        if (order.getStatus() != OrderStatus.RETURNED) {
+            throw new BusinessRuleException("Chỉ hoàn tiền cho đơn đã được trả lại");
+        }
+        // Logic để hoàn tiền (ví dụ: gọi API thanh toán)
+        BigDecimal refundAmount = order.getFinalAmount();
+
+    }
 
     // Hoan ton kho khi huy don: cong lai so luong da tru luc checkout, ghi so cai RETURN_IN (chi ghi so).
     private void releaseReservedInventory(Order order) {
-        Integer orderRef = order.getId() == null ? null : order.getId().intValue();
+        Integer orderRef = order.getId().intValue();
         for (OrderItem item : order.getItems()) {
             Integer productVariantId = item.getProductVariant().getId();
             ProductVariant productVariant = productVariantRepository.findByIdForUpdate(productVariantId)
@@ -107,5 +121,43 @@ public class OrderLifecycleService {
         if (coupon.getUsedCount() > 0) {
             coupon.setUsedCount(coupon.getUsedCount() - 1);
         }
+    }
+
+    @Transactional
+    public OrderResponse processReturnOrder(int orderId, String reason, User admin) {
+        Order order = orderRepository.findWithItemsByIdForUpdate(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng id = " + orderId));
+
+        // B1: Chỉ cho phép trả hàng khi đơn đã DELIVERED hoặc khách đã gửi RETURN_REQUESTED
+        if (order.getStatus() != OrderStatus.DELIVERED && order.getStatus() != OrderStatus.RETURN_REQUESTED) {
+            throw new BusinessRuleException("Chỉ đơn hàng đã giao thành công hoặc có yêu cầu trả mới được nhận lại hàng");
+        }
+
+        // B2: Cập nhật trạng thái sang RETURNED (Đã nhận lại hàng về kho)
+        order.setStatus(OrderStatus.RETURNED);
+
+        // B3: HOÀN TỒN KHO - Tăng lại stock_quantity cho từng Variant
+        Integer orderRef = order.getId().intValue();
+        for (OrderItem item : order.getItems()) {
+            stockMovementService.recordMovement(
+                    item.getProductVariant(),
+                    item.getQuantity(), // Số lượng dương (+) = Nhập lại kho
+                    StockMovementType.RETURN_IN,
+                    StockReferenceType.ORDER,
+                    orderRef,
+                    "Hoàn kho từ đơn trả hàng #" + order.getId() + ". Lý do: " + reason,
+                    admin
+            );
+        }
+
+        // B4: Ghi vết lịch sử đơn hàng (Audit Trail)
+        order.getHistories().add(OrderHistory.builder()
+                .order(order)
+                .user(admin)
+                .status(OrderStatus.RETURNED)
+                .description("Xác nhận đã nhận lại hàng về kho. Lý do: " + reason)
+                .build());
+
+        return OrderResponse.fromEntity(orderRepository.save(order));
     }
 }
