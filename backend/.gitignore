@@ -38,3 +38,6 @@ build/
 ### VS Code ###
 .vscode/
 .kiro/
+
+### Understand Anything (github repo)###
+.ua/
