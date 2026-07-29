@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import {
   Laptop,
   Search,
@@ -245,6 +245,223 @@ const MOCK_PRODUCTS: LaptopProduct[] = [
       },
     ],
     isNew: true,
+    isFeatured: true,
+  },
+  {
+    id: 3,
+    brand: "Lenovo",
+    category: "Doanh Nhân",
+    name: "Lenovo ThinkPad X1 Carbon Gen 12 (Core Ultra 7 / 32GB / 1TB OLED)",
+    slug: "lenovo-thinkpad-x1-carbon-gen-12",
+    cpu: "Intel Core Ultra 7 155H (16 nhân, 22 luồng)",
+    gpu: "Intel Arc Graphics",
+    display: "14.0 inch 2.8K OLED (2880 x 1800) 120Hz Anti-Glare Touch",
+    ram: "32GB LPDDR5X 6400MHz",
+    rom: "1TB PCIe Gen4 Performance NVMe SSD",
+    price: 52990000,
+    discountPrice: 48990000,
+    stockQuantity: 8,
+    rating: 4.8,
+    reviewCount: 26,
+    images: [
+      "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=800&fit=crop&auto=format",
+      "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800&fit=crop&auto=format",
+    ],
+    description:
+      "Biểu tượng doanh nhân đỉnh cao với vỏ sợi carbon mỏng nhẹ vượt trội dưới 1.1kg. Bàn phím huyền thoại cùng độ bền chuẩn quân đội MIL-STD-810H.",
+    reviews: [
+      {
+        id: 4,
+        reviewerName: "Nguyễn Văn Đức",
+        rating: 5,
+        comment:
+          "Dòng ThinkPad X1 Carbon vẫn giữ được chất bàn phím bấm phê nhất thị trường. Màn 2.8K OLED quá nét.",
+        createdAt: "10/08/2026",
+        avatar:
+          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&fit=crop&auto=format",
+      },
+    ],
+    isNew: true,
+    isFeatured: true,
+  },
+  {
+    id: 4,
+    brand: "Dell",
+    category: "Ultrabook",
+    name: "Dell XPS 16 9640 (Intel Core Ultra 9 / RTX 4070 / 32GB / 1TB OLED 4K)",
+    slug: "dell-xps-16-9640",
+    cpu: "Intel Core Ultra 9 185H (16 Cores, up to 5.1GHz)",
+    gpu: "NVIDIA GeForce RTX 4070 8GB GDDR6",
+    display: "16.3 inch 4K+ OLED (3840 x 2400) Touch display",
+    ram: "32GB LPDDR5X",
+    rom: "1TB M.2 PCIe NVMe SSD",
+    price: 78990000,
+    discountPrice: 73990000,
+    stockQuantity: 6,
+    rating: 4.9,
+    reviewCount: 19,
+    images: [
+      "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=800&fit=crop&auto=format",
+      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&fit=crop&auto=format",
+    ],
+    description:
+      "Tuyệt tác thiết kế nhôm nguyên khối tương lai với bàn phím tràn viền, kính cường lực Gorilla Glass 3 và touchpad ẩn cảm ứng lực rực rỡ.",
+    reviews: [
+      {
+        id: 5,
+        reviewerName: "Đặng Minh Tuấn",
+        rating: 5,
+        comment: "Vẻ đẹp vượt thời gian! Màn 4K OLED rực rỡ và loa ngoài siêu trầm vượt mong đợi.",
+        createdAt: "05/08/2026",
+        avatar:
+          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&fit=crop&auto=format",
+      },
+    ],
+    isNew: false,
+    isFeatured: true,
+  },
+  {
+    id: 5,
+    brand: "Razer",
+    category: "Gaming",
+    name: "Razer Blade 16 (Core i9 14900HX / RTX 4090 / 64GB / 2TB Dual Mini-LED)",
+    slug: "razer-blade-16-2026",
+    cpu: "Intel Core i9-14900HX (24 cores, 32 threads)",
+    gpu: "NVIDIA GeForce RTX 4090 16GB GDDR6 (175W TGP)",
+    display: "16.0 inch Dual-Mode Mini-LED (UHD+ 120Hz / FHD+ 240Hz)",
+    ram: "64GB DDR5 5600MHz",
+    rom: "2TB NVMe PCIe 4.0 SSD",
+    price: 119990000,
+    discountPrice: 112990000,
+    stockQuantity: 4,
+    rating: 5.0,
+    reviewCount: 15,
+    images: [
+      "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=800&fit=crop&auto=format",
+      "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=800&fit=crop&auto=format",
+    ],
+    description:
+      "Quái thú Gaming trong lớp vỏ nhôm CNC nguyên khối cực kỳ sang trọng. Màn hình Mini-LED chuyển đổi linh hoạt tần số quét 240Hz cực đỉnh.",
+    reviews: [
+      {
+        id: 6,
+        reviewerName: "Hoàng Anh Vũ",
+        rating: 5,
+        comment: "RTX 4090 trên màn Mini-LED cân mọi tựa game AAA Max Settings ở độ phân giải 4K!",
+        createdAt: "01/08/2026",
+        avatar:
+          "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&fit=crop&auto=format",
+      },
+    ],
+    isNew: true,
+    isFeatured: true,
+  },
+  {
+    id: 6,
+    brand: "Apple",
+    category: "MacBook",
+    name: "MacBook Air 15 inch M3 (16GB RAM / 512GB SSD) Midnight",
+    slug: "macbook-air-15-m3",
+    cpu: "Apple M3 (8-core CPU, 10-core GPU)",
+    gpu: "Integrated 10-Core GPU",
+    display: "15.3 inch Liquid Retina (2880 x 1864) True Tone",
+    ram: "16GB Unified Memory",
+    rom: "512GB SSD",
+    price: 36990000,
+    discountPrice: 33990000,
+    stockQuantity: 20,
+    rating: 4.9,
+    reviewCount: 54,
+    images: [
+      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&fit=crop&auto=format",
+      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&fit=crop&auto=format",
+    ],
+    description:
+      "MacBook Air 15 inch siêu mỏng chỉ 11.5mm với thời lượng pin lên đến 18 tiếng, đáp ứng hoàn hảo nhu cầu di chuyển làm việc liên tục.",
+    reviews: [
+      {
+        id: 7,
+        reviewerName: "Ngô Mỹ Linh",
+        rating: 5,
+        comment: "Máy mỏng nhẹ, pin cực lâu dùng cả ngày không cần mang sạc. Màu Midnight siêu thanh lịch.",
+        createdAt: "28/07/2026",
+        avatar:
+          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&fit=crop&auto=format",
+      },
+    ],
+    isNew: false,
+    isFeatured: false,
+  },
+  {
+    id: 7,
+    brand: "HP",
+    category: "Ultrabook",
+    name: "HP Spectre x360 16 (Core Ultra 7 / Touch OLED 2.8K / 32GB / 1TB)",
+    slug: "hp-spectre-x360-16",
+    cpu: "Intel Core Ultra 7 155H",
+    gpu: "Intel Arc Graphics",
+    display: "16.0 inch 2.8K OLED (2880 x 1800) Touchscreen 360 convertible",
+    ram: "32GB LPDDR5x",
+    rom: "1TB PCIe NVMe SSD",
+    price: 48990000,
+    discountPrice: 44990000,
+    stockQuantity: 10,
+    rating: 4.8,
+    reviewCount: 22,
+    images: [
+      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&fit=crop&auto=format",
+      "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=800&fit=crop&auto=format",
+    ],
+    description:
+      "Laptop xoay gập 360 độ cao cấp nhất của HP tích hợp camera AI 9MP thông minh cùng âm thanh sống động tinh chỉnh bởi Poly Studio.",
+    reviews: [
+      {
+        id: 8,
+        reviewerName: "Trịnh Bảo Ngọc",
+        rating: 5,
+        comment: "Bút cảm ứng đi kèm rất nhạy, xoay gập làm tablet vẽ sơ đồ siêu tiện.",
+        createdAt: "20/07/2026",
+        avatar:
+          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&fit=crop&auto=format",
+      },
+    ],
+    isNew: true,
+    isFeatured: false,
+  },
+  {
+    id: 8,
+    brand: "MSI",
+    category: "Gaming",
+    name: "MSI Raider GE78 HX (Core i9 14900HX / RTX 4080 / 32GB / 2TB / 240Hz)",
+    slug: "msi-raider-ge78-hx",
+    cpu: "Intel Core i9-14900HX",
+    gpu: "NVIDIA GeForce RTX 4080 12GB GDDR6",
+    display: "17.0 inch QHD+ (2560 x 1600) 240Hz 100% DCI-P3",
+    ram: "32GB DDR5 5600MHz",
+    rom: "2TB PCIe Gen4 SSD",
+    price: 89990000,
+    discountPrice: 83990000,
+    stockQuantity: 5,
+    rating: 4.9,
+    reviewCount: 31,
+    images: [
+      "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=800&fit=crop&auto=format",
+      "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=800&fit=crop&auto=format",
+    ],
+    description:
+      "Chiến hạm Gaming trang bị dải đèn RGB Matrix Mystic Light rực rỡ và hệ thống tản nhiệt tản nhiệt Cooler Boost 5 siêu mát.",
+    reviews: [
+      {
+        id: 9,
+        reviewerName: "Vũ Hải Đăng",
+        rating: 5,
+        comment: "Tản nhiệt siêu ngon, chiến game cả ngày nhiệt độ CPU không quá 78 độ.",
+        createdAt: "14/07/2026",
+        avatar:
+          "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&fit=crop&auto=format",
+      },
+    ],
+    isNew: false,
     isFeatured: true,
   },
 ];
@@ -558,12 +775,12 @@ export default function App() {
   const [priceRange, setPriceRange] = useState<number>(150000000);
 
   const [selectedProduct, setSelectedProduct] = useState<LaptopProduct | null>(MOCK_PRODUCTS[0]);
-  
+
   // User Avatar state
   const [userAvatar, setUserAvatar] = useState<string>(
     "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&fit=crop&auto=format"
   );
-  
+
   // Variant states for Product Detail
   const [selectedRam, setSelectedRam] = useState<"16GB" | "32GB" | "64GB">("32GB");
   const [selectedStorage, setSelectedStorage] = useState<"512GB SSD" | "1TB SSD" | "2TB SSD">("1TB SSD");
@@ -991,7 +1208,7 @@ export default function App() {
           </div>
 
           {/* ── Search Bar (Amazon-style) ── */}
-          <div className="flex-1 flex items-stretch h-11 rounded-md overflow-hidden border border-white/[0.12] bg-white/[0.04] focus-within:border-[#00D492]/60 focus-within:ring-1 focus-within:ring-[#00D492]/20 transition-all max-w-[calc(100%-20px)] ml-2">
+          <div className="flex-1 flex items-stretch h-11 rounded-[1px] overflow-hidden border border-white/[0.12] bg-white/[0.04] focus-within:border-[#00D492]/60 focus-within:ring-1 focus-within:ring-[#00D492]/20 transition-all max-w-[calc(100%-20px)] ml-2">
             {/* Text Input */}
             <input
               type="text"
@@ -1105,37 +1322,37 @@ export default function App() {
       {/* ── VIEW: STOREFRONT ── */}
       {currentView === "store" && (
         <main>
-          <section className="relative overflow-hidden py-20 lg:py-28 border-b border-white/[0.08]">
+          <section className="relative overflow-hidden pt-8 pb-12 lg:pt-12 lg:pb-16 border-b border-white/[0.08]">
             <div className="pointer-events-none absolute -right-32 top-0 h-[34rem] w-[34rem] rounded-full bg-[#00D492]/[0.07] blur-3xl" />
-            <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-              <div className="lg:col-span-7 space-y-8">
+            <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              <div className="lg:col-span-6 space-y-6 lg:space-y-8">
                 <div className="space-y-2">
-                  <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-none">
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
                     Laptop{" "}
-                    <span className="text-[#00D492] font-script italic font-normal text-6xl sm:text-7xl lg:text-8xl">
+                    <span className="text-[#00D492] font-script italic font-normal text-5xl sm:text-6xl lg:text-7xl">
                       perfect
                     </span>{" "}
                     for
                   </h1>
-                  <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-none">
+                  <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-none">
                     anyone.
                   </h2>
-                  <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-neutral-500 leading-none pt-2">
+                  <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-neutral-500 leading-none pt-1">
                     Laptop <span className="text-[#00D492]">premium</span>
                   </h2>
                 </div>
 
-                <p className="text-neutral-400 text-sm max-w-lg leading-relaxed pt-2">
+                <p className="text-neutral-400 text-sm sm:text-base max-w-lg leading-relaxed pt-1">
                   Trải nghiệm dòng Laptop 2 màn hình cảm ứng kép thế hệ mới. Đạt chuẩn hiệu năng cao nhất cho công việc sáng tạo, lập trình & đồ họa chuyên nghiệp.
                 </p>
 
-                <div className="flex flex-wrap items-center gap-5 pt-4">
+                <div className="flex flex-wrap items-center gap-4 pt-2">
                   <button
                     onClick={() => {
                       const el = document.getElementById("catalog-section");
                       el?.scrollIntoView({ behavior: "smooth" });
                     }}
-                    className="bg-[#00D492] hover:bg-[#00bc82] text-black font-extrabold px-8 py-4 rounded-full text-sm flex items-center gap-2 transition-transform hover:scale-105 shadow-lg shadow-[#00D492]/20"
+                    className="bg-[#00D492] hover:bg-[#00bc82] text-black font-extrabold px-7 py-3.5 rounded-full text-sm flex items-center gap-2 transition-transform hover:scale-105 shadow-lg shadow-[#00D492]/20"
                   >
                     <span>Get Starter</span>
                     <ChevronRight className="w-4 h-4 stroke-[3]" />
@@ -1143,20 +1360,22 @@ export default function App() {
 
                   <button
                     onClick={() => showToast("Đang mở video giới thiệu Laptop...")}
-                    className="border-2 border-white/80 hover:border-white text-white font-bold px-8 py-4 rounded-full text-sm transition-colors flex items-center gap-2"
+                    className="border-2 border-white/80 hover:border-white text-white font-bold px-7 py-3.5 rounded-full text-sm transition-colors flex items-center gap-2"
                   >
                     <span>Watch video</span>
                   </button>
                 </div>
               </div>
 
-              <div className="lg:col-span-5 relative flex justify-center items-center">
-                <div className="relative group">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-[#00D492]/30 to-purple-600/30 rounded-2xl blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
-                  <img
-                    src={heroLaptopImg}
-                    alt="Laptop perfect for anyone"
-                    className="relative w-full max-w-lg object-contain drop-shadow-[0_20px_50px_rgba(0,212,146,0.3)] hover:scale-105 transition-transform duration-500"
+              <div className="lg:col-span-6 relative flex justify-center items-center w-full h-[440px] sm:h-[480px] lg:h-[520px]">
+                <div className="relative w-full h-full overflow-hidden flex items-center justify-center">
+                  <iframe
+                    src="https://my.spline.design/metalicapplelogoanimation-EZUVyKOdbCkUVuxWbdWFwI7R/"
+                    frameBorder="0"
+                    width="100%"
+                    height="100%"
+                    className="w-full h-[calc(100%+50px)] -mb-[50px]"
+                    title="Spline 3D Metallic Apple Logo Animation"
                   />
                 </div>
               </div>
@@ -1197,11 +1416,10 @@ export default function App() {
                       <button
                         key={brand}
                         onClick={() => setSelectedBrand(brand)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
-                          selectedBrand === brand
-                            ? "bg-[#00D492] text-black shadow-[0_0_10px_rgba(0,212,146,0.2)]"
-                            : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700"
-                        }`}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${selectedBrand === brand
+                          ? "bg-[#00D492] text-black shadow-[0_0_10px_rgba(0,212,146,0.2)]"
+                          : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700"
+                          }`}
                       >
                         {brand}
                       </button>
@@ -1220,11 +1438,10 @@ export default function App() {
                         <button
                           key={cat}
                           onClick={() => setSelectedCategory(cat)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
-                            selectedCategory === cat
-                              ? "bg-[#00D492] text-black shadow-[0_0_10px_rgba(0,212,146,0.2)]"
-                              : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700"
-                          }`}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${selectedCategory === cat
+                            ? "bg-[#00D492] text-black shadow-[0_0_10px_rgba(0,212,146,0.2)]"
+                            : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700"
+                            }`}
                         >
                           {cat}
                         </button>
@@ -1291,11 +1508,10 @@ export default function App() {
                             ? "Xóa khỏi yêu thích"
                             : "Thêm vào yêu thích"
                         }
-                        className={`absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border backdrop-blur-md transition-all duration-300 ${
-                          wishlist.includes(laptop.id)
-                            ? "border-[#00D492]/60 bg-[#00D492] text-[#07100e]"
-                            : "border-white/20 bg-black/35 text-white hover:border-[#00D492]/70 hover:bg-black/65 hover:text-[#00D492]"
-                        }`}
+                        className={`absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border backdrop-blur-md transition-all duration-300 ${wishlist.includes(laptop.id)
+                          ? "border-[#00D492]/60 bg-[#00D492] text-[#07100e]"
+                          : "border-white/20 bg-black/35 text-white hover:border-[#00D492]/70 hover:bg-black/65 hover:text-[#00D492]"
+                          }`}
                       >
                         <Heart
                           className={`h-4 w-4 ${wishlist.includes(laptop.id) ? "fill-current" : ""}`}
@@ -1472,11 +1688,10 @@ export default function App() {
                       <button
                         key={ram}
                         onClick={() => setSelectedRam(ram)}
-                        className={`py-3 px-4 rounded-xl font-mono text-xs font-bold border transition-all ${
-                          selectedRam === ram
-                            ? "border-[#00D492] bg-[#00D492]/10 text-[#00D492] shadow-[0_0_15px_rgba(0,212,146,0.15)]"
-                            : "border-neutral-800 bg-neutral-950 text-neutral-400 hover:border-neutral-700 hover:text-white"
-                        }`}
+                        className={`py-3 px-4 rounded-xl font-mono text-xs font-bold border transition-all ${selectedRam === ram
+                          ? "border-[#00D492] bg-[#00D492]/10 text-[#00D492] shadow-[0_0_15px_rgba(0,212,146,0.15)]"
+                          : "border-neutral-800 bg-neutral-950 text-neutral-400 hover:border-neutral-700 hover:text-white"
+                          }`}
                       >
                         {ram}
                       </button>
@@ -1497,11 +1712,10 @@ export default function App() {
                       <button
                         key={storage}
                         onClick={() => setSelectedStorage(storage)}
-                        className={`py-3 px-4 rounded-xl font-mono text-xs font-bold border transition-all ${
-                          selectedStorage === storage
-                            ? "border-[#00D492] bg-[#00D492]/10 text-[#00D492] shadow-[0_0_15px_rgba(0,212,146,0.15)]"
-                            : "border-neutral-800 bg-neutral-950 text-neutral-400 hover:border-neutral-700 hover:text-white"
-                        }`}
+                        className={`py-3 px-4 rounded-xl font-mono text-xs font-bold border transition-all ${selectedStorage === storage
+                          ? "border-[#00D492] bg-[#00D492]/10 text-[#00D492] shadow-[0_0_15px_rgba(0,212,146,0.15)]"
+                          : "border-neutral-800 bg-neutral-950 text-neutral-400 hover:border-neutral-700 hover:text-white"
+                          }`}
                       >
                         {storage}
                       </button>
@@ -1526,11 +1740,10 @@ export default function App() {
                       <button
                         key={col.name}
                         onClick={() => setSelectedColor(col)}
-                        className={`group relative flex items-center gap-2.5 px-4 py-2.5 rounded-xl border text-xs font-medium transition-all ${
-                          selectedColor.name === col.name
-                            ? "border-[#00D492] bg-[#00D492]/10 text-white"
-                            : "border-neutral-800 bg-neutral-950 text-neutral-400 hover:border-neutral-700"
-                        }`}
+                        className={`group relative flex items-center gap-2.5 px-4 py-2.5 rounded-xl border text-xs font-medium transition-all ${selectedColor.name === col.name
+                          ? "border-[#00D492] bg-[#00D492]/10 text-white"
+                          : "border-neutral-800 bg-neutral-950 text-neutral-400 hover:border-neutral-700"
+                          }`}
                       >
                         <span
                           className="w-4 h-4 rounded-full border border-white/20 shadow-inner"
@@ -1630,9 +1843,8 @@ export default function App() {
                     className="p-1 hover:scale-110 transition-transform"
                   >
                     <Star
-                      className={`w-5 h-5 ${
-                        star <= newRating ? "fill-amber-400 text-amber-400" : "text-neutral-700"
-                      }`}
+                      className={`w-5 h-5 ${star <= newRating ? "fill-amber-400 text-amber-400" : "text-neutral-700"
+                        }`}
                     />
                   </button>
                 ))}
@@ -1851,7 +2063,7 @@ export default function App() {
                           Math.max(
                             0,
                             cartItems.reduce((acc, i) => acc + i.price * i.quantity, 0) -
-                              (appliedCoupon?.discountAmount || 0)
+                            (appliedCoupon?.discountAmount || 0)
                           )
                         )}
                       </span>
@@ -1926,11 +2138,10 @@ export default function App() {
                     <div
                       key={addr.id}
                       onClick={() => setSelectedAddressId(addr.id)}
-                      className={`p-4 rounded-xl border cursor-pointer transition flex items-start justify-between gap-4 ${
-                        selectedAddressId === addr.id
-                          ? "border-[#00D492] bg-[#00D492]/10"
-                          : "border-neutral-800 bg-neutral-900/50 hover:border-neutral-700"
-                      }`}
+                      className={`p-4 rounded-xl border cursor-pointer transition flex items-start justify-between gap-4 ${selectedAddressId === addr.id
+                        ? "border-[#00D492] bg-[#00D492]/10"
+                        : "border-neutral-800 bg-neutral-900/50 hover:border-neutral-700"
+                        }`}
                     >
                       <div className="space-y-1 text-xs">
                         <div className="flex items-center gap-2">
@@ -1947,11 +2158,10 @@ export default function App() {
                         </p>
                       </div>
                       <div
-                        className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                          selectedAddressId === addr.id
-                            ? "border-[#00D492] bg-[#00D492]"
-                            : "border-neutral-700"
-                        }`}
+                        className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${selectedAddressId === addr.id
+                          ? "border-[#00D492] bg-[#00D492]"
+                          : "border-neutral-700"
+                          }`}
                       >
                         {selectedAddressId === addr.id && (
                           <div className="w-2 h-2 rounded-full bg-black" />
@@ -2116,11 +2326,10 @@ export default function App() {
                   {/* VNPay Option */}
                   <div
                     onClick={() => setPaymentMethod("VNPAY")}
-                    className={`p-4 rounded-xl border cursor-pointer transition flex items-center justify-between ${
-                      paymentMethod === "VNPAY"
-                        ? "border-[#00D492] bg-[#00D492]/10"
-                        : "border-neutral-800 bg-neutral-900/50 hover:border-neutral-700"
-                    }`}
+                    className={`p-4 rounded-xl border cursor-pointer transition flex items-center justify-between ${paymentMethod === "VNPAY"
+                      ? "border-[#00D492] bg-[#00D492]/10"
+                      : "border-neutral-800 bg-neutral-900/50 hover:border-neutral-700"
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-blue-900/30 border border-blue-500/30 flex items-center justify-center font-black text-blue-400 text-xs">
@@ -2132,9 +2341,8 @@ export default function App() {
                       </div>
                     </div>
                     <div
-                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                        paymentMethod === "VNPAY" ? "border-[#00D492] bg-[#00D492]" : "border-neutral-700"
-                      }`}
+                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethod === "VNPAY" ? "border-[#00D492] bg-[#00D492]" : "border-neutral-700"
+                        }`}
                     >
                       {paymentMethod === "VNPAY" && <div className="w-1.5 h-1.5 rounded-full bg-black" />}
                     </div>
@@ -2143,11 +2351,10 @@ export default function App() {
                   {/* COD Option */}
                   <div
                     onClick={() => setPaymentMethod("COD")}
-                    className={`p-4 rounded-xl border cursor-pointer transition flex items-center justify-between ${
-                      paymentMethod === "COD"
-                        ? "border-[#00D492] bg-[#00D492]/10"
-                        : "border-neutral-800 bg-neutral-900/50 hover:border-neutral-700"
-                    }`}
+                    className={`p-4 rounded-xl border cursor-pointer transition flex items-center justify-between ${paymentMethod === "COD"
+                      ? "border-[#00D492] bg-[#00D492]/10"
+                      : "border-neutral-800 bg-neutral-900/50 hover:border-neutral-700"
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-emerald-900/30 border border-emerald-500/30 flex items-center justify-center font-bold text-[#00D492] text-xs">
@@ -2159,9 +2366,8 @@ export default function App() {
                       </div>
                     </div>
                     <div
-                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                        paymentMethod === "COD" ? "border-[#00D492] bg-[#00D492]" : "border-neutral-700"
-                      }`}
+                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethod === "COD" ? "border-[#00D492] bg-[#00D492]" : "border-neutral-700"
+                        }`}
                     >
                       {paymentMethod === "COD" && <div className="w-1.5 h-1.5 rounded-full bg-black" />}
                     </div>
@@ -2232,7 +2438,7 @@ export default function App() {
                         Math.max(
                           0,
                           cartItems.reduce((acc, i) => acc + i.price * i.quantity, 0) -
-                            (appliedCoupon?.discountAmount || 0)
+                          (appliedCoupon?.discountAmount || 0)
                         )
                       )}
                     </span>
@@ -2317,11 +2523,10 @@ export default function App() {
                 <div
                   key={ord.id}
                   onClick={() => setSelectedAddressOrderId(ord.id)}
-                  className={`p-4 rounded-xl border cursor-pointer transition space-y-2 ${
-                    selectedOrderId === ord.id
-                      ? "border-[#00D492] bg-[#00D492]/10"
-                      : "border-neutral-900 bg-neutral-950 hover:border-neutral-800"
-                  }`}
+                  className={`p-4 rounded-xl border cursor-pointer transition space-y-2 ${selectedOrderId === ord.id
+                    ? "border-[#00D492] bg-[#00D492]/10"
+                    : "border-neutral-900 bg-neutral-950 hover:border-neutral-800"
+                    }`}
                 >
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-mono font-bold text-[#00D492]">{ord.orderNumber}</span>
@@ -2336,25 +2541,24 @@ export default function App() {
                       {formatVND(ord.finalAmount)}
                     </span>
                     <span
-                      className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase ${
-                        ord.status === "DELIVERED"
-                          ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                          : ord.status === "SHIPPED"
+                      className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase ${ord.status === "DELIVERED"
+                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                        : ord.status === "SHIPPED"
                           ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                           : ord.status === "CANCELLED"
-                          ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                          : "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                      }`}
+                            ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                            : "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                        }`}
                     >
                       {ord.status === "PENDING"
                         ? "Chờ thanh toán"
                         : ord.status === "CONFIRMED"
-                        ? "Đã xác nhận"
-                        : ord.status === "SHIPPED"
-                        ? "Đang giao"
-                        : ord.status === "DELIVERED"
-                        ? "Đã giao hàng"
-                        : "Đã hủy"}
+                          ? "Đã xác nhận"
+                          : ord.status === "SHIPPED"
+                            ? "Đang giao"
+                            : ord.status === "DELIVERED"
+                              ? "Đã giao hàng"
+                              : "Đã hủy"}
                     </span>
                   </div>
                 </div>
@@ -2429,22 +2633,20 @@ export default function App() {
                             return (
                               <div key={st.code} className="flex flex-col items-center text-center space-y-2">
                                 <div
-                                  className={`w-8 h-8 rounded-full flex items-center justify-center font-mono font-bold text-xs transition-all ${
-                                    isDone
-                                      ? "bg-[#00D492] text-black shadow-[0_0_15px_rgba(0,212,146,0.3)]"
-                                      : "bg-neutral-900 border border-neutral-800 text-neutral-600"
-                                  }`}
+                                  className={`w-8 h-8 rounded-full flex items-center justify-center font-mono font-bold text-xs transition-all ${isDone
+                                    ? "bg-[#00D492] text-black shadow-[0_0_15px_rgba(0,212,146,0.3)]"
+                                    : "bg-neutral-900 border border-neutral-800 text-neutral-600"
+                                    }`}
                                 >
                                   {isDone ? <Check className="w-4 h-4 stroke-[3]" /> : i + 1}
                                 </div>
                                 <span
-                                  className={`text-[10px] sm:text-xs font-semibold leading-tight ${
-                                    isCurrent
-                                      ? "text-[#00D492] font-bold"
-                                      : isDone
+                                  className={`text-[10px] sm:text-xs font-semibold leading-tight ${isCurrent
+                                    ? "text-[#00D492] font-bold"
+                                    : isDone
                                       ? "text-white"
                                       : "text-neutral-600"
-                                  }`}
+                                    }`}
                                 >
                                   {st.label}
                                 </span>
@@ -3041,11 +3243,10 @@ export default function App() {
               {savedAddresses.map((addr) => (
                 <div
                   key={addr.id}
-                  className={`group relative rounded-2xl border p-5 sm:p-6 transition-all duration-200 ${
-                    addr.isDefault
-                      ? "border-[#00D492]/50 bg-[#00D492]/[0.05] shadow-[0_0_30px_rgba(0,212,146,0.07)]"
-                      : "border-white/[0.08] bg-white/[0.025] hover:border-white/[0.15]"
-                  }`}
+                  className={`group relative rounded-2xl border p-5 sm:p-6 transition-all duration-200 ${addr.isDefault
+                    ? "border-[#00D492]/50 bg-[#00D492]/[0.05] shadow-[0_0_30px_rgba(0,212,146,0.07)]"
+                    : "border-white/[0.08] bg-white/[0.025] hover:border-white/[0.15]"
+                    }`}
                 >
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     {/* Left: Address Info */}
@@ -3115,11 +3316,10 @@ export default function App() {
                         <button
                           onClick={() => setDeleteConfirmId(addr.id)}
                           disabled={addr.isDefault}
-                          className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-2.5 text-[11px] font-bold transition ${
-                            addr.isDefault
-                              ? "border-neutral-900 text-neutral-700 cursor-not-allowed"
-                              : "border-red-500/20 text-red-400 hover:bg-red-500/10 hover:border-red-500/40"
-                          }`}
+                          className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-2.5 text-[11px] font-bold transition ${addr.isDefault
+                            ? "border-neutral-900 text-neutral-700 cursor-not-allowed"
+                            : "border-red-500/20 text-red-400 hover:bg-red-500/10 hover:border-red-500/40"
+                            }`}
                           title={addr.isDefault ? "Không thể xóa địa chỉ mặc định" : "Xóa địa chỉ này"}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -3132,9 +3332,6 @@ export default function App() {
               ))}
             </div>
           )}
-
-          {/* API Endpoint Note (dev reference only, hidden visually) */}
-          {/* GET /api/v1/user-addresses/user · POST /api/v1/user-addresses · PUT /api/v1/user-addresses/{id} · DELETE /api/v1/user-addresses/{id} */}
         </main>
       )}
 
@@ -3259,11 +3456,10 @@ export default function App() {
               {/* isDefault toggle */}
               <div
                 onClick={() => setAddrForm({ ...addrForm, isDefault: !addrForm.isDefault })}
-                className={`flex items-center gap-4 rounded-xl border p-4 cursor-pointer transition-all ${
-                  addrForm.isDefault
-                    ? "border-[#00D492]/50 bg-[#00D492]/[0.07]"
-                    : "border-white/10 bg-white/[0.03] hover:border-white/20"
-                }`}
+                className={`flex items-center gap-4 rounded-xl border p-4 cursor-pointer transition-all ${addrForm.isDefault
+                  ? "border-[#00D492]/50 bg-[#00D492]/[0.07]"
+                  : "border-white/10 bg-white/[0.03] hover:border-white/20"
+                  }`}
               >
                 {/* Toggle Switch */}
                 <div className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${addrForm.isDefault ? "bg-[#00D492]" : "bg-neutral-800"}`}>

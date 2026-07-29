@@ -1,9 +1,9 @@
 
-  # Thiết kế giao diện website
+# LADUX - Premium Laptop Store Frontend
 
-  This is a code bundle for Thiết kế giao diện website. The original project is available at https://www.figma.com/design/cel6oG4pfFxbCJoWm4gNmF/Thi%E1%BA%BFt-k%E1%BA%BF-giao-di%E1%BB%87n-website.
+Ứng dụng web e-commerce React + Tailwind CSS cho cửa hàng máy tính LADUX.
 
-  ## Running the code
+## Running the code
 
   Run `npm i` to install the dependencies.
 
