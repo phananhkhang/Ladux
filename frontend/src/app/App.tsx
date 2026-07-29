@@ -1326,6 +1326,13 @@ export default function App() {
             <div className="pointer-events-none absolute -right-32 top-0 h-[34rem] w-[34rem] rounded-full bg-[#00D492]/[0.07] blur-3xl" />
             <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               <div className="lg:col-span-6 space-y-6 lg:space-y-8">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[#00D492]/40 bg-[#00D492]/10 px-4 py-1.5 backdrop-blur-md">
+                  <Zap className="w-3.5 h-3.5 text-[#00D492] fill-[#00D492]" />
+                  <span className="text-[11px] font-bold font-mono tracking-wider uppercase text-[#00D492]">
+                    LADUX PREMIUM STORE — CHÍNH HÃNG NEW SEAL 100%
+                  </span>
+                </div>
+
                 <div className="space-y-2">
                   <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
                     Laptop{" "}
@@ -1343,7 +1350,7 @@ export default function App() {
                 </div>
 
                 <p className="text-neutral-400 text-sm sm:text-base max-w-lg leading-relaxed pt-1">
-                  Trải nghiệm dòng Laptop 2 màn hình cảm ứng kép thế hệ mới. Đạt chuẩn hiệu năng cao nhất cho công việc sáng tạo, lập trình & đồ họa chuyên nghiệp.
+                  Trải nghiệm sức mạnh đỉnh cao từ chip M3/M4 Series. Chuẩn mực hiệu năng cho công việc sáng tạo, lập trình & đồ họa chuyên nghiệp.
                 </p>
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -1354,7 +1361,7 @@ export default function App() {
                     }}
                     className="bg-[#00D492] hover:bg-[#00bc82] text-black font-extrabold px-7 py-3.5 rounded-full text-sm flex items-center gap-2 transition-transform hover:scale-105 shadow-lg shadow-[#00D492]/20"
                   >
-                    <span>Get Starter</span>
+                    <span>Mua ngay</span>
                     <ChevronRight className="w-4 h-4 stroke-[3]" />
                   </button>
 
@@ -1362,7 +1369,7 @@ export default function App() {
                     onClick={() => showToast("Đang mở video giới thiệu Laptop...")}
                     className="border-2 border-white/80 hover:border-white text-white font-bold px-7 py-3.5 rounded-full text-sm transition-colors flex items-center gap-2"
                   >
-                    <span>Watch video</span>
+                    <span>Tư vấn AI</span>
                   </button>
                 </div>
               </div>
