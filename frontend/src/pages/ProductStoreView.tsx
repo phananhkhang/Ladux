@@ -124,6 +124,7 @@ export interface ProductStoreViewProps {
     toggleWishlist: (laptopId: number) => void;
     setSelectedProduct: (product: LaptopProduct) => void;
     setCurrentView: (view: ViewType) => void;
+    allProducts?: LaptopProduct[];
     addToCartCustom: (
         product: LaptopProduct,
         ram: string,
@@ -137,6 +138,7 @@ export interface ProductStoreViewProps {
 
 export default function ProductStoreView({
     filteredProducts,
+    allProducts,
     selectedBrand,
     setSelectedBrand,
     selectedCategory,
@@ -151,11 +153,12 @@ export default function ProductStoreView({
     addToCartCustom,
     showToast,
 }: ProductStoreViewProps) {
+    const productsList = allProducts && allProducts.length > 0 ? allProducts : MOCK_PRODUCTS;
     const isFilteringActive =
         selectedBrand !== "All" ||
         selectedCategory !== "All" ||
         priceRange < 150000000 ||
-        filteredProducts.length < MOCK_PRODUCTS.length;
+        filteredProducts.length < productsList.length;
 
     return (
         <main>
@@ -429,8 +432,8 @@ export default function ProductStoreView({
                 ) : (
                     <div className="space-y-16">
                         {BRAND_SECTIONS.map((section) => {
-                            const brandProducts = MOCK_PRODUCTS.filter(
-                                (p) => p.brand.toLowerCase() === section.brandId.toLowerCase()
+                            const brandProducts = productsList.filter(
+                                (p) => p && p.brand && p.brand.toLowerCase() === section.brandId.toLowerCase()
                             );
                             if (brandProducts.length === 0) return null;
                             return (

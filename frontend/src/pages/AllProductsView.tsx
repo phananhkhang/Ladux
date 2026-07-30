@@ -5,6 +5,7 @@ import { MOCK_PRODUCTS } from "../data/mockProducts";
 import { ChevronRight } from "lucide-react";
 
 export interface AllProductsViewProps {
+    allProducts?: LaptopProduct[];
     selectedBrand: string;
     setSelectedBrand: (brand: string) => void;
     selectedCategory: string;
@@ -24,6 +25,7 @@ export interface AllProductsViewProps {
 }
 
 export default function AllProductsView({
+    allProducts,
     selectedBrand,
     setSelectedBrand,
     selectedCategory,
@@ -41,27 +43,29 @@ export default function AllProductsView({
     const [currentPage, setCurrentPage] = useState<number>(1);
     const itemsPerPage = 8;
 
+    const baseProducts = allProducts && allProducts.length > 0 ? allProducts : MOCK_PRODUCTS;
+
     // Filter products
     const filteredProducts = useMemo(() => {
-        let list = [...MOCK_PRODUCTS];
+        let list = [...baseProducts];
 
         // Brand filter
         if (selectedBrand !== "All") {
             list = list.filter(
-                (p) => p.brand.toLowerCase() === selectedBrand.toLowerCase()
+                (p) => p && p.brand && p.brand.toLowerCase() === selectedBrand.toLowerCase()
             );
         }
 
         // Category filter
         if (selectedCategory !== "All") {
             list = list.filter(
-                (p) => p.category.toLowerCase() === selectedCategory.toLowerCase()
+                (p) => p && p.category && p.category.toLowerCase() === selectedCategory.toLowerCase()
             );
         }
 
         // RAM filter
         if (selectedRam !== "All") {
-            list = list.filter((p) => p.ram.includes(selectedRam));
+            list = list.filter((p) => p && p.ram && p.ram.includes(selectedRam));
         }
 
         // ROM filter

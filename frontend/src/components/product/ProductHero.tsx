@@ -60,12 +60,12 @@ export default function ProductHero({ onShopNowClick, onAiConsultClick }: Produc
                 <div className="lg:col-span-6 relative flex justify-center items-center w-full h-[440px] sm:h-[480px] lg:h-[520px]">
                     <div className="relative w-full h-full overflow-hidden flex items-center justify-center">
                         <iframe
-                            src="https://my.spline.design/greenskullcosmolabs-a0iyvVszPpzd2YrjUj99KBgY/"
+                            src="https://my.spline.design/genkubgreetingrobot-7YsTVizd0MDAetdqeMaVhJKY/"
                             frameBorder="0"
                             width="100%"
                             height="100%"
                             className="w-full h-[calc(100%+50px)] -mb-[50px]"
-                            title="Spline 3D Green Skull Cosmo Labs Animation"
+                            title="Spline 3D Genkub Greeting Robot Animation"
                         />
                     </div>
                 </div>

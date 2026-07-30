@@ -18,8 +18,10 @@ import {
     PaymentProvider,
     ReviewItem,
     ViewType,
+    mapProductResponseToLaptopProduct,
 } from "../types";
 import { MOCK_PRODUCTS } from "../data/mockProducts";
+import { couponService } from "../services";
 import Header from "../components/common/Header";
 import Footer from "../components/common/Footer";
 import ProductStoreView from "../pages/ProductStoreView";
@@ -252,17 +254,31 @@ export default function App() {
         }
     };
 
-    const toggleWishlist = (productId: number) => {
-        if (wishlist.includes(productId)) {
-            setWishlist(wishlist.filter((id) => id !== productId));
-            showToast("Đã xóa khỏi danh sách yêu thích.");
+    const activeWishlist = auth.isLoggedIn && wishlistStore.wishlistProductIds.length > 0
+        ? wishlistStore.wishlistProductIds
+        : wishlist;
+
+    const toggleWishlist = async (productId: number) => {
+        if (auth.isLoggedIn) {
+            try {
+                await wishlistStore.toggleWishlist(productId);
+                const isLiked = wishlistStore.isInWishlist(productId);
+                showToast(isLiked ? "Đã thêm vào danh sách yêu thích!" : "Đã xóa khỏi danh sách yêu thích.");
+            } catch {
+                showToast("Lỗi khi cập nhật danh sách yêu thích.");
+            }
         } else {
-            setWishlist([...wishlist, productId]);
-            showToast("Đã thêm vào danh sách yêu thích!");
+            if (wishlist.includes(productId)) {
+                setWishlist(wishlist.filter((id) => id !== productId));
+                showToast("Đã xóa khỏi danh sách yêu thích.");
+            } else {
+                setWishlist([...wishlist, productId]);
+                showToast("Đã thêm vào danh sách yêu thích!");
+            }
         }
     };
 
-    const handleApplyCoupon = () => {
+    const handleApplyCoupon = async () => {
         const code = couponInput.trim().toUpperCase();
         if (!code) {
             setCouponError("Vui lòng nhập mã coupon.");
@@ -270,6 +286,24 @@ export default function App() {
         }
 
         const subtotal = cartItems.reduce((acc, i) => acc + i.price * i.quantity, 0);
+
+        try {
+            const res = await couponService.getCouponByCode(code);
+            if (res) {
+                const discount = Number(res.discountAmount || 0);
+                setAppliedCoupon({
+                    code: res.code,
+                    discountAmount: discount,
+                    minSubtotal: Number(res.minOrderValue || 0),
+                    description: res.description || `Mã giảm giá ${res.code}`,
+                });
+                setCouponError("");
+                showToast(`Áp dụng mã ${res.code} thành công!`);
+                return;
+            }
+        } catch {
+            // Fall back to local check below
+        }
 
         if (code === "LADUX2M") {
             if (subtotal < 30000000) {
@@ -324,16 +358,27 @@ export default function App() {
         showToast("Cảm ơn bạn đã gửi đánh giá cho sản phẩm!");
     };
 
+    // Compute products list from store (API) or fallback to MOCK_PRODUCTS
+    const allDisplayProducts: LaptopProduct[] = (productStore.products && productStore.products.length > 0)
+        ? productStore.products.map((p) => mapProductResponseToLaptopProduct(p))
+        : MOCK_PRODUCTS;
+
     // Products filter logic
-    const filteredProducts = MOCK_PRODUCTS.filter((laptop) => {
-        const matchesBrand = selectedBrand === "All" || laptop.brand === selectedBrand;
-        const matchesCategory = selectedCategory === "All" || laptop.category === selectedCategory;
+    const filteredProducts = allDisplayProducts.filter((laptop) => {
+        if (!laptop) return false;
+        const laptopBrand = laptop.brand || "";
+        const laptopCat = laptop.category || "";
+        const laptopName = laptop.name || "";
+        const laptopCpu = laptop.cpu || "";
+
+        const matchesBrand = selectedBrand === "All" || laptopBrand.toLowerCase() === selectedBrand.toLowerCase();
+        const matchesCategory = selectedCategory === "All" || laptopCat.toLowerCase() === selectedCategory.toLowerCase();
         const matchesSearch =
             searchQuery === "" ||
-            laptop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            laptop.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            laptop.cpu.toLowerCase().includes(searchQuery.toLowerCase());
-        const currentPrice = laptop.discountPrice || laptop.price;
+            laptopName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            laptopBrand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            laptopCpu.toLowerCase().includes(searchQuery.toLowerCase());
+        const currentPrice = laptop.discountPrice || laptop.price || 0;
         const matchesPrice = currentPrice <= priceRange;
 
         return matchesBrand && matchesCategory && matchesSearch && matchesPrice;
@@ -433,6 +478,7 @@ export default function App() {
             {currentView === "store" && (
                 <ProductStoreView
                     filteredProducts={filteredProducts}
+                    allProducts={allDisplayProducts}
                     selectedBrand={selectedBrand}
                     setSelectedBrand={setSelectedBrand}
                     selectedCategory={selectedCategory}
@@ -440,7 +486,7 @@ export default function App() {
                     priceRange={priceRange}
                     setPriceRange={setPriceRange}
                     setSearchQuery={setSearchQuery}
-                    wishlist={wishlist}
+                    wishlist={activeWishlist}
                     toggleWishlist={toggleWishlist}
                     setSelectedProduct={setSelectedProduct}
                     setCurrentView={setCurrentView}
@@ -451,11 +497,12 @@ export default function App() {
 
             {currentView === "all-products" && (
                 <AllProductsView
+                    allProducts={allDisplayProducts}
                     selectedBrand={selectedBrand}
                     setSelectedBrand={setSelectedBrand}
                     selectedCategory={selectedCategory}
                     setSelectedCategory={setSelectedCategory}
-                    wishlist={wishlist}
+                    wishlist={activeWishlist}
                     toggleWishlist={toggleWishlist}
                     setSelectedProduct={setSelectedProduct}
                     setCurrentView={setCurrentView}
@@ -489,7 +536,7 @@ export default function App() {
             {currentView === "checkout" && (
                 <CheckoutView
                     cartItems={cartItems}
-                    savedAddresses={savedAddresses}
+                    savedAddresses={addressStore.addresses.length > 0 ? addressStore.addresses : savedAddresses}
                     setSavedAddresses={setSavedAddresses}
                     selectedAddressId={selectedAddressId}
                     setSelectedAddressId={setSelectedAddressId}
@@ -523,9 +570,9 @@ export default function App() {
 
             {currentView === "wishlist" && (
                 <WishlistView
-                    wishlist={wishlist}
+                    wishlist={activeWishlist}
                     toggleWishlist={toggleWishlist}
-                    products={MOCK_PRODUCTS}
+                    products={allDisplayProducts}
                     setCurrentView={setCurrentView}
                     setSelectedProduct={setSelectedProduct}
                 />
@@ -535,13 +582,13 @@ export default function App() {
                 <AccountView
                     currentView={currentView}
                     setCurrentView={setCurrentView}
-                    userAvatar={userAvatar}
+                    userAvatar={auth.user?.avatar || userAvatar}
                     setUserAvatar={setUserAvatar}
-                    userFullName="Lê Huy"
+                    userFullName={auth.user?.fullName || auth.user?.username || "Thành viên LADUX"}
                     orders={orders}
-                    savedAddresses={savedAddresses}
+                    savedAddresses={addressStore.addresses.length > 0 ? addressStore.addresses : savedAddresses}
                     setSavedAddresses={setSavedAddresses}
-                    wishlistCount={wishlist.length}
+                    wishlistCount={activeWishlist.length}
                     handleLogout={handleLogout}
                     showToast={showToast}
                 />

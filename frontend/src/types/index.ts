@@ -103,10 +103,14 @@ export interface ReviewItem {
     avatar: string;
 }
 
+import type { ProductResponse, ProductVariantResponse } from "../services/productService";
+
 export interface LaptopProduct {
     id: number;
     brand: string;
-    category: "Gaming" | "Ultrabook" | "MacBook" | "Workstation" | "Doanh Nhân";
+    brandId?: number;
+    category: string;
+    categoryId?: number;
     name: string;
     slug: string;
     cpu: string;
@@ -124,6 +128,58 @@ export interface LaptopProduct {
     reviews: ReviewItem[];
     isNew?: boolean;
     isFeatured?: boolean;
+}
+
+/**
+ * Chuyển đổi ProductResponse (Backend DTO) → LaptopProduct (Frontend UI type)
+ * Nếu có variants, lấy variant đầu tiên active để fill ram/rom/price.
+ */
+export function mapProductResponseToLaptopProduct(
+    product: ProductResponse,
+    variants?: ProductVariantResponse[]
+): LaptopProduct {
+    const API_BASE = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1").replace("/api/v1", "");
+
+    // Lấy variant chính (ưu tiên variant active đầu tiên)
+    const activeVariant = variants?.find((v) => v.isActive) ?? variants?.[0];
+
+    // Map images: backend trả { imageUrl } relative → cần prefix API_BASE nếu là relative path
+    const imageUrls = (product.images || []).map((img) => {
+        if (!img?.imageUrl) return "https://placehold.co/400x300/121214/666?text=No+Image";
+        if (img.imageUrl.startsWith("http")) return img.imageUrl;
+        return `${API_BASE}${img.imageUrl.startsWith("/") ? "" : "/"}${img.imageUrl}`;
+    });
+
+    // Kiểm tra isNew: sản phẩm tạo trong 30 ngày gần đây
+    const createdDate = product.createdAt ? new Date(product.createdAt) : null;
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const isNew = createdDate ? createdDate > thirtyDaysAgo : false;
+
+    return {
+        id: product.id,
+        brand: product.brand?.name || "Unknown",
+        brandId: product.brand?.id,
+        category: product.category?.name || "Other",
+        categoryId: product.category?.id,
+        name: product.name || "",
+        slug: product.slug || "",
+        cpu: product.cpu || "",
+        gpu: product.gpu || "",
+        display: product.display || "",
+        ram: activeVariant?.ram || "",
+        rom: activeVariant?.rom || "",
+        price: activeVariant ? Number(activeVariant.price) : 0,
+        discountPrice: activeVariant?.discountPrice ? Number(activeVariant.discountPrice) : undefined,
+        stockQuantity: activeVariant?.stockQuantity ?? 0,
+        rating: 0,
+        reviewCount: 0,
+        images: imageUrls.length > 0 ? imageUrls : ["https://placehold.co/400x300/121214/666?text=No+Image"],
+        description: "",
+        reviews: [],
+        isNew,
+        isFeatured: false,
+    };
 }
 
 export const formatVND = (amount: number): string => {
