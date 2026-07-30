@@ -1,0 +1,138 @@
+import React, { useState } from "react";
+import { ArrowLeft, UserPlus } from "lucide-react";
+
+export interface RegisterViewProps {
+    onRegister: () => void;
+    onGoLogin: () => void;
+    onBack: () => void;
+}
+
+export default function RegisterView({ onRegister, onGoLogin, onBack }: RegisterViewProps) {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirm, setConfirm] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (password !== confirm) {
+            setError("Mật khẩu xác nhận không khớp.");
+            return;
+        }
+        setError("");
+        setLoading(true);
+        setTimeout(() => {
+            setLoading(false);
+            onRegister();
+        }, 900);
+    };
+
+    return (
+        <main className="min-h-[80vh] flex items-center justify-center px-4 py-20">
+            <div className="w-full max-w-md">
+                <button
+                    onClick={onBack}
+                    className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-500 hover:text-[#00D492] mb-10 transition-colors"
+                >
+                    <ArrowLeft className="w-3.5 h-3.5" /> Quay lại cửa hàng
+                </button>
+
+                <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-8 sm:p-10 backdrop-blur-md">
+                    <div className="mb-8 text-center">
+                        <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00D492]/15 border border-[#00D492]/30 mb-4">
+                            <UserPlus className="w-6 h-6 text-[#00D492]" />
+                        </div>
+                        <h1 className="text-2xl font-black tracking-tight text-white">Tạo tài khoản</h1>
+                        <p className="mt-1.5 text-xs text-neutral-500">Tham gia cộng đồng thành viên LADUX</p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-2">
+                                Họ & Tên
+                            </label>
+                            <input
+                                type="text"
+                                required
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Nguyễn Văn A"
+                                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#00D492]/60 focus:ring-1 focus:ring-[#00D492]/30 transition"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-2">
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="you@example.com"
+                                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#00D492]/60 focus:ring-1 focus:ring-[#00D492]/30 transition"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-2">
+                                Mật khẩu
+                            </label>
+                            <input
+                                type="password"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Tối thiểu 8 ký tự"
+                                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#00D492]/60 focus:ring-1 focus:ring-[#00D492]/30 transition"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-2">
+                                Xác nhận mật khẩu
+                            </label>
+                            <input
+                                type="password"
+                                required
+                                value={confirm}
+                                onChange={(e) => setConfirm(e.target.value)}
+                                placeholder="Nhập lại mật khẩu"
+                                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#00D492]/60 focus:ring-1 focus:ring-[#00D492]/30 transition"
+                            />
+                        </div>
+
+                        {error && (
+                            <p className="text-xs text-red-400 font-semibold">{error}</p>
+                        )}
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full rounded-xl bg-[#00D492] py-3.5 text-sm font-extrabold text-black uppercase tracking-wider hover:bg-[#00bc82] disabled:opacity-60 transition-all hover:scale-[1.02] active:scale-100 mt-2"
+                        >
+                            {loading ? "Đang tạo tài khoản..." : "Đăng Ký"}
+                        </button>
+                    </form>
+
+                    <p className="mt-7 text-center text-xs text-neutral-500">
+                        Đã có tài khoản?{" "}
+                        <button
+                            onClick={onGoLogin}
+                            className="font-bold text-[#00D492] hover:underline"
+                        >
+                            Đăng nhập
+                        </button>
+                    </p>
+                </div>
+
+                <p className="mt-6 text-center text-[10px] text-neutral-600 font-mono uppercase tracking-widest">
+                    Bảo mật SSL · Dữ liệu mã hóa 256-bit
+                </p>
+            </div>
+        </main>
+    );
+}

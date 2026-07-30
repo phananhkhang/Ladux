@@ -1,0 +1,648 @@
+import React, { useState } from "react";
+import {
+    Award,
+    ChevronRight,
+    LogOut,
+    Plus,
+    Building2,
+    Home,
+    Check,
+    Pencil,
+    X,
+    Trash2,
+    Loader2,
+    MapPin,
+} from "lucide-react";
+import { ShippingAddressRequest, OrderItemRecord, ViewType } from "../types";
+
+export interface AccountViewProps {
+    currentView: ViewType;
+    setCurrentView: (view: ViewType) => void;
+    userAvatar: string;
+    setUserAvatar: (avatar: string) => void;
+    userFullName?: string;
+    orders: OrderItemRecord[];
+    savedAddresses: ShippingAddressRequest[];
+    setSavedAddresses: (addresses: ShippingAddressRequest[]) => void;
+    wishlistCount: number;
+    handleLogout: () => void;
+    showToast: (msg: string) => void;
+}
+
+export default function AccountView({
+    currentView,
+    setCurrentView,
+    userAvatar,
+    setUserAvatar,
+    userFullName = "Lê Huy",
+    orders,
+    savedAddresses,
+    setSavedAddresses,
+    wishlistCount,
+    handleLogout,
+    showToast,
+}: AccountViewProps) {
+    const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+    const [showAddrFormModal, setShowAddrFormModal] = useState(false);
+    const [editingAddrId, setEditingAddrId] = useState<number | null>(null);
+    const [addrSaving, setAddrSaving] = useState(false);
+
+    const [addrForm, setAddrForm] = useState<Omit<ShippingAddressRequest, "id">>({
+        fullName: "",
+        phone: "",
+        addressDetail: "",
+        ward: "",
+        district: "",
+        city: "Hà Nội",
+        isDefault: false,
+    });
+
+    const openAddAddr = () => {
+        setEditingAddrId(null);
+        setAddrForm({
+            fullName: "",
+            phone: "",
+            addressDetail: "",
+            ward: "",
+            district: "",
+            city: "Hà Nội",
+            isDefault: savedAddresses.length === 0,
+        });
+        setShowAddrFormModal(true);
+    };
+
+    const openEditAddr = (addr: ShippingAddressRequest) => {
+        setEditingAddrId(addr.id);
+        setAddrForm({
+            fullName: addr.fullName,
+            phone: addr.phone,
+            addressDetail: addr.addressDetail,
+            ward: addr.ward,
+            district: addr.district,
+            city: addr.city,
+            isDefault: addr.isDefault,
+        });
+        setShowAddrFormModal(true);
+    };
+
+    const setDefaultAddr = (id: number) => {
+        setSavedAddresses(
+            savedAddresses.map((a) => ({
+                ...a,
+                isDefault: a.id === id,
+            }))
+        );
+        showToast("Đã thiết lập địa chỉ mặc định mới!");
+    };
+
+    const deleteAddr = (id: number) => {
+        setSavedAddresses(savedAddresses.filter((a) => a.id !== id));
+        setDeleteConfirmId(null);
+        showToast("Đã xóa địa chỉ thành công!");
+    };
+
+    const saveAddrForm = () => {
+        if (!addrForm.fullName || !addrForm.phone || !addrForm.addressDetail || !addrForm.ward || !addrForm.district) {
+            showToast("Vui lòng điền đầy đủ các thông tin bắt buộc!");
+            return;
+        }
+
+        setAddrSaving(true);
+        setTimeout(() => {
+            if (editingAddrId !== null) {
+                setSavedAddresses(
+                    savedAddresses.map((a) =>
+                        a.id === editingAddrId
+                            ? { ...a, ...addrForm }
+                            : addrForm.isDefault
+                            ? { ...a, isDefault: false }
+                            : a
+                    )
+                );
+                showToast("Cập nhật địa chỉ thành công!");
+            } else {
+                const newId = Date.now();
+                const newAddrRecord: ShippingAddressRequest = { id: newId, ...addrForm };
+                if (addrForm.isDefault) {
+                    setSavedAddresses([
+                        newAddrRecord,
+                        ...savedAddresses.map((a) => ({ ...a, isDefault: false })),
+                    ]);
+                } else {
+                    setSavedAddresses([...savedAddresses, newAddrRecord]);
+                }
+                showToast("Thêm địa chỉ giao hàng thành công!");
+            }
+            setAddrSaving(false);
+            setShowAddrFormModal(false);
+        }, 500);
+    };
+
+    if (currentView === "addresses") {
+        return (
+            <main className="container mx-auto max-w-4xl px-5 py-12 sm:px-6 lg:py-16">
+                <div className="mb-10 flex flex-col gap-4 border-b border-white/10 pb-7 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <div className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-neutral-500">
+                            <button onClick={() => setCurrentView("account")} className="hover:text-[#00D492] transition-colors">
+                                Tài khoản
+                            </button>
+                            <ChevronRight className="w-3 h-3" />
+                            <span className="text-[#00D492]">Địa chỉ giao hàng</span>
+                        </div>
+                        <h1 className="text-4xl font-black tracking-[-0.035em] text-white sm:text-5xl">
+                            Sổ địa chỉ
+                        </h1>
+                        <p className="mt-2 text-xs text-neutral-500 font-mono">
+                            Địa chỉ giao hàng của bạn ({savedAddresses.length} địa chỉ đã lưu)
+                        </p>
+                    </div>
+                    <button
+                        onClick={openAddAddr}
+                        className="flex items-center gap-2 rounded-xl bg-[#00D492] px-5 py-3 text-xs font-extrabold uppercase tracking-wider text-black transition hover:bg-[#00bc82] hover:scale-[1.02] active:scale-100 shadow-lg shadow-[#00D492]/20 shrink-0"
+                    >
+                        <Plus className="w-4 h-4 stroke-[2.5]" />
+                        Thêm địa chỉ mới
+                    </button>
+                </div>
+
+                {savedAddresses.length === 0 ? (
+                    <div className="py-24 flex flex-col items-center text-center space-y-7 max-w-sm mx-auto">
+                        <div className="relative">
+                            <div className="w-28 h-28 rounded-full bg-neutral-950 border border-neutral-900 flex items-center justify-center">
+                                <Home className="w-12 h-12 text-neutral-700 stroke-[1.3]" />
+                            </div>
+                            <div className="absolute -bottom-1 -right-1 w-9 h-9 rounded-full bg-neutral-950 border border-neutral-900 flex items-center justify-center">
+                                <MapPin className="w-4 h-4 text-[#00D492]" />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <h2 className="text-xl font-bold text-white">Chưa có địa chỉ nào</h2>
+                            <p className="text-xs text-neutral-500 leading-relaxed">
+                                Bạn chưa có địa chỉ giao hàng nào được lưu. Thêm địa chỉ đầu tiên để thanh toán nhanh hơn.
+                            </p>
+                        </div>
+                        <button
+                            onClick={openAddAddr}
+                            className="flex items-center gap-2 rounded-xl bg-[#00D492] px-7 py-3.5 text-xs font-extrabold uppercase tracking-wider text-black hover:bg-[#00bc82] transition shadow-lg shadow-[#00D492]/20"
+                        >
+                            <Plus className="w-4 h-4" />
+                            Thêm địa chỉ đầu tiên
+                        </button>
+                    </div>
+                ) : (
+                    <div className="grid gap-4 sm:grid-cols-1">
+                        {savedAddresses.map((addr) => (
+                            <div
+                                key={addr.id}
+                                className={`group relative rounded-2xl border p-5 sm:p-6 transition-all duration-200 ${
+                                    addr.isDefault
+                                        ? "border-[#00D492]/50 bg-[#00D492]/[0.05] shadow-[0_0_30px_rgba(0,212,146,0.07)]"
+                                        : "border-white/[0.08] bg-white/[0.025] hover:border-white/[0.15]"
+                                }`}
+                            >
+                                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                                    <div className="flex items-start gap-4 min-w-0">
+                                        <div
+                                            className={`shrink-0 w-11 h-11 rounded-xl flex items-center justify-center border ${
+                                                addr.isDefault
+                                                    ? "bg-[#00D492]/15 border-[#00D492]/30"
+                                                    : "bg-neutral-900 border-neutral-800"
+                                            }`}
+                                        >
+                                            {addr.fullName.toLowerCase().includes("văn phòng") ||
+                                            addr.fullName.toLowerCase().includes("office") ||
+                                            addr.fullName.toLowerCase().includes("cơ quan") ? (
+                                                <Building2
+                                                    className={`w-5 h-5 ${
+                                                        addr.isDefault ? "text-[#00D492]" : "text-neutral-500"
+                                                    }`}
+                                                />
+                                            ) : (
+                                                <Home
+                                                    className={`w-5 h-5 ${
+                                                        addr.isDefault ? "text-[#00D492]" : "text-neutral-500"
+                                                    }`}
+                                                />
+                                            )}
+                                        </div>
+
+                                        <div className="min-w-0 space-y-1.5">
+                                            <div className="flex flex-wrap items-center gap-2.5">
+                                                <span className="font-bold text-white text-base leading-tight">
+                                                    {addr.fullName}
+                                                </span>
+                                                <span className="font-mono text-xs text-neutral-400">
+                                                    {addr.phone}
+                                                </span>
+                                                {addr.isDefault && (
+                                                    <span className="inline-flex items-center gap-1 rounded-full bg-[#00D492]/20 border border-[#00D492]/40 px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#00D492]">
+                                                        <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                                        Mặc định
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-xs text-neutral-300 leading-relaxed">
+                                                {addr.addressDetail}, {addr.ward}, {addr.district}, {addr.city}
+                                            </p>
+                                            {!addr.isDefault && (
+                                                <button
+                                                    onClick={() => setDefaultAddr(addr.id)}
+                                                    className="text-[11px] font-bold text-neutral-500 hover:text-[#00D492] transition-colors underline-offset-2 hover:underline"
+                                                >
+                                                    Thiết lập làm mặc định
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-2 shrink-0 sm:self-start">
+                                        <button
+                                            onClick={() => openEditAddr(addr)}
+                                            className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.05] px-3.5 py-2.5 text-[11px] font-bold text-neutral-300 transition hover:border-white/25 hover:text-white"
+                                        >
+                                            <Pencil className="w-3.5 h-3.5" />
+                                            Chỉnh sửa
+                                        </button>
+
+                                        {deleteConfirmId === addr.id ? (
+                                            <div className="flex items-center gap-1.5">
+                                                <button
+                                                    onClick={() => deleteAddr(addr.id)}
+                                                    className="rounded-xl bg-red-500/20 border border-red-500/40 px-3 py-2.5 text-[11px] font-extrabold text-red-400 hover:bg-red-500/30 transition"
+                                                >
+                                                    Xác nhận xóa
+                                                </button>
+                                                <button
+                                                    onClick={() => setDeleteConfirmId(null)}
+                                                    className="rounded-xl border border-white/10 px-2.5 py-2.5 text-neutral-500 hover:text-white transition"
+                                                >
+                                                    <X className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={() => setDeleteConfirmId(addr.id)}
+                                                disabled={addr.isDefault}
+                                                className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-2.5 text-[11px] font-bold transition ${
+                                                    addr.isDefault
+                                                        ? "border-neutral-900 text-neutral-700 cursor-not-allowed"
+                                                        : "border-red-500/20 text-red-400 hover:bg-red-500/10 hover:border-red-500/40"
+                                                }`}
+                                                title={addr.isDefault ? "Không thể xóa địa chỉ mặc định" : "Xóa địa chỉ này"}
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                                Xóa
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </main>
+        );
+    }
+
+    return (
+        <main className="container mx-auto max-w-6xl px-5 py-12 sm:px-6 lg:py-16">
+            <div className="mb-10 flex flex-col justify-between gap-5 border-b border-white/10 pb-7 sm:flex-row sm:items-end">
+                <div>
+                    <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#00D492]">
+                        Khu vực thành viên · 01
+                    </p>
+                    <h1 className="text-4xl font-black tracking-[-0.035em] text-white sm:text-5xl">
+                        Tài khoản của bạn
+                    </h1>
+                </div>
+                <button
+                    onClick={() => setCurrentView("store")}
+                    className="text-left text-xs font-bold uppercase tracking-[0.14em] text-neutral-400 transition hover:text-[#00D492]"
+                >
+                    ← Quay lại cửa hàng
+                </button>
+            </div>
+
+            <div className="grid gap-5 lg:grid-cols-[0.88fr_1.7fr]">
+                <aside className="rounded-2xl border border-white/10 bg-white/[0.035] p-6">
+                    <div className="mb-7 flex items-center gap-4 border-b border-white/10 pb-6">
+                        <div className="relative group">
+                            <img
+                                src={userAvatar}
+                                alt="Avatar"
+                                className="h-16 w-16 rounded-full object-cover border-2 border-[#00D492] shadow-[0_0_15px_rgba(0,212,146,0.3)]"
+                            />
+                            <label
+                                htmlFor="avatar-upload"
+                                className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer text-white text-[10px] font-bold uppercase tracking-wider"
+                            >
+                                Đổi
+                            </label>
+                            <input
+                                id="avatar-upload"
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        const url = URL.createObjectURL(file);
+                                        setUserAvatar(url);
+                                        showToast("Đã cập nhật ảnh đại diện thành công!");
+                                    }
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <p className="font-bold text-white text-base">{userFullName}</p>
+                            <p className="mt-0.5 font-mono text-[10px] text-neutral-400">LADUX / GOLD MEMBER</p>
+                            <label
+                                htmlFor="avatar-upload"
+                                className="inline-block mt-1 text-[11px] font-bold text-[#00D492] hover:underline cursor-pointer"
+                            >
+                                Tải lên ảnh mới
+                            </label>
+                        </div>
+                    </div>
+
+                    <nav className="space-y-1 text-sm">
+                        <button className="flex w-full items-center justify-between rounded-xl bg-[#00D492] px-4 py-3 font-bold text-[#07100e]">
+                            <span>Tổng quan</span>
+                            <ChevronRight className="h-4 w-4" />
+                        </button>
+                        <button
+                            onClick={() => setCurrentView("orders")}
+                            className="w-full rounded-xl px-4 py-3 text-left text-neutral-400 transition hover:bg-white/[0.06] hover:text-white flex items-center justify-between"
+                        >
+                            <span>Đơn hàng của tôi</span>
+                            <span className="font-mono text-xs text-[#00D492] font-bold">{orders.length}</span>
+                        </button>
+                        <button
+                            onClick={() => setCurrentView("addresses")}
+                            className="w-full rounded-xl px-4 py-3 text-left text-neutral-400 transition hover:bg-white/[0.06] hover:text-white flex items-center justify-between"
+                        >
+                            <span>Địa chỉ giao hàng</span>
+                            <span className="font-mono text-xs text-[#00D492] font-bold">{savedAddresses.length}</span>
+                        </button>
+                        <button
+                            onClick={() => setCurrentView("wishlist")}
+                            className="w-full rounded-xl px-4 py-3 text-left text-neutral-400 transition hover:bg-white/[0.06] hover:text-white flex items-center justify-between"
+                        >
+                            <span>Danh sách yêu thích</span>
+                            <span className="font-mono text-xs text-[#00D492] font-bold">{wishlistCount}</span>
+                        </button>
+                    </nav>
+
+                    {/* Logout Button */}
+                    <div className="mt-6 pt-5 border-t border-white/10">
+                        <button
+                            onClick={handleLogout}
+                            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            Đăng xuất
+                        </button>
+                    </div>
+                </aside>
+
+                <section className="space-y-5">
+                    <div className="rounded-2xl border border-white/10 bg-[linear-gradient(118deg,rgba(0,212,146,0.13),rgba(255,255,255,0.035)_44%,rgba(103,76,174,0.14))] p-6 sm:p-8">
+                        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#00D492]">
+                            Điểm thành viên
+                        </p>
+                        <div className="mt-4 flex flex-wrap items-end justify-between gap-6">
+                            <div>
+                                <p className="text-5xl font-black tracking-[-0.045em] text-white">2.480</p>
+                                <p className="mt-2 text-sm text-neutral-400">
+                                    Chỉ còn 520 điểm để lên hạng Ruby.
+                                </p>
+                            </div>
+                            <Award className="h-12 w-12 text-[#00D492]" />
+                        </div>
+                        <div className="mt-7 h-1.5 overflow-hidden rounded-full bg-black/35">
+                            <div className="h-full w-[72%] rounded-full bg-[#00D492]" />
+                        </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-6">
+                        <div className="mb-5 flex items-center justify-between">
+                            <h2 className="text-lg font-bold text-white">Đơn hàng gần đây</h2>
+                            <button
+                                onClick={() => setCurrentView("orders")}
+                                className="text-xs font-bold text-[#00D492] hover:underline"
+                            >
+                                Xem tất cả
+                            </button>
+                        </div>
+                        {orders.length > 0 ? (
+                            <div className="flex flex-col gap-4 rounded-xl border border-white/[0.08] bg-black/20 p-4 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <p className="font-mono text-xs text-[#00D492]">#{orders[0].orderNumber}</p>
+                                    <p className="mt-1 text-sm font-semibold text-white">
+                                        {orders[0].items[0]?.product.name || "Laptop Premium"}
+                                    </p>
+                                    <p className="mt-1 text-xs text-neutral-500">
+                                        {orders[0].date} · {orders[0].finalAmount.toLocaleString("vi-VN")} ₫
+                                    </p>
+                                </div>
+                                <span className="w-fit rounded-full border border-[#00D492]/30 bg-[#00D492]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#00D492]">
+                                    {orders[0].status}
+                                </span>
+                            </div>
+                        ) : (
+                            <p className="text-xs text-neutral-500 font-mono">Chưa có đơn hàng nào.</p>
+                        )}
+                    </div>
+                </section>
+            </div>
+
+            {/* Modal Add / Edit Address */}
+            {showAddrFormModal && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                        onClick={() => {
+                            if (!addrSaving) setShowAddrFormModal(false);
+                        }}
+                    />
+
+                    <div className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-[#0d0f10] shadow-[0_40px_120px_rgba(0,0,0,0.7)] overflow-hidden">
+                        <div className="flex items-center justify-between border-b border-white/[0.08] px-6 py-5">
+                            <div>
+                                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#00D492]">
+                                    {editingAddrId !== null ? "Chỉnh sửa địa chỉ" : "Thêm địa chỉ mới"}
+                                </p>
+                                <h2 className="mt-0.5 text-lg font-black text-white tracking-tight">
+                                    {editingAddrId !== null ? "Cập nhật thông tin địa chỉ" : "Địa chỉ giao hàng mới"}
+                                </h2>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    if (!addrSaving) setShowAddrFormModal(false);
+                                }}
+                                className="rounded-xl border border-white/10 p-2.5 text-neutral-400 hover:text-white hover:border-white/25 transition"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+
+                        <div className="px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto">
+                            <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-1.5">
+                                    Họ và tên người nhận <span className="text-red-400">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value={addrForm.fullName}
+                                    onChange={(e) => setAddrForm({ ...addrForm, fullName: e.target.value })}
+                                    placeholder="Nguyễn Văn A"
+                                    className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#00D492]/60 focus:ring-1 focus:ring-[#00D492]/20 transition"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-1.5">
+                                    Số điện thoại nhận hàng <span className="text-red-400">*</span>
+                                </label>
+                                <input
+                                    type="tel"
+                                    value={addrForm.phone}
+                                    onChange={(e) => setAddrForm({ ...addrForm, phone: e.target.value })}
+                                    placeholder="0988 123 456"
+                                    className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white font-mono placeholder:text-neutral-600 focus:outline-none focus:border-[#00D492]/60 focus:ring-1 focus:ring-[#00D492]/20 transition"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-1.5">
+                                    Địa chỉ nhà / Tên đường <span className="text-red-400">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value={addrForm.addressDetail}
+                                    onChange={(e) => setAddrForm({ ...addrForm, addressDetail: e.target.value })}
+                                    placeholder="Số 88 Tôn Thất Thuyết"
+                                    className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#00D492]/60 focus:ring-1 focus:ring-[#00D492]/20 transition"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-1.5">
+                                        Phường / Xã <span className="text-red-400">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={addrForm.ward}
+                                        onChange={(e) => setAddrForm({ ...addrForm, ward: e.target.value })}
+                                        placeholder="Phường Mỹ Đình 2"
+                                        className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#00D492]/60 focus:ring-1 focus:ring-[#00D492]/20 transition"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-1.5">
+                                        Quận / Huyện <span className="text-red-400">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={addrForm.district}
+                                        onChange={(e) => setAddrForm({ ...addrForm, district: e.target.value })}
+                                        placeholder="Quận Nam Từ Liêm"
+                                        className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#00D492]/60 focus:ring-1 focus:ring-[#00D492]/20 transition"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-1.5">
+                                    Tỉnh / Thành phố <span className="text-red-400">*</span>
+                                </label>
+                                <select
+                                    value={addrForm.city}
+                                    onChange={(e) => setAddrForm({ ...addrForm, city: e.target.value })}
+                                    className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00D492]/60 focus:ring-1 focus:ring-[#00D492]/20 transition appearance-none"
+                                >
+                                    {[
+                                        "Hà Nội",
+                                        "TP. Hồ Chí Minh",
+                                        "Đà Nẵng",
+                                        "Hải Phòng",
+                                        "Cần Thơ",
+                                        "An Giang",
+                                        "Bắc Giang",
+                                        "Bắc Ninh",
+                                        "Bình Dương",
+                                        "Đồng Nai",
+                                        "Quảng Ninh",
+                                        "Thừa Thiên Huế",
+                                    ].map((city) => (
+                                        <option key={city} value={city} className="bg-neutral-900">
+                                            {city}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div
+                                onClick={() => setAddrForm({ ...addrForm, isDefault: !addrForm.isDefault })}
+                                className={`flex items-center gap-4 rounded-xl border p-4 cursor-pointer transition-all ${
+                                    addrForm.isDefault
+                                        ? "border-[#00D492]/50 bg-[#00D492]/[0.07]"
+                                        : "border-white/10 bg-white/[0.03] hover:border-white/20"
+                                }`}
+                            >
+                                <div
+                                    className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${
+                                        addrForm.isDefault ? "bg-[#00D492]" : "bg-neutral-800"
+                                    }`}
+                                >
+                                    <div
+                                        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                                            addrForm.isDefault ? "translate-x-5" : "translate-x-0.5"
+                                        }`}
+                                    />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-white">Đặt làm địa chỉ giao hàng mặc định</p>
+                                    <p className="text-[11px] text-neutral-500 mt-0.5">
+                                        Địa chỉ này sẽ được tự động chọn khi thanh toán
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 border-t border-white/[0.08] px-6 py-5">
+                            <button
+                                onClick={() => {
+                                    if (!addrSaving) setShowAddrFormModal(false);
+                                }}
+                                disabled={addrSaving}
+                                className="flex-1 rounded-xl border border-white/10 py-3.5 text-xs font-bold uppercase tracking-wider text-neutral-400 transition hover:border-white/25 hover:text-white disabled:opacity-50"
+                            >
+                                Hủy bỏ
+                            </button>
+                            <button
+                                onClick={saveAddrForm}
+                                disabled={addrSaving}
+                                className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#00D492] py-3.5 text-xs font-extrabold uppercase tracking-wider text-black transition hover:bg-[#00bc82] disabled:opacity-70 shadow-lg shadow-[#00D492]/20"
+                            >
+                                {addrSaving ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        <span>Đang lưu...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Check className="w-4 h-4 stroke-[3]" />
+                                        <span>Lưu địa chỉ</span>
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </main>
+    );
+}
