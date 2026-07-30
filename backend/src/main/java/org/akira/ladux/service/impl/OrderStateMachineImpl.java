@@ -93,12 +93,11 @@ public class OrderStateMachineImpl implements OrderStateMachine {
             @CacheEvict(value = "coupons", allEntries = true)
     })
     // Job dinh ky (mac dinh 60s): huy don PENDING qua paymentExpiresAt. ShedLock chan chay trung khi scale ngang.
-    public int expirePendingOrders() {
+    public void expirePendingOrders() {
         List<Order> expiredOrders = orderRepository.findExpiredOrdersForUpdate(OrderStatus.PENDING, Instant.now());
         for (Order order : expiredOrders) {
             orderLifecycleService.cancelOrder(order, "Payment window expired");
         }
-        return expiredOrders.size();
     }
 
     // Kiem tra ma tran chuyen trang thai — nem BusinessRuleException neu khong hop le.

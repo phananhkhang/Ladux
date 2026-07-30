@@ -1,30 +1,32 @@
 import React from "react";
 import { Heart, Star } from "lucide-react";
-import { LaptopProduct, formatVND, ViewType } from "../types";
+import { LaptopProduct, formatVND, ViewType, mapProductResponseToLaptopProduct } from "../types";
+import { useWishlistStore } from "../stores";
 
 export interface WishlistViewProps {
-    wishlist: number[];
-    toggleWishlist: (laptopId: number) => void;
-    products: LaptopProduct[];
+    wishlist?: number[];
+    toggleWishlist?: (laptopId: number) => void;
+    products?: LaptopProduct[];
     setCurrentView: (view: ViewType) => void;
     setSelectedProduct: (product: LaptopProduct) => void;
 }
 
 export default function WishlistView({
-    wishlist,
-    toggleWishlist,
-    products,
     setCurrentView,
     setSelectedProduct,
 }: WishlistViewProps) {
-    const wishlistedProducts = products.filter((p) => wishlist.includes(p.id));
+    const { wishlistItems, toggleWishlist: storeToggleWishlist, isLoading } = useWishlistStore();
+
+    const mappedWishlistProducts = wishlistItems
+        .filter((w) => w.product !== null)
+        .map((w) => mapProductResponseToLaptopProduct(w.product!));
 
     return (
         <main className="container mx-auto px-6 py-12 max-w-6xl">
             <div className="flex items-center justify-between border-b border-neutral-900 pb-6 mb-8">
                 <div>
                     <span className="text-xs font-mono uppercase tracking-widest text-[#00D492]">
-                        LADUX FAVORITES ({wishlist.length})
+                        LADUX FAVORITES ({mappedWishlistProducts.length})
                     </span>
                     <h1 className="text-3xl font-black text-white tracking-tight mt-1">
                         DANH SÁCH LAPTOP YÊU THÍCH
@@ -38,7 +40,12 @@ export default function WishlistView({
                 </button>
             </div>
 
-            {wishlist.length === 0 ? (
+            {isLoading ? (
+                <div className="py-20 text-center space-y-4">
+                    <div className="inline-block w-8 h-8 border-2 border-[#00D492] border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-neutral-400 text-xs font-mono">Đang nạp danh sách yêu thích từ máy chủ...</p>
+                </div>
+            ) : mappedWishlistProducts.length === 0 ? (
                 <div className="py-20 text-center space-y-6 max-w-md mx-auto">
                     <div className="w-24 h-24 rounded-full bg-neutral-950 border border-neutral-800 flex items-center justify-center mx-auto text-neutral-600">
                         <Heart className="w-10 h-10 stroke-[1.5]" />
@@ -58,7 +65,7 @@ export default function WishlistView({
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {wishlistedProducts.map((laptop) => (
+                    {mappedWishlistProducts.map((laptop) => (
                         <div
                             key={laptop.id}
                             className="group relative overflow-hidden rounded-2xl border border-white/[0.09] bg-white/[0.035] shadow-[0_18px_60px_rgba(0,0,0,0.25)] transition-all duration-500 hover:-translate-y-1 hover:border-[#00D492]/60 hover:shadow-[0_22px_80px_rgba(0,212,146,0.12)] flex flex-col justify-between"
@@ -67,7 +74,7 @@ export default function WishlistView({
                                 <div className="relative aspect-[4/3] bg-neutral-900 overflow-hidden">
                                     <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/35 via-transparent to-transparent pointer-events-none" />
                                     <button
-                                        onClick={() => toggleWishlist(laptop.id)}
+                                        onClick={() => storeToggleWishlist(laptop.id)}
                                         aria-label="Xóa khỏi yêu thích"
                                         className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-[#00D492]/60 bg-[#00D492] text-[#07100e] backdrop-blur-md transition-all duration-300 hover:scale-110"
                                     >

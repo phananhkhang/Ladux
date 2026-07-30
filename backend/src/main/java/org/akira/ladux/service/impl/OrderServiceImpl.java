@@ -232,8 +232,8 @@ public class OrderServiceImpl implements OrderService {
             @CacheEvict(value = "products", allEntries = true),
             @CacheEvict(value = "coupons", allEntries = true)
     })
-    public int expirePendingOrders() {
-        return orderStateMachine.expirePendingOrders();
+    public void expirePendingOrders() {
+        orderStateMachine.expirePendingOrders();
     }
 
     @Override

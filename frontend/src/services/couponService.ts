@@ -1,6 +1,6 @@
 import apiClient from './apiClient';
 
-export type DiscountType = 'PERCENTAGE' | 'FIXED';
+export type DiscountType = 'PERCENT' | 'FIXED_AMOUNT';
 
 export interface CouponApplyRequest {
   code: string;

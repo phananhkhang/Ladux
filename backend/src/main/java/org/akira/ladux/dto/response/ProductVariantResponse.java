@@ -1,24 +1,23 @@
 package org.akira.ladux.dto.response;
 
-
-import org.akira.ladux.model.Color;
 import org.akira.ladux.model.ProductVariant;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 public record ProductVariantResponse(
     Integer id,
     Integer productId,
     String sku,
-    Color color,
+    ColorResponse color,
     String ram,
     String rom,
     BigDecimal price,
     BigDecimal discountPrice,
     int stockQuantity,
     boolean isActive
-) {
-    private static final long serialVersionUID = 1L; //Dùng cho redis cache, để đảm bảo rằng các phiên bản khác nhau của lớp có thể được nhận dạng là cùng một lớp.
+) implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     public static ProductVariantResponse fromEntity(ProductVariant variant) {
         if (variant == null) {
@@ -28,7 +27,7 @@ public record ProductVariantResponse(
                 variant.getId(),
                 variant.getProduct() != null ? variant.getProduct().getId() : null,
                 variant.getSku(),
-                variant.getColor(),
+                variant.getColor() != null ? ColorResponse.fromEntity(variant.getColor()) : null,
                 variant.getRam(),
                 variant.getRom(),
                 variant.getPrice(),

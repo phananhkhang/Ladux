@@ -21,9 +21,9 @@ export interface AccountViewProps {
     userAvatar: string;
     setUserAvatar: (avatar: string) => void;
     userFullName?: string;
-    orders: OrderItemRecord[];
-    savedAddresses: ShippingAddressRequest[];
-    setSavedAddresses: (addresses: ShippingAddressRequest[]) => void;
+    orders?: OrderItemRecord[];
+    savedAddresses?: ShippingAddressRequest[];
+    setSavedAddresses?: (addresses: ShippingAddressRequest[]) => void;
     wishlistCount: number;
     handleLogout: () => void;
     showToast: (msg: string) => void;
@@ -35,9 +35,9 @@ export default function AccountView({
     userAvatar,
     setUserAvatar,
     userFullName = "Lê Huy",
-    orders,
-    savedAddresses,
-    setSavedAddresses,
+    orders = [],
+    savedAddresses = [],
+    setSavedAddresses = () => {},
     wishlistCount,
     handleLogout,
     showToast,

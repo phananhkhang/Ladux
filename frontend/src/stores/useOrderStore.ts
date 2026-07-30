@@ -17,6 +17,7 @@ interface OrderState {
   error: string | null;
 
   // Actions
+  fetchOrders: (page?: number, size?: number) => Promise<void>;
   fetchUserOrders: (page?: number, size?: number) => Promise<void>;
   fetchOrderById: (id: number) => Promise<OrderResponse | null>;
   createOrder: (data: OrderRequest) => Promise<OrderResponse>;
@@ -39,7 +40,7 @@ export const useOrderStore = create<OrderState>((set, get) => ({
   clearError: () => set({ error: null }),
   clearCurrentOrder: () => set({ currentOrder: null }),
 
-  fetchUserOrders: async (page = 0, size = 10) => {
+  fetchOrders: async (page = 0, size = 10) => {
     set({ isLoading: true, error: null });
     try {
       const res = await orderService.getOrdersByUser({ page, size, sort: 'createdAt,desc' });
@@ -57,6 +58,10 @@ export const useOrderStore = create<OrderState>((set, get) => ({
     } finally {
       set({ isLoading: false });
     }
+  },
+
+  fetchUserOrders: async (page = 0, size = 10) => {
+    return get().fetchOrders(page, size);
   },
 
   fetchOrderById: async (id: number) => {

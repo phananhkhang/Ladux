@@ -1,9 +1,8 @@
-import React from "react";
-import { SlidersHorizontal, RotateCcw } from "lucide-react";
+import React, { useMemo } from "react";
 import ProductHero from "../components/product/ProductHero";
 import ProductCard from "../components/product/ProductCard";
-import { LaptopProduct, formatVND, ViewType } from "../types";
-import { MOCK_PRODUCTS } from "../data/mockProducts";
+import { LaptopProduct, ViewType, mapProductResponseToLaptopProduct } from "../types";
+import { useProductStore, useWishlistStore, useCartStore } from "../stores";
 
 const BRAND_SECTIONS = [
     {
@@ -112,20 +111,20 @@ const NEEDS = [
 ];
 
 export interface ProductStoreViewProps {
-    filteredProducts: LaptopProduct[];
-    selectedBrand: string;
-    setSelectedBrand: (brand: string) => void;
-    selectedCategory: string;
-    setSelectedCategory: (category: string) => void;
-    priceRange: number;
-    setPriceRange: (price: number) => void;
-    setSearchQuery: (query: string) => void;
-    wishlist: number[];
-    toggleWishlist: (laptopId: number) => void;
+    filteredProducts?: LaptopProduct[];
+    selectedBrand?: string;
+    setSelectedBrand?: (brand: string) => void;
+    selectedCategory?: string;
+    setSelectedCategory?: (category: string) => void;
+    priceRange?: number;
+    setPriceRange?: (price: number) => void;
+    setSearchQuery?: (query: string) => void;
+    wishlist?: number[];
+    toggleWishlist?: (laptopId: number) => void;
     setSelectedProduct: (product: LaptopProduct) => void;
     setCurrentView: (view: ViewType) => void;
     allProducts?: LaptopProduct[];
-    addToCartCustom: (
+    addToCartCustom?: (
         product: LaptopProduct,
         ram: string,
         storage: string,
@@ -138,27 +137,15 @@ export interface ProductStoreViewProps {
 
 export default function ProductStoreView({
     filteredProducts,
-    allProducts,
-    selectedBrand,
-    setSelectedBrand,
-    selectedCategory,
-    setSelectedCategory,
-    priceRange,
-    setPriceRange,
-    setSearchQuery,
-    wishlist,
-    toggleWishlist,
     setSelectedProduct,
     setCurrentView,
-    addToCartCustom,
     showToast,
 }: ProductStoreViewProps) {
-    const productsList = allProducts && allProducts.length > 0 ? allProducts : MOCK_PRODUCTS;
-    const isFilteringActive =
-        selectedBrand !== "All" ||
-        selectedCategory !== "All" ||
-        priceRange < 150000000 ||
-        filteredProducts.length < productsList.length;
+    const { products, brands, categories, setBrandFilter, setCategoryFilter, setSearch, isLoading } = useProductStore();
+    const { wishlistProductIds, toggleWishlist: storeToggleWishlist } = useWishlistStore();
+    const { addToCart } = useCartStore();
+
+    const productsList = filteredProducts || [];
 
     return (
         <main>
@@ -168,7 +155,7 @@ export default function ProductStoreView({
                     const el = document.getElementById("catalog-section");
                     el?.scrollIntoView({ behavior: "smooth" });
                 }}
-                onAiConsultClick={() => showToast("Đang mở video giới thiệu Laptop...")}
+                onAiConsultClick={() => showToast("Đang mở tư vấn AI cho siêu phẩm Laptop...")}
             />
 
             {/* Featured Categories (Danh mục nổi bật) */}
@@ -197,9 +184,8 @@ export default function ProductStoreView({
                             <div className="space-y-4 w-full">
                                 <button
                                     onClick={() => {
-                                        setSelectedBrand("Lenovo");
-                                        setSelectedCategory("Workstation");
-                                        setSearchQuery("");
+                                        const lenovoBrand = brands.find((b) => b.name.toLowerCase().includes("lenovo"));
+                                        if (lenovoBrand) setBrandFilter(lenovoBrand.id);
                                         document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
                                     }}
                                     className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00D492]/10 hover:border-[#00D492] hover:shadow-[0_0_15px_rgba(0,212,146,0.15)] text-white hover:text-[#00D492] transition-all duration-300 group"
@@ -209,27 +195,14 @@ export default function ProductStoreView({
                                 </button>
                                 <button
                                     onClick={() => {
-                                        setSelectedBrand("Lenovo");
-                                        setSelectedCategory("Doanh Nhân");
-                                        setSearchQuery("");
+                                        const lenovoBrand = brands.find((b) => b.name.toLowerCase().includes("lenovo"));
+                                        if (lenovoBrand) setBrandFilter(lenovoBrand.id);
                                         document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
                                     }}
                                     className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00D492]/10 hover:border-[#00D492] hover:shadow-[0_0_15px_rgba(0,212,146,0.15)] text-white hover:text-[#00D492] transition-all duration-300 group"
                                 >
                                     <span className="text-xs sm:text-sm font-extrabold tracking-wider uppercase">BUSINESS</span>
                                     <span className="text-[10px] sm:text-[11px] text-neutral-400 group-hover:text-neutral-300 font-medium mt-0.5">X - Series</span>
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        setSelectedBrand("Lenovo");
-                                        setSelectedCategory("Doanh Nhân");
-                                        setSearchQuery("");
-                                        document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
-                                    }}
-                                    className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00D492]/10 hover:border-[#00D492] hover:shadow-[0_0_15px_rgba(0,212,146,0.15)] text-white hover:text-[#00D492] transition-all duration-300 group"
-                                >
-                                    <span className="text-xs sm:text-sm font-extrabold tracking-wider uppercase">BUSINESS</span>
-                                    <span className="text-[10px] sm:text-[11px] text-neutral-400 group-hover:text-neutral-300 font-medium mt-0.5">T - Series</span>
                                 </button>
                             </div>
                         </div>
@@ -242,9 +215,8 @@ export default function ProductStoreView({
                             <div className="space-y-4 w-full">
                                 <button
                                     onClick={() => {
-                                        setSelectedBrand("Dell");
-                                        setSelectedCategory("Workstation");
-                                        setSearchQuery("");
+                                        const dellBrand = brands.find((b) => b.name.toLowerCase().includes("dell"));
+                                        if (dellBrand) setBrandFilter(dellBrand.id);
                                         document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
                                     }}
                                     className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00D492]/10 hover:border-[#00D492] hover:shadow-[0_0_15px_rgba(0,212,146,0.15)] text-white hover:text-[#00D492] transition-all duration-300 group"
@@ -254,21 +226,8 @@ export default function ProductStoreView({
                                 </button>
                                 <button
                                     onClick={() => {
-                                        setSelectedBrand("Dell");
-                                        setSelectedCategory("Doanh Nhân");
-                                        setSearchQuery("");
-                                        document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
-                                    }}
-                                    className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00D492]/10 hover:border-[#00D492] hover:shadow-[0_0_15px_rgba(0,212,146,0.15)] text-white hover:text-[#00D492] transition-all duration-300 group"
-                                >
-                                    <span className="text-xs sm:text-sm font-extrabold tracking-wider uppercase">BUSINESS</span>
-                                    <span className="text-[10px] sm:text-[11px] text-neutral-400 group-hover:text-neutral-300 font-medium mt-0.5">XPS, Latitude</span>
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        setSelectedBrand("Dell");
-                                        setSelectedCategory("Gaming");
-                                        setSearchQuery("");
+                                        const dellBrand = brands.find((b) => b.name.toLowerCase().includes("dell"));
+                                        if (dellBrand) setBrandFilter(dellBrand.id);
                                         document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
                                     }}
                                     className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00D492]/10 hover:border-[#00D492] hover:shadow-[0_0_15px_rgba(0,212,146,0.15)] text-white hover:text-[#00D492] transition-all duration-300 group"
@@ -289,39 +248,14 @@ export default function ProductStoreView({
                             <div className="space-y-4 w-full">
                                 <button
                                     onClick={() => {
-                                        setSelectedBrand("HP");
-                                        setSelectedCategory("Workstation");
-                                        setSearchQuery("");
+                                        const hpBrand = brands.find((b) => b.name.toLowerCase().includes("hp"));
+                                        if (hpBrand) setBrandFilter(hpBrand.id);
                                         document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
                                     }}
                                     className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00D492]/10 hover:border-[#00D492] hover:shadow-[0_0_15px_rgba(0,212,146,0.15)] text-white hover:text-[#00D492] transition-all duration-300 group"
                                 >
-                                    <span className="text-xs sm:text-sm font-extrabold tracking-wider uppercase">WORKSTATION</span>
-                                    <span className="text-[10px] sm:text-[11px] text-neutral-400 group-hover:text-neutral-300 font-medium mt-0.5">(ZBook)</span>
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        setSelectedBrand("HP");
-                                        setSelectedCategory("Doanh Nhân");
-                                        setSearchQuery("");
-                                        document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
-                                    }}
-                                    className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00D492]/10 hover:border-[#00D492] hover:shadow-[0_0_15px_rgba(0,212,146,0.15)] text-white hover:text-[#00D492] transition-all duration-300 group"
-                                >
-                                    <span className="text-xs sm:text-sm font-extrabold tracking-wider uppercase">BUSINESS</span>
-                                    <span className="text-[10px] sm:text-[11px] text-neutral-400 group-hover:text-neutral-300 font-medium mt-0.5">Spectre, Elite, ENVY</span>
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        setSelectedBrand("HP");
-                                        setSelectedCategory("Gaming");
-                                        setSearchQuery("");
-                                        document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
-                                    }}
-                                    className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00D492]/10 hover:border-[#00D492] hover:shadow-[0_0_15px_rgba(0,212,146,0.15)] text-white hover:text-[#00D492] transition-all duration-300 group"
-                                >
-                                    <span className="text-xs sm:text-sm font-extrabold tracking-wider uppercase">GAMING</span>
-                                    <span className="text-[10px] sm:text-[11px] text-neutral-400 group-hover:text-neutral-300 font-medium mt-0.5">OMEN</span>
+                                    <span className="text-xs sm:text-sm font-extrabold tracking-wider uppercase">BUSINESS & GAMING</span>
+                                    <span className="text-[10px] sm:text-[11px] text-neutral-400 group-hover:text-neutral-300 font-medium mt-0.5">Spectre, Elite, OMEN</span>
                                 </button>
                             </div>
                         </div>
@@ -344,9 +278,8 @@ export default function ProductStoreView({
                             <div
                                 key={need.id}
                                 onClick={() => {
-                                    setSelectedCategory(need.category);
-                                    setSelectedBrand("All");
-                                    setSearchQuery("");
+                                    const cat = categories.find((c) => c.name.toLowerCase().includes(need.category.toLowerCase()));
+                                    if (cat) setCategoryFilter(cat.id);
                                     document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
                                 }}
                                 className="flex flex-col items-center text-center shrink-0 w-28 cursor-pointer group"
@@ -375,26 +308,15 @@ export default function ProductStoreView({
                     </span>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                         {BRANDS.map((brand) => {
-                            const filterMap: Record<string, string> = {
-                                dell: "Dell",
-                                apple: "Apple",
-                                asus: "ASUS ROG",
-                                lenovo: "Lenovo",
-                                msi: "MSI",
-                            };
-                            const isSelected = selectedBrand === filterMap[brand.id];
                             return (
                                 <div
                                     key={brand.id}
                                     onClick={() => {
-                                        setSelectedBrand(isSelected ? "All" : filterMap[brand.id]);
+                                        const matched = brands.find((b) => b.name.toLowerCase().includes(brand.id));
+                                        if (matched) setBrandFilter(matched.id);
                                         document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
                                     }}
-                                    className={`flex items-center justify-center bg-white rounded-xl p-4 h-16 sm:h-20 border transition-all duration-300 cursor-pointer ${
-                                        isSelected
-                                            ? "border-[#00D492] shadow-[0_0_15px_rgba(0,212,146,0.3)] scale-[1.03]"
-                                            : "border-white/5 shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:shadow-[#00D492]/10 hover:scale-[1.03] hover:border-[#00D492]/30"
-                                    }`}
+                                    className="flex items-center justify-center bg-white rounded-xl p-4 h-16 sm:h-20 border border-white/5 shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:shadow-[#00D492]/10 hover:scale-[1.03] hover:border-[#00D492]/30 transition-all duration-300 cursor-pointer"
                                 >
                                     <img
                                         src={brand.logo}
@@ -410,52 +332,72 @@ export default function ProductStoreView({
 
             {/* Catalog Section (Brand Product Rows) */}
             <section id="catalog-section" className="py-12 container mx-auto px-6">
-
-                {isFilteringActive ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredProducts.map((laptop) => (
-                            <ProductCard
-                                key={laptop.id}
-                                laptop={laptop}
-                                isWishlisted={wishlist.includes(laptop.id)}
-                                onToggleWishlist={toggleWishlist}
-                                onSelectProduct={(p) => {
-                                    setSelectedProduct(p);
-                                    setCurrentView("product-detail");
-                                }}
-                                onAddToCart={(p) => {
-                                    addToCartCustom(p, "32GB", "1TB SSD", "Space Black", "#1D1D1F", 1);
-                                }}
-                            />
-                        ))}
+                {isLoading ? (
+                    <div className="text-center py-20 bg-[#0f1112]/40 rounded-2xl border border-white/[0.06]">
+                        <div className="inline-block w-8 h-8 border-2 border-[#00D492] border-t-transparent rounded-full animate-spin mb-3"></div>
+                        <p className="text-neutral-400 text-xs font-mono">Đang nạp dữ liệu Laptop từ Backend API...</p>
                     </div>
-                ) : (
+                ) : productsList.length > 0 ? (
                     <div className="space-y-16">
+                        {/* Tất Cả Sản Phẩm Grid */}
+                        <div className="space-y-6">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/[0.08] pb-3 gap-4">
+                                <div className="flex items-center gap-4 flex-wrap">
+                                    <div
+                                        className="bg-[#00D492] text-black font-black px-6 py-2.5 text-xs sm:text-sm tracking-wider uppercase shrink-0 rounded-r-full shadow-lg shadow-[#00D492]/20"
+                                    >
+                                        DANH SÁCH LAPTOP MỚI NHẤT ({productsList.length})
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setCurrentView("all-products")}
+                                    className="text-xs sm:text-sm font-bold text-[#00D492] hover:underline shrink-0 text-right"
+                                >
+                                    Xem tất cả ({productsList.length}) &rarr;
+                                </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {productsList.map((laptop) => (
+                                    <ProductCard
+                                        key={laptop.id}
+                                        laptop={laptop}
+                                        isWishlisted={wishlistProductIds.includes(laptop.id)}
+                                        onToggleWishlist={(id) => storeToggleWishlist(id)}
+                                        onSelectProduct={(p) => {
+                                            setSelectedProduct(p);
+                                            setCurrentView("product-detail");
+                                        }}
+                                        onAddToCart={(p) => {
+                                            addToCart({ productId: p.id, quantity: 1 });
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Phân nhóm theo thương hiệu nếu có */}
                         {BRAND_SECTIONS.map((section) => {
                             const brandProducts = productsList.filter(
-                                (p) => p && p.brand && p.brand.toLowerCase() === section.brandId.toLowerCase()
+                                (p) => p && p.brand && p.brand.toLowerCase().includes(section.brandId.toLowerCase())
                             );
                             if (brandProducts.length === 0) return null;
                             return (
                                 <div key={section.brandId} className="space-y-6">
-                                    {/* Section Header */}
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/[0.08] pb-3 gap-4">
                                         <div className="flex items-center gap-4 flex-wrap">
-                                            {/* Trapezoid title badge */}
                                             <div
                                                 className="bg-[#0a3a60] text-white font-extrabold px-6 py-2.5 text-xs sm:text-sm tracking-wider uppercase shrink-0"
                                                 style={{ clipPath: "polygon(0 0, 100% 0, 88% 100%, 0 100%)" }}
                                             >
                                                 {section.title}
                                             </div>
-                                            {/* Sub tabs */}
                                             <div className="flex items-center gap-4 text-xs font-bold text-neutral-400 overflow-x-auto py-1">
                                                 {section.tabs.map((tab) => (
                                                     <button
                                                         key={tab.label}
                                                         onClick={() => {
-                                                            setSelectedBrand(section.brandId);
-                                                            setSearchQuery(tab.query);
+                                                            setSearch(tab.query);
                                                             document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
                                                         }}
                                                         className="hover:text-[#00D492] transition-colors shrink-0 uppercase whitespace-nowrap"
@@ -467,9 +409,6 @@ export default function ProductStoreView({
                                         </div>
                                         <button
                                             onClick={() => {
-                                                setSelectedBrand(section.brandId);
-                                                setSelectedCategory("All");
-                                                setSearchQuery("");
                                                 setCurrentView("all-products");
                                             }}
                                             className="text-xs sm:text-sm font-bold text-[#00D492] hover:underline shrink-0 text-right"
@@ -478,20 +417,19 @@ export default function ProductStoreView({
                                         </button>
                                     </div>
 
-                                    {/* Products Grid (Max 4 items per brand row) */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                         {brandProducts.slice(0, 4).map((laptop) => (
                                             <ProductCard
                                                 key={laptop.id}
                                                 laptop={laptop}
-                                                isWishlisted={wishlist.includes(laptop.id)}
-                                                onToggleWishlist={toggleWishlist}
+                                                isWishlisted={wishlistProductIds.includes(laptop.id)}
+                                                onToggleWishlist={(id) => storeToggleWishlist(id)}
                                                 onSelectProduct={(p) => {
                                                     setSelectedProduct(p);
                                                     setCurrentView("product-detail");
                                                 }}
                                                 onAddToCart={(p) => {
-                                                    addToCartCustom(p, "32GB", "1TB SSD", "Space Black", "#1D1D1F", 1);
+                                                    addToCart({ productId: p.id, quantity: 1 });
                                                 }}
                                             />
                                         ))}
@@ -499,6 +437,10 @@ export default function ProductStoreView({
                                 </div>
                             );
                         })}
+                    </div>
+                ) : (
+                    <div className="text-center py-16 bg-[#0f1112]/40 rounded-2xl border border-white/[0.06]">
+                        <p className="text-neutral-400 text-sm font-medium">Chưa có sản phẩm nào trong cơ sở dữ liệu.</p>
                     </div>
                 )}
             </section>

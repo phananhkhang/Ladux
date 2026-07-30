@@ -3,19 +3,19 @@ import { AlertCircle, Check, RefreshCw, FileText } from "lucide-react";
 import { OrderItemRecord, OrderStatus, formatVND, ViewType } from "../types";
 
 export interface OrdersViewProps {
-    orders: OrderItemRecord[];
-    selectedOrderId: string;
-    setSelectedAddressOrderId: (id: string) => void;
-    setOrders: React.Dispatch<React.SetStateAction<OrderItemRecord[]>>;
+    orders?: OrderItemRecord[];
+    selectedOrderId?: string;
+    setSelectedAddressOrderId?: (id: string) => void;
+    setOrders?: React.Dispatch<React.SetStateAction<OrderItemRecord[]>>;
     setCurrentView: (view: ViewType) => void;
     showToast: (msg: string) => void;
 }
 
 export default function OrdersView({
-    orders,
-    selectedOrderId,
-    setSelectedAddressOrderId,
-    setOrders,
+    orders = [],
+    selectedOrderId = "",
+    setSelectedAddressOrderId = () => {},
+    setOrders = () => {},
     setCurrentView,
     showToast,
 }: OrdersViewProps) {

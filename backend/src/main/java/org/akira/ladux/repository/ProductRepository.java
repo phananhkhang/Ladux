@@ -17,30 +17,30 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
-    @EntityGraph(attributePaths = {"brand", "category", "images"})
+    @EntityGraph(attributePaths = {"brand", "category", "images", "variants", "variants.color"})
     @Override
     Optional<Product> findById(Integer id);
 
-    @EntityGraph(attributePaths = {"brand", "category", "images"})
+    @EntityGraph(attributePaths = {"brand", "category", "images", "variants", "variants.color"})
     Product findBySlug(String slug);
-
-    @EntityGraph(attributePaths = {"brand", "category"})
+    
+    @EntityGraph(attributePaths = {"brand", "category", "images", "variants", "variants.color"})
     Page<Product> findAll(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"brand", "category"})
+    @EntityGraph(attributePaths = {"brand", "category", "images", "variants", "variants.color"})
     Page<Product> findByBrandId(Integer brandId, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"brand", "category"})
+    @EntityGraph(attributePaths = {"brand", "category", "images", "variants", "variants.color"})
     Page<Product> findByCategoryId(Integer categoryId, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"brand", "category"})
+    @EntityGraph(attributePaths = {"brand", "category", "images", "variants", "variants.color"})
     Page<Product> findByIsActiveTrue(Pageable pageable);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Product p where p.id = :id")
-    Optional<ProductVariant> findByIdForUpdate(@Param("id") Integer id);
+    Optional<Product> findByIdForUpdate(@Param("id") Integer id);
 
-    @EntityGraph(attributePaths = {"brand", "category"})
+    @EntityGraph(attributePaths = {"brand", "category", "images", "variants", "variants.color"})
     @Query("""
         SELECT p FROM Product p
         WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%'))
@@ -50,6 +50,4 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             Pageable pageable
     );
     boolean existsByCategoryId(int id);
-
 }
-

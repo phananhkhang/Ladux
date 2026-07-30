@@ -141,7 +141,8 @@ export function mapProductResponseToLaptopProduct(
     const API_BASE = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1").replace("/api/v1", "");
 
     // Lấy variant chính (ưu tiên variant active đầu tiên)
-    const activeVariant = variants?.find((v) => v.isActive) ?? variants?.[0];
+    const availableVariants = variants || product.variants;
+    const activeVariant = availableVariants?.find((v) => v.isActive) ?? availableVariants?.[0];
 
     // Map images: backend trả { imageUrl } relative → cần prefix API_BASE nếu là relative path
     const imageUrls = (product.images || []).map((img) => {

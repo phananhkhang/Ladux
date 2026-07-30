@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     MapPin,
     Plus,
@@ -9,72 +9,170 @@ import {
     CheckCircle2,
 } from "lucide-react";
 import {
-    CartItem,
     CouponItem,
-    ShippingAddressRequest,
     PaymentProvider,
-    OrderItemRecord,
     formatVND,
     ViewType,
+    mapProductResponseToLaptopProduct,
 } from "../types";
+import { orderService, paymentService, couponService } from "../services";
+import { useCartStore, useAddressStore, useOrderStore } from "../stores";
 
 export interface CheckoutViewProps {
-    cartItems: CartItem[];
-    savedAddresses: ShippingAddressRequest[];
-    setSavedAddresses: (addresses: ShippingAddressRequest[]) => void;
-    selectedAddressId: number;
-    setSelectedAddressId: (id: number) => void;
-    appliedCoupon: CouponItem | null;
-    setAppliedCoupon: (coupon: CouponItem | null) => void;
-    paymentMethod: PaymentProvider;
-    setPaymentMethod: (method: PaymentProvider) => void;
-    orders: OrderItemRecord[];
-    setOrders: (orders: OrderItemRecord[]) => void;
-    setSelectedAddressOrderId: (id: string) => void;
-    setCartItems: (items: CartItem[]) => void;
+    cartItems?: any[];
+    savedAddresses?: any[];
+    setSavedAddresses?: (addresses: any[]) => void;
+    selectedAddressId?: number;
+    setSelectedAddressId?: (id: number) => void;
+    appliedCoupon?: CouponItem | null;
+    setAppliedCoupon?: (coupon: CouponItem | null) => void;
+    paymentMethod?: PaymentProvider;
+    setPaymentMethod?: (method: PaymentProvider) => void;
+    orders?: any[];
+    setOrders?: (orders: any[]) => void;
+    setSelectedAddressOrderId?: (id: string) => void;
+    setCartItems?: (items: any[]) => void;
     setCurrentView: (view: ViewType) => void;
     showToast: (msg: string) => void;
-    handleApplyCoupon: () => void;
-    couponInput: string;
-    setCouponInput: (val: string) => void;
-    couponError: string;
+    handleApplyCoupon?: () => void;
+    couponInput?: string;
+    setCouponInput?: (val: string) => void;
+    couponError?: string;
 }
 
 export default function CheckoutView({
-    cartItems,
-    savedAddresses,
-    setSavedAddresses,
-    selectedAddressId,
-    setSelectedAddressId,
-    appliedCoupon,
-    setAppliedCoupon,
-    paymentMethod,
-    setPaymentMethod,
-    orders,
-    setOrders,
-    setSelectedAddressOrderId,
-    setCartItems,
     setCurrentView,
     showToast,
-    handleApplyCoupon,
-    couponInput,
-    setCouponInput,
-    couponError,
 }: CheckoutViewProps) {
+    const { cart, clearCart } = useCartStore();
+    const { addresses, createAddress, fetchAddresses } = useAddressStore();
+    const { fetchOrders } = useOrderStore();
+
+    const [selectedAddrId, setSelectedAddrId] = useState<number | null>(null);
+    const [paymentProvider, setPaymentProvider] = useState<PaymentProvider>("COD");
+    const [couponCodeInput, setCouponCodeInput] = useState<string>("");
+    const [appliedCouponItem, setAppliedCouponItem] = useState<CouponItem | null>(null);
+    const [couponErrMsg, setCouponErrMsg] = useState<string>("");
+
     const [showAddressModal, setShowAddressModal] = useState(false);
-    const [newAddress, setNewAddress] = useState<Omit<ShippingAddressRequest, "id">>({
-        fullName: "",
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [newAddress, setNewAddress] = useState({
+        receiverName: "",
         phone: "",
-        addressDetail: "",
-        ward: "",
+        street: "",
         district: "",
         city: "Hà Nội",
         isDefault: false,
     });
 
-    const subTotal = cartItems.reduce((acc, i) => acc + i.price * i.quantity, 0);
-    const discountAmount = appliedCoupon?.discountAmount || 0;
+    useEffect(() => {
+        fetchAddresses();
+    }, []);
+
+    useEffect(() => {
+        if (addresses.length > 0 && selectedAddrId === null) {
+            const def = addresses.find((a) => a.isDefault) || addresses[0];
+            setSelectedAddrId(def.id);
+        }
+    }, [addresses, selectedAddrId]);
+
+    const cartItemsList = cart?.items || [];
+    const subTotal = cart?.totalPrice || 0;
+    const discountAmount = appliedCouponItem?.discountAmount || 0;
     const finalAmount = Math.max(0, subTotal - discountAmount);
+
+    const handleApplyCoupon = async () => {
+        if (!couponCodeInput.trim()) {
+            setCouponErrMsg("Vui lòng nhập mã giảm giá");
+            return;
+        }
+        setCouponErrMsg("");
+        try {
+            const res = await couponService.applyCoupon(couponCodeInput.trim());
+
+            if (res.minOrderValue && subTotal < res.minOrderValue) {
+                setCouponErrMsg(`Đơn hàng tối thiểu phải từ ${formatVND(res.minOrderValue)} để áp dụng mã này!`);
+                return;
+            }
+
+            let calculatedDiscount = 0;
+            const isPercent = res.discountType === "PERCENT" || (res.discountType as string) === "PERCENTAGE";
+            if (isPercent) {
+                calculatedDiscount = (subTotal * res.discountValue) / 100;
+            } else {
+                calculatedDiscount = res.discountValue;
+            }
+
+            setAppliedCouponItem({
+                code: res.code || couponCodeInput.trim().toUpperCase(),
+                discountAmount: calculatedDiscount,
+                minSubtotal: res.minOrderValue || 0,
+                description: isPercent
+                    ? `Giảm ${res.discountValue}%`
+                    : `Giảm ${formatVND(res.discountValue)}`,
+            });
+            showToast("Đã áp dụng mã giảm giá thành công!");
+        } catch (err: any) {
+            const msg = err?.response?.data?.message || "Mã giảm giá không hợp lệ hoặc đã hết hạn!";
+            setCouponErrMsg(msg);
+        }
+    };
+
+    const handlePlaceOrder = async () => {
+        const selectedAddr = addresses.find((a) => a.id === selectedAddrId) || addresses[0];
+
+        if (!selectedAddr) {
+            showToast("Vui lòng chọn hoặc thêm địa chỉ giao hàng!");
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            // Bắn API Tạo Đơn Hàng Thật xuống Backend
+            const orderRes = await orderService.createOrder({
+                couponCode: appliedCouponItem?.code,
+                paymentProvider: paymentProvider,
+                shippingAddress: {
+                    fullName: selectedAddr.receiverName || (selectedAddr as any).fullName || "",
+                    phone: selectedAddr.phone || "",
+                    addressLine: selectedAddr.street || (selectedAddr as any).addressLine || "",
+                    city: selectedAddr.city || "",
+                    district: selectedAddr.district || "",
+                },
+            });
+
+            // Xử lý luồng VNPay
+            if (paymentProvider === "VNPAY") {
+                showToast("Đang tạo cổng thanh toán VNPay...");
+                try {
+                    const payRes = await paymentService.createPayment({
+                        orderId: orderRes.id,
+                        provider: "VNPAY",
+                    });
+                    if (payRes.paymentUrl) {
+                        window.location.href = payRes.paymentUrl;
+                        return;
+                    }
+                } catch (payErr) {
+                    console.error("Lỗi khởi tạo thanh toán VNPay:", payErr);
+                }
+            }
+
+            // Xử lý luồng COD
+            await clearCart();
+            await fetchOrders();
+            setCurrentView("orders");
+            showToast(`Đặt hàng thành công! Mã đơn: #${orderRes.id}`);
+
+        } catch (err: any) {
+            console.error("Lỗi đặt hàng:", err);
+            const errorMsg = err?.response?.data?.message || "Đặt hàng thất bại. Vui lòng thử lại!";
+            showToast(errorMsg);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <main className="container mx-auto px-6 py-12 max-w-6xl">
@@ -114,43 +212,53 @@ export default function CheckoutView({
                         </div>
 
                         <div className="space-y-3">
-                            {savedAddresses.map((addr) => (
-                                <div
-                                    key={addr.id}
-                                    onClick={() => setSelectedAddressId(addr.id)}
-                                    className={`p-4 rounded-xl border cursor-pointer transition flex items-start justify-between gap-4 ${
-                                        selectedAddressId === addr.id
-                                            ? "border-[#00D492] bg-[#00D492]/10"
-                                            : "border-neutral-800 bg-neutral-900/50 hover:border-neutral-700"
-                                    }`}
-                                >
-                                    <div className="space-y-1 text-xs">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-bold text-white text-sm">{addr.fullName}</span>
-                                            <span className="font-mono text-neutral-400">({addr.phone})</span>
-                                            {addr.isDefault && (
-                                                <span className="bg-[#00D492]/20 border border-[#00D492]/40 text-[#00D492] text-[9px] font-mono font-bold px-2 py-0.5 rounded">
-                                                    Default
-                                                </span>
-                                            )}
-                                        </div>
-                                        <p className="text-neutral-300">
-                                            {addr.addressDetail}, {addr.ward}, {addr.district}, {addr.city}
-                                        </p>
-                                    </div>
+                            {addresses.length === 0 ? (
+                                <p className="text-xs text-neutral-400 py-2">
+                                    Chưa có địa chỉ giao hàng nào. Vui lòng bấm "Thêm địa chỉ mới".
+                                </p>
+                            ) : (
+                                addresses.map((addr) => (
                                     <div
-                                        className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                                            selectedAddressId === addr.id
-                                                ? "border-[#00D492] bg-[#00D492]"
-                                                : "border-neutral-700"
+                                        key={addr.id}
+                                        onClick={() => setSelectedAddrId(addr.id)}
+                                        className={`p-4 rounded-xl border cursor-pointer transition flex items-start justify-between gap-4 ${
+                                            selectedAddrId === addr.id
+                                                ? "border-[#00D492] bg-[#00D492]/10"
+                                                : "border-neutral-800 bg-neutral-900/50 hover:border-neutral-700"
                                         }`}
                                     >
-                                        {selectedAddressId === addr.id && (
-                                            <div className="w-2 h-2 rounded-full bg-black" />
-                                        )}
+                                        <div className="space-y-1 text-xs">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-bold text-white text-sm">
+                                                    {addr.receiverName || (addr as any).fullName}
+                                                </span>
+                                                <span className="font-mono text-neutral-400">({addr.phone})</span>
+                                                {addr.isDefault && (
+                                                    <span className="bg-[#00D492]/20 border border-[#00D492]/40 text-[#00D492] text-[9px] font-mono font-bold px-2 py-0.5 rounded">
+                                                        Default
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-neutral-300">
+                                                {addr.street || (addr as any).addressLine}
+                                                {addr.district ? `, ${addr.district}` : ""}
+                                                {addr.city ? `, ${addr.city}` : ""}
+                                            </p>
+                                        </div>
+                                        <div
+                                            className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
+                                                selectedAddrId === addr.id
+                                                    ? "border-[#00D492] bg-[#00D492]"
+                                                    : "border-neutral-700"
+                                            }`}
+                                        >
+                                            {selectedAddrId === addr.id && (
+                                                <div className="w-2 h-2 rounded-full bg-black" />
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </div>
 
@@ -164,8 +272,8 @@ export default function CheckoutView({
                                         <label className="block text-neutral-400 mb-1">Họ và tên người nhận</label>
                                         <input
                                             type="text"
-                                            value={newAddress.fullName}
-                                            onChange={(e) => setNewAddress({ ...newAddress, fullName: e.target.value })}
+                                            value={newAddress.receiverName}
+                                            onChange={(e) => setNewAddress({ ...newAddress, receiverName: e.target.value })}
                                             className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00D492]"
                                             placeholder="Lê Huy"
                                         />
@@ -184,23 +292,13 @@ export default function CheckoutView({
                                         <label className="block text-neutral-400 mb-1">Địa chỉ chi tiết (Số nhà, đường)</label>
                                         <input
                                             type="text"
-                                            value={newAddress.addressDetail}
-                                            onChange={(e) => setNewAddress({ ...newAddress, addressDetail: e.target.value })}
+                                            value={newAddress.street}
+                                            onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })}
                                             className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00D492]"
                                             placeholder="Số 88 Tôn Thất Thuyết"
                                         />
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <label className="block text-neutral-400 mb-1">Phường / Xã</label>
-                                            <input
-                                                type="text"
-                                                value={newAddress.ward}
-                                                onChange={(e) => setNewAddress({ ...newAddress, ward: e.target.value })}
-                                                className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00D492]"
-                                                placeholder="Mỹ Đình 2"
-                                            />
-                                        </div>
                                         <div>
                                             <label className="block text-neutral-400 mb-1">Quận / Huyện</label>
                                             <input
@@ -209,6 +307,16 @@ export default function CheckoutView({
                                                 onChange={(e) => setNewAddress({ ...newAddress, district: e.target.value })}
                                                 className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00D492]"
                                                 placeholder="Nam Từ Liêm"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-neutral-400 mb-1">Tỉnh / Thành phố</label>
+                                            <input
+                                                type="text"
+                                                value={newAddress.city}
+                                                onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
+                                                className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00D492]"
+                                                placeholder="Hà Nội"
                                             />
                                         </div>
                                     </div>
@@ -222,19 +330,19 @@ export default function CheckoutView({
                                         Hủy
                                     </button>
                                     <button
-                                        onClick={() => {
-                                            if (!newAddress.fullName || !newAddress.phone || !newAddress.addressDetail) {
+                                        onClick={async () => {
+                                            if (!newAddress.receiverName || !newAddress.phone || !newAddress.street) {
                                                 showToast("Vui lòng điền đầy đủ thông tin địa chỉ");
                                                 return;
                                             }
-                                            const created: ShippingAddressRequest = {
-                                                id: Date.now(),
-                                                ...newAddress,
-                                            };
-                                            setSavedAddresses([...savedAddresses, created]);
-                                            setSelectedAddressId(created.id);
-                                            setShowAddressModal(false);
-                                            showToast("Đã thêm địa chỉ mới thành công!");
+                                            try {
+                                                const created = await createAddress(newAddress);
+                                                setSelectedAddrId(created.id);
+                                                setShowAddressModal(false);
+                                                showToast("Đã lưu địa chỉ giao hàng mới!");
+                                            } catch (err) {
+                                                showToast("Không thể tạo địa chỉ mới!");
+                                            }
                                         }}
                                         className="flex-1 py-3 bg-[#00D492] text-black rounded-xl text-xs font-extrabold hover:bg-[#00bc82]"
                                     >
@@ -255,9 +363,9 @@ export default function CheckoutView({
                         <div className="flex gap-3">
                             <input
                                 type="text"
-                                value={couponInput}
-                                onChange={(e) => setCouponInput(e.target.value)}
-                                placeholder="Nhập mã (Gợi ý: LADUX2M hoặc WELCOME10)"
+                                value={couponCodeInput}
+                                onChange={(e) => setCouponCodeInput(e.target.value)}
+                                placeholder="Nhập mã (Ví dụ: LADUX2M hoặc WELCOME10)"
                                 className="flex-1 bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-xs text-white font-mono placeholder:text-neutral-600 focus:outline-none focus:border-[#00D492]"
                             />
                             <button
@@ -268,25 +376,25 @@ export default function CheckoutView({
                             </button>
                         </div>
 
-                        {couponError && (
+                        {couponErrMsg && (
                             <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5">
                                 <AlertCircle className="w-3.5 h-3.5" />
-                                {couponError}
+                                {couponErrMsg}
                             </p>
                         )}
 
-                        {appliedCoupon && (
+                        {appliedCouponItem && (
                             <div className="p-3 bg-[#00D492]/10 border border-[#00D492]/30 rounded-xl flex items-center justify-between text-xs">
                                 <div>
                                     <span className="font-mono font-bold text-[#00D492]">
-                                        {appliedCoupon.code}
+                                        {appliedCouponItem.code}
                                     </span>
-                                    <p className="text-neutral-400 text-[11px]">{appliedCoupon.description}</p>
+                                    <p className="text-neutral-400 text-[11px]">{appliedCouponItem.description}</p>
                                 </div>
                                 <button
                                     onClick={() => {
-                                        setAppliedCoupon(null);
-                                        setCouponInput("");
+                                        setAppliedCouponItem(null);
+                                        setCouponCodeInput("");
                                         showToast("Đã hủy mã giảm giá.");
                                     }}
                                     className="text-neutral-500 hover:text-white"
@@ -307,9 +415,9 @@ export default function CheckoutView({
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {/* VNPay Option */}
                             <div
-                                onClick={() => setPaymentMethod("VNPAY")}
+                                onClick={() => setPaymentProvider("VNPAY")}
                                 className={`p-4 rounded-xl border cursor-pointer transition flex items-center justify-between ${
-                                    paymentMethod === "VNPAY"
+                                    paymentProvider === "VNPAY"
                                         ? "border-[#00D492] bg-[#00D492]/10"
                                         : "border-neutral-800 bg-neutral-900/50 hover:border-neutral-700"
                                 }`}
@@ -325,18 +433,18 @@ export default function CheckoutView({
                                 </div>
                                 <div
                                     className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                                        paymentMethod === "VNPAY" ? "border-[#00D492] bg-[#00D492]" : "border-neutral-700"
+                                        paymentProvider === "VNPAY" ? "border-[#00D492] bg-[#00D492]" : "border-neutral-700"
                                     }`}
                                 >
-                                    {paymentMethod === "VNPAY" && <div className="w-1.5 h-1.5 rounded-full bg-black" />}
+                                    {paymentProvider === "VNPAY" && <div className="w-1.5 h-1.5 rounded-full bg-black" />}
                                 </div>
                             </div>
 
                             {/* COD Option */}
                             <div
-                                onClick={() => setPaymentMethod("COD")}
+                                onClick={() => setPaymentProvider("COD")}
                                 className={`p-4 rounded-xl border cursor-pointer transition flex items-center justify-between ${
-                                    paymentMethod === "COD"
+                                    paymentProvider === "COD"
                                         ? "border-[#00D492] bg-[#00D492]/10"
                                         : "border-neutral-800 bg-neutral-900/50 hover:border-neutral-700"
                                 }`}
@@ -352,10 +460,10 @@ export default function CheckoutView({
                                 </div>
                                 <div
                                     className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                                        paymentMethod === "COD" ? "border-[#00D492] bg-[#00D492]" : "border-neutral-700"
+                                        paymentProvider === "COD" ? "border-[#00D492] bg-[#00D492]" : "border-neutral-700"
                                     }`}
                                 >
-                                    {paymentMethod === "COD" && <div className="w-1.5 h-1.5 rounded-full bg-black" />}
+                                    {paymentProvider === "COD" && <div className="w-1.5 h-1.5 rounded-full bg-black" />}
                                 </div>
                             </div>
                         </div>
@@ -371,29 +479,38 @@ export default function CheckoutView({
 
                         {/* Itemized List */}
                         <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
-                            {cartItems.map((item, idx) => (
-                                <div
-                                    key={idx}
-                                    className="flex items-center justify-between gap-3 text-xs border-b border-neutral-900/60 pb-3"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <img
-                                            src={item.product.images[0]}
-                                            alt={item.product.name}
-                                            className="w-12 h-12 bg-neutral-900 rounded-lg object-contain p-1 border border-neutral-800 shrink-0"
-                                        />
-                                        <div>
-                                            <p className="font-bold text-white line-clamp-1">{item.product.name}</p>
-                                            <p className="text-[10px] font-mono text-neutral-500">
-                                                {item.selectedRam} / {item.selectedStorage} x {item.quantity}
-                                            </p>
+                            {cartItemsList.map((item) => {
+                                if (!item.product) return null;
+                                const mapped = (item.product as any).cpu !== undefined || (item.product as any).brand !== undefined
+                                    ? mapProductResponseToLaptopProduct(item.product as any)
+                                    : (item.product as any);
+                                const price = mapped.discountPrice || mapped.price || 0;
+                                const imageUrl = mapped.images?.[0] || "https://placehold.co/400x300/121214/666?text=No+Image";
+
+                                return (
+                                    <div
+                                        key={item.id}
+                                        className="flex items-center justify-between gap-3 text-xs border-b border-neutral-900/60 pb-3"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <img
+                                                src={imageUrl}
+                                                alt={mapped.name}
+                                                className="w-12 h-12 bg-neutral-900 rounded-lg object-contain p-1 border border-neutral-800 shrink-0"
+                                            />
+                                            <div>
+                                                <p className="font-bold text-white line-clamp-1">{mapped.name}</p>
+                                                <p className="text-[10px] font-mono text-neutral-500">
+                                                    Số lượng: x{item.quantity}
+                                                </p>
+                                            </div>
                                         </div>
+                                        <span className="font-mono font-bold text-white shrink-0">
+                                            {formatVND(price * item.quantity)}
+                                        </span>
                                     </div>
-                                    <span className="font-mono font-bold text-white shrink-0">
-                                        {formatVND(item.price * item.quantity)}
-                                    </span>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
 
                         {/* Financial Summary */}
@@ -427,39 +544,17 @@ export default function CheckoutView({
 
                         {/* Place Order CTA */}
                         <button
-                            onClick={() => {
-                                const selAddr = savedAddresses.find((a) => a.id === selectedAddressId) || savedAddresses[0];
-
-                                const newOrderRecord: OrderItemRecord = {
-                                    id: `ord-${Date.now()}`,
-                                    orderNumber: `LDX-${Math.floor(100000 + Math.random() * 900000)}`,
-                                    date: "Vừa xong",
-                                    items: [...cartItems],
-                                    shippingAddress: selAddr,
-                                    paymentMethod,
-                                    subTotal,
-                                    discountAmount,
-                                    shippingFee: 0,
-                                    finalAmount,
-                                    status: paymentMethod === "VNPAY" ? "PENDING" : "CONFIRMED",
-                                    trackingNumber: `LDX-EXPRESS-${Math.floor(10000000 + Math.random() * 90000000)}`,
-                                };
-
-                                setOrders([newOrderRecord, ...orders]);
-                                setSelectedAddressOrderId(newOrderRecord.id);
-                                setCartItems([]);
-                                setCurrentView("account");
-                                showToast(`Đặt hàng thành công! Mã đơn: ${newOrderRecord.orderNumber}`);
-                            }}
-                            className="w-full bg-[#00D492] text-black py-4 rounded-xl font-extrabold text-sm uppercase tracking-wider hover:bg-[#00bc82] transition shadow-lg shadow-[#00D492]/20 flex items-center justify-center gap-2"
+                            onClick={handlePlaceOrder}
+                            disabled={isSubmitting || cartItemsList.length === 0}
+                            className="w-full bg-[#00D492] text-black py-4 rounded-xl font-extrabold text-sm uppercase tracking-wider hover:bg-[#00bc82] transition shadow-lg shadow-[#00D492]/20 flex items-center justify-center gap-2 disabled:opacity-50"
                         >
                             <CheckCircle2 className="w-5 h-5" />
-                            <span>ĐẶT HÀNG NGAY</span>
+                            <span>{isSubmitting ? "ĐANG XỬ LÝ ĐƠN HÀNG..." : "ĐẶT HÀNG NGAY"}</span>
                         </button>
 
                         <div className="pt-2 flex items-center justify-center gap-4 text-[10px] text-neutral-500 font-mono">
                             <span className="flex items-center gap-1">
-                                <Lock className="w-3 h-3 text-[#00D492]" /> Thanh toán SSL 256-bit
+                                <Lock className="w-3.5 h-3.5 text-[#00D492]" /> Thanh toán SSL 256-bit
                             </span>
                             <span>•</span>
                             <span>Đổi trả 30 ngày</span>

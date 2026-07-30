@@ -1,20 +1,20 @@
 import React, { useState, useMemo } from "react";
-import { LaptopProduct, ViewType } from "../types";
-import ProductCard from "../components/product/ProductCard";
-import { MOCK_PRODUCTS } from "../data/mockProducts";
 import { ChevronRight } from "lucide-react";
+import { useProductStore, useWishlistStore, useCartStore } from "../stores";
+import ProductCard from "../components/product/ProductCard";
+import { LaptopProduct, ViewType, mapProductResponseToLaptopProduct } from "../types";
 
 export interface AllProductsViewProps {
     allProducts?: LaptopProduct[];
-    selectedBrand: string;
-    setSelectedBrand: (brand: string) => void;
-    selectedCategory: string;
-    setSelectedCategory: (category: string) => void;
-    wishlist: number[];
-    toggleWishlist: (laptopId: number) => void;
+    selectedBrand?: string;
+    setSelectedBrand?: (brand: string) => void;
+    selectedCategory?: string;
+    setSelectedCategory?: (category: string) => void;
+    wishlist?: number[];
+    toggleWishlist?: (laptopId: number) => void;
     setSelectedProduct: (product: LaptopProduct) => void;
     setCurrentView: (view: ViewType) => void;
-    addToCartCustom: (
+    addToCartCustom?: (
         product: LaptopProduct,
         ram: string,
         storage: string,
@@ -25,17 +25,22 @@ export interface AllProductsViewProps {
 }
 
 export default function AllProductsView({
-    allProducts,
-    selectedBrand,
-    setSelectedBrand,
-    selectedCategory,
-    setSelectedCategory,
-    wishlist,
-    toggleWishlist,
     setSelectedProduct,
     setCurrentView,
-    addToCartCustom,
 }: AllProductsViewProps) {
+    const {
+        products,
+        brands,
+        categories,
+        filters,
+        isLoading,
+        setBrandFilter,
+        setCategoryFilter,
+    } = useProductStore();
+
+    const { wishlistProductIds, toggleWishlist: storeToggleWishlist } = useWishlistStore();
+    const { addToCart } = useCartStore();
+
     const [selectedRam, setSelectedRam] = useState<string>("All");
     const [selectedRom, setSelectedRom] = useState<string>("All");
     const [maxPrice, setMaxPrice] = useState<number>(280000000);
@@ -43,25 +48,14 @@ export default function AllProductsView({
     const [currentPage, setCurrentPage] = useState<number>(1);
     const itemsPerPage = 8;
 
-    const baseProducts = allProducts && allProducts.length > 0 ? allProducts : MOCK_PRODUCTS;
+    // Chuyển đổi dữ liệu Backend ProductResponse DTO sang LaptopProduct UI model
+    const mappedProducts = useMemo(() => {
+        return products.map((p) => mapProductResponseToLaptopProduct(p));
+    }, [products]);
 
-    // Filter products
+    // Client-side filtering bổ sung cho RAM, ROM, Giá & Sắp xếp
     const filteredProducts = useMemo(() => {
-        let list = [...baseProducts];
-
-        // Brand filter
-        if (selectedBrand !== "All") {
-            list = list.filter(
-                (p) => p && p.brand && p.brand.toLowerCase() === selectedBrand.toLowerCase()
-            );
-        }
-
-        // Category filter
-        if (selectedCategory !== "All") {
-            list = list.filter(
-                (p) => p && p.category && p.category.toLowerCase() === selectedCategory.toLowerCase()
-            );
-        }
+        let list = [...mappedProducts];
 
         // RAM filter
         if (selectedRam !== "All") {
@@ -70,7 +64,7 @@ export default function AllProductsView({
 
         // ROM filter
         if (selectedRom !== "All") {
-            list = list.filter((p) => p.rom.includes(selectedRom));
+            list = list.filter((p) => p && p.rom && p.rom.includes(selectedRom));
         }
 
         // Price filter
@@ -88,9 +82,9 @@ export default function AllProductsView({
         }
 
         return list;
-    }, [selectedBrand, selectedCategory, selectedRam, selectedRom, maxPrice, sortBy]);
+    }, [mappedProducts, selectedRam, selectedRom, maxPrice, sortBy]);
 
-    // Pagination calculations
+    // Pagination
     const totalPages = Math.ceil(filteredProducts.length / itemsPerPage) || 1;
     const paginatedProducts = useMemo(() => {
         const start = (currentPage - 1) * itemsPerPage;
@@ -151,26 +145,32 @@ export default function AllProductsView({
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                     {/* Left Sidebar Filter Column */}
                     <aside className="lg:col-span-3 space-y-8 bg-[#0f1112]/60 p-6 rounded-2xl border border-white/[0.06] backdrop-blur-md">
-                        {/* 1. THƯƠNG HIỆU */}
+                        {/* 1. THƯƠNG HIỆU ĐỘNG TỪ BACKEND */}
                         <div>
                             <h3 className="text-xs font-mono font-bold tracking-widest text-neutral-400 uppercase mb-3">
                                 THƯƠNG HIỆU
                             </h3>
                             <div className="space-y-1.5 flex flex-col items-start">
-                                {[
-                                    { label: "Tất cả thương hiệu", value: "All" },
-                                    { label: "ASUS ROG", value: "ASUS ROG" },
-                                    { label: "Apple", value: "Apple" },
-                                    { label: "Dell", value: "Dell" },
-                                    { label: "Lenovo", value: "Lenovo" },
-                                    { label: "MSI", value: "MSI" },
-                                ].map((item) => {
-                                    const isActive = selectedBrand === item.value;
+                                <button
+                                    onClick={() => {
+                                        setBrandFilter(null);
+                                        setCurrentPage(1);
+                                    }}
+                                    className={`text-xs font-bold transition-all text-left ${
+                                        filters.brandId === null
+                                            ? "bg-[#00D492] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00D492]/20"
+                                            : "text-neutral-400 hover:text-white py-1.5 px-4"
+                                    }`}
+                                >
+                                    Tất cả thương hiệu
+                                </button>
+                                {brands.map((b) => {
+                                    const isActive = filters.brandId === b.id;
                                     return (
                                         <button
-                                            key={item.value}
+                                            key={b.id}
                                             onClick={() => {
-                                                setSelectedBrand(item.value);
+                                                setBrandFilter(b.id);
                                                 setCurrentPage(1);
                                             }}
                                             className={`text-xs font-bold transition-all text-left ${
@@ -179,33 +179,39 @@ export default function AllProductsView({
                                                     : "text-neutral-400 hover:text-white py-1.5 px-4"
                                             }`}
                                         >
-                                            {item.label}
+                                            {b.name}
                                         </button>
                                     );
                                 })}
                             </div>
                         </div>
 
-                        {/* 2. DÒNG MÁY */}
+                        {/* 2. DÒNG MÁY / DANH MỤC ĐỘNG TỪ BACKEND */}
                         <div className="pt-4 border-t border-white/[0.06]">
                             <h3 className="text-xs font-mono font-bold tracking-widest text-neutral-400 uppercase mb-3">
                                 DÒNG MÁY
                             </h3>
                             <div className="space-y-1.5 flex flex-col items-start">
-                                {[
-                                    { label: "Tất cả dòng máy", value: "All" },
-                                    { label: "Gaming", value: "Gaming" },
-                                    { label: "Ultrabook", value: "Ultrabook" },
-                                    { label: "MacBook", value: "MacBook" },
-                                    { label: "Workstation", value: "Workstation" },
-                                    { label: "Doanh Nhân", value: "Doanh Nhân" },
-                                ].map((item) => {
-                                    const isActive = selectedCategory === item.value;
+                                <button
+                                    onClick={() => {
+                                        setCategoryFilter(null);
+                                        setCurrentPage(1);
+                                    }}
+                                    className={`text-xs font-bold transition-all text-left ${
+                                        filters.categoryId === null
+                                            ? "bg-[#00D492] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00D492]/20"
+                                            : "text-neutral-400 hover:text-white py-1.5 px-4"
+                                    }`}
+                                >
+                                    Tất cả dòng máy
+                                </button>
+                                {categories.map((c) => {
+                                    const isActive = filters.categoryId === c.id;
                                     return (
                                         <button
-                                            key={item.value}
+                                            key={c.id}
                                             onClick={() => {
-                                                setSelectedCategory(item.value);
+                                                setCategoryFilter(c.id);
                                                 setCurrentPage(1);
                                             }}
                                             className={`text-xs font-bold transition-all text-left ${
@@ -214,7 +220,7 @@ export default function AllProductsView({
                                                     : "text-neutral-400 hover:text-white py-1.5 px-4"
                                             }`}
                                         >
-                                            {item.label}
+                                            {c.name}
                                         </button>
                                     );
                                 })}
@@ -323,20 +329,26 @@ export default function AllProductsView({
 
                     {/* Right Products Grid Column */}
                     <main className="lg:col-span-9 space-y-8">
-                        {paginatedProducts.length > 0 ? (
+                        {isLoading ? (
+                            <div className="text-center py-20 bg-[#0f1112]/40 rounded-2xl border border-white/[0.06]">
+                                <div className="inline-block w-8 h-8 border-2 border-[#00D492] border-t-transparent rounded-full animate-spin mb-3"></div>
+                                <p className="text-neutral-400 text-xs font-mono">Đang tải sản phẩm từ Database...</p>
+                            </div>
+                        ) : paginatedProducts.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                 {paginatedProducts.map((laptop) => (
                                     <ProductCard
                                         key={laptop.id}
                                         laptop={laptop}
-                                        isWishlisted={wishlist.includes(laptop.id)}
-                                        onToggleWishlist={toggleWishlist}
+                                        isWishlisted={wishlistProductIds.includes(laptop.id)}
+                                        onToggleWishlist={(id) => storeToggleWishlist(id)}
                                         onSelectProduct={(p) => {
                                             setSelectedProduct(p);
                                             setCurrentView("product-detail");
                                         }}
                                         onAddToCart={(p) => {
-                                            addToCartCustom(p, "32GB", "1TB SSD", "Space Black", "#1D1D1F", 1);
+                                            const defaultVariantId = p.id;
+                                            addToCart({ productId: defaultVariantId, quantity: 1 });
                                         }}
                                     />
                                 ))}
@@ -348,8 +360,8 @@ export default function AllProductsView({
                                 </p>
                                 <button
                                     onClick={() => {
-                                        setSelectedBrand("All");
-                                        setSelectedCategory("All");
+                                        setBrandFilter(null);
+                                        setCategoryFilter(null);
                                         setSelectedRam("All");
                                         setSelectedRom("All");
                                         setMaxPrice(280000000);

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.akira.ladux.AbstractIntegrationTest;
 import org.akira.ladux.model.Product;
 import org.junit.jupiter.api.Test;
+import org.akira.ladux.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 class SeedDataPersistenceTest extends AbstractIntegrationTest {
 
+    @Autowired ProductService productService;
     @Autowired RoleRepository roleRepository;
     @Autowired BrandRepository brandRepository;
     @Autowired CategoryRepository categoryRepository;

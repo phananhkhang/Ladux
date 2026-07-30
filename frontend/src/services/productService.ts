@@ -72,6 +72,7 @@ export interface ProductResponse {
   isActive: boolean;
   createdAt: string;
   images: ProductImageResponse[];
+  variants?: ProductVariantResponse[];
 }
 
 // --- Interfaces Request (Dành cho Create/Update) ---

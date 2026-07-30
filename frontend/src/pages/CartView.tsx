@@ -1,24 +1,26 @@
 import React from "react";
 import { ShoppingBag, Trash2, ChevronRight, ShieldCheck, Truck } from "lucide-react";
-import { CartItem, CouponItem, LaptopProduct, formatVND, ViewType } from "../types";
+import { CartItem, CouponItem, LaptopProduct, formatVND, ViewType, mapProductResponseToLaptopProduct } from "../types";
+import { useCartStore } from "../stores";
 
 export interface CartViewProps {
-    cartItems: CartItem[];
-    updateCartQuantity: (index: number, quantity: number) => void;
-    appliedCoupon: CouponItem | null;
+    cartItems?: CartItem[];
+    updateCartQuantity?: (index: number, quantity: number) => void;
+    appliedCoupon?: CouponItem | null;
     setCurrentView: (view: ViewType) => void;
     setSelectedProduct: (product: LaptopProduct) => void;
 }
 
 export default function CartView({
-    cartItems,
-    updateCartQuantity,
     appliedCoupon,
     setCurrentView,
     setSelectedProduct,
 }: CartViewProps) {
-    const totalCount = cartItems.reduce((acc, i) => acc + i.quantity, 0);
-    const subTotal = cartItems.reduce((acc, i) => acc + i.price * i.quantity, 0);
+    const { cart, updateQuantity, removeItem, isLoading } = useCartStore();
+
+    const cartItemsList = cart?.items || [];
+    const totalCount = cartItemsList.reduce((acc, i) => acc + i.quantity, 0);
+    const subTotal = cart?.totalPrice || 0;
     const discountAmount = appliedCoupon?.discountAmount || 0;
     const finalAmount = Math.max(0, subTotal - discountAmount);
 
@@ -41,7 +43,12 @@ export default function CartView({
                 </button>
             </div>
 
-            {cartItems.length === 0 ? (
+            {isLoading ? (
+                <div className="py-20 text-center space-y-4">
+                    <div className="inline-block w-8 h-8 border-2 border-[#00D492] border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-neutral-400 text-xs font-mono">Đang cập nhật giỏ hàng từ máy chủ...</p>
+                </div>
+            ) : cartItemsList.length === 0 ? (
                 /* Empty Cart State */
                 <div className="py-20 text-center space-y-6 max-w-md mx-auto">
                     <div className="w-24 h-24 rounded-full bg-neutral-950 border border-neutral-800 flex items-center justify-center mx-auto text-neutral-600">
@@ -64,85 +71,89 @@ export default function CartView({
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                     {/* Item List */}
                     <div className="lg:col-span-8 space-y-4">
-                        {cartItems.map((item, idx) => (
-                            <div
-                                key={`${item.product.id}-${item.selectedRam}-${item.selectedStorage}-${item.selectedColorName}-${idx}`}
-                                className="p-5 bg-neutral-950 rounded-2xl border border-neutral-900 flex flex-col sm:flex-row items-center justify-between gap-6 transition hover:border-neutral-800"
-                            >
-                                <div className="flex items-center gap-4 w-full sm:w-auto">
-                                    <div className="w-24 h-24 bg-neutral-900 rounded-xl overflow-hidden border border-neutral-800 shrink-0 p-2 flex items-center justify-center">
-                                        <img
-                                            src={item.product.images[0]}
-                                            alt={item.product.name}
-                                            className="w-full h-full object-contain"
-                                        />
+                        {cartItemsList.map((item) => {
+                            if (!item.product) return null;
+                            const mappedProduct = mapProductResponseToLaptopProduct(item.product);
+                            const itemPrice = mappedProduct.discountPrice || mappedProduct.price;
+
+                            return (
+                                <div
+                                    key={item.id}
+                                    className="p-5 bg-neutral-950 rounded-2xl border border-neutral-900 flex flex-col sm:flex-row items-center justify-between gap-6 transition hover:border-neutral-800"
+                                >
+                                    <div className="flex items-center gap-4 w-full sm:w-auto">
+                                        <div className="w-24 h-24 bg-neutral-900 rounded-xl overflow-hidden border border-neutral-800 shrink-0 p-2 flex items-center justify-center">
+                                            <img
+                                                src={mappedProduct.images[0]}
+                                                alt={mappedProduct.name}
+                                                className="w-full h-full object-contain"
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[10px] font-mono text-[#00D492] font-bold uppercase">
+                                                {mappedProduct.brand}
+                                            </span>
+                                            <h3
+                                                onClick={() => {
+                                                    setSelectedProduct(mappedProduct);
+                                                    setCurrentView("product-detail");
+                                                }}
+                                                className="font-bold text-sm text-white line-clamp-1 hover:underline cursor-pointer"
+                                            >
+                                                {mappedProduct.name}
+                                            </h3>
+                                            <p className="text-xs font-mono text-neutral-400 flex items-center gap-2">
+                                                <span>
+                                                    {mappedProduct.ram || "Standard"} / {mappedProduct.rom || "SSD"}
+                                                </span>
+                                            </p>
+                                            <p className="text-sm font-mono font-bold text-[#00D492] pt-1">
+                                                {formatVND(itemPrice)}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="space-y-1">
-                                        <span className="text-[10px] font-mono text-[#00D492] font-bold uppercase">
-                                            {item.product.brand}
-                                        </span>
-                                        <h3
-                                            onClick={() => {
-                                                setSelectedProduct(item.product);
-                                                setCurrentView("product-detail");
-                                            }}
-                                            className="font-bold text-sm text-white line-clamp-1 hover:underline cursor-pointer"
+
+                                    <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 border-neutral-900 pt-4 sm:pt-0">
+                                        {/* Quantity Stepper */}
+                                        <div className="flex items-center border border-neutral-800 bg-neutral-900 rounded-xl p-1">
+                                            <button
+                                                onClick={() => {
+                                                    if (item.quantity > 1) {
+                                                        updateQuantity(item.product!.id, item.quantity - 1);
+                                                    } else {
+                                                        removeItem(item.product!.id);
+                                                    }
+                                                }}
+                                                className="w-8 h-8 flex items-center justify-center text-neutral-400 hover:text-white font-bold transition"
+                                            >
+                                                -
+                                            </button>
+                                            <span className="w-10 text-center font-mono font-bold text-xs text-white">
+                                                {item.quantity}
+                                            </span>
+                                            <button
+                                                onClick={() => updateQuantity(item.product!.id, item.quantity + 1)}
+                                                className="w-8 h-8 flex items-center justify-center text-neutral-400 hover:text-white font-bold transition"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+
+                                        <div className="text-right font-mono text-sm font-bold text-white min-w-[100px]">
+                                            {formatVND(itemPrice * item.quantity)}
+                                        </div>
+
+                                        <button
+                                            onClick={() => removeItem(item.product!.id)}
+                                            aria-label="Xóa sản phẩm"
+                                            className="p-2.5 text-neutral-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition"
                                         >
-                                            {item.product.name}
-                                        </h3>
-                                        <p className="text-xs font-mono text-neutral-400 flex items-center gap-2">
-                                            <span>
-                                                {item.selectedRam} / {item.selectedStorage}
-                                            </span>
-                                            <span>•</span>
-                                            <span className="flex items-center gap-1">
-                                                <span
-                                                    className="w-2.5 h-2.5 rounded-full border border-white/20"
-                                                    style={{ backgroundColor: item.selectedColorHex }}
-                                                />
-                                                {item.selectedColorName}
-                                            </span>
-                                        </p>
-                                        <p className="text-sm font-mono font-bold text-[#00D492] pt-1">
-                                            {formatVND(item.price)}
-                                        </p>
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
                                     </div>
                                 </div>
-
-                                <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 border-neutral-900 pt-4 sm:pt-0">
-                                    {/* CartQuantityRequest Stepper */}
-                                    <div className="flex items-center border border-neutral-800 bg-neutral-900 rounded-xl p-1">
-                                        <button
-                                            onClick={() => updateCartQuantity(idx, item.quantity - 1)}
-                                            className="w-8 h-8 flex items-center justify-center text-neutral-400 hover:text-white font-bold transition"
-                                        >
-                                            -
-                                        </button>
-                                        <span className="w-10 text-center font-mono font-bold text-xs text-white">
-                                            {item.quantity}
-                                        </span>
-                                        <button
-                                            onClick={() => updateCartQuantity(idx, item.quantity + 1)}
-                                            className="w-8 h-8 flex items-center justify-center text-neutral-400 hover:text-white font-bold transition"
-                                        >
-                                            +
-                                        </button>
-                                    </div>
-
-                                    <div className="text-right font-mono text-sm font-bold text-white min-w-[100px]">
-                                        {formatVND(item.price * item.quantity)}
-                                    </div>
-
-                                    <button
-                                        onClick={() => updateCartQuantity(idx, 0)}
-                                        aria-label="Xóa sản phẩm"
-                                        className="p-2.5 text-neutral-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     {/* Cart Summary */}

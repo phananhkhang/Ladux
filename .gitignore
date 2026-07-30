@@ -29,3 +29,5 @@ backend/.mvn/
 .vscode/
 mcps
 .kiro
+
+repomix-output.xml
