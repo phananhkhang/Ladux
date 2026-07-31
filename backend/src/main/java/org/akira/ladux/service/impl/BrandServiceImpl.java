@@ -57,6 +57,7 @@ public class BrandServiceImpl implements BrandService {
         Brand brand = Brand.builder()
                 .name(request.name())
                 .slug(slug)
+                .logoUrl(request.logoUrl())
                 .build();
 
         Brand savedBrand = repo.save(brand);
@@ -72,6 +73,7 @@ public class BrandServiceImpl implements BrandService {
         if (b == null) return null;
         b.setName(brand.name());
         b.setSlug(SlugUtils.toSlug(brand.name()));
+        b.setLogoUrl(brand.logoUrl());
         return BrandResponse.fromEntity(b);
     }
 
