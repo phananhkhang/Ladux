@@ -1,6 +1,6 @@
 package org.akira.ladux.repository;
 
-import org.akira.ladux.dto.response.SupplierResponse;
+import org.akira.ladux.dto.response.admin.SupplierResponse;
 import org.akira.ladux.model.Supplier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +14,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, Integer> {
 
     boolean existsByNameIgnoreCase(String name);
 
-    @Query("SELECT new org.akira.ladux.dto.response.SupplierResponse(" +
+    @Query("SELECT new org.akira.ladux.dto.response.admin.SupplierResponse(" +
            "s.id, s.name, s.address, s.phone, s.email, s.isActive, s.createdAt, s.updatedAt) " +
            "FROM Supplier s WHERE " +
            "(:name IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', :name, '%'))) OR " +

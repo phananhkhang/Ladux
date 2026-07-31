@@ -1,13 +1,13 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.request.RegisterRequest;
-import org.akira.ladux.dto.request.UserAdminUpdateRequest;
-import org.akira.ladux.dto.request.UserProfileUpdateRequest;
-import org.akira.ladux.dto.response.UserResponse;
+import org.akira.ladux.dto.request.user.RegisterRequest;
+import org.akira.ladux.dto.request.admin.UserAdminUpdateRequest;
+import org.akira.ladux.dto.response.admin.UserResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.akira.ladux.dto.request.user.UserProfileUpdateRequest;
 public interface UserService {
     Page<UserResponse> getAllUsers(Pageable pageable);
 

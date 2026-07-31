@@ -5,10 +5,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.akira.ladux.dto.request.RegisterRequest;
-import org.akira.ladux.dto.request.UserAdminUpdateRequest;
-import org.akira.ladux.dto.request.UserProfileUpdateRequest;
-import org.akira.ladux.dto.response.UserResponse;
+import org.akira.ladux.dto.request.user.RegisterRequest;
+import org.akira.ladux.dto.request.admin.UserAdminUpdateRequest;
+import org.akira.ladux.dto.response.admin.UserResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Cart;
@@ -35,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 
+import org.akira.ladux.dto.request.user.UserProfileUpdateRequest;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     private final RefreshTokenService refreshTokenService;
     private final FileStorageService fileStorage;
 
-    @Value("${app.upload.avatar-dir:avatars}")
+    @Value("${app.upload.avatar-dir:avatar}")
     private String avatarUploadDir;
 
     @Override

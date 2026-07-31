@@ -1,7 +1,7 @@
 package org.akira.ladux.controller.admin;
 
-import org.akira.ladux.dto.request.CustomerUpdateRequest;
-import org.akira.ladux.dto.response.CustomerResponse;
+import org.akira.ladux.dto.request.admin.AdminCustomerUpdateRequest;
+import org.akira.ladux.dto.response.admin.CustomerResponse;
 import org.akira.ladux.model.enums.CustomerLevel;
 import org.akira.ladux.service.CustomerService;
 import org.springframework.data.domain.Page;
@@ -53,7 +53,7 @@ public class AdminCustomerController {
 
     @PutMapping("/{customerId}")
     public ResponseEntity<CustomerResponse> updateCustomer(
-            @PathVariable int customerId, @Valid @RequestBody CustomerUpdateRequest request) {
+            @PathVariable int customerId, @Valid @RequestBody AdminCustomerUpdateRequest request) {
         return ResponseEntity.ok(service.updateCustomer(customerId, request));
     }
 }

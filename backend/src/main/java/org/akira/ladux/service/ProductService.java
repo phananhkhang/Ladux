@@ -1,8 +1,8 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.request.ProductRequest;
-import org.akira.ladux.dto.response.ProductResponse;
-import org.akira.ladux.dto.response.ProductVariantResponse;
+import org.akira.ladux.dto.request.admin.ProductRequest;
+import org.akira.ladux.dto.response.common.ProductResponse;
+import org.akira.ladux.dto.response.common.ProductVariantResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

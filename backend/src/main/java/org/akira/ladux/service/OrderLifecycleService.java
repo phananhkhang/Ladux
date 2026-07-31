@@ -1,6 +1,6 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.response.OrderResponse;
+import org.akira.ladux.dto.response.user.OrderResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.*;

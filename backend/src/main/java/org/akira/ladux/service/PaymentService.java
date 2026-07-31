@@ -1,8 +1,8 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.request.PaymentCallbackRequest;
-import org.akira.ladux.dto.request.PaymentCreateRequest;
-import org.akira.ladux.dto.response.PaymentCallbackResponse;
+import org.akira.ladux.dto.request.system.PaymentCallbackRequest;
+import org.akira.ladux.dto.request.user.PaymentCreateRequest;
+import org.akira.ladux.dto.response.user.PaymentCallbackResponse;
 import org.akira.ladux.model.enums.PaymentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

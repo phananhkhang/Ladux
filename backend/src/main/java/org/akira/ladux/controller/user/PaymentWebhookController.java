@@ -1,7 +1,7 @@
 package org.akira.ladux.controller.user;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.PaymentWebhookResult;
+import org.akira.ladux.dto.internal.PaymentWebhookResult;
 import org.akira.ladux.service.PaymentWebhookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

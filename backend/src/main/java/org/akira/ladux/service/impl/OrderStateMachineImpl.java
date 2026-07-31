@@ -2,8 +2,8 @@ package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.akira.ladux.dto.request.OrderStatusUpdateRequest;
-import org.akira.ladux.dto.response.OrderResponse;
+import org.akira.ladux.dto.request.admin.OrderStatusUpdateRequest;
+import org.akira.ladux.dto.response.user.OrderResponse;
 import org.akira.ladux.event.OrderDeliveredEvent;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;

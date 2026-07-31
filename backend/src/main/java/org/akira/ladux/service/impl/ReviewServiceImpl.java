@@ -1,9 +1,9 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.ReviewCreateRequest;
-import org.akira.ladux.dto.request.ReviewUpdateRequest;
-import org.akira.ladux.dto.response.ReviewResponse;
+import org.akira.ladux.dto.request.user.ReviewCreateRequest;
+import org.akira.ladux.dto.request.user.ReviewUpdateRequest;
+import org.akira.ladux.dto.response.common.ReviewResponse;
 import org.akira.ladux.model.Product;
 import org.akira.ladux.model.Review;
 import org.akira.ladux.model.User;

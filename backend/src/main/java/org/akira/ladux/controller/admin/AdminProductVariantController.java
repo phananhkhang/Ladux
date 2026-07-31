@@ -1,8 +1,8 @@
 package org.akira.ladux.controller.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.ProductVariantRequest;
-import org.akira.ladux.dto.response.ProductVariantResponse;
+import org.akira.ladux.dto.request.admin.ProductVariantRequest;
+import org.akira.ladux.dto.response.common.ProductVariantResponse;
 import org.akira.ladux.service.ProductVariantService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -1,8 +1,8 @@
 package org.akira.ladux.controller.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.NotificationRequest;
-import org.akira.ladux.dto.response.NotificationResponse;
+import org.akira.ladux.dto.request.admin.NotificationRequest;
+import org.akira.ladux.dto.response.user.NotificationResponse;
 import org.akira.ladux.service.NotificationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

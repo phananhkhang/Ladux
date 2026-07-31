@@ -1,8 +1,8 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.NotificationRequest;
-import org.akira.ladux.dto.response.NotificationResponse;
+import org.akira.ladux.dto.request.admin.NotificationRequest;
+import org.akira.ladux.dto.response.user.NotificationResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Notification;
 import org.akira.ladux.model.User;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { wishlistService, WishlistResponse } from '@/services';
+import { useAuthStore } from './useAuthStore';
 
 interface WishlistState {
   wishlistItems: WishlistResponse[];
@@ -40,6 +41,11 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
   },
 
   toggleWishlist: async (productId) => {
+    if (!useAuthStore.getState().isLoggedIn) {
+      const message = 'Vui lòng đăng nhập để sử dụng tính năng Yêu thích!';
+      set({ error: message });
+      throw new Error(message);
+    }
     const isLiked = get().isInWishlist(productId);
     set({ error: null });
     try {

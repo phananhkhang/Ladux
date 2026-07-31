@@ -1,5 +1,5 @@
 package org.akira.ladux.service;
-import org.akira.ladux.dto.response.CartResponse;
+import org.akira.ladux.dto.response.user.CartResponse;
 
 public interface CartService {
     CartResponse getCartByUserId(int userId);

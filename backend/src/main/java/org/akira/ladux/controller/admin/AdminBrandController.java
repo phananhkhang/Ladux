@@ -3,8 +3,8 @@ package org.akira.ladux.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.BrandRequest;
-import org.akira.ladux.dto.response.BrandResponse;
+import org.akira.ladux.dto.request.admin.BrandRequest;
+import org.akira.ladux.dto.response.common.BrandResponse;
 import org.akira.ladux.service.BrandService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

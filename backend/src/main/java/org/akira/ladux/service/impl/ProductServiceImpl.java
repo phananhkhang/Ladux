@@ -1,10 +1,10 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.ProductRequest;
-import org.akira.ladux.dto.request.ProductVariantRequest;
-import org.akira.ladux.dto.response.ProductResponse;
-import org.akira.ladux.dto.response.ProductVariantResponse;
+import org.akira.ladux.dto.request.admin.ProductRequest;
+import org.akira.ladux.dto.request.admin.ProductVariantRequest;
+import org.akira.ladux.dto.response.common.ProductResponse;
+import org.akira.ladux.dto.response.common.ProductVariantResponse;
 import org.akira.ladux.model.*;
 import org.akira.ladux.repository.*;
 import org.akira.ladux.service.ProductService;
@@ -19,8 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

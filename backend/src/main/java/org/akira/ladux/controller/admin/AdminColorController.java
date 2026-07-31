@@ -1,19 +1,14 @@
 package org.akira.ladux.controller.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.ColorRequest;
-import org.akira.ladux.dto.response.ColorResponse;
+import org.akira.ladux.dto.request.admin.ColorRequest;
+import org.akira.ladux.dto.response.common.ColorResponse;
 import org.akira.ladux.model.Color;
 import org.akira.ladux.service.ColorService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.function.EntityResponse;
-import org.springframework.web.servlet.function.ServerResponse;
-
-import javax.swing.text.html.parser.Entity;
 
 
 @RestController

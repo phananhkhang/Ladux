@@ -1,16 +1,13 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.LineDraft;
-import org.akira.ladux.dto.request.OrderLineRequest;
+import org.akira.ladux.dto.internal.LineDraft;
+import org.akira.ladux.dto.request.common.OrderLineRequest;
 import org.akira.ladux.exception.ResourceNotFoundException;
-import org.akira.ladux.model.Product;
 import org.akira.ladux.model.ProductVariant;
-import org.akira.ladux.repository.ProductRepository;
 import org.akira.ladux.repository.ProductVariantRepository;
 import org.akira.ladux.service.InventoryService;
 import org.akira.ladux.service.PricingService;
-import org.akira.ladux.service.ProductVariantService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

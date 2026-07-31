@@ -41,6 +41,7 @@ export interface CheckoutViewProps {
 }
 
 export default function CheckoutView({
+    setSelectedAddressOrderId,
     setCurrentView,
     showToast,
 }: CheckoutViewProps) {
@@ -61,6 +62,7 @@ export default function CheckoutView({
         receiverName: "",
         phone: "",
         street: "",
+        ward: "",
         district: "",
         city: "Hà Nội",
         isDefault: false,
@@ -127,6 +129,8 @@ export default function CheckoutView({
             return;
         }
 
+        const cleanPhone = (selectedAddr.phone || "").trim().replace(/[\s\-\.]/g, "");
+
         setIsSubmitting(true);
         try {
             // Bắn API Tạo Đơn Hàng Thật xuống Backend
@@ -134,11 +138,12 @@ export default function CheckoutView({
                 couponCode: appliedCouponItem?.code,
                 paymentProvider: paymentProvider,
                 shippingAddress: {
-                    fullName: selectedAddr.receiverName || (selectedAddr as any).fullName || "",
-                    phone: selectedAddr.phone || "",
-                    addressLine: selectedAddr.street || (selectedAddr as any).addressLine || "",
-                    city: selectedAddr.city || "",
-                    district: selectedAddr.district || "",
+                    receiverName: (selectedAddr.receiverName || (selectedAddr as any).fullName || "").trim(),
+                    phone: cleanPhone,
+                    street: (selectedAddr.street || (selectedAddr as any).addressLine || (selectedAddr as any).addressDetail || "").trim(),
+                    ward: (selectedAddr.ward || "").trim() || "Chưa chọn Phường/Xã",
+                    district: (selectedAddr.district || "").trim() || "Chưa chọn Quận/Huyện",
+                    city: (selectedAddr.city || "").trim() || "Hà Nội",
                 },
             });
 
@@ -160,6 +165,9 @@ export default function CheckoutView({
             }
 
             // Xử lý luồng COD
+            if (setSelectedAddressOrderId) {
+                setSelectedAddressOrderId(orderRes.id.toString());
+            }
             await clearCart();
             await fetchOrders();
             setCurrentView("orders");
@@ -241,6 +249,7 @@ export default function CheckoutView({
                                             </div>
                                             <p className="text-neutral-300">
                                                 {addr.street || (addr as any).addressLine}
+                                                {addr.ward ? `, ${addr.ward}` : ""}
                                                 {addr.district ? `, ${addr.district}` : ""}
                                                 {addr.city ? `, ${addr.city}` : ""}
                                             </p>
@@ -298,7 +307,17 @@ export default function CheckoutView({
                                             placeholder="Số 88 Tôn Thất Thuyết"
                                         />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="grid grid-cols-3 gap-2">
+                                        <div>
+                                            <label className="block text-neutral-400 mb-1">Phường / Xã</label>
+                                            <input
+                                                type="text"
+                                                value={newAddress.ward}
+                                                onChange={(e) => setNewAddress({ ...newAddress, ward: e.target.value })}
+                                                className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00D492]"
+                                                placeholder="Mỹ Đình 2"
+                                            />
+                                        </div>
                                         <div>
                                             <label className="block text-neutral-400 mb-1">Quận / Huyện</label>
                                             <input

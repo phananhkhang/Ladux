@@ -395,6 +395,7 @@ export default function App() {
                 <ProductDetailView
                     selectedProduct={selectedProduct}
                     setCurrentView={setCurrentView}
+                    toggleWishlist={toggleWishlist}
                     addToCartCustom={addToCartCustom}
                     handleAddReview={handleAddReview}
                     newRating={newRating}
@@ -415,6 +416,7 @@ export default function App() {
                 <CheckoutView
                     setCurrentView={setCurrentView}
                     showToast={showToast}
+                    setSelectedAddressOrderId={setSelectedAddressOrderId}
                 />
             )}
 

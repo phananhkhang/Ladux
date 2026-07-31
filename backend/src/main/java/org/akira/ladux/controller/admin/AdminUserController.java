@@ -1,7 +1,7 @@
 package org.akira.ladux.controller.admin;
 
-import org.akira.ladux.dto.request.UserAdminUpdateRequest;
-import org.akira.ladux.dto.response.UserResponse;
+import org.akira.ladux.dto.request.admin.UserAdminUpdateRequest;
+import org.akira.ladux.dto.response.admin.UserResponse;
 import org.akira.ladux.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

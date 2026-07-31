@@ -1,6 +1,6 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.CouponRedemptionResult;
+import org.akira.ladux.dto.internal.CouponRedemptionResult;
 
 import java.math.BigDecimal;
 

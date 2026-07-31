@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.UUID;
   
 import org.akira.ladux.AbstractIntegrationTest;
-import org.akira.ladux.dto.request.OrderRequest;
-import org.akira.ladux.dto.request.OrderStatusUpdateRequest;
-import org.akira.ladux.dto.request.PurchaseOrderCreateRequest;
-import org.akira.ladux.dto.request.PurchaseOrderItemRequest;
-import org.akira.ladux.dto.request.PurchaseOrderReceiveRequest;
-import org.akira.ladux.dto.request.ShippingAddressRequest;
-import org.akira.ladux.dto.request.StockMovementRequest;
-import org.akira.ladux.dto.response.PurchaseOrderResponse;
+import org.akira.ladux.dto.request.user.OrderRequest;
+import org.akira.ladux.dto.request.admin.OrderStatusUpdateRequest;
+import org.akira.ladux.dto.request.admin.PurchaseOrderCreateRequest;
+import org.akira.ladux.dto.request.admin.AdminPurchaseOrderItemRequest;
+import org.akira.ladux.dto.request.admin.AdminPurchaseOrderReceiveRequest;
+import org.akira.ladux.dto.request.user.ShippingAddressRequest;
+import org.akira.ladux.dto.request.admin.StockMovementRequest;
+import org.akira.ladux.dto.response.admin.PurchaseOrderResponse;
 import org.akira.ladux.model.Cart;
 import org.akira.ladux.model.CartItem;
 import org.akira.ladux.model.Order;
@@ -200,7 +200,7 @@ class StockMovementFlowTest extends AbstractIntegrationTest {
         PurchaseOrderResponse po = purchaseOrderService.createPurchaseOrder(
                 new PurchaseOrderCreateRequest(
                         SUPPLIER_ID, null, "Nhap bo sung",
-                        List.of(new PurchaseOrderItemRequest(
+                        List.of(new AdminPurchaseOrderItemRequest(
                                 productVariant.getId(), 10, new BigDecimal("300.00"), null))),
                 ADMIN_ID);
         em.flush();
@@ -209,8 +209,8 @@ class StockMovementFlowTest extends AbstractIntegrationTest {
         int itemId = po.items().get(0).id();
         PurchaseOrderResponse received = purchaseOrderService.receiveGoods(
                 po.id(),
-                new PurchaseOrderReceiveRequest(List.of(
-                        new PurchaseOrderReceiveRequest.ReceiveLine(itemId, 10))),
+                new AdminPurchaseOrderReceiveRequest(List.of(
+                        new AdminPurchaseOrderReceiveRequest.ReceiveLine(itemId, 10))),
                 ADMIN_ID);
         em.flush();
         em.clear();

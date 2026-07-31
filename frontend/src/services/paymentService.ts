@@ -1,7 +1,8 @@
 import apiClient from './apiClient';
+import { PaymentProvider } from '../types';
 
 export type PaymentStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'REFUNDED';
-export type PaymentProvider = 'VNPAY' | 'ZALOPAY' | 'MOMO' | 'COD';
+export type { PaymentProvider };
 
 export interface PaymentCallbackResponse {
   id: number;

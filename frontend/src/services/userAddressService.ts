@@ -6,6 +6,7 @@ export interface UserAddressResponse {
   receiverName: string;
   phone: string;
   street: string;
+  ward: string;
   district: string;
   city: string;
   isDefault: boolean;
@@ -15,6 +16,7 @@ export interface UserAddressRequest {
   receiverName: string;
   phone: string;
   street: string;
+  ward: string;
   district: string;
   city: string;
   isDefault: boolean;

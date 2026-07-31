@@ -16,7 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${app.upload.root:uploads}")
+    @Value("${app.upload.root:../uploads}")
     private String uploadRoot;
     // Chuẩn hóa URL: loại bỏ dấu / thừa ở cuối URL, ví dụ: /api/v1/products/ -> /api/v1/products
     // Nếu client gửi /api/v1/products/123/ -> /api/v1/products/123

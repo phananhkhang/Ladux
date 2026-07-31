@@ -1,7 +1,7 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.response.PaymentCallbackResponse;
+import org.akira.ladux.dto.response.user.PaymentCallbackResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Order;

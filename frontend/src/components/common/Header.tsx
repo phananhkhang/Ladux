@@ -1,7 +1,7 @@
 import React from "react";
 import { Search, Heart, ShoppingBag, Lock, User, ChevronRight, Phone } from "lucide-react";
 import laduxLogoImg from "../../assets/ladux-logo.png";
-import { ViewType } from "../../types";
+import { ViewType, getAvatarUrl } from "../../types";
 
 export interface HeaderProps {
     searchQuery: string;
@@ -147,7 +147,7 @@ export default function Header({
                         >
                             {userAvatar && (
                                 <img
-                                    src={userAvatar}
+                                    src={getAvatarUrl(userAvatar)}
                                     alt="Avatar"
                                     className="h-7 w-7 rounded-lg object-cover border border-[#00D492]"
                                 />

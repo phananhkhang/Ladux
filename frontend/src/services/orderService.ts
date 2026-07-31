@@ -5,22 +5,22 @@ import { PaymentProvider } from './paymentService';
 export type OrderStatus = 'PENDING' | 'PAID' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
 
 export interface ShippingAddressRequest {
-  fullName: string;
+  receiverName: string;
   phone: string;
-  addressLine: string;
+  street: string;
+  ward: string;
+  district: string;
   city: string;
-  district?: string;
-  ward?: string;
 }
 
 export interface ShippingAddressResponse {
   id?: number;
-  fullName: string;
+  receiverName: string;
   phone: string;
-  addressLine: string;
+  street: string;
+  ward: string;
+  district: string;
   city: string;
-  district?: string;
-  ward?: string;
 }
 
 export interface OrderRequest {
@@ -43,6 +43,7 @@ export interface OrderResponse {
   couponCode: number | null;
   subTotal: number;
   discountAmount: number;
+  shippingFee?: number;
   finalAmount: number;
   status: OrderStatus;
   shippingAddress: ShippingAddressResponse;

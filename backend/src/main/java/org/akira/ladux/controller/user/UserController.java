@@ -2,8 +2,7 @@ package org.akira.ladux.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.UserProfileUpdateRequest;
-import org.akira.ladux.dto.response.UserResponse;
+import org.akira.ladux.dto.response.admin.UserResponse;
 import org.akira.ladux.model.UserPrincipal;
 import org.akira.ladux.service.UserService;
 import org.springframework.http.MediaType;
@@ -12,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.akira.ladux.dto.request.user.UserProfileUpdateRequest;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor

@@ -1,8 +1,8 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.UserAddressRequest;
-import org.akira.ladux.dto.response.UserAddressResponse;
+import org.akira.ladux.dto.request.user.UserAddressRequest;
+import org.akira.ladux.dto.response.user.UserAddressResponse;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.UserAddress;
 import org.akira.ladux.repository.UserAddressRepository;
@@ -91,6 +91,7 @@ public class UserAddressServiceImpl implements UserAddressService {
                 .receiverName(request.receiverName())
                 .phone(request.phone())
                 .street(request.street())
+                .ward(request.ward())
                 .district(request.district())
                 .city(request.city())
                 .isDefault(request.isDefault() == null ? false : request.isDefault())
@@ -111,6 +112,7 @@ public class UserAddressServiceImpl implements UserAddressService {
         if (request.receiverName() != null) address.setReceiverName(request.receiverName());
         if (request.phone() != null) address.setPhone(request.phone());
         if (request.street() != null) address.setStreet(request.street());
+        if (request.ward() != null) address.setWard(request.ward());
         if (request.district() != null) address.setDistrict(request.district());
         if (request.city() != null) address.setCity(request.city());
 

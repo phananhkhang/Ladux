@@ -5,13 +5,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
-import org.akira.ladux.dto.CouponRedemptionResult;
-import org.akira.ladux.dto.LineDraft;
-import org.akira.ladux.dto.request.OrderLineRequest;
-import org.akira.ladux.dto.request.OrderRequest;
-import org.akira.ladux.dto.request.OrderStatusUpdateRequest;
-import org.akira.ladux.dto.response.OrderResponse;
-import org.akira.ladux.dto.response.PaymentCallbackResponse;
+import org.akira.ladux.dto.internal.CouponRedemptionResult;
+import org.akira.ladux.dto.internal.LineDraft;
+import org.akira.ladux.dto.request.common.OrderLineRequest;
+import org.akira.ladux.dto.request.user.OrderRequest;
+import org.akira.ladux.dto.request.admin.OrderStatusUpdateRequest;
+import org.akira.ladux.dto.response.user.OrderResponse;
+import org.akira.ladux.dto.response.user.PaymentCallbackResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.*;
@@ -92,7 +92,7 @@ public class OrderServiceImpl implements OrderService {
     public Page<OrderResponse> getOrdersByUserId(int userId, Pageable pageable) {
         // Trả về danh sách đơn hàng của đúng người dùng được yêu cầu.
         return repo.findByUserId(userId, pageable)
-                .map(OrderResponse::summaryFromEntity);
+                .map(OrderResponse::fromEntity);
     }
 
     @Override

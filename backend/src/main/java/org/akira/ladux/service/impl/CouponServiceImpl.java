@@ -2,10 +2,10 @@ package org.akira.ladux.service.impl;
 
 import java.math.BigDecimal;
 
-import org.akira.ladux.dto.request.CouponAdminRequest;
-import org.akira.ladux.dto.request.CouponApplyRequest;
-import org.akira.ladux.dto.response.CouponApplyResponse;
-import org.akira.ladux.dto.response.CouponResponse;
+import org.akira.ladux.dto.request.admin.CouponAdminRequest;
+import org.akira.ladux.dto.request.admin.CouponApplyRequest;
+import org.akira.ladux.dto.response.user.CouponApplyResponse;
+import org.akira.ladux.dto.response.common.CouponResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Coupon;

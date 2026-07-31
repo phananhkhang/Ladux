@@ -2,7 +2,7 @@ package org.akira.ladux.service.impl;
 
 import java.math.BigDecimal;
 
-import org.akira.ladux.dto.CouponRedemptionResult;
+import org.akira.ladux.dto.internal.CouponRedemptionResult;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Coupon;

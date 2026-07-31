@@ -25,7 +25,7 @@ export type OrderStatus =
     | "REFUNDED"
     | "CANCELLED";
 
-export type PaymentProvider = "VNPAY" | "MOMO" | "COD";
+export type PaymentProvider = "VNPAY" | "ZALOPAY" | "MOMO" | "COD";
 
 export interface VariantOption {
     ram: "16GB" | "32GB" | "64GB";
@@ -189,3 +189,14 @@ export const formatVND = (amount: number): string => {
         currency: "VND",
     }).format(amount);
 };
+
+export function getAvatarUrl(avatarPath?: string | null): string {
+    if (!avatarPath) {
+        return "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&fit=crop&auto=format";
+    }
+    if (avatarPath.startsWith("http") || avatarPath.startsWith("blob:")) {
+        return avatarPath;
+    }
+    const API_BASE = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1").replace("/api/v1", "");
+    return `${API_BASE}${avatarPath.startsWith("/") ? "" : "/"}${avatarPath}`;
+}

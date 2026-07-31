@@ -1,6 +1,6 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.request.ColorRequest;
+import org.akira.ladux.dto.request.admin.ColorRequest;
 import org.akira.ladux.model.Color;
 
 public interface ColorService {

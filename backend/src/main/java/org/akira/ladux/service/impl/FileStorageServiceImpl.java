@@ -26,7 +26,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     private final String uploadRoot;
 
-    public FileStorageServiceImpl(@Value("${app.upload.root:uploads}") String uploadRoot) {
+    public FileStorageServiceImpl(@Value("${app.upload.root:../uploads}") String uploadRoot) {
         this.uploadRoot = uploadRoot;
     }
 

@@ -13,7 +13,7 @@ import {
     Loader2,
     MapPin,
 } from "lucide-react";
-import { ShippingAddressRequest, OrderItemRecord, ViewType } from "../types";
+import { ShippingAddressRequest, OrderItemRecord, ViewType, getAvatarUrl } from "../types";
 import { useAddressStore, useAuthStore } from "../stores";
 
 export interface AccountViewProps {
@@ -53,7 +53,7 @@ export default function AccountView({
             fullName: a.receiverName,
             phone: a.phone,
             addressDetail: a.street,
-            ward: "",
+            ward: a.ward || "",
             district: a.district || "",
             city: a.city,
             isDefault: a.isDefault,
@@ -123,19 +123,27 @@ export default function AccountView({
     };
 
     const saveAddrForm = async () => {
-        if (!addrForm.fullName || !addrForm.phone || !addrForm.addressDetail) {
+        if (!addrForm.fullName.trim() || !addrForm.phone.trim() || !addrForm.addressDetail.trim()) {
             showToast("Vui lòng điền đầy đủ các thông tin bắt buộc!");
+            return;
+        }
+
+        const cleanPhone = addrForm.phone.trim().replace(/[\s\-\.]/g, "");
+        const phoneRegex = /^(0|\+84)[35789][0-9]{8}$/;
+        if (!phoneRegex.test(cleanPhone)) {
+            showToast("Số điện thoại không hợp lệ! Vui lòng nhập SĐT Việt Nam (VD: 0988123456).");
             return;
         }
 
         setAddrSaving(true);
         try {
             const reqData = {
-                receiverName: addrForm.fullName,
-                phone: addrForm.phone,
-                street: addrForm.addressDetail + (addrForm.ward ? `, ${addrForm.ward}` : ""),
-                district: addrForm.district || "N/A",
-                city: addrForm.city,
+                receiverName: addrForm.fullName.trim(),
+                phone: cleanPhone,
+                street: addrForm.addressDetail.trim(),
+                ward: addrForm.ward.trim() || "Chưa chọn Phường/Xã",
+                district: addrForm.district.trim() || "Chưa chọn Quận/Huyện",
+                city: addrForm.city.trim() || "Hà Nội",
                 isDefault: addrForm.isDefault,
             };
 
@@ -148,7 +156,8 @@ export default function AccountView({
             }
             setShowAddrFormModal(false);
         } catch (err: any) {
-            showToast(err?.message || "Lưu địa chỉ thất bại!");
+            const errorMsg = err?.response?.data?.message || err?.message || "Lưu địa chỉ thất bại!";
+            showToast(errorMsg);
         } finally {
             setAddrSaving(false);
         }
@@ -534,7 +543,7 @@ export default function AccountView({
                     <div className="mb-7 flex items-center gap-4 border-b border-white/10 pb-6">
                         <div className="relative group">
                             <img
-                                src={userAvatar}
+                                src={getAvatarUrl(userAvatar || authStore.user?.avatar)}
                                 alt="Avatar"
                                 className="h-16 w-16 rounded-full object-cover border-2 border-[#00D492] shadow-[0_0_15px_rgba(0,212,146,0.3)]"
                             />
@@ -549,12 +558,21 @@ export default function AccountView({
                                 type="file"
                                 accept="image/*"
                                 className="hidden"
-                                onChange={(e) => {
+                                onChange={async (e) => {
                                     const file = e.target.files?.[0];
                                     if (file) {
-                                        const url = URL.createObjectURL(file);
-                                        setUserAvatar(url);
-                                        showToast("Đã cập nhật ảnh đại diện thành công!");
+                                        const localPreview = URL.createObjectURL(file);
+                                        setUserAvatar(localPreview);
+                                        try {
+                                            await authStore.uploadAvatar(file);
+                                            if (authStore.user?.avatar) {
+                                                setUserAvatar(getAvatarUrl(authStore.user.avatar));
+                                            }
+                                            showToast("Đã cập nhật và lưu ảnh đại diện thành công!");
+                                        } catch (err: any) {
+                                            const errMsg = err?.response?.data?.message || err?.message || "Tải ảnh đại diện thất bại!";
+                                            showToast(errMsg);
+                                        }
                                     }
                                 }}
                             />
@@ -588,7 +606,7 @@ export default function AccountView({
                             className="w-full rounded-xl px-4 py-3 text-left text-neutral-400 transition hover:bg-white/[0.06] hover:text-white flex items-center justify-between"
                         >
                             <span>Địa chỉ giao hàng</span>
-                            <span className="font-mono text-xs text-[#00D492] font-bold">{savedAddresses.length}</span>
+                            <span className="font-mono text-xs text-[#00D492] font-bold">{addressesList.length}</span>
                         </button>
                         <button
                             onClick={() => setCurrentView("wishlist")}

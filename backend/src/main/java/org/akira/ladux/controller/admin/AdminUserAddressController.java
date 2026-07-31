@@ -1,7 +1,7 @@
 package org.akira.ladux.controller.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.response.UserAddressResponse;
+import org.akira.ladux.dto.response.user.UserAddressResponse;
 import org.akira.ladux.service.UserAddressService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

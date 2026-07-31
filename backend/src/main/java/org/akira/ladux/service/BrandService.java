@@ -1,7 +1,7 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.request.BrandRequest;
-import org.akira.ladux.dto.response.BrandResponse;
+import org.akira.ladux.dto.request.admin.BrandRequest;
+import org.akira.ladux.dto.response.common.BrandResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

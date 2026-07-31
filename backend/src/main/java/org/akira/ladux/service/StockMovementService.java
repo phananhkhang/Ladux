@@ -1,8 +1,7 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.request.StockMovementRequest;
-import org.akira.ladux.dto.response.StockMovementResponse;
-import org.akira.ladux.model.Product;
+import org.akira.ladux.dto.request.admin.StockMovementRequest;
+import org.akira.ladux.dto.response.admin.StockMovementResponse;
 import org.akira.ladux.model.ProductVariant;
 import org.akira.ladux.model.StockMovement;
 import org.akira.ladux.model.User;

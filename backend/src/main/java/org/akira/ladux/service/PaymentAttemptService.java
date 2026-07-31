@@ -1,6 +1,6 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.response.PaymentCallbackResponse;
+import org.akira.ladux.dto.response.user.PaymentCallbackResponse;
 import org.akira.ladux.model.Order;
 import org.akira.ladux.model.enums.PaymentProvider;
 

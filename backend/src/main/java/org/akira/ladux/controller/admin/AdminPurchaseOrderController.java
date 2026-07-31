@@ -1,9 +1,9 @@
 package org.akira.ladux.controller.admin;
 
-import org.akira.ladux.dto.request.PurchaseOrderCreateRequest;
-import org.akira.ladux.dto.request.PurchaseOrderReceiveRequest;
-import org.akira.ladux.dto.request.PurchaseOrderStatusUpdateRequest;
-import org.akira.ladux.dto.response.PurchaseOrderResponse;
+import org.akira.ladux.dto.request.admin.PurchaseOrderCreateRequest;
+import org.akira.ladux.dto.request.admin.AdminPurchaseOrderReceiveRequest;
+import org.akira.ladux.dto.request.admin.PurchaseOrderStatusUpdateRequest;
+import org.akira.ladux.dto.response.admin.PurchaseOrderResponse;
 import org.akira.ladux.model.UserPrincipal;
 import org.akira.ladux.model.enums.PurchaseOrderStatus;
 import org.akira.ladux.service.PurchaseOrderService;
@@ -71,7 +71,7 @@ public class AdminPurchaseOrderController {
     public ResponseEntity<PurchaseOrderResponse> receive(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable int id,
-            @Valid @RequestBody PurchaseOrderReceiveRequest request) {
+            @Valid @RequestBody AdminPurchaseOrderReceiveRequest request) {
         return ResponseEntity.ok(service.receiveGoods(id, request, principal.getId()));
     }
 }

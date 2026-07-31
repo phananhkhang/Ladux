@@ -25,6 +25,9 @@ public class Brand {
     @Column(nullable = false, unique = true, length = 120)
     private String slug;
 
+    @Column(name = "logo_url", length = 255, nullable = true)
+    private String logoUrl;
+
     @OneToMany(mappedBy = "brand")
     @ToString.Exclude
     @Builder.Default

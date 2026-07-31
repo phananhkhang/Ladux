@@ -1,9 +1,9 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.request.PurchaseOrderCreateRequest;
-import org.akira.ladux.dto.request.PurchaseOrderReceiveRequest;
-import org.akira.ladux.dto.request.PurchaseOrderStatusUpdateRequest;
-import org.akira.ladux.dto.response.PurchaseOrderResponse;
+import org.akira.ladux.dto.request.admin.AdminPurchaseOrderReceiveRequest;
+import org.akira.ladux.dto.request.admin.PurchaseOrderCreateRequest;
+import org.akira.ladux.dto.request.admin.PurchaseOrderStatusUpdateRequest;
+import org.akira.ladux.dto.response.admin.PurchaseOrderResponse;
 import org.akira.ladux.model.enums.PurchaseOrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,5 +23,5 @@ public interface PurchaseOrderService {
     PurchaseOrderResponse updateStatus(int id, PurchaseOrderStatusUpdateRequest request);
 
     /** Nhan hang (toan bo/tung phan): cong ton kho + ghi stock movement + cap nhat trang thai. */
-    PurchaseOrderResponse receiveGoods(int id, PurchaseOrderReceiveRequest request, Integer receivedByUserId);
+    PurchaseOrderResponse receiveGoods(int id, AdminPurchaseOrderReceiveRequest request, Integer receivedByUserId);
 }

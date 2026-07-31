@@ -1,7 +1,7 @@
 package org.akira.ladux.controller.admin;
 
-import org.akira.ladux.dto.request.SupplierRequest;
-import org.akira.ladux.dto.response.SupplierResponse;
+import org.akira.ladux.dto.request.admin.SupplierRequest;
+import org.akira.ladux.dto.response.admin.SupplierResponse;
 import org.akira.ladux.service.SupplierService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

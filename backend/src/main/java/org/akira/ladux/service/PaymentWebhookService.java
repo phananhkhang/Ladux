@@ -1,6 +1,6 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.PaymentWebhookResult;
+import org.akira.ladux.dto.internal.PaymentWebhookResult;
 
 import java.util.Map;
 

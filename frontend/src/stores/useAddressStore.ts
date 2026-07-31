@@ -106,6 +106,7 @@ export const useAddressStore = create<AddressState>((set, get) => ({
         receiverName: target.receiverName,
         phone: target.phone,
         street: target.street,
+        ward: target.ward || '',
         district: target.district,
         city: target.city,
         isDefault: true,

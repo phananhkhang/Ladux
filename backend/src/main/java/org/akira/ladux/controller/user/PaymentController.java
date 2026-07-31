@@ -2,8 +2,8 @@ package org.akira.ladux.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.PaymentCreateRequest;
-import org.akira.ladux.dto.response.PaymentCallbackResponse;
+import org.akira.ladux.dto.request.user.PaymentCreateRequest;
+import org.akira.ladux.dto.response.user.PaymentCallbackResponse;
 import org.akira.ladux.model.UserPrincipal;
 import org.akira.ladux.model.enums.PaymentStatus;
 import org.akira.ladux.service.PaymentService;

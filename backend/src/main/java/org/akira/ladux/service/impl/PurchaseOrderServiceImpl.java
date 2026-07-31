@@ -2,11 +2,11 @@ package org.akira.ladux.service.impl;
 
 import java.math.BigDecimal;
 
-import org.akira.ladux.dto.request.PurchaseOrderCreateRequest;
-import org.akira.ladux.dto.request.PurchaseOrderItemRequest;
-import org.akira.ladux.dto.request.PurchaseOrderReceiveRequest;
-import org.akira.ladux.dto.request.PurchaseOrderStatusUpdateRequest;
-import org.akira.ladux.dto.response.PurchaseOrderResponse;
+import org.akira.ladux.dto.request.admin.AdminPurchaseOrderReceiveRequest;
+import org.akira.ladux.dto.request.admin.AdminPurchaseOrderItemRequest;
+import org.akira.ladux.dto.request.admin.PurchaseOrderCreateRequest;
+import org.akira.ladux.dto.request.admin.PurchaseOrderStatusUpdateRequest;
+import org.akira.ladux.dto.response.admin.PurchaseOrderResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.*;
@@ -54,7 +54,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                 .build();
 
         BigDecimal total = BigDecimal.ZERO;
-        for (PurchaseOrderItemRequest line : request.items()) {
+        for (AdminPurchaseOrderItemRequest line : request.items()) {
             ProductVariant productVariant = productVariantRepository.findById(line.productId())
                     .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham id = " + line.productId()));
             PurchaseOrderItem item = PurchaseOrderItem.builder()
@@ -120,7 +120,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     @Override
     @Transactional
-    public PurchaseOrderResponse receiveGoods(int id, PurchaseOrderReceiveRequest request, Integer receivedByUserId) {
+    public PurchaseOrderResponse receiveGoods(int id, AdminPurchaseOrderReceiveRequest request, Integer receivedByUserId) {
         PurchaseOrder po = repo.findWithItemsByIdForUpdate(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay don mua hang id = " + id));
 
@@ -134,7 +134,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         User receivedBy = receivedByUserId == null ? null
                 : userRepository.findById(receivedByUserId).orElse(null);
 
-        for (PurchaseOrderReceiveRequest.ReceiveLine line : request.lines()) {
+        for (AdminPurchaseOrderReceiveRequest.ReceiveLine line : request.lines()) {
             if (line.receivedQuantity() == null || line.receivedQuantity() == 0) {
                 continue;
             }

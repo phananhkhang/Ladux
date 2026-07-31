@@ -2,8 +2,8 @@ package org.akira.ladux.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.CouponAdminRequest;
-import org.akira.ladux.dto.response.CouponResponse;
+import org.akira.ladux.dto.request.admin.CouponAdminRequest;
+import org.akira.ladux.dto.response.common.CouponResponse;
 import org.akira.ladux.service.CouponService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

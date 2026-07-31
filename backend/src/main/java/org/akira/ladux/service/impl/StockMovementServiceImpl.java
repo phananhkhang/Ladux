@@ -1,17 +1,15 @@
 package org.akira.ladux.service.impl;
 
-import org.akira.ladux.dto.request.StockMovementRequest;
-import org.akira.ladux.dto.response.StockMovementResponse;
+import org.akira.ladux.dto.request.admin.StockMovementRequest;
+import org.akira.ladux.dto.response.admin.StockMovementResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.InsufficientStockException;
 import org.akira.ladux.exception.ResourceNotFoundException;
-import org.akira.ladux.model.Product;
 import org.akira.ladux.model.ProductVariant;
 import org.akira.ladux.model.StockMovement;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.enums.StockMovementType;
 import org.akira.ladux.model.enums.StockReferenceType;
-import org.akira.ladux.repository.ProductRepository;
 import org.akira.ladux.repository.ProductVariantRepository;
 import org.akira.ladux.repository.StockMovementRepository;
 import org.akira.ladux.repository.UserRepository;

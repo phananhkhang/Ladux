@@ -2,9 +2,8 @@ package org.akira.ladux.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.OrderRequest;
-import org.akira.ladux.dto.request.OrderStatusUpdateRequest;
-import org.akira.ladux.dto.response.OrderResponse;
+import org.akira.ladux.dto.request.admin.OrderStatusUpdateRequest;
+import org.akira.ladux.dto.response.user.OrderResponse;
 import org.akira.ladux.model.enums.OrderStatus;
 import org.akira.ladux.service.OrderService;
 import org.springframework.data.domain.Page;

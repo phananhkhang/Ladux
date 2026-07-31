@@ -1,6 +1,6 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.response.ProductVariantResponse;
+import org.akira.ladux.dto.response.common.ProductVariantResponse;
 import org.akira.ladux.model.Color;
 
 import java.math.BigDecimal;

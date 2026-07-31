@@ -1,7 +1,7 @@
 package org.akira.ladux.controller.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.response.OrderItemResponse;
+import org.akira.ladux.dto.response.user.OrderItemResponse;
 import org.akira.ladux.service.OrderItemService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

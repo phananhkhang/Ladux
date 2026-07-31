@@ -1,6 +1,6 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.response.ProductImageResponse;
+import org.akira.ladux.dto.response.common.ProductImageResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.akira.ladux.dto.PaymentWebhookResult;
+import org.akira.ladux.dto.internal.PaymentWebhookResult;
 import org.akira.ladux.model.Order;
 import org.akira.ladux.model.Payment;
 import org.akira.ladux.model.enums.PaymentStatus;

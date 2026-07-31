@@ -25,6 +25,7 @@ export interface AllProductsViewProps {
 }
 
 export default function AllProductsView({
+    toggleWishlist,
     setSelectedProduct,
     setCurrentView,
 }: AllProductsViewProps) {
@@ -341,7 +342,7 @@ export default function AllProductsView({
                                         key={laptop.id}
                                         laptop={laptop}
                                         isWishlisted={wishlistProductIds.includes(laptop.id)}
-                                        onToggleWishlist={(id) => storeToggleWishlist(id)}
+                                        onToggleWishlist={(id) => (toggleWishlist ? toggleWishlist(id) : storeToggleWishlist(id))}
                                         onSelectProduct={(p) => {
                                             setSelectedProduct(p);
                                             setCurrentView("product-detail");

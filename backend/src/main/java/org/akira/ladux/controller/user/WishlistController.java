@@ -2,8 +2,8 @@ package org.akira.ladux.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.WishlistRequest;
-import org.akira.ladux.dto.response.WishlistResponse;
+import org.akira.ladux.dto.request.user.WishlistRequest;
+import org.akira.ladux.dto.response.user.WishlistResponse;
 import org.akira.ladux.model.UserPrincipal;
 import org.akira.ladux.service.WishlistService;
 import org.springframework.http.HttpStatus;

@@ -1,7 +1,7 @@
 package org.akira.ladux.service.impl;
 
-import org.akira.ladux.dto.request.CustomerUpdateRequest;
-import org.akira.ladux.dto.response.CustomerResponse;
+import org.akira.ladux.dto.request.admin.AdminCustomerUpdateRequest;
+import org.akira.ladux.dto.response.admin.CustomerResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Customer;
 import org.akira.ladux.model.enums.CustomerLevel;
@@ -46,7 +46,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    public CustomerResponse updateCustomer(int userId, CustomerUpdateRequest request) {
+    public CustomerResponse updateCustomer(int userId, AdminCustomerUpdateRequest request) {
         Customer customer = findOrThrow(userId);
         if (request.fullName() != null) {
             customer.setFullName(request.fullName().trim());

@@ -137,6 +137,7 @@ export interface ProductStoreViewProps {
 
 export default function ProductStoreView({
     filteredProducts,
+    toggleWishlist,
     setSelectedProduct,
     setCurrentView,
     showToast,
@@ -363,7 +364,7 @@ export default function ProductStoreView({
                                         key={laptop.id}
                                         laptop={laptop}
                                         isWishlisted={wishlistProductIds.includes(laptop.id)}
-                                        onToggleWishlist={(id) => storeToggleWishlist(id)}
+                                        onToggleWishlist={(id) => (toggleWishlist ? toggleWishlist(id) : storeToggleWishlist(id))}
                                         onSelectProduct={(p) => {
                                             setSelectedProduct(p);
                                             setCurrentView("product-detail");
@@ -423,7 +424,7 @@ export default function ProductStoreView({
                                                 key={laptop.id}
                                                 laptop={laptop}
                                                 isWishlisted={wishlistProductIds.includes(laptop.id)}
-                                                onToggleWishlist={(id) => storeToggleWishlist(id)}
+                                                onToggleWishlist={(id) => (toggleWishlist ? toggleWishlist(id) : storeToggleWishlist(id))}
                                                 onSelectProduct={(p) => {
                                                     setSelectedProduct(p);
                                                     setCurrentView("product-detail");

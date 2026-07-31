@@ -79,14 +79,9 @@ public class SecurityConfig {
                         .csrfTokenRepository(csrfTokenRepository)
                         .csrfTokenRequestHandler(csrfRequestHandler)
                         .ignoringRequestMatchers(
-                                "/api/v1/auth/login", "/api/v1/auth/login/",
-                                "/api/v1/auth/register", "/api/v1/auth/register/",
-                                "/api/v1/auth/refresh", "/api/v1/auth/refresh/",
-                                "/api/v1/auth/logout", "/api/v1/auth/logout/",
-                                "/api/v1/payments/vnpay-webhook",
+                                "/api/v1/**",
                                 "/oauth2/**", "/login/oauth2/**"
                         )
-                        .ignoringRequestMatchers(BEARER_AUTH_REQUEST) // Bearer token (JWT) không cần CSRFf
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Không dùng session, mỗi request cần phải đem theo token để xác thực
                 .authorizeHttpRequests(auth -> auth

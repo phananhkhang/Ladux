@@ -6,6 +6,7 @@ import { useWishlistStore } from "../stores";
 export interface ProductDetailViewProps {
     selectedProduct: LaptopProduct;
     setCurrentView: (view: ViewType) => void;
+    toggleWishlist?: (id: number) => void;
     addToCartCustom: (
         product: LaptopProduct,
         ram: string,
@@ -24,6 +25,7 @@ export interface ProductDetailViewProps {
 export default function ProductDetailView({
     selectedProduct,
     setCurrentView,
+    toggleWishlist,
     addToCartCustom,
     handleAddReview,
     newRating,
@@ -120,7 +122,7 @@ export default function ProductDetailView({
                                 </h1>
                             </div>
                             <button
-                                onClick={() => wishlistStore.toggleWishlist(selectedProduct.id)}
+                                onClick={() => (toggleWishlist ? toggleWishlist(selectedProduct.id) : wishlistStore.toggleWishlist(selectedProduct.id))}
                                 className={`p-3 rounded-xl border transition ${
                                     isWishlisted
                                         ? "bg-red-500/10 border-red-500 text-red-500"
