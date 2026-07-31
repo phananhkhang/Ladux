@@ -1,7 +1,7 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.request.admin.CategoryRequest;
-import org.akira.ladux.dto.response.common.CategoryResponse;
+import org.akira.ladux.dto.catalog.request.CategoryRequest;
+import org.akira.ladux.dto.catalog.response.CategoryResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;

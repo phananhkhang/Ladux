@@ -1,7 +1,7 @@
 package org.akira.ladux.controller.user;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.response.common.BrandResponse;
+import org.akira.ladux.dto.catalog.response.BrandResponse;
 import org.akira.ladux.service.BrandService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

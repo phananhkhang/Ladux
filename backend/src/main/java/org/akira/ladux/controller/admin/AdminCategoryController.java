@@ -2,9 +2,9 @@ package org.akira.ladux.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.admin.CategoryRequest;
-import org.akira.ladux.dto.response.common.CategoryResponse;
-import org.akira.ladux.dto.response.common.UploadUrlResponse;
+import org.akira.ladux.dto.catalog.request.CategoryRequest;
+import org.akira.ladux.dto.catalog.response.CategoryResponse;
+import org.akira.ladux.dto.system.response.UploadUrlResponse;
 import org.akira.ladux.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

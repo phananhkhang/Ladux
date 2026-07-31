@@ -5,9 +5,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.akira.ladux.dto.request.user.RegisterRequest;
-import org.akira.ladux.dto.request.admin.UserAdminUpdateRequest;
-import org.akira.ladux.dto.response.admin.UserResponse;
+import org.akira.ladux.dto.user.request.RegisterRequest;
+import org.akira.ladux.dto.user.request.UserAdminUpdateRequest;
+import org.akira.ladux.dto.user.response.UserResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Cart;
@@ -34,7 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 
-import org.akira.ladux.dto.request.user.UserProfileUpdateRequest;
+import org.akira.ladux.dto.user.request.UserProfileUpdateRequest;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -171,20 +171,6 @@ public class UserServiceImpl implements UserService {
         User user = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id));
 
-        if (request.email() != null) {
-            String email = request.email().trim();
-            if (repo.existsByEmailAndIdNot(email, id)) {
-                throw new BusinessRuleException("Email nay da ton tai trong DB. Hay dung email khac.");
-            }
-            user.setEmail(email);
-        }
-        if (request.username() != null) {
-            String username = request.username().trim();
-            if (repo.existsByUsernameAndIdNot(username, id)) {
-                throw new BusinessRuleException("Username nay da ton tai trong DB. Hay dung username khac.");
-            }
-            user.setUsername(username);
-        }
         if (request.password() != null) {
             user.setPassword(encoder.encode(request.password()));
             // Doi mat khau -> bump tokenVersion (tren entity managed) + thu hoi refresh token.
@@ -196,6 +182,9 @@ public class UserServiceImpl implements UserService {
         }
         if (request.phone() != null) {
             getOrCreateCustomer(user).setPhone(request.phone());
+        }
+        if (request.avatarUrl() != null) {
+            getOrCreateCustomer(user).setAvatarUrl(request.avatarUrl().trim());
         }
         return UserResponse.fromEntity(user);
     }

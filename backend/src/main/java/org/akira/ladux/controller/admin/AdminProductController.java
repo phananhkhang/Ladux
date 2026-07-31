@@ -2,8 +2,8 @@ package org.akira.ladux.controller.admin;
  
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.admin.ProductRequest;
-import org.akira.ladux.dto.response.common.ProductResponse;
+import org.akira.ladux.dto.catalog.request.ProductRequest;
+import org.akira.ladux.dto.catalog.response.ProductResponse;
 import org.akira.ladux.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

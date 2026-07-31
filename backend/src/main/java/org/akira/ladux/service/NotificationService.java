@@ -1,7 +1,7 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.request.admin.NotificationRequest;
-import org.akira.ladux.dto.response.user.NotificationResponse;
+import org.akira.ladux.dto.system.request.NotificationRequest;
+import org.akira.ladux.dto.system.response.NotificationResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

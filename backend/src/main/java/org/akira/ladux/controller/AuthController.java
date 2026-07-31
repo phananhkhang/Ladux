@@ -2,9 +2,9 @@ package org.akira.ladux.controller;
 
 import java.util.Map;
 
-import org.akira.ladux.dto.request.user.LoginRequest;
-import org.akira.ladux.dto.request.user.RegisterRequest;
-import org.akira.ladux.dto.response.admin.UserResponse;
+import org.akira.ladux.dto.user.request.LoginRequest;
+import org.akira.ladux.dto.user.request.RegisterRequest;
+import org.akira.ladux.dto.user.response.UserResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.model.RefreshToken;
 import org.akira.ladux.model.User;

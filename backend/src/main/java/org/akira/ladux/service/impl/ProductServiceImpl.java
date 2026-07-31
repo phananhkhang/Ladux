@@ -1,10 +1,10 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.admin.ProductRequest;
-import org.akira.ladux.dto.request.admin.ProductVariantRequest;
-import org.akira.ladux.dto.response.common.ProductResponse;
-import org.akira.ladux.dto.response.common.ProductVariantResponse;
+import org.akira.ladux.dto.catalog.request.ProductRequest;
+import org.akira.ladux.dto.catalog.request.ProductVariantRequest;
+import org.akira.ladux.dto.catalog.response.ProductResponse;
+import org.akira.ladux.dto.catalog.response.ProductVariantResponse;
 import org.akira.ladux.model.*;
 import org.akira.ladux.repository.*;
 import org.akira.ladux.service.ProductService;
@@ -117,16 +117,16 @@ public class ProductServiceImpl implements ProductService {
                 .build();
         if (request.variants() != null && !request.variants().isEmpty()) {
             for (ProductVariantRequest variantRequest : request.variants()) {
-                Color color = colorRepository.findById(variantRequest.getColorId()).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy màu sắc với id = " + variantRequest.getColorId()));
-                String rawSku = product.getName() + " " + variantRequest.getRam() + " " + variantRequest.getRom() + " " + color.getName();
+                Color color = colorRepository.findById(variantRequest.colorId()).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy màu sắc với id = " + variantRequest.colorId()));
+                String rawSku = product.getName() + " " + variantRequest.ram() + " " + variantRequest.rom() + " " + color.getName();
                 String sku = resolveSku(null, rawSku);
                 ProductVariant variant = ProductVariant.builder()
                         .color(color)
-                        .ram(variantRequest.getRam())
-                        .rom(variantRequest.getRom())
-                        .price(variantRequest.getPrice())
-                        .discountPrice(variantRequest.getDiscountPrice())
-                        .stockQuantity(variantRequest.getStockQuantity())
+                        .ram(variantRequest.ram())
+                        .rom(variantRequest.rom())
+                        .price(variantRequest.price())
+                        .discountPrice(variantRequest.discountPrice())
+                        .stockQuantity(variantRequest.stockQuantity())
                         .sku(sku)
                         .isActive(variantRequest.isActive())
                         .build();

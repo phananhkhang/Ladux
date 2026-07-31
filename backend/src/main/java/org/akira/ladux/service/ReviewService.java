@@ -1,8 +1,8 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.request.user.ReviewCreateRequest;
-import org.akira.ladux.dto.request.user.ReviewUpdateRequest;
-import org.akira.ladux.dto.response.common.ReviewResponse;
+import org.akira.ladux.dto.catalog.request.ReviewCreateRequest;
+import org.akira.ladux.dto.catalog.request.ReviewUpdateRequest;
+import org.akira.ladux.dto.catalog.response.ReviewResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

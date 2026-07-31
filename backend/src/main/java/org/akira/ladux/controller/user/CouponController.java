@@ -2,8 +2,8 @@ package org.akira.ladux.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.admin.CouponApplyRequest;
-import org.akira.ladux.dto.response.user.CouponApplyResponse;
+import org.akira.ladux.dto.promotion.request.CouponApplyRequest;
+import org.akira.ladux.dto.promotion.response.CouponApplyResponse;
 import org.akira.ladux.service.CouponService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

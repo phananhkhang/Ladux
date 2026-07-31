@@ -1,8 +1,8 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.user.UserAddressRequest;
-import org.akira.ladux.dto.response.user.UserAddressResponse;
+import org.akira.ladux.dto.user.request.UserAddressRequest;
+import org.akira.ladux.dto.user.response.UserAddressResponse;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.UserAddress;
 import org.akira.ladux.repository.UserAddressRepository;

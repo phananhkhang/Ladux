@@ -7,11 +7,11 @@ import java.util.List;
 
 import org.akira.ladux.dto.internal.CouponRedemptionResult;
 import org.akira.ladux.dto.internal.LineDraft;
-import org.akira.ladux.dto.request.common.OrderLineRequest;
-import org.akira.ladux.dto.request.user.OrderRequest;
-import org.akira.ladux.dto.request.admin.OrderStatusUpdateRequest;
-import org.akira.ladux.dto.response.user.OrderResponse;
-import org.akira.ladux.dto.response.user.PaymentCallbackResponse;
+import org.akira.ladux.dto.internal.OrderLineRequest;
+import org.akira.ladux.dto.order.request.OrderRequest;
+import org.akira.ladux.dto.order.request.OrderStatusUpdateRequest;
+import org.akira.ladux.dto.order.response.OrderResponse;
+import org.akira.ladux.dto.system.response.PaymentCallbackResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.*;

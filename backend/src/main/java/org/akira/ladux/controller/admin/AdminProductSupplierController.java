@@ -2,8 +2,8 @@ package org.akira.ladux.controller.admin;
 
 import java.util.List;
 
-import org.akira.ladux.dto.request.admin.ProductSupplierRequest;
-import org.akira.ladux.dto.response.admin.ProductSupplierResponse;
+import org.akira.ladux.dto.inventory.request.ProductSupplierRequest;
+import org.akira.ladux.dto.inventory.response.ProductSupplierResponse;
 import org.akira.ladux.service.ProductSupplierService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

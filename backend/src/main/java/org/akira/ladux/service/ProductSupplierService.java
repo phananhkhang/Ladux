@@ -2,8 +2,8 @@ package org.akira.ladux.service;
 
 import java.util.List;
 
-import org.akira.ladux.dto.request.admin.ProductSupplierRequest;
-import org.akira.ladux.dto.response.admin.ProductSupplierResponse;
+import org.akira.ladux.dto.inventory.request.ProductSupplierRequest;
+import org.akira.ladux.dto.inventory.response.ProductSupplierResponse;
 
 public interface ProductSupplierService {
 

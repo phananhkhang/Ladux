@@ -1,8 +1,8 @@
 package org.akira.ladux.controller.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.admin.ColorRequest;
-import org.akira.ladux.dto.response.common.ColorResponse;
+import org.akira.ladux.dto.catalog.request.ColorRequest;
+import org.akira.ladux.dto.catalog.response.ColorResponse;
 import org.akira.ladux.model.Color;
 import org.akira.ladux.service.ColorService;
 import org.springframework.http.HttpStatus;

@@ -1,9 +1,9 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.request.admin.AdminPurchaseOrderReceiveRequest;
-import org.akira.ladux.dto.request.admin.PurchaseOrderCreateRequest;
-import org.akira.ladux.dto.request.admin.PurchaseOrderStatusUpdateRequest;
-import org.akira.ladux.dto.response.admin.PurchaseOrderResponse;
+import org.akira.ladux.dto.inventory.request.AdminPurchaseOrderReceiveRequest;
+import org.akira.ladux.dto.inventory.request.PurchaseOrderCreateRequest;
+import org.akira.ladux.dto.inventory.request.PurchaseOrderStatusUpdateRequest;
+import org.akira.ladux.dto.inventory.response.PurchaseOrderResponse;
 import org.akira.ladux.model.enums.PurchaseOrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

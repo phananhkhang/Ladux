@@ -2,9 +2,9 @@ package org.akira.ladux.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.user.ReviewCreateRequest;
-import org.akira.ladux.dto.request.user.ReviewUpdateRequest;
-import org.akira.ladux.dto.response.common.ReviewResponse;
+import org.akira.ladux.dto.catalog.request.ReviewCreateRequest;
+import org.akira.ladux.dto.catalog.request.ReviewUpdateRequest;
+import org.akira.ladux.dto.catalog.response.ReviewResponse;
 import org.akira.ladux.model.UserPrincipal;
 import org.akira.ladux.service.ReviewService;
 import org.springframework.data.domain.Page;

@@ -1,7 +1,7 @@
 package org.akira.ladux.service;
 
 import org.akira.ladux.dto.internal.LineDraft;
-import org.akira.ladux.dto.request.common.OrderLineRequest;
+import org.akira.ladux.dto.internal.OrderLineRequest;
 
 import java.util.List;
 

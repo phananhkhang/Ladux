@@ -1,7 +1,7 @@
 package org.akira.ladux.service.impl;
 
-import org.akira.ladux.dto.request.admin.StockMovementRequest;
-import org.akira.ladux.dto.response.admin.StockMovementResponse;
+import org.akira.ladux.dto.inventory.request.StockMovementRequest;
+import org.akira.ladux.dto.inventory.response.StockMovementResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.InsufficientStockException;
 import org.akira.ladux.exception.ResourceNotFoundException;

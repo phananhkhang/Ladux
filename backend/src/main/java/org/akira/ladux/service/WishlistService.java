@@ -1,6 +1,6 @@
 package org.akira.ladux.service;
 
-import org.akira.ladux.dto.response.user.WishlistResponse;
+import org.akira.ladux.dto.user.response.WishlistResponse;
 
 import java.util.List;
 

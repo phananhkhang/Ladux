@@ -2,7 +2,7 @@ package org.akira.ladux.service.impl;
 
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.response.common.ProductVariantResponse;
+import org.akira.ladux.dto.catalog.response.ProductVariantResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Color;
 import org.akira.ladux.model.Product;

@@ -2,11 +2,11 @@ package org.akira.ladux.service.impl;
 
 import java.math.BigDecimal;
 
-import org.akira.ladux.dto.request.admin.AdminPurchaseOrderReceiveRequest;
-import org.akira.ladux.dto.request.admin.AdminPurchaseOrderItemRequest;
-import org.akira.ladux.dto.request.admin.PurchaseOrderCreateRequest;
-import org.akira.ladux.dto.request.admin.PurchaseOrderStatusUpdateRequest;
-import org.akira.ladux.dto.response.admin.PurchaseOrderResponse;
+import org.akira.ladux.dto.inventory.request.AdminPurchaseOrderReceiveRequest;
+import org.akira.ladux.dto.inventory.request.AdminPurchaseOrderItemRequest;
+import org.akira.ladux.dto.inventory.request.PurchaseOrderCreateRequest;
+import org.akira.ladux.dto.inventory.request.PurchaseOrderStatusUpdateRequest;
+import org.akira.ladux.dto.inventory.response.PurchaseOrderResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.*;
@@ -48,15 +48,14 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         PurchaseOrder po = PurchaseOrder.builder()
                 .supplier(supplier)
                 .status(PurchaseOrderStatus.PENDING)
-                .expectedDeliveryDate(request.expectedDeliveryDate())
                 .note(request.note())
                 .createdBy(createdBy)
                 .build();
 
         BigDecimal total = BigDecimal.ZERO;
         for (AdminPurchaseOrderItemRequest line : request.items()) {
-            ProductVariant productVariant = productVariantRepository.findById(line.productId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham id = " + line.productId()));
+            ProductVariant productVariant = productVariantRepository.findById(line.productVariantId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham id = " + line.productVariantId()));
             PurchaseOrderItem item = PurchaseOrderItem.builder()
                     .purchaseOrder(po)
                     .productVariant(productVariant)

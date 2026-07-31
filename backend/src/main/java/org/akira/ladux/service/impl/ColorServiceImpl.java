@@ -1,7 +1,7 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.admin.ColorRequest;
+import org.akira.ladux.dto.catalog.request.ColorRequest;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Color;
 import org.akira.ladux.repository.ColorRepository;

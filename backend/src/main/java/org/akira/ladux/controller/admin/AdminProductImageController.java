@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.response.common.ProductImageResponse;
+import org.akira.ladux.dto.catalog.response.ProductImageResponse;
 import org.akira.ladux.service.ProductImageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

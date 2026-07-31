@@ -1,7 +1,7 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.response.user.OrderItemResponse;
+import org.akira.ladux.dto.order.response.OrderItemResponse;
 import org.akira.ladux.repository.OrderItemRepository;
 import org.akira.ladux.service.OrderItemService;
 import org.akira.ladux.exception.ResourceNotFoundException;

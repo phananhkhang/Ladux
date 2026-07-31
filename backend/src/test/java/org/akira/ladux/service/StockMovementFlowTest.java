@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.UUID;
   
 import org.akira.ladux.AbstractIntegrationTest;
-import org.akira.ladux.dto.request.user.OrderRequest;
-import org.akira.ladux.dto.request.admin.OrderStatusUpdateRequest;
-import org.akira.ladux.dto.request.admin.PurchaseOrderCreateRequest;
-import org.akira.ladux.dto.request.admin.AdminPurchaseOrderItemRequest;
-import org.akira.ladux.dto.request.admin.AdminPurchaseOrderReceiveRequest;
-import org.akira.ladux.dto.request.user.ShippingAddressRequest;
-import org.akira.ladux.dto.request.admin.StockMovementRequest;
-import org.akira.ladux.dto.response.admin.PurchaseOrderResponse;
+import org.akira.ladux.dto.order.request.OrderRequest;
+import org.akira.ladux.dto.order.request.OrderStatusUpdateRequest;
+import org.akira.ladux.dto.inventory.request.PurchaseOrderCreateRequest;
+import org.akira.ladux.dto.inventory.request.AdminPurchaseOrderItemRequest;
+import org.akira.ladux.dto.inventory.request.AdminPurchaseOrderReceiveRequest;
+import org.akira.ladux.dto.order.request.ShippingAddressRequest;
+import org.akira.ladux.dto.inventory.request.StockMovementRequest;
+import org.akira.ladux.dto.inventory.response.PurchaseOrderResponse;
 import org.akira.ladux.model.Cart;
 import org.akira.ladux.model.CartItem;
 import org.akira.ladux.model.Order;
@@ -199,7 +199,7 @@ class StockMovementFlowTest extends AbstractIntegrationTest {
 
         PurchaseOrderResponse po = purchaseOrderService.createPurchaseOrder(
                 new PurchaseOrderCreateRequest(
-                        SUPPLIER_ID, null, "Nhap bo sung",
+                        SUPPLIER_ID, "Nhap bo sung",
                         List.of(new AdminPurchaseOrderItemRequest(
                                 productVariant.getId(), 10, new BigDecimal("300.00"), null))),
                 ADMIN_ID);

@@ -1,8 +1,8 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.admin.NotificationRequest;
-import org.akira.ladux.dto.response.user.NotificationResponse;
+import org.akira.ladux.dto.system.request.NotificationRequest;
+import org.akira.ladux.dto.system.response.NotificationResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Notification;
 import org.akira.ladux.model.User;

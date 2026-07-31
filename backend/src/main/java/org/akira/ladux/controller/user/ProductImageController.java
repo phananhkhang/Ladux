@@ -1,7 +1,7 @@
 package org.akira.ladux.controller.user;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.response.common.ProductImageResponse;
+import org.akira.ladux.dto.catalog.response.ProductImageResponse;
 import org.akira.ladux.service.ProductImageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

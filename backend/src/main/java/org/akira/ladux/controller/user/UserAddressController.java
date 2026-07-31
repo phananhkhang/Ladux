@@ -2,8 +2,8 @@ package org.akira.ladux.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.user.UserAddressRequest;
-import org.akira.ladux.dto.response.user.UserAddressResponse;
+import org.akira.ladux.dto.user.request.UserAddressRequest;
+import org.akira.ladux.dto.user.response.UserAddressResponse;
 import org.akira.ladux.model.UserPrincipal;
 import org.akira.ladux.service.UserAddressService;
 import org.springframework.http.HttpStatus;

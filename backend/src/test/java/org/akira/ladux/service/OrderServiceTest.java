@@ -9,9 +9,9 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import org.akira.ladux.AbstractIntegrationTest;
-import org.akira.ladux.dto.request.user.OrderRequest;
-import org.akira.ladux.dto.request.admin.OrderStatusUpdateRequest;
-import org.akira.ladux.dto.request.user.ShippingAddressRequest;
+import org.akira.ladux.dto.order.request.OrderRequest;
+import org.akira.ladux.dto.order.request.OrderStatusUpdateRequest;
+import org.akira.ladux.dto.order.request.ShippingAddressRequest;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.model.Cart;
 import org.akira.ladux.model.CartItem;

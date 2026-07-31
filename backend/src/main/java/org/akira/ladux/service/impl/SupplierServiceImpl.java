@@ -1,7 +1,7 @@
 package org.akira.ladux.service.impl;
 
-import org.akira.ladux.dto.request.admin.SupplierRequest;
-import org.akira.ladux.dto.response.admin.SupplierResponse;
+import org.akira.ladux.dto.inventory.request.SupplierRequest;
+import org.akira.ladux.dto.inventory.response.SupplierResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Supplier;
 import org.akira.ladux.repository.SupplierRepository;

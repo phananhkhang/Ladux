@@ -2,7 +2,7 @@ package org.akira.ladux.repository;
 
 import java.util.Optional;
 
-import org.akira.ladux.dto.response.admin.CustomerResponse;
+import org.akira.ladux.dto.user.response.CustomerResponse;
 import org.akira.ladux.model.Customer;
 import org.akira.ladux.model.enums.CustomerLevel;
 import org.springframework.data.domain.Page;
@@ -21,7 +21,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
     @EntityGraph(attributePaths = {"user"})
     Page<Customer> findByLevel(CustomerLevel level, Pageable pageable);
 
-    @Query("SELECT new org.akira.ladux.dto.response.admin.CustomerResponse(" +
+    @Query("SELECT new org.akira.ladux.dto.user.response.CustomerResponse(" +
            "c.id, u.id, u.email, u.username, c.fullName, c.phone, c.avatarUrl, " +
            "c.loyaltyPoints, c.level, c.totalSpent) " +
            "FROM Customer c JOIN c.user u WHERE " +

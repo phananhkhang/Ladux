@@ -1,7 +1,7 @@
 package org.akira.ladux.controller.admin;
 
-import org.akira.ladux.dto.request.admin.StockMovementRequest;
-import org.akira.ladux.dto.response.admin.StockMovementResponse;
+import org.akira.ladux.dto.inventory.request.StockMovementRequest;
+import org.akira.ladux.dto.inventory.response.StockMovementResponse;
 import org.akira.ladux.model.UserPrincipal;
 import org.akira.ladux.service.StockMovementService;
 import org.springframework.data.domain.Page;

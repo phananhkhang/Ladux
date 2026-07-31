@@ -2,9 +2,9 @@ package org.akira.ladux.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.akira.ladux.dto.request.user.CartItemRequest;
-import org.akira.ladux.dto.request.user.CartQuantityRequest;
-import org.akira.ladux.dto.response.user.CartResponse;
+import org.akira.ladux.dto.order.request.CartItemRequest;
+import org.akira.ladux.dto.order.request.CartQuantityRequest;
+import org.akira.ladux.dto.order.response.CartResponse;
 import org.akira.ladux.model.UserPrincipal;
 import org.akira.ladux.service.CartService;
 import org.springframework.http.HttpStatus;

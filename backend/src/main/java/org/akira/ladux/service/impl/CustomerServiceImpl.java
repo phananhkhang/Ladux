@@ -1,7 +1,7 @@
 package org.akira.ladux.service.impl;
 
-import org.akira.ladux.dto.request.admin.AdminCustomerUpdateRequest;
-import org.akira.ladux.dto.response.admin.CustomerResponse;
+import org.akira.ladux.dto.user.request.AdminCustomerUpdateRequest;
+import org.akira.ladux.dto.user.response.CustomerResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Customer;
 import org.akira.ladux.model.enums.CustomerLevel;
