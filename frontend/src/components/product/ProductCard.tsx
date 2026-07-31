@@ -55,27 +55,25 @@ export default function ProductCard({
                     <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-left">
                         <div className="flex items-center gap-1.5 truncate">
                             <Monitor className="w-3.5 h-3.5 text-[#00D492] shrink-0" />
-                            <span className="truncate">{laptop.display || "15.6 inch"}</span>
+                            <span className="truncate">{laptop.display || "15.6 inch FHD"}</span>
                         </div>
                         <div className="flex items-center gap-1.5 truncate">
                             <Cpu className="w-3.5 h-3.5 text-[#00D492] shrink-0" />
-                            <span className="truncate">{laptop.cpu.split(" ")[0]} {laptop.cpu.split(" ")[1] || ""}</span>
+                            <span className="truncate">{laptop.cpu ? `${laptop.cpu.split(" ")[0]} ${laptop.cpu.split(" ")[1] || ""}` : "Intel Core i7"}</span>
                         </div>
                         <div className="flex items-center gap-1.5 truncate">
                             <Cpu className="w-3.5 h-3.5 text-[#00D492] shrink-0" />
-                            <span className="truncate">{laptop.ram}</span>
+                            <span className="truncate">{laptop.ram || "16GB RAM"}</span>
                         </div>
                         <div className="flex items-center gap-1.5 truncate">
                             <HardDrive className="w-3.5 h-3.5 text-[#00D492] shrink-0" />
-                            <span className="truncate">{laptop.rom}</span>
+                            <span className="truncate">{laptop.rom || "512GB SSD"}</span>
                         </div>
                     </div>
-                    {laptop.gpu && (
-                        <div className="flex items-center gap-1.5 pt-1.5 border-t border-white/[0.05] truncate text-left">
-                            <Cpu className="w-3.5 h-3.5 text-[#00D492] shrink-0" />
-                            <span className="truncate font-medium text-neutral-200">{laptop.gpu}</span>
-                        </div>
-                    )}
+                    <div className="flex items-center gap-1.5 pt-1.5 border-t border-white/[0.05] truncate text-left">
+                        <Cpu className="w-3.5 h-3.5 text-[#00D492] shrink-0" />
+                        <span className="truncate font-medium text-neutral-200">{laptop.gpu || "GeForce RTX / Intel Graphics"}</span>
+                    </div>
                 </div>
 
                 {/* Price block */}

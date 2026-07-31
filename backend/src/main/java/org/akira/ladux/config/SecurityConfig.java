@@ -95,10 +95,10 @@ public class SecurityConfig {
                         .requestMatchers("/error", "/api/v1/auth/**", "/oauth2/**", "/login/oauth2/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET,
-                                "/api/v1/products/**",
-                                "/api/v1/brands/**",
-                                "/api/v1/categories/**",
-                                "/api/v1/reviews/**")
+                                "/api/v1/products", "/api/v1/products/**",
+                                "/api/v1/brands", "/api/v1/brands/**",
+                                "/api/v1/categories", "/api/v1/categories/**",
+                                "/api/v1/reviews", "/api/v1/reviews/**")
                         .permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/health/**", "/actuator/info").permitAll()
@@ -136,8 +136,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://ladux.vn", "http://localhost:5173"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "http://127.0.0.1:*",
+                "https://ladux.vn",
+                "http://*.ladux.vn"
+        ));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control", "Cookie", "X-XSRF-TOKEN"));
         configuration.setAllowCredentials(true);
 

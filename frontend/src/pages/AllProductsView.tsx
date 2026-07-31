@@ -347,8 +347,10 @@ export default function AllProductsView({
                                             setCurrentView("product-detail");
                                         }}
                                         onAddToCart={(p) => {
-                                            const defaultVariantId = p.id;
-                                            addToCart({ productId: defaultVariantId, quantity: 1 });
+                                            const rawProduct = products.find((prod) => prod.id === p.id);
+                                            const activeVariant = rawProduct?.variants?.find((v) => v.isActive) ?? rawProduct?.variants?.[0];
+                                            const targetVariantId = activeVariant ? activeVariant.id : p.id;
+                                            addToCart({ productId: targetVariantId, quantity: 1 });
                                         }}
                                     />
                                 ))}

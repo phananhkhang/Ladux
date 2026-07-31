@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ArrowLeft, UserPlus } from "lucide-react";
+import { useAuthStore } from "../stores";
 
 export interface RegisterViewProps {
     onRegister: () => void;
@@ -9,13 +10,16 @@ export interface RegisterViewProps {
 
 export default function RegisterView({ onRegister, onGoLogin, onBack }: RegisterViewProps) {
     const [name, setName] = useState("");
+    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const { register, login } = useAuthStore();
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (password !== confirm) {
             setError("Mật khẩu xác nhận không khớp.");
@@ -23,10 +27,32 @@ export default function RegisterView({ onRegister, onGoLogin, onBack }: Register
         }
         setError("");
         setLoading(true);
-        setTimeout(() => {
+
+        try {
+            // 1. Gọi API đăng ký tài khoản xuống Backend
+            await register({
+                fullName: name.trim(),
+                username: username.trim(),
+                email: email.trim(),
+                password: password,
+            });
+
+            // 2. Tự động đăng nhập với tài khoản vừa tạo
+            await login({
+                username: username.trim(),
+                password: password,
+            });
+
             setLoading(false);
             onRegister();
-        }, 900);
+        } catch (err: any) {
+            setLoading(false);
+            const errMsg =
+                err?.response?.data?.message ||
+                err?.message ||
+                "Đăng ký thất bại. Vui lòng kiểm tra lại!";
+            setError(errMsg);
+        }
     };
 
     return (
@@ -48,7 +74,27 @@ export default function RegisterView({ onRegister, onGoLogin, onBack }: Register
                         <p className="mt-1.5 text-xs text-neutral-500">Tham gia cộng đồng thành viên LADUX</p>
                     </div>
 
+                    {error && (
+                        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs text-center font-medium">
+                            {error}
+                        </div>
+                    )}
+
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-2">
+                                Tên đăng nhập (Username)
+                            </label>
+                            <input
+                                type="text"
+                                required
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder="nguyenvana"
+                                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#00D492]/60 focus:ring-1 focus:ring-[#00D492]/30 transition"
+                            />
+                        </div>
+
                         <div>
                             <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-2">
                                 Họ & Tên
@@ -105,16 +151,12 @@ export default function RegisterView({ onRegister, onGoLogin, onBack }: Register
                             />
                         </div>
 
-                        {error && (
-                            <p className="text-xs text-red-400 font-semibold">{error}</p>
-                        )}
-
                         <button
                             type="submit"
                             disabled={loading}
                             className="w-full rounded-xl bg-[#00D492] py-3.5 text-sm font-extrabold text-black uppercase tracking-wider hover:bg-[#00bc82] disabled:opacity-60 transition-all hover:scale-[1.02] active:scale-100 mt-2"
                         >
-                            {loading ? "Đang tạo tài khoản..." : "Đăng Ký"}
+                            {loading ? "Đang xử lý API..." : "Đăng Ký"}
                         </button>
                     </form>
 

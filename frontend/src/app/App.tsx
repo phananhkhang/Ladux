@@ -141,8 +141,12 @@ export default function App() {
         colorHex: string,
         quantity: number
     ) => {
-        cart.addToCart({ productId: product.id, quantity });
-        showToast(`Đã thêm ${quantity} máy ${product.name} vào giỏ hàng API!`);
+        const rawProduct = productStore.products.find((p) => p.id === product.id);
+        const matchedVariant = rawProduct?.variants?.find((v) => v.isActive) ?? rawProduct?.variants?.[0];
+        const variantId = matchedVariant ? matchedVariant.id : product.id;
+
+        cart.addToCart({ productId: variantId, quantity });
+        showToast(`Đã thêm ${quantity} máy ${product.name} vào giỏ hàng!`);
     };
 
     const activeWishlist = wishlistStore.wishlistProductIds;

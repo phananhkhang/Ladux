@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { ChevronRight, Star, Check, ShoppingBag, MessageSquare, Send } from "lucide-react";
+import { ChevronRight, Star, Check, ShoppingBag, MessageSquare, Send, Heart } from "lucide-react";
 import { LaptopProduct, formatVND, ViewType } from "../types";
+import { useWishlistStore } from "../stores";
 
 export interface ProductDetailViewProps {
     selectedProduct: LaptopProduct;
@@ -37,6 +38,9 @@ export default function ProductDetailView({
         hex: "#1D1D1F",
     });
     const [productQuantity, setProductQuantity] = useState<number>(1);
+
+    const wishlistStore = useWishlistStore();
+    const isWishlisted = wishlistStore.isInWishlist(selectedProduct.id);
 
     const computeVariantPrice = (basePrice: number, ram: string, storage: string) => {
         let extra = 0;
@@ -79,19 +83,25 @@ export default function ProductDetailView({
                         <div className="grid grid-cols-2 gap-3 text-xs font-mono">
                             <div className="p-3.5 bg-neutral-950 border border-neutral-900 rounded-xl space-y-1">
                                 <span className="text-neutral-500 block text-[10px] uppercase">Bộ xử lý (CPU)</span>
-                                <span className="font-semibold text-neutral-200 block truncate">{selectedProduct.cpu}</span>
+                                <span className="font-semibold text-neutral-200 block truncate">
+                                    {selectedProduct.cpu || "Intel Core i7 Gen 13/14 / Apple M-Series"}
+                                </span>
                             </div>
                             <div className="p-3.5 bg-neutral-950 border border-neutral-900 rounded-xl space-y-1">
                                 <span className="text-neutral-500 block text-[10px] uppercase">Đồ họa (GPU)</span>
-                                <span className="font-semibold text-neutral-200 block truncate">{selectedProduct.gpu}</span>
+                                <span className="font-semibold text-neutral-200 block truncate">
+                                    {selectedProduct.gpu || "NVIDIA GeForce RTX 40-Series / Integrated"}
+                                </span>
                             </div>
                             <div className="p-3.5 bg-neutral-950 border border-neutral-900 rounded-xl space-y-1">
                                 <span className="text-neutral-500 block text-[10px] uppercase">Màn hình</span>
-                                <span className="font-semibold text-neutral-200 block truncate">{selectedProduct.display}</span>
+                                <span className="font-semibold text-neutral-200 block truncate">
+                                    {selectedProduct.display || "15.6 inch 2.5K 165Hz / Liquid Retina"}
+                                </span>
                             </div>
                             <div className="p-3.5 bg-neutral-950 border border-neutral-900 rounded-xl space-y-1">
                                 <span className="text-neutral-500 block text-[10px] uppercase">Tình trạng kho</span>
-                                <span className="font-semibold text-[#00D492] block">Sẵn hàng ({selectedProduct.stockQuantity} máy)</span>
+                                <span className="font-semibold text-[#00D492] block">Sẵn hàng ({selectedProduct.stockQuantity || 10} máy)</span>
                             </div>
                         </div>
                     </div>
@@ -100,12 +110,27 @@ export default function ProductDetailView({
                 {/* Right Column: Variant & Quantity Selector */}
                 <div className="lg:col-span-6 space-y-8">
                     <div>
-                        <span className="inline-block px-3 py-1 bg-neutral-900 border border-[#00D492]/30 text-[#00D492] text-xs font-mono font-bold rounded-md mb-3">
-                            {selectedProduct.brand} • {selectedProduct.category}
-                        </span>
-                        <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight">
-                            {selectedProduct.name}
-                        </h1>
+                        <div className="flex items-start justify-between gap-4">
+                            <div>
+                                <span className="inline-block px-3 py-1 bg-neutral-900 border border-[#00D492]/30 text-[#00D492] text-xs font-mono font-bold rounded-md mb-3">
+                                    {selectedProduct.brand} • {selectedProduct.category}
+                                </span>
+                                <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+                                    {selectedProduct.name}
+                                </h1>
+                            </div>
+                            <button
+                                onClick={() => wishlistStore.toggleWishlist(selectedProduct.id)}
+                                className={`p-3 rounded-xl border transition ${
+                                    isWishlisted
+                                        ? "bg-red-500/10 border-red-500 text-red-500"
+                                        : "bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-red-400"
+                                }`}
+                                title={isWishlisted ? "Bỏ yêu thích" : "Thêm vào yêu thích"}
+                            >
+                                <Heart className={`w-5 h-5 ${isWishlisted ? "fill-current" : ""}`} />
+                            </button>
+                        </div>
                         <div className="mt-3 flex items-center gap-3 text-xs text-neutral-400">
                             <div className="flex items-center gap-1 text-amber-400 font-bold">
                                 <Star className="w-4 h-4 fill-amber-400" /> {selectedProduct.rating}

@@ -95,6 +95,17 @@ export default function LoginView({ onLoginSuccess, onLogin, onGoRegister, onBac
                             {isLoading ? "Đang xác thực API..." : "Đăng Nhập"}
                         </button>
                     </form>
+
+                    <div className="mt-6 text-center text-xs text-neutral-400">
+                        Nếu chưa có tài khoản:{" "}
+                        <button
+                            type="button"
+                            onClick={onGoRegister}
+                            className="font-bold text-[#00D492] hover:underline cursor-pointer transition-colors"
+                        >
+                            Đăng ký ngay
+                        </button>
+                    </div>
                 </div>
             </div>
         </main>
