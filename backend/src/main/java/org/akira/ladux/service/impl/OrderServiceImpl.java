@@ -4,6 +4,8 @@ package org.akira.ladux.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Map;
+
 
 import org.akira.ladux.dto.internal.CouponRedemptionResult;
 import org.akira.ladux.dto.internal.LineDraft;
@@ -32,6 +34,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +63,6 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentAttemptService paymentAttemptService;
     private final OrderStateMachine orderStateMachine;
     private final StockMovementService stockMovementService;
-    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional(readOnly = true)
@@ -88,11 +90,22 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "orders", key = "'user:' + #userId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<OrderResponse> getOrdersByUserId(int userId, Pageable pageable) {
-        // Trả về danh sách đơn hàng của đúng người dùng được yêu cầu.
-        return repo.findByUserId(userId, pageable)
-                .map(OrderResponse::fromEntity);
+        // Bước 1: Lấy page IDs với pagination đúng — query đơn giản, không JOIN collection.
+        Page<Integer> idPage = repo.findIdsByUserId(userId, pageable);
+        if (idPage.isEmpty()) {
+            return idPage.map(id -> (OrderResponse) null); // trả empty page giữ metadata
+        }
+        // Bước 2: Fetch đầy đủ entity (có items + payments) theo IDs đã biết.
+        List<Order> orders = repo.findByIdIn(idPage.getContent());
+        // Giữ thứ tự của page gốc (sort theo pageable).
+        Map<Integer, Order> byId = orders.stream()
+                .collect(java.util.stream.Collectors.toMap(Order::getId, o -> o));
+        List<OrderResponse> content = idPage.getContent().stream()
+                .map(id -> OrderResponse.fromEntity(byId.get(id)))
+                .filter(r -> r != null)
+                .toList();
+        return new PageImpl<>(content, pageable, idPage.getTotalElements());
     }
 
     @Override
@@ -173,9 +186,11 @@ public class OrderServiceImpl implements OrderService {
 
         // B8: thêm các dòng sản phẩm vào đơn hàng.
         for (LineDraft draft : lineDrafts) {
+            ProductVariant variant = draft.productVariant();
             order.getItems().add(OrderItem.builder()
                     .order(order)
-                    .productVariant(draft.productVariant())
+                    .product(variant == null ? null : variant.getProduct())
+                    .productVariant(variant)
                     .quantity(draft.quantity())
                     .priceAtPurchase(draft.priceAtPurchase())
                     .build());

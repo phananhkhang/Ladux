@@ -100,9 +100,10 @@ class StockMovementFlowTest extends AbstractIntegrationTest {
     }
 
     private Order newestOrderOf(int userId) {
-        return orderRepository
-                .findByUserId(userId, PageRequest.of(0, 1, Sort.by("id").descending()))
+        Integer id = orderRepository
+                .findIdsByUserId(userId, PageRequest.of(0, 1, Sort.by("id").descending()))
                 .getContent().get(0);
+        return orderRepository.findById(id).orElseThrow();
     }
 
     private int stockOf(int productVariantId) {

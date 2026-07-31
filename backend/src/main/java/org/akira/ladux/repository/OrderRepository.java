@@ -16,12 +16,19 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
     @EntityGraph(attributePaths = {"user", "coupon", "payments"})
     Page<Order> findAll(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"user", "coupon", "payments"})
-    Page<Order> findByUserId(Integer userId, Pageable pageable);
+    // Lấy page ID đơn giản, KHÔNG join collection — tránh MultipleBagFetchException với Pageable
+    @Query("select o.id from Order o where o.user.id = :userId")
+    Page<Integer> findIdsByUserId(@Param("userId") Integer userId, Pageable pageable);
+
+    // Fetch đầy đủ items + product + payments cho danh sách IDs đã biết
+    @EntityGraph(attributePaths = {"user", "coupon", "payments", "items", "items.product", "items.productVariant"})
+    @Query("select o from Order o where o.id in :ids")
+    List<Order> findByIdIn(@Param("ids") List<Integer> ids);
 
     @EntityGraph(attributePaths = {"user", "coupon", "payments"})
     Page<Order> findByStatus(OrderStatus status, Pageable pageable);
@@ -71,4 +78,3 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             """)
     List<Order> findExpiredOrdersForUpdate(@Param("status") OrderStatus status, @Param("now") Instant now);
 }
-

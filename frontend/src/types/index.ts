@@ -18,6 +18,8 @@ export type CustomerLevel = "BROWSER" | "SILVER" | "GOLD" | "RUBY";
 export type OrderStatus =
     | "PENDING"
     | "CONFIRMED"
+    | "PAID"
+    | "PROCESSING"
     | "SHIPPED"
     | "DELIVERED"
     | "RETURN_REQUESTED"

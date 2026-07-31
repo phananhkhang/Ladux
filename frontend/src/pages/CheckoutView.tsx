@@ -190,7 +190,7 @@ export default function CheckoutView({
                         XÁC NHẬN ĐƠN HÀNG LADUX
                     </span>
                     <h1 className="text-3xl font-black text-white tracking-tight mt-1">
-                        THANH TOÁN AN TOÀN
+                        Thanh toán đơn hàng
                     </h1>
                 </div>
                 <button

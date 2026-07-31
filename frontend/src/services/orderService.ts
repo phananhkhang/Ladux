@@ -2,7 +2,9 @@ import apiClient from './apiClient';
 import { PageParams, PageResponse, ProductResponse } from './productService';
 import { PaymentProvider } from './paymentService';
 
-export type OrderStatus = 'PENDING' | 'PAID' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+import { OrderStatus } from '../types';
+
+export type { OrderStatus };
 
 export interface ShippingAddressRequest {
   receiverName: string;
@@ -31,10 +33,11 @@ export interface OrderRequest {
 
 export interface OrderItemResponse {
   id: number;
+  orderId: number | null;
   product: ProductResponse | null;
+  productVariantId: number | null;
   quantity: number;
-  unitPrice: number;
-  totalPrice: number;
+  priceAtPurchase: number; // khớp với backend OrderItemResponse.priceAtPurchase
 }
 
 export interface OrderResponse {

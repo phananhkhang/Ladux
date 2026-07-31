@@ -30,13 +30,14 @@ export default function OrdersView({
         if (storeOrders.length > 0) {
             return storeOrders.map((ord) => {
                 const itemsMapped = (ord.orderItems || []).map((it) => {
+                    const actualPrice = (it as any).priceAtPurchase ?? 0;
                     const prod = it.product
                         ? mapProductResponseToLaptopProduct(it.product)
                         : {
                               id: it.id,
                               name: "Sản phẩm Laptop LADUX",
                               images: ["https://placehold.co/400x300/121214/666?text=Laptop"],
-                              price: it.unitPrice,
+                              price: actualPrice,
                           };
                     return {
                         product: prod as any,
@@ -45,7 +46,7 @@ export default function OrdersView({
                         selectedStorage: (it.product as any)?.rom || "SSD",
                         selectedColorName: "Standard",
                         selectedColorHex: "#1D1D1F",
-                        price: it.unitPrice,
+                        price: actualPrice,
                     };
                 });
 
@@ -165,8 +166,8 @@ export default function OrdersView({
                                         }`}
                                     >
                                         {ord.status === "PENDING"
-                                            ? "Chờ thanh toán"
-                                            : ord.status === "CONFIRMED" || (ord.status as string) === "PAID" || (ord.status as string) === "PROCESSING"
+                                            ? "Đã đặt hàng"
+                                            : ord.status === "CONFIRMED" || ord.status === "PAID" || ord.status === "PROCESSING"
                                             ? "Đã xác nhận"
                                             : ord.status === "SHIPPED"
                                             ? "Đang giao"
@@ -225,7 +226,7 @@ export default function OrdersView({
                                         </h3>
                                         <div className="grid grid-cols-4 gap-2 relative pt-2">
                                             {[
-                                                { code: "PENDING", label: "Chờ thanh toán" },
+                                                { code: "PENDING", label: "Đã đặt hàng" },
                                                 { code: "CONFIRMED", label: "Đã xác nhận" },
                                                 { code: "SHIPPED", label: "Đang giao" },
                                                 { code: "DELIVERED", label: "Đã giao hàng" },
