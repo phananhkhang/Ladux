@@ -186,7 +186,7 @@ export default function CheckoutView({
         <main className="container mx-auto px-6 py-12 max-w-6xl">
             <div className="flex items-center justify-between border-b border-neutral-900 pb-6 mb-8">
                 <div>
-                    <span className="text-xs font-mono uppercase tracking-widest text-[#00D492]">
+                    <span className="text-xs font-mono uppercase tracking-widest text-[#00FF41]">
                         XÁC NHẬN ĐƠN HÀNG LADUX
                     </span>
                     <h1 className="text-3xl font-black text-white tracking-tight mt-1">
@@ -195,7 +195,7 @@ export default function CheckoutView({
                 </div>
                 <button
                     onClick={() => setCurrentView("cart")}
-                    className="text-xs font-bold uppercase tracking-widest text-neutral-400 hover:text-[#00D492] transition"
+                    className="text-xs font-bold uppercase tracking-widest text-neutral-400 hover:text-[#00FF41] transition"
                 >
                     ← Trở lại giỏ hàng
                 </button>
@@ -208,12 +208,12 @@ export default function CheckoutView({
                     <div className="p-6 bg-neutral-950 rounded-2xl border border-neutral-900 space-y-5">
                         <div className="flex items-center justify-between">
                             <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
-                                <MapPin className="w-4 h-4 text-[#00D492]" />
+                                <MapPin className="w-4 h-4 text-[#00FF41]" />
                                 <span>1. ĐỊA CHỈ NHẬN HÀNG</span>
                             </h2>
                             <button
                                 onClick={() => setShowAddressModal(true)}
-                                className="text-xs font-bold text-[#00D492] hover:underline flex items-center gap-1"
+                                className="text-xs font-bold text-[#00FF41] hover:underline flex items-center gap-1"
                             >
                                 <Plus className="w-3.5 h-3.5" /> Thêm địa chỉ mới
                             </button>
@@ -231,7 +231,7 @@ export default function CheckoutView({
                                         onClick={() => setSelectedAddrId(addr.id)}
                                         className={`p-4 rounded-xl border cursor-pointer transition flex items-start justify-between gap-4 ${
                                             selectedAddrId === addr.id
-                                                ? "border-[#00D492] bg-[#00D492]/10"
+                                                ? "border-[#00FF41] bg-[#00FF41]/10"
                                                 : "border-neutral-800 bg-neutral-900/50 hover:border-neutral-700"
                                         }`}
                                     >
@@ -242,7 +242,7 @@ export default function CheckoutView({
                                                 </span>
                                                 <span className="font-mono text-neutral-400">({addr.phone})</span>
                                                 {addr.isDefault && (
-                                                    <span className="bg-[#00D492]/20 border border-[#00D492]/40 text-[#00D492] text-[9px] font-mono font-bold px-2 py-0.5 rounded">
+                                                    <span className="bg-[#00FF41]/20 border border-[#00FF41]/40 text-[#00FF41] text-[9px] font-mono font-bold px-2 py-0.5 rounded">
                                                         Default
                                                     </span>
                                                 )}
@@ -257,7 +257,7 @@ export default function CheckoutView({
                                         <div
                                             className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
                                                 selectedAddrId === addr.id
-                                                    ? "border-[#00D492] bg-[#00D492]"
+                                                    ? "border-[#00FF41] bg-[#00FF41]"
                                                     : "border-neutral-700"
                                             }`}
                                         >
@@ -283,7 +283,7 @@ export default function CheckoutView({
                                             type="text"
                                             value={newAddress.receiverName}
                                             onChange={(e) => setNewAddress({ ...newAddress, receiverName: e.target.value })}
-                                            className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00D492]"
+                                            className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00FF41]"
                                             placeholder="Lê Huy"
                                         />
                                     </div>
@@ -293,7 +293,7 @@ export default function CheckoutView({
                                             type="text"
                                             value={newAddress.phone}
                                             onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })}
-                                            className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white font-mono focus:outline-none focus:border-[#00D492]"
+                                            className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white font-mono focus:outline-none focus:border-[#00FF41]"
                                             placeholder="0988 123 456"
                                         />
                                     </div>
@@ -303,7 +303,7 @@ export default function CheckoutView({
                                             type="text"
                                             value={newAddress.street}
                                             onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })}
-                                            className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00D492]"
+                                            className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00FF41]"
                                             placeholder="Số 88 Tôn Thất Thuyết"
                                         />
                                     </div>
@@ -314,7 +314,7 @@ export default function CheckoutView({
                                                 type="text"
                                                 value={newAddress.ward}
                                                 onChange={(e) => setNewAddress({ ...newAddress, ward: e.target.value })}
-                                                className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00D492]"
+                                                className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00FF41]"
                                                 placeholder="Mỹ Đình 2"
                                             />
                                         </div>
@@ -324,7 +324,7 @@ export default function CheckoutView({
                                                 type="text"
                                                 value={newAddress.district}
                                                 onChange={(e) => setNewAddress({ ...newAddress, district: e.target.value })}
-                                                className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00D492]"
+                                                className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00FF41]"
                                                 placeholder="Nam Từ Liêm"
                                             />
                                         </div>
@@ -334,7 +334,7 @@ export default function CheckoutView({
                                                 type="text"
                                                 value={newAddress.city}
                                                 onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
-                                                className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00D492]"
+                                                className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-white focus:outline-none focus:border-[#00FF41]"
                                                 placeholder="Hà Nội"
                                             />
                                         </div>
@@ -363,7 +363,7 @@ export default function CheckoutView({
                                                 showToast("Không thể tạo địa chỉ mới!");
                                             }
                                         }}
-                                        className="flex-1 py-3 bg-[#00D492] text-black rounded-xl text-xs font-extrabold hover:bg-[#00bc82]"
+                                        className="flex-1 py-3 bg-[#00FF41] text-black rounded-xl text-xs font-extrabold hover:bg-[#00cc34]"
                                     >
                                         Lưu Địa Chỉ
                                     </button>
@@ -375,7 +375,7 @@ export default function CheckoutView({
                     {/* 2. Coupon Code Input */}
                     <div className="p-6 bg-neutral-950 rounded-2xl border border-neutral-900 space-y-4">
                         <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
-                            <Zap className="w-4 h-4 text-[#00D492]" />
+                            <Zap className="w-4 h-4 text-[#00FF41]" />
                             <span>2. MÃ GIẢM GIÁ / COUPON</span>
                         </h2>
 
@@ -385,11 +385,11 @@ export default function CheckoutView({
                                 value={couponCodeInput}
                                 onChange={(e) => setCouponCodeInput(e.target.value)}
                                 placeholder="Nhập mã (Ví dụ: LADUX2M hoặc WELCOME10)"
-                                className="flex-1 bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-xs text-white font-mono placeholder:text-neutral-600 focus:outline-none focus:border-[#00D492]"
+                                className="flex-1 bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-xs text-white font-mono placeholder:text-neutral-600 focus:outline-none focus:border-[#00FF41]"
                             />
                             <button
                                 onClick={handleApplyCoupon}
-                                className="bg-[#00D492] text-black px-6 py-3 rounded-xl text-xs font-extrabold uppercase hover:bg-[#00bc82] transition shrink-0"
+                                className="bg-[#00FF41] text-black px-6 py-3 rounded-xl text-xs font-extrabold uppercase hover:bg-[#00cc34] transition shrink-0"
                             >
                                 Áp dụng
                             </button>
@@ -403,9 +403,9 @@ export default function CheckoutView({
                         )}
 
                         {appliedCouponItem && (
-                            <div className="p-3 bg-[#00D492]/10 border border-[#00D492]/30 rounded-xl flex items-center justify-between text-xs">
+                            <div className="p-3 bg-[#00FF41]/10 border border-[#00FF41]/30 rounded-xl flex items-center justify-between text-xs">
                                 <div>
-                                    <span className="font-mono font-bold text-[#00D492]">
+                                    <span className="font-mono font-bold text-[#00FF41]">
                                         {appliedCouponItem.code}
                                     </span>
                                     <p className="text-neutral-400 text-[11px]">{appliedCouponItem.description}</p>
@@ -427,7 +427,7 @@ export default function CheckoutView({
                     {/* 3. Payment Method Selection */}
                     <div className="p-6 bg-neutral-950 rounded-2xl border border-neutral-900 space-y-4">
                         <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
-                            <Lock className="w-4 h-4 text-[#00D492]" />
+                            <Lock className="w-4 h-4 text-[#00FF41]" />
                             <span>3. PHƯƠNG THỨC THANH TOÁN</span>
                         </h2>
 
@@ -437,7 +437,7 @@ export default function CheckoutView({
                                 onClick={() => setPaymentProvider("VNPAY")}
                                 className={`p-4 rounded-xl border cursor-pointer transition flex items-center justify-between ${
                                     paymentProvider === "VNPAY"
-                                        ? "border-[#00D492] bg-[#00D492]/10"
+                                        ? "border-[#00FF41] bg-[#00FF41]/10"
                                         : "border-neutral-800 bg-neutral-900/50 hover:border-neutral-700"
                                 }`}
                             >
@@ -452,7 +452,7 @@ export default function CheckoutView({
                                 </div>
                                 <div
                                     className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                                        paymentProvider === "VNPAY" ? "border-[#00D492] bg-[#00D492]" : "border-neutral-700"
+                                        paymentProvider === "VNPAY" ? "border-[#00FF41] bg-[#00FF41]" : "border-neutral-700"
                                     }`}
                                 >
                                     {paymentProvider === "VNPAY" && <div className="w-1.5 h-1.5 rounded-full bg-black" />}
@@ -464,12 +464,12 @@ export default function CheckoutView({
                                 onClick={() => setPaymentProvider("COD")}
                                 className={`p-4 rounded-xl border cursor-pointer transition flex items-center justify-between ${
                                     paymentProvider === "COD"
-                                        ? "border-[#00D492] bg-[#00D492]/10"
+                                        ? "border-[#00FF41] bg-[#00FF41]/10"
                                         : "border-neutral-800 bg-neutral-900/50 hover:border-neutral-700"
                                 }`}
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-lg bg-emerald-900/30 border border-emerald-500/30 flex items-center justify-center font-bold text-[#00D492] text-xs">
+                                    <div className="w-10 h-10 rounded-lg bg-emerald-900/30 border border-emerald-500/30 flex items-center justify-center font-bold text-[#00FF41] text-xs">
                                         COD
                                     </div>
                                     <div>
@@ -479,7 +479,7 @@ export default function CheckoutView({
                                 </div>
                                 <div
                                     className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                                        paymentProvider === "COD" ? "border-[#00D492] bg-[#00D492]" : "border-neutral-700"
+                                        paymentProvider === "COD" ? "border-[#00FF41] bg-[#00FF41]" : "border-neutral-700"
                                     }`}
                                 >
                                     {paymentProvider === "COD" && <div className="w-1.5 h-1.5 rounded-full bg-black" />}
@@ -543,19 +543,19 @@ export default function CheckoutView({
 
                             <div className="flex justify-between text-neutral-400">
                                 <span>Giảm giá (discountAmount):</span>
-                                <span className="text-[#00D492] font-semibold">
+                                <span className="text-[#00FF41] font-semibold">
                                     -{formatVND(discountAmount)}
                                 </span>
                             </div>
 
                             <div className="flex justify-between text-neutral-400">
                                 <span>Phí vận chuyển (shippingFee):</span>
-                                <span className="text-[#00D492] font-semibold">MIỄN PHÍ</span>
+                                <span className="text-[#00FF41] font-semibold">MIỄN PHÍ</span>
                             </div>
 
                             <div className="pt-4 border-t border-neutral-900 flex justify-between items-baseline">
                                 <span className="text-sm font-bold text-white uppercase">Tổng cộng (finalAmount):</span>
-                                <span className="text-2xl font-black text-[#00D492]">
+                                <span className="text-2xl font-black text-[#00FF41]">
                                     {formatVND(finalAmount)}
                                 </span>
                             </div>
@@ -565,7 +565,7 @@ export default function CheckoutView({
                         <button
                             onClick={handlePlaceOrder}
                             disabled={isSubmitting || cartItemsList.length === 0}
-                            className="w-full bg-[#00D492] text-black py-4 rounded-xl font-extrabold text-sm uppercase tracking-wider hover:bg-[#00bc82] transition shadow-lg shadow-[#00D492]/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                            className="w-full bg-[#00FF41] text-black py-4 rounded-xl font-extrabold text-sm uppercase tracking-wider hover:bg-[#00cc34] transition shadow-lg shadow-[#00FF41]/20 flex items-center justify-center gap-2 disabled:opacity-50"
                         >
                             <CheckCircle2 className="w-5 h-5" />
                             <span>{isSubmitting ? "ĐANG XỬ LÝ ĐƠN HÀNG..." : "ĐẶT HÀNG NGAY"}</span>
@@ -573,7 +573,7 @@ export default function CheckoutView({
 
                         <div className="pt-2 flex items-center justify-center gap-4 text-[10px] text-neutral-500 font-mono">
                             <span className="flex items-center gap-1">
-                                <Lock className="w-3.5 h-3.5 text-[#00D492]" /> Thanh toán SSL 256-bit
+                                <Lock className="w-3.5 h-3.5 text-[#00FF41]" /> Thanh toán SSL 256-bit
                             </span>
                             <span>•</span>
                             <span>Đổi trả 30 ngày</span>

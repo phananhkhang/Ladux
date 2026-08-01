@@ -264,8 +264,8 @@ export default function App() {
 
     if (currentView === "login") {
         return (
-            <div className="dark min-h-screen overflow-x-hidden bg-[#080a0b] text-white font-sans selection:bg-[#00D492] selection:text-[#07100e]">
-                <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_78%_8%,rgba(0,212,146,0.12),transparent_24%),radial-gradient(circle_at_14%_56%,rgba(93,77,155,0.1),transparent_28%)]" />
+            <div className="dark min-h-screen overflow-x-hidden bg-[#080a0b] text-white font-sans selection:bg-[#00FF41] selection:text-[#000000]">
+                <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_78%_8%,rgba(0,255,65,0.12),transparent_24%),radial-gradient(circle_at_14%_56%,rgba(93,77,155,0.1),transparent_28%)]" />
                 {notificationMsg && (
                     <div className="fixed bottom-6 right-6 z-50 bg-white text-black px-5 py-3 rounded-md shadow-2xl text-sm font-medium flex items-center gap-3 border border-neutral-200">
                         <Check className="w-4 h-4 text-emerald-600" />
@@ -298,8 +298,8 @@ export default function App() {
 
     if (currentView === "register") {
         return (
-            <div className="dark min-h-screen overflow-x-hidden bg-[#080a0b] text-white font-sans selection:bg-[#00D492] selection:text-[#07100e]">
-                <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_78%_8%,rgba(0,212,146,0.12),transparent_24%),radial-gradient(circle_at_14%_56%,rgba(93,77,155,0.1),transparent_28%)]" />
+            <div className="dark min-h-screen overflow-x-hidden bg-[#080a0b] text-white font-sans selection:bg-[#00FF41] selection:text-[#000000]">
+                <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_78%_8%,rgba(0,255,65,0.12),transparent_24%),radial-gradient(circle_at_14%_56%,rgba(93,77,155,0.1),transparent_28%)]" />
                 {notificationMsg && (
                     <div className="fixed bottom-6 right-6 z-50 bg-white text-black px-5 py-3 rounded-md shadow-2xl text-sm font-medium flex items-center gap-3 border border-neutral-200">
                         <Check className="w-4 h-4 text-emerald-600" />
@@ -328,9 +328,9 @@ export default function App() {
     }
 
     return (
-        <div className="dark min-h-screen overflow-x-hidden bg-[#080a0b] text-white font-sans selection:bg-[#00D492] selection:text-[#07100e]">
+        <div className="dark min-h-screen overflow-x-hidden bg-[#080a0b] text-white font-sans selection:bg-[#00FF41] selection:text-[#000000]">
             {/* Background Ambient Glow */}
-            <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_78%_8%,rgba(0,212,146,0.12),transparent_24%),radial-gradient(circle_at_14%_56%,rgba(93,77,155,0.1),transparent_28%)]" />
+            <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_78%_8%,rgba(0,255,65,0.12),transparent_24%),radial-gradient(circle_at_14%_56%,rgba(93,77,155,0.1),transparent_28%)]" />
 
             {/* Notification Toast */}
             {notificationMsg && (

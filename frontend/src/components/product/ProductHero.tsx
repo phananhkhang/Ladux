@@ -8,13 +8,13 @@ export interface ProductHeroProps {
 
 export default function ProductHero({ onShopNowClick, onAiConsultClick }: ProductHeroProps) {
     return (
-        <section className="relative overflow-hidden pt-8 pb-12 lg:pt-12 lg:pb-16 border-b border-white/[0.08]">
-            <div className="pointer-events-none absolute -right-32 top-0 h-[34rem] w-[34rem] rounded-full bg-[#00D492]/[0.07] blur-3xl" />
+        <section className="relative overflow-hidden pt-8 pb-12 lg:pt-12 lg:pb-16 border-b border-white/[0.08] bg-black">
+            <div className="pointer-events-none absolute -right-32 top-0 h-[34rem] w-[34rem] rounded-full bg-[#00FF41]/[0.05] blur-3xl" />
             <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                <div className="lg:col-span-6 space-y-6 lg:space-y-8">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-[#00D492]/40 bg-[#00D492]/10 px-4 py-1.5 backdrop-blur-md">
-                        <Zap className="w-3.5 h-3.5 text-[#00D492] fill-[#00D492]" />
-                        <span className="text-[11px] font-bold font-mono tracking-wider uppercase text-[#00D492]">
+                <div className="lg:col-span-6 space-y-6 lg:space-y-5 ml-25 mb-15">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-[#00FF41]/40 bg-[#00FF41]/10 px-4 py-1.5 backdrop-blur-md">
+                        <Zap className="w-3.5 h-3.5 text-[#00FF41] fill-[#00FF41]" />
+                        <span className="text-[11px] font-bold font-mono tracking-wider uppercase text-[#00FF41]">
                             LADUX PREMIUM STORE — CHÍNH HÃNG NEW SEAL 100%
                         </span>
                     </div>
@@ -22,7 +22,7 @@ export default function ProductHero({ onShopNowClick, onAiConsultClick }: Produc
                     <div className="space-y-2">
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
                             Laptop{" "}
-                            <span className="text-[#00D492] font-script italic font-normal text-5xl sm:text-6xl lg:text-7xl">
+                            <span className="text-[#00FF41] font-script italic font-normal text-5xl sm:text-6xl lg:text-7xl">
                                 perfect
                             </span>{" "}
                             for
@@ -31,7 +31,7 @@ export default function ProductHero({ onShopNowClick, onAiConsultClick }: Produc
                             anyone.
                         </h2>
                         <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-neutral-500 leading-none pt-1">
-                            Laptop <span className="text-[#00D492]">premium</span>
+                            Laptop <span className="text-[#00FF41]">premium</span>
                         </h2>
                     </div>
 
@@ -42,7 +42,7 @@ export default function ProductHero({ onShopNowClick, onAiConsultClick }: Produc
                     <div className="flex flex-wrap items-center gap-4 pt-2">
                         <button
                             onClick={onShopNowClick}
-                            className="bg-[#00D492] hover:bg-[#00bc82] text-black font-extrabold px-7 py-3.5 rounded-full text-sm flex items-center gap-2 transition-transform hover:scale-105 shadow-lg shadow-[#00D492]/20"
+                            className="bg-[#00FF41] hover:bg-[#00cc34] text-black font-extrabold px-7 py-3.5 rounded-full text-sm flex items-center gap-2 transition-transform hover:scale-105 shadow-lg shadow-[#00FF41]/20"
                         >
                             <span>Mua ngay</span>
                             <ChevronRight className="w-4 h-4 stroke-[3]" />

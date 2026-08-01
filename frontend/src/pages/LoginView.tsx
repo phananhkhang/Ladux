@@ -37,15 +37,15 @@ export default function LoginView({ onLoginSuccess, onLogin, onGoRegister, onBac
             <div className="w-full max-w-md">
                 <button
                     onClick={onBack}
-                    className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-500 hover:text-[#00D492] mb-10 transition-colors"
+                    className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-500 hover:text-[#00FF41] mb-10 transition-colors"
                 >
                     <ArrowLeft className="w-3.5 h-3.5" /> Quay lại cửa hàng
                 </button>
 
                 <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-8 sm:p-10 backdrop-blur-md">
                     <div className="mb-8 text-center">
-                        <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00D492]/15 border border-[#00D492]/30 mb-4">
-                            <Lock className="w-6 h-6 text-[#00D492]" />
+                        <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00FF41]/15 border border-[#00FF41]/30 mb-4">
+                            <Lock className="w-6 h-6 text-[#00FF41]" />
                         </div>
                         <h1 className="text-2xl font-black tracking-tight text-white">Đăng nhập</h1>
                         <p className="mt-1.5 text-xs text-neutral-500">Chào mừng trở lại với LADUX</p>
@@ -69,7 +69,7 @@ export default function LoginView({ onLoginSuccess, onLogin, onGoRegister, onBac
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 placeholder="Nhập username hoặc email..."
-                                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#00D492]/60 focus:ring-1 focus:ring-[#00D492]/30 transition"
+                                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#00FF41]/60 focus:ring-1 focus:ring-[#00FF41]/30 transition"
                             />
                         </div>
 
@@ -83,14 +83,14 @@ export default function LoginView({ onLoginSuccess, onLogin, onGoRegister, onBac
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#00D492]/60 focus:ring-1 focus:ring-[#00D492]/30 transition"
+                                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#00FF41]/60 focus:ring-1 focus:ring-[#00FF41]/30 transition"
                             />
                         </div>
 
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full rounded-xl bg-[#00D492] py-3.5 text-sm font-extrabold text-black uppercase tracking-wider hover:bg-[#00bc82] disabled:opacity-60 transition-all hover:scale-[1.02] active:scale-100 mt-2"
+                            className="w-full rounded-xl bg-[#00FF41] py-3.5 text-sm font-extrabold text-black uppercase tracking-wider hover:bg-[#00cc34] disabled:opacity-60 transition-all hover:scale-[1.02] active:scale-100 mt-2"
                         >
                             {isLoading ? "Đang xác thực API..." : "Đăng Nhập"}
                         </button>
@@ -101,7 +101,7 @@ export default function LoginView({ onLoginSuccess, onLogin, onGoRegister, onBac
                         <button
                             type="button"
                             onClick={onGoRegister}
-                            className="font-bold text-[#00D492] hover:underline cursor-pointer transition-colors"
+                            className="font-bold text-[#00FF41] hover:underline cursor-pointer transition-colors"
                         >
                             Đăng ký ngay
                         </button>

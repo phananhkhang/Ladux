@@ -64,6 +64,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderStateMachine orderStateMachine;
     private final StockMovementService stockMovementService;
 
+    private static final BigDecimal FIXED_SHIPPING_FEE = BigDecimal.valueOf(30000);
+
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "orders", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
@@ -161,11 +163,16 @@ public class OrderServiceImpl implements OrderService {
         CouponRedemptionResult redemption = couponRedemptionService.redeem(request.couponCode(), subTotal);
         Coupon coupon = redemption.coupon();
         BigDecimal discountAmount = redemption.discountAmount();
-
+        BigDecimal shippingFee = FIXED_SHIPPING_FEE;
+        String carrier = "VNPOST";
         // B7: tính số tiền cuối cùng sau khi trừ giảm giá, đảm bảo không âm.
         BigDecimal finalAmount = subTotal.subtract(discountAmount)
+                .add(shippingFee)
                 .max(BigDecimal.ZERO)
                 .setScale(2, RoundingMode.HALF_UP);
+        if (finalAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            finalAmount = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+        }
         ShippingAddress shippingAddress = ShippingAddress.builder()
                 .receiverName(request.shippingAddress().receiverName())
                 .phone(request.shippingAddress().phone())
@@ -182,6 +189,8 @@ public class OrderServiceImpl implements OrderService {
                 .status(OrderStatus.PENDING)
                 .shippingAddress(shippingAddress)
                 .user(user)
+                .carrierName(carrier)
+                .shippingFee(shippingFee)
                 .build();
 
         // B8: thêm các dòng sản phẩm vào đơn hàng.

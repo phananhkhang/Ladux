@@ -22,11 +22,11 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     Page<Order> findAll(Pageable pageable);
 
     // Lấy page ID đơn giản, KHÔNG join collection — tránh MultipleBagFetchException với Pageable
-    @Query("select o.id from Order o where o.user.id = :userId")
+    @Query("select o.id from Order o where o.user.id = :userId order by o.id desc")
     Page<Integer> findIdsByUserId(@Param("userId") Integer userId, Pageable pageable);
 
-    // Fetch đầy đủ items + product + payments cho danh sách IDs đã biết
-    @EntityGraph(attributePaths = {"user", "coupon", "payments", "items", "items.product", "items.productVariant"})
+    // Fetch đầy đủ items + product cho danh sách IDs đã biết (tránh MultipleBagFetchException khi join cả payments)
+    @EntityGraph(attributePaths = {"user", "coupon", "items", "items.product", "items.productVariant"})
     @Query("select o from Order o where o.id in :ids")
     List<Order> findByIdIn(@Param("ids") List<Integer> ids);
 

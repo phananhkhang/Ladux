@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.akira.ladux.model.enums.PaymentProvider;
 
+import java.math.BigDecimal;
+
 public record OrderRequest(
         String couponCode,
 
@@ -12,5 +14,14 @@ public record OrderRequest(
 
         @NotNull(message = "ShippingAddress khong duoc de trong")
         @Valid
-        ShippingAddressRequest shippingAddress
-) {}
+        ShippingAddressRequest shippingAddress,
+
+        String carrier,
+
+        BigDecimal shippingFee
+) {
+    public OrderRequest(String couponCode, PaymentProvider paymentProvider, ShippingAddressRequest shippingAddress) {
+        this(couponCode, paymentProvider, shippingAddress, null, null);
+    }
+}
+

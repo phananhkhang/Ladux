@@ -25,7 +25,7 @@ export default function WishlistView({
         <main className="container mx-auto px-6 py-12 max-w-6xl">
             <div className="flex items-center justify-between border-b border-neutral-900 pb-6 mb-8">
                 <div>
-                    <span className="text-xs font-mono uppercase tracking-widest text-[#00D492]">
+                    <span className="text-xs font-mono uppercase tracking-widest text-[#00FF41]">
                         LADUX FAVORITES ({mappedWishlistProducts.length})
                     </span>
                     <h1 className="text-3xl font-black text-white tracking-tight mt-1">
@@ -34,7 +34,7 @@ export default function WishlistView({
                 </div>
                 <button
                     onClick={() => setCurrentView("store")}
-                    className="text-xs font-bold uppercase tracking-widest text-neutral-400 hover:text-[#00D492] transition"
+                    className="text-xs font-bold uppercase tracking-widest text-neutral-400 hover:text-[#00FF41] transition"
                 >
                     ← Trở lại cửa hàng
                 </button>
@@ -42,7 +42,7 @@ export default function WishlistView({
 
             {isLoading ? (
                 <div className="py-20 text-center space-y-4">
-                    <div className="inline-block w-8 h-8 border-2 border-[#00D492] border-t-transparent rounded-full animate-spin"></div>
+                    <div className="inline-block w-8 h-8 border-2 border-[#00FF41] border-t-transparent rounded-full animate-spin"></div>
                     <p className="text-neutral-400 text-xs font-mono">Đang nạp danh sách yêu thích từ máy chủ...</p>
                 </div>
             ) : mappedWishlistProducts.length === 0 ? (
@@ -58,7 +58,7 @@ export default function WishlistView({
                     </div>
                     <button
                         onClick={() => setCurrentView("store")}
-                        className="bg-[#00D492] text-black font-extrabold px-8 py-3.5 rounded-xl text-xs uppercase tracking-wider hover:bg-[#00bc82] transition shadow-lg shadow-[#00D492]/20"
+                        className="bg-[#00FF41] text-black font-extrabold px-8 py-3.5 rounded-xl text-xs uppercase tracking-wider hover:bg-[#00cc34] transition shadow-lg shadow-[#00FF41]/20"
                     >
                         Khám phá Laptop ngay
                     </button>
@@ -68,7 +68,7 @@ export default function WishlistView({
                     {mappedWishlistProducts.map((laptop) => (
                         <div
                             key={laptop.id}
-                            className="group relative overflow-hidden rounded-2xl border border-white/[0.09] bg-white/[0.035] shadow-[0_18px_60px_rgba(0,0,0,0.25)] transition-all duration-500 hover:-translate-y-1 hover:border-[#00D492]/60 hover:shadow-[0_22px_80px_rgba(0,212,146,0.12)] flex flex-col justify-between"
+                            className="group relative overflow-hidden rounded-2xl border border-white/[0.09] bg-white/[0.035] shadow-[0_18px_60px_rgba(0,0,0,0.25)] transition-all duration-500 hover:-translate-y-1 hover:border-[#00FF41]/60 hover:shadow-[0_22px_80px_rgba(0,255,65,0.12)] flex flex-col justify-between"
                         >
                             <div>
                                 <div className="relative aspect-[4/3] bg-neutral-900 overflow-hidden">
@@ -76,7 +76,7 @@ export default function WishlistView({
                                     <button
                                         onClick={() => storeToggleWishlist(laptop.id)}
                                         aria-label="Xóa khỏi yêu thích"
-                                        className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-[#00D492]/60 bg-[#00D492] text-[#07100e] backdrop-blur-md transition-all duration-300 hover:scale-110"
+                                        className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-[#00FF41]/60 bg-[#00FF41] text-black backdrop-blur-md transition-all duration-300 hover:scale-110"
                                     >
                                         <Heart className="h-4 w-4 fill-current" />
                                     </button>
@@ -110,7 +110,7 @@ export default function WishlistView({
                             </div>
 
                             <div className="p-5 pt-0 border-t border-neutral-900 mt-2">
-                                <div className="my-3 text-lg font-bold font-mono text-[#00D492]">
+                                <div className="my-3 text-lg font-bold font-mono text-[#00FF41]">
                                     {formatVND(laptop.discountPrice || laptop.price)}
                                 </div>
                                 <div className="grid grid-cols-2 gap-2">
@@ -128,7 +128,7 @@ export default function WishlistView({
                                             setSelectedProduct(laptop);
                                             setCurrentView("product-detail");
                                         }}
-                                        className="bg-[#00D492] text-black py-2.5 rounded-xl text-xs font-bold hover:bg-[#00bc82] transition"
+                                        className="bg-[#00FF41] text-black py-2.5 rounded-xl text-xs font-bold hover:bg-[#00cc34] transition"
                                     >
                                         Chọn Cấu Hình
                                     </button>

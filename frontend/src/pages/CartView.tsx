@@ -28,7 +28,7 @@ export default function CartView({
         <main className="container mx-auto px-6 py-12 max-w-6xl">
             <div className="flex items-center justify-between border-b border-neutral-900 pb-6 mb-8">
                 <div>
-                    <span className="text-xs font-mono uppercase tracking-widest text-[#00D492]">
+                    <span className="text-xs font-mono uppercase tracking-widest text-[#00FF41]">
                         GIỎ HÀNG LADUX ({totalCount})
                     </span>
                     <h1 className="text-3xl font-black text-white tracking-tight mt-1">
@@ -37,7 +37,7 @@ export default function CartView({
                 </div>
                 <button
                     onClick={() => setCurrentView("store")}
-                    className="text-xs font-bold uppercase tracking-widest text-neutral-400 hover:text-[#00D492] transition"
+                    className="text-xs font-bold uppercase tracking-widest text-neutral-400 hover:text-[#00FF41] transition"
                 >
                     ← Tiếp tục xem sản phẩm
                 </button>
@@ -45,7 +45,7 @@ export default function CartView({
 
             {isLoading ? (
                 <div className="py-20 text-center space-y-4">
-                    <div className="inline-block w-8 h-8 border-2 border-[#00D492] border-t-transparent rounded-full animate-spin"></div>
+                    <div className="inline-block w-8 h-8 border-2 border-[#00FF41] border-t-transparent rounded-full animate-spin"></div>
                     <p className="text-neutral-400 text-xs font-mono">Đang cập nhật giỏ hàng từ máy chủ...</p>
                 </div>
             ) : cartItemsList.length === 0 ? (
@@ -62,7 +62,7 @@ export default function CartView({
                     </div>
                     <button
                         onClick={() => setCurrentView("store")}
-                        className="bg-[#00D492] text-black font-extrabold px-8 py-3.5 rounded-xl text-xs uppercase tracking-wider hover:bg-[#00bc82] transition shadow-lg shadow-[#00D492]/20"
+                        className="bg-[#00FF41] text-black font-extrabold px-8 py-3.5 rounded-xl text-xs uppercase tracking-wider hover:bg-[#00cc34] transition shadow-lg shadow-[#00FF41]/20"
                     >
                         Khám phá Laptop ngay
                     </button>
@@ -90,7 +90,7 @@ export default function CartView({
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <span className="text-[10px] font-mono text-[#00D492] font-bold uppercase">
+                                            <span className="text-[10px] font-mono text-[#00FF41] font-bold uppercase">
                                                 {mappedProduct.brand}
                                             </span>
                                             <h3
@@ -107,7 +107,7 @@ export default function CartView({
                                                     {mappedProduct.ram || "Standard"} / {mappedProduct.rom || "SSD"}
                                                 </span>
                                             </p>
-                                            <p className="text-sm font-mono font-bold text-[#00D492] pt-1">
+                                            <p className="text-sm font-mono font-bold text-[#00FF41] pt-1">
                                                 {formatVND(itemPrice)}
                                             </p>
                                         </div>
@@ -173,11 +173,11 @@ export default function CartView({
 
                                 <div className="flex justify-between text-neutral-400">
                                     <span>Phí vận chuyển bảo hiểm:</span>
-                                    <span className="text-[#00D492] font-semibold">MIỄN PHÍ</span>
+                                    <span className="text-[#00FF41] font-semibold">MIỄN PHÍ</span>
                                 </div>
 
                                 {appliedCoupon && (
-                                    <div className="flex justify-between text-[#00D492]">
+                                    <div className="flex justify-between text-[#00FF41]">
                                         <span>Giảm giá ({appliedCoupon.code}):</span>
                                         <span className="font-semibold">
                                             -{formatVND(appliedCoupon.discountAmount)}
@@ -187,7 +187,7 @@ export default function CartView({
 
                                 <div className="pt-4 border-t border-neutral-900 flex justify-between items-baseline">
                                     <span className="text-sm font-bold text-white uppercase">Tổng thanh toán:</span>
-                                    <span className="text-2xl font-black text-[#00D492]">
+                                    <span className="text-2xl font-black text-[#00FF41]">
                                         {formatVND(finalAmount)}
                                     </span>
                                 </div>
@@ -195,7 +195,7 @@ export default function CartView({
 
                             <button
                                 onClick={() => setCurrentView("checkout")}
-                                className="w-full bg-[#00D492] text-black py-4 rounded-xl font-extrabold text-sm uppercase tracking-wider hover:bg-[#00bc82] transition shadow-lg shadow-[#00D492]/20 flex items-center justify-center gap-2"
+                                className="w-full bg-[#00FF41] text-black py-4 rounded-xl font-extrabold text-sm uppercase tracking-wider hover:bg-[#00cc34] transition shadow-lg shadow-[#00FF41]/20 flex items-center justify-center gap-2"
                             >
                                 <span>TIẾN HÀNH THANH TOÁN</span>
                                 <ChevronRight className="w-4 h-4 stroke-[3]" />
@@ -203,11 +203,11 @@ export default function CartView({
 
                             <div className="pt-2 text-[10px] text-neutral-500 font-mono space-y-2">
                                 <p className="flex items-center gap-2">
-                                    <ShieldCheck className="w-3.5 h-3.5 text-[#00D492]" />
+                                    <ShieldCheck className="w-3.5 h-3.5 text-[#00FF41]" />
                                     Cam kết bảo mật thông tin thanh toán 100%
                                 </p>
                                 <p className="flex items-center gap-2">
-                                    <Truck className="w-3.5 h-3.5 text-[#00D492]" />
+                                    <Truck className="w-3.5 h-3.5 text-[#00FF41]" />
                                     Giao hàng hỏa tốc trong 2h tại Hà Nội & TP.HCM
                                 </p>
                             </div>

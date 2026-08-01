@@ -9,7 +9,7 @@ export default function ContactView({ showToast }: ContactViewProps) {
     return (
         <main className="container mx-auto px-6 py-16 max-w-4xl space-y-12">
             <div className="text-center space-y-4">
-                <span className="text-xs font-mono text-[#00D492] uppercase tracking-widest">
+                <span className="text-xs font-mono text-[#00FF41] uppercase tracking-widest">
                     CONTACT US
                 </span>
                 <h1 className="text-4xl font-black">LIÊN HỆ VỚI LADUX</h1>
@@ -53,7 +53,7 @@ export default function ContactView({ showToast }: ContactViewProps) {
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-[#00D492] text-black py-3 rounded text-xs font-extrabold uppercase"
+                        className="w-full bg-[#00FF41] text-black py-3 rounded text-xs font-extrabold uppercase"
                     >
                         Gửi Yêu Cầu
                     </button>
@@ -61,7 +61,7 @@ export default function ContactView({ showToast }: ContactViewProps) {
 
                 <div className="space-y-6 text-xs">
                     <div className="flex items-start gap-4 p-4 bg-neutral-950 border border-neutral-900 rounded-xl">
-                        <MapPin className="w-5 h-5 text-[#00D492] shrink-0" />
+                        <MapPin className="w-5 h-5 text-[#00FF41] shrink-0" />
                         <div>
                             <h4 className="font-bold text-white mb-1">Showroom Chính</h4>
                             <p className="text-neutral-400">
@@ -70,14 +70,14 @@ export default function ContactView({ showToast }: ContactViewProps) {
                         </div>
                     </div>
                     <div className="flex items-start gap-4 p-4 bg-neutral-950 border border-neutral-900 rounded-xl">
-                        <Phone className="w-5 h-5 text-[#00D492] shrink-0" />
+                        <Phone className="w-5 h-5 text-[#00FF41] shrink-0" />
                         <div>
                             <h4 className="font-bold text-white mb-1">Hotline Hỗ Trợ Khách Hàng</h4>
                             <p className="text-neutral-400 font-mono">1900 888 999 (24/7)</p>
                         </div>
                     </div>
                     <div className="flex items-start gap-4 p-4 bg-neutral-950 border border-neutral-900 rounded-xl">
-                        <Mail className="w-5 h-5 text-[#00D492] shrink-0" />
+                        <Mail className="w-5 h-5 text-[#00FF41] shrink-0" />
                         <div>
                             <h4 className="font-bold text-white mb-1">Email Liên Hệ & B2B</h4>
                             <p className="text-neutral-400 font-mono">contact@ladux.vn / b2b@ladux.vn</p>

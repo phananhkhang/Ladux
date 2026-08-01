@@ -24,7 +24,7 @@ import jakarta.servlet.http.HttpServletResponse;
 /**
  * Rate limit cho endpoint dang nhap: gioi han so lan POST /api/v1/auth/login theo IP client.
  *
- * <p>Chay som (HIGHEST_PRECEDENCE) de chan TRUOC khi ton tai nguyen xac thuc. Bucket duoc luu
+ * Chay som (HIGHEST_PRECEDENCE) de chan TRUOC khi ton tai nguyen xac thuc. Bucket duoc luu
  * tren Redis (qua ProxyManager) nen gioi han dung chung cho moi instance. Vuot nguong -> 429.
  */
 @Component

@@ -78,6 +78,9 @@ public class Order {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
+    @Column(name = "shipping_fee", nullable = false, precision = 15, scale = 2)
+    private BigDecimal shippingFee;
+
     private Instant paymentExpiresAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)

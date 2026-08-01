@@ -166,7 +166,7 @@ export default function ProductStoreView({
                         <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
                             Danh mục nổi bật
                         </h2>
-                        <div className="w-12 h-1 bg-[#00D492] mx-auto mt-3 rounded-full" />
+                        <div className="w-12 h-1 bg-[#00FF41] mx-auto mt-3 rounded-full" />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
@@ -189,7 +189,7 @@ export default function ProductStoreView({
                                         if (lenovoBrand) setBrandFilter(lenovoBrand.id);
                                         document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
                                     }}
-                                    className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00D492]/10 hover:border-[#00D492] hover:shadow-[0_0_15px_rgba(0,212,146,0.15)] text-white hover:text-[#00D492] transition-all duration-300 group"
+                                    className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00FF41]/10 hover:border-[#00FF41] hover:shadow-[0_0_15px_rgba(0,255,65,0.15)] text-white hover:text-[#00FF41] transition-all duration-300 group"
                                 >
                                     <span className="text-xs sm:text-sm font-extrabold tracking-wider uppercase">WORKSTATION</span>
                                     <span className="text-[10px] sm:text-[11px] text-neutral-400 group-hover:text-neutral-300 font-medium mt-0.5">P - Series</span>
@@ -200,7 +200,7 @@ export default function ProductStoreView({
                                         if (lenovoBrand) setBrandFilter(lenovoBrand.id);
                                         document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
                                     }}
-                                    className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00D492]/10 hover:border-[#00D492] hover:shadow-[0_0_15px_rgba(0,212,146,0.15)] text-white hover:text-[#00D492] transition-all duration-300 group"
+                                    className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00FF41]/10 hover:border-[#00FF41] hover:shadow-[0_0_15px_rgba(0,255,65,0.15)] text-white hover:text-[#00FF41] transition-all duration-300 group"
                                 >
                                     <span className="text-xs sm:text-sm font-extrabold tracking-wider uppercase">BUSINESS</span>
                                     <span className="text-[10px] sm:text-[11px] text-neutral-400 group-hover:text-neutral-300 font-medium mt-0.5">X - Series</span>
@@ -220,7 +220,7 @@ export default function ProductStoreView({
                                         if (dellBrand) setBrandFilter(dellBrand.id);
                                         document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
                                     }}
-                                    className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00D492]/10 hover:border-[#00D492] hover:shadow-[0_0_15px_rgba(0,212,146,0.15)] text-white hover:text-[#00D492] transition-all duration-300 group"
+                                    className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00FF41]/10 hover:border-[#00FF41] hover:shadow-[0_0_15px_rgba(0,255,65,0.15)] text-white hover:text-[#00FF41] transition-all duration-300 group"
                                 >
                                     <span className="text-xs sm:text-sm font-extrabold tracking-wider uppercase">WORKSTATION</span>
                                     <span className="text-[10px] sm:text-[11px] text-neutral-400 group-hover:text-neutral-300 font-medium mt-0.5">Precision</span>
@@ -231,7 +231,7 @@ export default function ProductStoreView({
                                         if (dellBrand) setBrandFilter(dellBrand.id);
                                         document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
                                     }}
-                                    className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00D492]/10 hover:border-[#00D492] hover:shadow-[0_0_15px_rgba(0,212,146,0.15)] text-white hover:text-[#00D492] transition-all duration-300 group"
+                                    className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00FF41]/10 hover:border-[#00FF41] hover:shadow-[0_0_15px_rgba(0,255,65,0.15)] text-white hover:text-[#00FF41] transition-all duration-300 group"
                                 >
                                     <span className="text-xs sm:text-sm font-extrabold tracking-wider uppercase">GAMING</span>
                                     <span className="text-[10px] sm:text-[11px] text-neutral-400 group-hover:text-neutral-300 font-medium mt-0.5">Alienware, G Series</span>
@@ -253,7 +253,7 @@ export default function ProductStoreView({
                                         if (hpBrand) setBrandFilter(hpBrand.id);
                                         document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
                                     }}
-                                    className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00D492]/10 hover:border-[#00D492] hover:shadow-[0_0_15px_rgba(0,212,146,0.15)] text-white hover:text-[#00D492] transition-all duration-300 group"
+                                    className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00FF41]/10 hover:border-[#00FF41] hover:shadow-[0_0_15px_rgba(0,255,65,0.15)] text-white hover:text-[#00FF41] transition-all duration-300 group"
                                 >
                                     <span className="text-xs sm:text-sm font-extrabold tracking-wider uppercase">BUSINESS & GAMING</span>
                                     <span className="text-[10px] sm:text-[11px] text-neutral-400 group-hover:text-neutral-300 font-medium mt-0.5">Spectre, Elite, OMEN</span>
@@ -271,7 +271,7 @@ export default function ProductStoreView({
                         <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
                             Lựa chọn nhu cầu
                         </h2>
-                        <div className="w-12 h-1 bg-[#00D492] mx-auto mt-3 rounded-full" />
+                        <div className="w-12 h-1 bg-[#00FF41] mx-auto mt-3 rounded-full" />
                     </div>
 
                     <div className="flex items-start justify-start md:justify-center gap-6 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
@@ -285,14 +285,14 @@ export default function ProductStoreView({
                                 }}
                                 className="flex flex-col items-center text-center shrink-0 w-28 cursor-pointer group"
                             >
-                                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white border border-white/10 flex items-center justify-center p-2 shadow-lg group-hover:shadow-[#00D492]/20 group-hover:scale-105 group-hover:border-[#00D492] transition-all duration-300">
+                                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white border border-white/10 flex items-center justify-center p-2 shadow-lg group-hover:shadow-[#00FF41]/20 group-hover:scale-105 group-hover:border-[#00FF41] transition-all duration-300">
                                     <img
                                         src={need.image}
                                         alt={need.label}
                                         className="max-h-full max-w-full object-contain filter group-hover:brightness-105 transition-all"
                                     />
                                 </div>
-                                <span className="text-xs sm:text-[13px] text-neutral-300 font-medium mt-3 leading-snug group-hover:text-[#00D492] transition-colors max-w-[100px] h-10 flex items-center justify-center">
+                                <span className="text-xs sm:text-[13px] text-neutral-300 font-medium mt-3 leading-snug group-hover:text-[#00FF41] transition-colors max-w-[100px] h-10 flex items-center justify-center">
                                     {need.label}
                                 </span>
                             </div>
@@ -304,7 +304,7 @@ export default function ProductStoreView({
             {/* Brands Showcase Section */}
             <section className="py-8 bg-black/10 border-b border-white/[0.04]">
                 <div className="container mx-auto px-6">
-                    <span className="text-xs font-mono uppercase tracking-widest text-[#00D492] block mb-5">
+                    <span className="text-xs font-mono uppercase tracking-widest text-[#00FF41] block mb-5">
                         THƯƠNG HIỆU
                     </span>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
@@ -317,7 +317,7 @@ export default function ProductStoreView({
                                         if (matched) setBrandFilter(matched.id);
                                         document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
                                     }}
-                                    className="flex items-center justify-center bg-white rounded-xl p-4 h-16 sm:h-20 border border-white/5 shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:shadow-[#00D492]/10 hover:scale-[1.03] hover:border-[#00D492]/30 transition-all duration-300 cursor-pointer"
+                                    className="flex items-center justify-center bg-white rounded-xl p-4 h-16 sm:h-20 border border-white/5 shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:shadow-[#00FF41]/10 hover:scale-[1.03] hover:border-[#00FF41]/30 transition-all duration-300 cursor-pointer"
                                 >
                                     <img
                                         src={brand.logo}
@@ -335,7 +335,7 @@ export default function ProductStoreView({
             <section id="catalog-section" className="py-12 container mx-auto px-6">
                 {isLoading ? (
                     <div className="text-center py-20 bg-[#0f1112]/40 rounded-2xl border border-white/[0.06]">
-                        <div className="inline-block w-8 h-8 border-2 border-[#00D492] border-t-transparent rounded-full animate-spin mb-3"></div>
+                        <div className="inline-block w-8 h-8 border-2 border-[#00FF41] border-t-transparent rounded-full animate-spin mb-3"></div>
                         <p className="text-neutral-400 text-xs font-mono">Đang nạp dữ liệu Laptop từ Backend API...</p>
                     </div>
                 ) : productsList.length > 0 ? (
@@ -345,14 +345,14 @@ export default function ProductStoreView({
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/[0.08] pb-3 gap-4">
                                 <div className="flex items-center gap-4 flex-wrap">
                                     <div
-                                        className="bg-[#00D492] text-black font-black px-6 py-2.5 text-xs sm:text-sm tracking-wider uppercase shrink-0 rounded-r-full shadow-lg shadow-[#00D492]/20"
+                                        className="bg-[#00FF41] text-black font-black px-6 py-2.5 text-xs sm:text-sm tracking-wider uppercase shrink-0 rounded-r-full shadow-lg shadow-[#00FF41]/20"
                                     >
                                         DANH SÁCH LAPTOP MỚI NHẤT ({productsList.length})
                                     </div>
                                 </div>
                                 <button
                                     onClick={() => setCurrentView("all-products")}
-                                    className="text-xs sm:text-sm font-bold text-[#00D492] hover:underline shrink-0 text-right"
+                                    className="text-xs sm:text-sm font-bold text-[#00FF41] hover:underline shrink-0 text-right"
                                 >
                                     Xem tất cả ({productsList.length}) &rarr;
                                 </button>
@@ -401,7 +401,7 @@ export default function ProductStoreView({
                                                             setSearch(tab.query);
                                                             document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
                                                         }}
-                                                        className="hover:text-[#00D492] transition-colors shrink-0 uppercase whitespace-nowrap"
+                                                        className="hover:text-[#00FF41] transition-colors shrink-0 uppercase whitespace-nowrap"
                                                     >
                                                         {tab.label}
                                                     </button>
@@ -412,7 +412,7 @@ export default function ProductStoreView({
                                             onClick={() => {
                                                 setCurrentView("all-products");
                                             }}
-                                            className="text-xs sm:text-sm font-bold text-[#00D492] hover:underline shrink-0 text-right"
+                                            className="text-xs sm:text-sm font-bold text-[#00FF41] hover:underline shrink-0 text-right"
                                         >
                                             Xem tất cả &rarr;
                                         </button>

@@ -5,6 +5,7 @@ import {
   OrderRequest,
   OrderPaymentRetryResponse,
 } from '@/services';
+import { orderHistoryService, OrderHistoryResponse } from '@/services/orderHistoryService';
 
 interface OrderState {
   orders: OrderResponse[];
@@ -16,10 +17,15 @@ interface OrderState {
   isLoading: boolean;
   error: string | null;
 
+  // Order history timeline
+  orderHistories: OrderHistoryResponse[];
+  isLoadingHistories: boolean;
+
   // Actions
   fetchOrders: (page?: number, size?: number) => Promise<void>;
   fetchUserOrders: (page?: number, size?: number) => Promise<void>;
   fetchOrderById: (id: number) => Promise<OrderResponse | null>;
+  fetchOrderHistories: (page?: number, size?: number) => Promise<void>;
   createOrder: (data: OrderRequest) => Promise<OrderResponse>;
   retryPayment: (orderId: number) => Promise<OrderPaymentRetryResponse>;
   clearCurrentOrder: () => void;
@@ -37,13 +43,16 @@ export const useOrderStore = create<OrderState>((set, get) => ({
   isLoading: false,
   error: null,
 
+  orderHistories: [],
+  isLoadingHistories: false,
+
   clearError: () => set({ error: null }),
   clearCurrentOrder: () => set({ currentOrder: null }),
 
   fetchOrders: async (page = 0, size = 10) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await orderService.getOrdersByUser({ page, size, sort: 'createdAt,desc' });
+      const res = await orderService.getOrdersByUser({ page, size });
       set({
         orders: res.content || [],
         totalElements: res.totalElements || 0,
@@ -77,6 +86,19 @@ export const useOrderStore = create<OrderState>((set, get) => ({
       return null;
     } finally {
       set({ isLoading: false });
+    }
+  },
+
+  fetchOrderHistories: async (page = 0, size = 100) => {
+    set({ isLoadingHistories: true });
+    try {
+      const res = await orderHistoryService.getMyOrderHistories({ page, size, sort: 'createdAt,asc' });
+      set({ orderHistories: res.content || [] });
+    } catch (err: any) {
+      console.error('Lỗi fetch order histories:', err);
+      // không block UI nếu lỗi history
+    } finally {
+      set({ isLoadingHistories: false });
     }
   },
 
@@ -121,6 +143,9 @@ export const useOrderStore = create<OrderState>((set, get) => ({
       currentOrder: null,
       isLoading: false,
       error: null,
+      orderHistories: [],
+      isLoadingHistories: false,
     });
   },
 }));
+

@@ -125,7 +125,7 @@ export default function AllProductsView({
                                 setSortBy(e.target.value);
                                 setCurrentPage(1);
                             }}
-                            className="bg-[#181a1b] border border-white/10 rounded-full px-5 py-2 text-xs font-bold text-white focus:outline-none focus:border-[#00D492] cursor-pointer hover:border-white/20 transition-all appearance-none pr-8 relative"
+                            className="bg-[#181a1b] border border-white/10 rounded-full px-5 py-2 text-xs font-bold text-white focus:outline-none focus:border-[#00FF41] cursor-pointer hover:border-white/20 transition-all appearance-none pr-8 relative"
                             style={{
                                 backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
                                 backgroundRepeat: "no-repeat",
@@ -159,7 +159,7 @@ export default function AllProductsView({
                                     }}
                                     className={`text-xs font-bold transition-all text-left ${
                                         filters.brandId === null
-                                            ? "bg-[#00D492] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00D492]/20"
+                                            ? "bg-[#00FF41] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00FF41]/20"
                                             : "text-neutral-400 hover:text-white py-1.5 px-4"
                                     }`}
                                 >
@@ -176,7 +176,7 @@ export default function AllProductsView({
                                             }}
                                             className={`text-xs font-bold transition-all text-left ${
                                                 isActive
-                                                    ? "bg-[#00D492] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00D492]/20"
+                                                    ? "bg-[#00FF41] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00FF41]/20"
                                                     : "text-neutral-400 hover:text-white py-1.5 px-4"
                                             }`}
                                         >
@@ -200,7 +200,7 @@ export default function AllProductsView({
                                     }}
                                     className={`text-xs font-bold transition-all text-left ${
                                         filters.categoryId === null
-                                            ? "bg-[#00D492] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00D492]/20"
+                                            ? "bg-[#00FF41] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00FF41]/20"
                                             : "text-neutral-400 hover:text-white py-1.5 px-4"
                                     }`}
                                 >
@@ -217,7 +217,7 @@ export default function AllProductsView({
                                             }}
                                             className={`text-xs font-bold transition-all text-left ${
                                                 isActive
-                                                    ? "bg-[#00D492] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00D492]/20"
+                                                    ? "bg-[#00FF41] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00FF41]/20"
                                                     : "text-neutral-400 hover:text-white py-1.5 px-4"
                                             }`}
                                         >
@@ -236,7 +236,7 @@ export default function AllProductsView({
                                 </h3>
                                 <button
                                     onClick={() => setMaxPrice(280000000)}
-                                    className="text-[11px] font-medium text-[#00D492] hover:underline"
+                                    className="text-[11px] font-medium text-[#00FF41] hover:underline"
                                 >
                                     Tất cả
                                 </button>
@@ -251,7 +251,7 @@ export default function AllProductsView({
                                     setMaxPrice(Number(e.target.value));
                                     setCurrentPage(1);
                                 }}
-                                className="w-full accent-[#00D492] bg-neutral-800 rounded-lg cursor-pointer h-2"
+                                className="w-full accent-[#00FF41] bg-neutral-800 rounded-lg cursor-pointer h-2"
                             />
                             <div className="flex justify-between text-[11px] font-mono text-neutral-400 mt-2">
                                 <span>20tr</span>
@@ -282,7 +282,7 @@ export default function AllProductsView({
                                             }}
                                             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
                                                 isActive
-                                                    ? "bg-[#00D492] text-black shadow-md shadow-[#00D492]/20"
+                                                    ? "bg-[#00FF41] text-black shadow-md shadow-[#00FF41]/20"
                                                     : "border border-neutral-800 text-neutral-300 hover:border-neutral-600"
                                             }`}
                                         >
@@ -316,7 +316,7 @@ export default function AllProductsView({
                                             }}
                                             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
                                                 isActive
-                                                    ? "bg-[#00D492] text-black shadow-md shadow-[#00D492]/20"
+                                                    ? "bg-[#00FF41] text-black shadow-md shadow-[#00FF41]/20"
                                                     : "border border-neutral-800 text-neutral-300 hover:border-neutral-600"
                                             }`}
                                         >
@@ -332,7 +332,7 @@ export default function AllProductsView({
                     <main className="lg:col-span-9 space-y-8">
                         {isLoading ? (
                             <div className="text-center py-20 bg-[#0f1112]/40 rounded-2xl border border-white/[0.06]">
-                                <div className="inline-block w-8 h-8 border-2 border-[#00D492] border-t-transparent rounded-full animate-spin mb-3"></div>
+                                <div className="inline-block w-8 h-8 border-2 border-[#00FF41] border-t-transparent rounded-full animate-spin mb-3"></div>
                                 <p className="text-neutral-400 text-xs font-mono">Đang tải sản phẩm từ Database...</p>
                             </div>
                         ) : paginatedProducts.length > 0 ? (
@@ -369,7 +369,7 @@ export default function AllProductsView({
                                         setSelectedRom("All");
                                         setMaxPrice(280000000);
                                     }}
-                                    className="mt-4 bg-[#00D492] text-black font-bold text-xs px-5 py-2 rounded-full hover:bg-[#00bc82] transition-colors"
+                                    className="mt-4 bg-[#00FF41] text-black font-bold text-xs px-5 py-2 rounded-full hover:bg-[#00cc34] transition-colors"
                                 >
                                     Xóa tất cả bộ lọc
                                 </button>
@@ -395,7 +395,7 @@ export default function AllProductsView({
                                             onClick={() => setCurrentPage(pageNum)}
                                             className={`w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center transition-all ${
                                                 isActive
-                                                    ? "bg-[#00D492] text-black shadow-md shadow-[#00D492]/20"
+                                                    ? "bg-[#00FF41] text-black shadow-md shadow-[#00FF41]/20"
                                                     : "border border-neutral-800 text-neutral-300 hover:border-neutral-600"
                                             }`}
                                         >
