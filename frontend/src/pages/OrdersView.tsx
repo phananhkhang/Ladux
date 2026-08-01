@@ -14,15 +14,16 @@ import {
     XCircle,
     RotateCcw,
 } from "lucide-react";
-import { OrderItemRecord, OrderStatus, formatVND, ViewType, mapProductResponseToLaptopProduct } from "../types";
+import { useNavigate } from "react-router-dom";
+import { OrderItemRecord, OrderStatus, formatVND, mapProductResponseToLaptopProduct } from "../types";
 import { useOrderStore } from "../stores";
+import { ROUTES } from "../app/routePaths";
 
 export interface OrdersViewProps {
     orders?: OrderItemRecord[];
     selectedOrderId?: string;
     setSelectedAddressOrderId?: (id: string) => void;
     setOrders?: React.Dispatch<React.SetStateAction<OrderItemRecord[]>>;
-    setCurrentView: (view: ViewType) => void;
     showToast: (msg: string) => void;
 }
 
@@ -80,9 +81,9 @@ export default function OrdersView({
     orders = [],
     selectedOrderId = "",
     setSelectedAddressOrderId = () => {},
-    setCurrentView,
     showToast,
 }: OrdersViewProps) {
+    const navigate = useNavigate();
     const {
         orders: storeOrders,
         fetchOrders,
@@ -112,7 +113,7 @@ export default function OrdersView({
         return () => {
             if (intervalRef.current) clearInterval(intervalRef.current);
         };
-    }, []);
+    }, [fetchOrderHistories, fetchOrders]);
 
     // Map Backend OrderResponse[] → UI OrderItemRecord[]
     const displayOrders: OrderItemRecord[] = useMemo(() => {
@@ -172,7 +173,7 @@ export default function OrdersView({
         if (displayOrders.length > 0 && !activeId) {
             setActiveId(displayOrders[0].id);
         }
-    }, [displayOrders]);
+    }, [activeId, displayOrders]);
 
     const currentOrder = displayOrders.find((o) => o.id === activeId) || displayOrders[0];
 
@@ -225,7 +226,7 @@ export default function OrdersView({
                         <span className="hidden sm:inline">Làm mới</span>
                     </button>
                     <button
-                        onClick={() => setCurrentView("account")}
+                        onClick={() => navigate(ROUTES.account)}
                         className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 hover:text-[#00FF41] transition"
                     >
                         ← Về tài khoản
@@ -252,7 +253,7 @@ export default function OrdersView({
                         Hãy khám phá danh mục Laptop chính hãng tại Ladux và thực hiện đơn hàng đầu tiên.
                     </p>
                     <button
-                        onClick={() => setCurrentView("store")}
+                        onClick={() => navigate(ROUTES.products)}
                         className="inline-flex bg-[#00FF41] text-black px-6 py-3 rounded-xl text-xs font-extrabold uppercase hover:bg-[#00cc34] transition shadow-lg shadow-[#00FF41]/20"
                     >
                         Khám phá sản phẩm ngay

@@ -1,8 +1,10 @@
 import React, { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import ProductHero from "../components/product/ProductHero";
 import ProductCard from "../components/product/ProductCard";
-import { LaptopProduct, ViewType, mapProductResponseToLaptopProduct } from "../types";
+import { LaptopProduct, mapProductResponseToLaptopProduct } from "../types";
 import { useProductStore, useWishlistStore, useCartStore } from "../stores";
+import { productPath, ROUTES } from "../app/routePaths";
 
 const BRAND_SECTIONS = [
     {
@@ -122,7 +124,6 @@ export interface ProductStoreViewProps {
     wishlist?: number[];
     toggleWishlist?: (laptopId: number) => void;
     setSelectedProduct: (product: LaptopProduct) => void;
-    setCurrentView: (view: ViewType) => void;
     allProducts?: LaptopProduct[];
     addToCartCustom?: (
         product: LaptopProduct,
@@ -139,9 +140,9 @@ export default function ProductStoreView({
     filteredProducts,
     toggleWishlist,
     setSelectedProduct,
-    setCurrentView,
     showToast,
 }: ProductStoreViewProps) {
+    const navigate = useNavigate();
     const { products, brands, categories, setBrandFilter, setCategoryFilter, setSearch, isLoading } = useProductStore();
     const { wishlistProductIds, toggleWishlist: storeToggleWishlist } = useWishlistStore();
     const { addToCart } = useCartStore();
@@ -351,7 +352,7 @@ export default function ProductStoreView({
                                     </div>
                                 </div>
                                 <button
-                                    onClick={() => setCurrentView("all-products")}
+                                    onClick={() => navigate(ROUTES.products)}
                                     className="text-xs sm:text-sm font-bold text-[#00FF41] hover:underline shrink-0 text-right"
                                 >
                                     Xem tất cả ({productsList.length}) &rarr;
@@ -367,7 +368,7 @@ export default function ProductStoreView({
                                         onToggleWishlist={(id) => (toggleWishlist ? toggleWishlist(id) : storeToggleWishlist(id))}
                                         onSelectProduct={(p) => {
                                             setSelectedProduct(p);
-                                            setCurrentView("product-detail");
+                                            navigate(productPath(p.id));
                                         }}
                                         onAddToCart={(p) => {
                                             addToCart({ productId: p.id, quantity: 1 });
@@ -410,7 +411,7 @@ export default function ProductStoreView({
                                         </div>
                                         <button
                                             onClick={() => {
-                                                setCurrentView("all-products");
+                                                navigate(ROUTES.products);
                                             }}
                                             className="text-xs sm:text-sm font-bold text-[#00FF41] hover:underline shrink-0 text-right"
                                         >
@@ -427,7 +428,7 @@ export default function ProductStoreView({
                                                 onToggleWishlist={(id) => (toggleWishlist ? toggleWishlist(id) : storeToggleWishlist(id))}
                                                 onSelectProduct={(p) => {
                                                     setSelectedProduct(p);
-                                                    setCurrentView("product-detail");
+                                                    navigate(productPath(p.id));
                                                 }}
                                                 onAddToCart={(p) => {
                                                     addToCart({ productId: p.id, quantity: 1 });

@@ -1,8 +1,10 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ChevronRight, Search, X } from "lucide-react";
 import { useProductStore, useWishlistStore, useCartStore } from "../stores";
 import ProductCard from "../components/product/ProductCard";
-import { LaptopProduct, ViewType, mapProductResponseToLaptopProduct } from "../types";
+import { LaptopProduct, mapProductResponseToLaptopProduct } from "../types";
+import { productPath, ROUTES } from "../app/routePaths";
 
 export interface AllProductsViewProps {
     allProducts?: LaptopProduct[];
@@ -15,7 +17,6 @@ export interface AllProductsViewProps {
     wishlist?: number[];
     toggleWishlist?: (laptopId: number) => void;
     setSelectedProduct: (product: LaptopProduct) => void;
-    setCurrentView: (view: ViewType) => void;
     addToCartCustom?: (
         product: LaptopProduct,
         ram: string,
@@ -36,8 +37,8 @@ export default function AllProductsView({
     setSearchQuery,
     toggleWishlist,
     setSelectedProduct,
-    setCurrentView,
 }: AllProductsViewProps) {
+    const navigate = useNavigate();
     const {
         products,
         brands,
@@ -194,7 +195,7 @@ export default function AllProductsView({
                     <div>
                         <div className="flex items-center gap-2 text-xs text-neutral-400 font-medium mb-2">
                             <button
-                                onClick={() => setCurrentView("store")}
+                                onClick={() => navigate(ROUTES.home)}
                                 className="hover:text-white transition-colors"
                             >
                                 Trang chủ
@@ -479,7 +480,7 @@ export default function AllProductsView({
                                         onToggleWishlist={(id) => (toggleWishlist ? toggleWishlist(id) : storeToggleWishlist(id))}
                                         onSelectProduct={(p) => {
                                             setSelectedProduct(p);
-                                            setCurrentView("product-detail");
+                                            navigate(productPath(p.id));
                                         }}
                                         onAddToCart={(p) => {
                                             const rawProduct = products.find((prod) => prod.id === p.id);

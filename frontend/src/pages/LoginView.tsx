@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowLeft, Lock } from "lucide-react";
+import { ArrowLeft, Lock, AlertCircle } from "lucide-react";
 import { useAuthStore } from "../stores"; // Import Store Auth
 
 export interface LoginViewProps {
@@ -12,6 +12,7 @@ export interface LoginViewProps {
 export default function LoginView({ onLoginSuccess, onLogin, onGoRegister, onBack }: LoginViewProps) {
     const [username, setUsername] = useState(""); // Backend dùng username hoặc email
     const [password, setPassword] = useState("");
+    const [localError, setLocalError] = useState<string | null>(null);
     
     // Lấy state và hàm login từ Zustand Auth Store
     const { login, isLoading, error, clearError } = useAuthStore();
@@ -19,18 +20,34 @@ export default function LoginView({ onLoginSuccess, onLogin, onGoRegister, onBac
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         clearError();
+        setLocalError(null);
         try {
             // Bắn API POST /api/v1/auth/login xuống Spring Boot
             await login({ username, password });
-            if (onLoginSuccess) {
-                onLoginSuccess();
-            } else if (onLogin) {
-                onLogin();
+
+            // Chỉ chuyển trang nếu thực sự đăng nhập thành công
+            const isSuccess = useAuthStore.getState().isLoggedIn;
+            if (isSuccess) {
+                if (onLoginSuccess) {
+                    onLoginSuccess();
+                } else if (onLogin) {
+                    onLogin();
+                }
+            } else {
+                setLocalError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin!");
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error("Lỗi đăng nhập:", err);
+            const errMsg =
+                err?.response?.data?.message ||
+                err?.message ||
+                "Sai tên đăng nhập hoặc mật khẩu. Vui lòng kiểm tra lại!";
+            setLocalError(errMsg);
+            // Giữ nguyên ở trang đăng nhập, KHÔNG chuyển hướng
         }
     };
+
+    const activeError = error || localError;
 
     return (
         <main className="min-h-[80vh] flex items-center justify-center px-4 py-20">
@@ -52,9 +69,10 @@ export default function LoginView({ onLoginSuccess, onLogin, onGoRegister, onBac
                     </div>
 
                     {/* Hiển thị thông báo lỗi thật từ Backend nếu có */}
-                    {error && (
-                        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs text-center font-medium">
-                            {error}
+                    {activeError && (
+                        <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold flex items-center gap-2.5 animate-in fade-in zoom-in duration-200">
+                            <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+                            <span>{activeError}</span>
                         </div>
                     )}
 

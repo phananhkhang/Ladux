@@ -26,13 +26,15 @@ apiClient.interceptors.response.use(
     (response) => response.data, // Chỉ trả về phần 'data' sạch (bỏ bớt rác HTTP Wrapper)
     async (error) => {
         const originalRequest = error.config;
+        const url = originalRequest?.url || '';
+        const isAuthEndpoint = url.includes('/auth/login') || url.includes('/auth/register') || url.includes('/auth/refresh');
 
-        // Nếu Backend trả về 401 (Hết hạn Token) và chưa thử retry
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        // Nếu Backend trả về 401 (Hết hạn Token) và không phải API Auth (login/register/refresh)
+        if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
             originalRequest._retry = true;
 
             try {
-                // Tự động gọi API Refresh Token ngầm (Cookie AUTH_TOKEN & REFRESH_TOKEN được cập nhật tự động)
+                // Tự động gọi API Refresh Token ngầm
                 await axios.post(
                     `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1'}/auth/refresh`,
                     {},
@@ -42,8 +44,6 @@ apiClient.interceptors.response.use(
                 // Gọi lại request ban đầu với Cookie mới
                 return apiClient(originalRequest);
             } catch (refreshError) {
-                // Nếu Refresh Token cũng hết hạn ➔ Chuyển hướng người dùng về trang Đăng nhập
-                window.location.href = '/login';
                 return Promise.reject(refreshError);
             }
         }

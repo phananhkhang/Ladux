@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     MapPin,
     Plus,
@@ -12,11 +13,11 @@ import {
     CouponItem,
     PaymentProvider,
     formatVND,
-    ViewType,
     mapProductResponseToLaptopProduct,
 } from "../types";
 import { orderService, paymentService, couponService } from "../services";
 import { useCartStore, useAddressStore, useOrderStore } from "../stores";
+import { ROUTES } from "../app/routePaths";
 
 export interface CheckoutViewProps {
     cartItems?: any[];
@@ -32,7 +33,6 @@ export interface CheckoutViewProps {
     setOrders?: (orders: any[]) => void;
     setSelectedAddressOrderId?: (id: string) => void;
     setCartItems?: (items: any[]) => void;
-    setCurrentView: (view: ViewType) => void;
     showToast: (msg: string) => void;
     handleApplyCoupon?: () => void;
     couponInput?: string;
@@ -42,9 +42,9 @@ export interface CheckoutViewProps {
 
 export default function CheckoutView({
     setSelectedAddressOrderId,
-    setCurrentView,
     showToast,
 }: CheckoutViewProps) {
+    const navigate = useNavigate();
     const { cart, clearCart } = useCartStore();
     const { addresses, createAddress, fetchAddresses } = useAddressStore();
     const { fetchOrders } = useOrderStore();
@@ -69,8 +69,8 @@ export default function CheckoutView({
     });
 
     useEffect(() => {
-        fetchAddresses();
-    }, []);
+        void fetchAddresses();
+    }, [fetchAddresses]);
 
     useEffect(() => {
         if (addresses.length > 0 && selectedAddrId === null) {
@@ -170,7 +170,7 @@ export default function CheckoutView({
             }
             await clearCart();
             await fetchOrders();
-            setCurrentView("orders");
+            navigate(ROUTES.orders);
             showToast(`Đặt hàng thành công! Mã đơn: #${orderRes.id}`);
 
         } catch (err: any) {
@@ -194,7 +194,7 @@ export default function CheckoutView({
                     </h1>
                 </div>
                 <button
-                    onClick={() => setCurrentView("cart")}
+                    onClick={() => navigate(ROUTES.cart)}
                     className="text-xs font-bold uppercase tracking-widest text-neutral-400 hover:text-[#00FF41] transition"
                 >
                     ← Trở lại giỏ hàng

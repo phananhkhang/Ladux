@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Award,
     ChevronRight,
@@ -13,12 +14,12 @@ import {
     Loader2,
     MapPin,
 } from "lucide-react";
-import { ShippingAddressRequest, OrderItemRecord, ViewType, getAvatarUrl } from "../types";
+import { ShippingAddressRequest, OrderItemRecord, getAvatarUrl, mapProductResponseToLaptopProduct } from "../types";
 import { useAddressStore, useAuthStore, useOrderStore } from "../stores";
+import { ROUTES } from "../app/routePaths";
 
 export interface AccountViewProps {
-    currentView: ViewType;
-    setCurrentView: (view: ViewType) => void;
+    currentView: "account" | "addresses";
     userAvatar: string;
     setUserAvatar: (avatar: string) => void;
     userFullName?: string;
@@ -32,7 +33,6 @@ export interface AccountViewProps {
 
 export default function AccountView({
     currentView,
-    setCurrentView,
     userAvatar,
     setUserAvatar,
     userFullName = "Thành viên LADUX",
@@ -43,15 +43,129 @@ export default function AccountView({
     handleLogout,
     showToast,
 }: AccountViewProps) {
+    const navigate = useNavigate();
     const addressStore = useAddressStore();
     const authStore = useAuthStore();
     const { orders: storeOrders, fetchOrders, totalElements } = useOrderStore();
 
     useEffect(() => {
-        fetchOrders();
-    }, []);
+        void Promise.allSettled([fetchOrders(), addressStore.fetchAddresses()]);
+    }, [addressStore.fetchAddresses, fetchOrders]);
 
-    const totalOrderCount = storeOrders.length > 0 ? storeOrders.length : (totalElements || orders.length);
+    // Map Backend OrderResponse[] → UI OrderItemRecord[]
+    const displayOrders: OrderItemRecord[] = useMemo(() => {
+        if (storeOrders && storeOrders.length > 0) {
+            return storeOrders.map((ord) => {
+                const itemsMapped = (ord.orderItems || []).map((it) => {
+                    const actualPrice = (it as any).priceAtPurchase ?? 0;
+                    const prod = it.product
+                        ? mapProductResponseToLaptopProduct(it.product)
+                        : {
+                              id: it.id,
+                              name: "Sản phẩm Laptop LADUX",
+                              images: ["https://placehold.co/400x300/121214/666?text=Laptop"],
+                              price: actualPrice,
+                          };
+                    return {
+                        product: prod as any,
+                        quantity: it.quantity,
+                        selectedRam: (it.product as any)?.ram || "",
+                        selectedStorage: (it.product as any)?.rom || "",
+                        selectedColorName: "Standard",
+                        selectedColorHex: "#1D1D1F",
+                        price: actualPrice,
+                    };
+                });
+
+                return {
+                    id: ord.id.toString(),
+                    orderNumber: ord.trackingNumber || `LDX-${String(ord.id).padStart(6, "0")}`,
+                    date: ord.createdAt ? new Date(ord.createdAt).toLocaleString("vi-VN") : "Vừa xong",
+                    status: ord.status,
+                    paymentMethod: ord.paymentProvider || "COD",
+                    trackingNumber: ord.trackingNumber || `VNPOST-${String(ord.id).padStart(8, "0")}`,
+                    items: itemsMapped,
+                    subTotal: Number(ord.subTotal) || 0,
+                    discountAmount: Number(ord.discountAmount) || 0,
+                    shippingFee: Number(ord.shippingFee) || 0,
+                    finalAmount: Number(ord.finalAmount) || 0,
+                    shippingAddress: {
+                        id: ord.shippingAddress?.id || 0,
+                        fullName: ord.shippingAddress?.receiverName || "",
+                        phone: ord.shippingAddress?.phone || "",
+                        addressDetail: ord.shippingAddress?.street || "",
+                        ward: ord.shippingAddress?.ward || "",
+                        district: ord.shippingAddress?.district || "",
+                        city: ord.shippingAddress?.city || "",
+                        isDefault: false,
+                    },
+                };
+            });
+        }
+        return orders;
+    }, [storeOrders, orders]);
+
+    const totalOrderCount = displayOrders.length;
+
+    // Tính tổng chi tiêu thực tế từ các đơn hàng
+    const totalSpent = useMemo(() => {
+        return displayOrders.reduce((sum, ord) => sum + (ord.finalAmount || 0), 0);
+    }, [displayOrders]);
+
+    // Điểm thành viên thực tế (100.000 VNĐ = 1 điểm thành viên)
+    const realMemberPoints = useMemo(() => {
+        return Math.floor(totalSpent / 100000);
+    }, [totalSpent]);
+
+    // Cấp bậc thành viên & Điểm cần nâng hạng
+    const memberTierInfo = useMemo(() => {
+        const points = realMemberPoints;
+        if (points >= 10000) {
+            return {
+                rankName: "DIAMOND MEMBER",
+                nextRankName: "",
+                pointsNeeded: 0,
+                progressPercent: 100,
+                subtext: "Chúc mừng! Bạn đã đạt cấp bậc thành viên Diamond cao nhất.",
+            };
+        }
+        if (points >= 3000) {
+            const needed = 10000 - points;
+            const pct = Math.min(100, Math.max(0, Math.floor(((points - 3000) / 7000) * 100)));
+            return {
+                rankName: "RUBY MEMBER",
+                nextRankName: "Diamond",
+                pointsNeeded: needed,
+                progressPercent: pct,
+                subtext: `Chỉ còn ${needed.toLocaleString("vi-VN")} điểm để lên hạng Diamond.`,
+            };
+        }
+        if (points >= 1000) {
+            const needed = 3000 - points;
+            const pct = Math.min(100, Math.max(0, Math.floor(((points - 1000) / 2000) * 100)));
+            return {
+                rankName: "GOLD MEMBER",
+                nextRankName: "Ruby",
+                pointsNeeded: needed,
+                progressPercent: pct,
+                subtext: `Chỉ còn ${needed.toLocaleString("vi-VN")} điểm để lên hạng Ruby.`,
+            };
+        }
+        const needed = 1000 - points;
+        const pct = Math.min(100, Math.max(0, Math.floor((points / 1000) * 100)));
+        return {
+            rankName: "SILVER MEMBER",
+            nextRankName: "Gold",
+            pointsNeeded: needed,
+            progressPercent: pct,
+            subtext: `Chỉ còn ${needed.toLocaleString("vi-VN")} điểm để lên hạng Gold.`,
+        };
+    }, [realMemberPoints]);
+
+    // Lấy tối đa 3 đơn hàng gần đây nhất
+    const recent3Orders = useMemo(() => {
+        return displayOrders.slice(0, 3);
+    }, [displayOrders]);
 
     // Map store addresses to ShippingAddressRequest
     const addressesList: ShippingAddressRequest[] = addressStore.addresses.length > 0
@@ -372,7 +486,7 @@ export default function AccountView({
                 <div className="mb-10 flex flex-col gap-4 border-b border-white/10 pb-7 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <div className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-neutral-500">
-                            <button onClick={() => setCurrentView("account")} className="hover:text-[#00FF41] transition-colors">
+                            <button onClick={() => navigate(ROUTES.account)} className="hover:text-[#00FF41] transition-colors">
                                 Tài khoản
                             </button>
                             <ChevronRight className="w-3 h-3" />
@@ -548,7 +662,7 @@ export default function AccountView({
                     </h1>
                 </div>
                 <button
-                    onClick={() => setCurrentView("store")}
+                    onClick={() => navigate(ROUTES.home)}
                     className="text-left text-xs font-bold uppercase tracking-[0.14em] text-neutral-400 transition hover:text-[#00FF41]"
                 >
                     ← Quay lại cửa hàng
@@ -603,7 +717,7 @@ export default function AccountView({
                                 SĐT: {authStore.user?.phone || "0988 123 456"}
                             </p>
                             <p className="mt-1 font-mono text-[10px] font-bold text-[#00FF41] tracking-wider uppercase">
-                                LADUX / GOLD MEMBER
+                                {memberTierInfo.rankName}
                             </p>
                             <button
                                 onClick={() => {
@@ -630,21 +744,21 @@ export default function AccountView({
                             <ChevronRight className="h-4 w-4" />
                         </button>
                         <button
-                            onClick={() => setCurrentView("orders")}
+                            onClick={() => navigate(ROUTES.orders)}
                             className="w-full rounded-xl px-4 py-3 text-left text-neutral-400 transition hover:bg-white/[0.06] hover:text-white flex items-center justify-between"
                         >
                             <span>Đơn hàng của tôi</span>
                             <span className="font-mono text-xs text-[#00FF41] font-bold">{totalOrderCount}</span>
                         </button>
                         <button
-                            onClick={() => setCurrentView("addresses")}
+                            onClick={() => navigate(ROUTES.addresses)}
                             className="w-full rounded-xl px-4 py-3 text-left text-neutral-400 transition hover:bg-white/[0.06] hover:text-white flex items-center justify-between"
                         >
                             <span>Địa chỉ giao hàng</span>
                             <span className="font-mono text-xs text-[#00FF41] font-bold">{addressesList.length}</span>
                         </button>
                         <button
-                            onClick={() => setCurrentView("wishlist")}
+                            onClick={() => navigate(ROUTES.wishlist)}
                             className="w-full rounded-xl px-4 py-3 text-left text-neutral-400 transition hover:bg-white/[0.06] hover:text-white flex items-center justify-between"
                         >
                             <span>Danh sách yêu thích</span>
@@ -665,51 +779,87 @@ export default function AccountView({
                 </aside>
 
                 <section className="space-y-5">
+                    {/* Hộp Điểm Thành Viên Thật */}
                     <div className="rounded-2xl border border-white/10 bg-[linear-gradient(118deg,rgba(0,255,65,0.13),rgba(255,255,255,0.035)_44%,rgba(103,76,174,0.14))] p-6 sm:p-8">
                         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#00FF41]">
-                            Điểm thành viên
+                            ĐIỂM THÀNH VIÊN
                         </p>
                         <div className="mt-4 flex flex-wrap items-end justify-between gap-6">
                             <div>
-                                <p className="text-5xl font-black tracking-[-0.045em] text-white">2.480</p>
-                                <p className="mt-2 text-sm text-neutral-400">
-                                    Chỉ còn 520 điểm để lên hạng Ruby.
+                                <p className="text-5xl font-black tracking-[-0.045em] text-white">
+                                    {realMemberPoints.toLocaleString("vi-VN")}
+                                </p>
+                                <p className="mt-2 text-sm text-neutral-400 font-medium">
+                                    {memberTierInfo.subtext}
                                 </p>
                             </div>
                             <Award className="h-12 w-12 text-[#00FF41]" />
                         </div>
-                        <div className="mt-7 h-1.5 overflow-hidden rounded-full bg-black/35">
-                            <div className="h-full w-[72%] rounded-full bg-[#00FF41]" />
+                        <div className="mt-7 h-2 overflow-hidden rounded-full bg-black/40 border border-white/10">
+                            <div
+                                className="h-full rounded-full bg-[#00FF41] transition-all duration-500 shadow-[0_0_12px_rgba(0,255,65,0.5)]"
+                                style={{ width: `${memberTierInfo.progressPercent}%` }}
+                            />
                         </div>
                     </div>
 
+                    {/* Hộp Đơn Hàng Gần Đây (Hiển thị tối đa 3 đơn hàng) */}
                     <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-6">
                         <div className="mb-5 flex items-center justify-between">
                             <h2 className="text-lg font-bold text-white">Đơn hàng gần đây</h2>
                             <button
-                                onClick={() => setCurrentView("orders")}
-                                className="text-xs font-bold text-[#00FF41] hover:underline"
+                                onClick={() => navigate(ROUTES.orders)}
+                                className="text-xs font-bold text-[#00FF41] hover:underline flex items-center gap-1 cursor-pointer"
                             >
-                                Xem tất cả
+                                <span>Xem tất cả</span>
+                                <ChevronRight className="w-3.5 h-3.5" />
                             </button>
                         </div>
-                        {orders.length > 0 ? (
-                            <div className="flex flex-col gap-4 rounded-xl border border-white/[0.08] bg-black/20 p-4 sm:flex-row sm:items-center sm:justify-between">
-                                <div>
-                                    <p className="font-mono text-xs text-[#00FF41]">#{orders[0].orderNumber}</p>
-                                    <p className="mt-1 text-sm font-semibold text-white">
-                                        {orders[0].items[0]?.product.name || "Laptop Premium"}
-                                    </p>
-                                    <p className="mt-1 text-xs text-neutral-500">
-                                        {orders[0].date} · {orders[0].finalAmount.toLocaleString("vi-VN")} ₫
-                                    </p>
-                                </div>
-                                <span className="w-fit rounded-full border border-[#00FF41]/30 bg-[#00FF41]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#00FF41]">
-                                    {orders[0].status}
-                                </span>
+
+                        {recent3Orders.length > 0 ? (
+                            <div className="space-y-3">
+                                {recent3Orders.map((ord) => (
+                                    <div
+                                        key={ord.id}
+                                        onClick={() => navigate(ROUTES.orders)}
+                                        className="flex flex-col gap-3 rounded-xl border border-white/[0.08] bg-black/30 p-4 sm:flex-row sm:items-center sm:justify-between hover:border-[#00FF41]/40 transition cursor-pointer group"
+                                    >
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-mono text-xs font-bold text-[#00FF41] group-hover:underline">
+                                                    #{ord.orderNumber}
+                                                </span>
+                                                <span className="text-[10px] text-neutral-400 font-mono">
+                                                    ({ord.items.length} sản phẩm)
+                                                </span>
+                                            </div>
+                                            <p className="mt-1 text-sm font-semibold text-white line-clamp-1">
+                                                {ord.items[0]?.product?.name || "Sản phẩm Laptop LADUX"}
+                                            </p>
+                                            <p className="mt-1 text-xs text-neutral-400 font-mono">
+                                                {ord.date} · <span className="text-white font-bold">{ord.finalAmount.toLocaleString("vi-VN")} ₫</span>
+                                            </p>
+                                        </div>
+                                        <span className="w-fit rounded-full border border-[#00FF41]/30 bg-[#00FF41]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#00FF41] shrink-0">
+                                            {ord.status}
+                                        </span>
+                                    </div>
+                                ))}
+
+                                {displayOrders.length > 3 && (
+                                    <div className="pt-3 text-center border-t border-white/5">
+                                        <button
+                                            onClick={() => navigate(ROUTES.orders)}
+                                            className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#00FF41] hover:underline cursor-pointer transition"
+                                        >
+                                            <span>Xem thêm {displayOrders.length - 3} đơn hàng khác</span>
+                                            <ChevronRight className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         ) : (
-                            <p className="text-xs text-neutral-500 font-mono">Chưa có đơn hàng nào.</p>
+                            <p className="text-xs text-neutral-500 font-mono py-6 text-center">Chưa có đơn hàng nào.</p>
                         )}
                     </div>
                 </section>

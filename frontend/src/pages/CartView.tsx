@@ -1,21 +1,22 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { ShoppingBag, Trash2, ChevronRight, ShieldCheck, Truck } from "lucide-react";
-import { CartItem, CouponItem, LaptopProduct, formatVND, ViewType, mapProductResponseToLaptopProduct } from "../types";
+import { CartItem, CouponItem, LaptopProduct, formatVND, mapProductResponseToLaptopProduct } from "../types";
 import { useCartStore } from "../stores";
+import { productPath, ROUTES } from "../app/routePaths";
 
 export interface CartViewProps {
     cartItems?: CartItem[];
     updateCartQuantity?: (index: number, quantity: number) => void;
     appliedCoupon?: CouponItem | null;
-    setCurrentView: (view: ViewType) => void;
     setSelectedProduct: (product: LaptopProduct) => void;
 }
 
 export default function CartView({
     appliedCoupon,
-    setCurrentView,
     setSelectedProduct,
 }: CartViewProps) {
+    const navigate = useNavigate();
     const { cart, updateQuantity, removeItem, isLoading } = useCartStore();
 
     const cartItemsList = cart?.items || [];
@@ -36,7 +37,7 @@ export default function CartView({
                     </h1>
                 </div>
                 <button
-                    onClick={() => setCurrentView("store")}
+                    onClick={() => navigate(ROUTES.products)}
                     className="text-xs font-bold uppercase tracking-widest text-neutral-400 hover:text-[#00FF41] transition"
                 >
                     ← Tiếp tục xem sản phẩm
@@ -61,7 +62,7 @@ export default function CartView({
                         </p>
                     </div>
                     <button
-                        onClick={() => setCurrentView("store")}
+                        onClick={() => navigate(ROUTES.products)}
                         className="bg-[#00FF41] text-black font-extrabold px-8 py-3.5 rounded-xl text-xs uppercase tracking-wider hover:bg-[#00cc34] transition shadow-lg shadow-[#00FF41]/20"
                     >
                         Khám phá Laptop ngay
@@ -96,7 +97,7 @@ export default function CartView({
                                             <h3
                                                 onClick={() => {
                                                     setSelectedProduct(mappedProduct);
-                                                    setCurrentView("product-detail");
+                                                    navigate(productPath(mappedProduct.id));
                                                 }}
                                                 className="font-bold text-sm text-white line-clamp-1 hover:underline cursor-pointer"
                                             >
@@ -194,7 +195,7 @@ export default function CartView({
                             </div>
 
                             <button
-                                onClick={() => setCurrentView("checkout")}
+                                onClick={() => navigate(ROUTES.checkout)}
                                 className="w-full bg-[#00FF41] text-black py-4 rounded-xl font-extrabold text-sm uppercase tracking-wider hover:bg-[#00cc34] transition shadow-lg shadow-[#00FF41]/20 flex items-center justify-center gap-2"
                             >
                                 <span>TIẾN HÀNH THANH TOÁN</span>

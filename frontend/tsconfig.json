@@ -18,5 +18,6 @@
     },
     "types": ["vite/client"]
   },
-  "include": ["src", "src/services/apiClient.ts", "vite-env.d.ts"]
+  "include": ["src", "vite-env.d.ts"],
+  "exclude": ["src/imports/pasted_text/**"]
 }

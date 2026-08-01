@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { ChevronRight, Star, Check, ShoppingBag, MessageSquare, Send, Heart } from "lucide-react";
-import { LaptopProduct, formatVND, ViewType } from "../types";
+import { LaptopProduct, formatVND } from "../types";
 import { useWishlistStore } from "../stores";
+import { ROUTES } from "../app/routePaths";
 
 export interface ProductDetailViewProps {
     selectedProduct: LaptopProduct;
-    setCurrentView: (view: ViewType) => void;
     toggleWishlist?: (id: number) => void;
     addToCartCustom: (
         product: LaptopProduct,
@@ -24,7 +25,6 @@ export interface ProductDetailViewProps {
 
 export default function ProductDetailView({
     selectedProduct,
-    setCurrentView,
     toggleWishlist,
     addToCartCustom,
     handleAddReview,
@@ -33,6 +33,11 @@ export default function ProductDetailView({
     newComment,
     setNewComment,
 }: ProductDetailViewProps) {
+    const navigate = useNavigate();
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [selectedProduct?.id]);
+
     const [selectedRam, setSelectedRam] = useState<"16GB" | "32GB" | "64GB">("32GB");
     const [selectedStorage, setSelectedStorage] = useState<"512GB SSD" | "1TB SSD" | "2TB SSD">("1TB SSD");
     const [selectedColor, setSelectedColor] = useState<{ name: string; hex: string }>({
@@ -55,12 +60,18 @@ export default function ProductDetailView({
 
     return (
         <main className="container mx-auto px-6 py-12">
-            <div className="flex items-center gap-2 text-xs font-mono text-neutral-500 mb-8">
-                <button onClick={() => setCurrentView("store")} className="hover:underline">
+            <div className="flex items-center gap-2 text-xs font-mono text-neutral-500 mb-8 flex-wrap">
+                <Link to={ROUTES.home} className="hover:text-[#00FF41] hover:underline transition-colors">
                     Trang chủ
-                </button>
+                </Link>
                 <ChevronRight className="w-3 h-3" />
-                <span className="text-white font-semibold truncate">{selectedProduct.name}</span>
+                <Link to={ROUTES.products} className="hover:text-[#00FF41] hover:underline transition-colors">
+                    Sản phẩm
+                </Link>
+                <ChevronRight className="w-3 h-3" />
+                <span className="text-white font-semibold truncate max-w-[300px] sm:max-w-none">
+                    {selectedProduct.name}
+                </span>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -314,7 +325,7 @@ export default function ProductDetailView({
                                     selectedColor.hex,
                                     productQuantity
                                 );
-                                setCurrentView("checkout");
+                                navigate(ROUTES.checkout);
                             }}
                             className="w-full bg-white text-black py-3.5 rounded-xl font-extrabold text-sm uppercase tracking-wider hover:bg-neutral-200 transition"
                         >

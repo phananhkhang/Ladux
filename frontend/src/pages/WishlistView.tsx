@@ -1,20 +1,21 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Heart, Star } from "lucide-react";
-import { LaptopProduct, formatVND, ViewType, mapProductResponseToLaptopProduct } from "../types";
+import { LaptopProduct, formatVND, mapProductResponseToLaptopProduct } from "../types";
 import { useWishlistStore } from "../stores";
+import { productPath, ROUTES } from "../app/routePaths";
 
 export interface WishlistViewProps {
     wishlist?: number[];
     toggleWishlist?: (laptopId: number) => void;
     products?: LaptopProduct[];
-    setCurrentView: (view: ViewType) => void;
     setSelectedProduct: (product: LaptopProduct) => void;
 }
 
 export default function WishlistView({
-    setCurrentView,
     setSelectedProduct,
 }: WishlistViewProps) {
+    const navigate = useNavigate();
     const { wishlistItems, toggleWishlist: storeToggleWishlist, isLoading } = useWishlistStore();
 
     const mappedWishlistProducts = wishlistItems
@@ -33,7 +34,7 @@ export default function WishlistView({
                     </h1>
                 </div>
                 <button
-                    onClick={() => setCurrentView("store")}
+                    onClick={() => navigate(ROUTES.products)}
                     className="text-xs font-bold uppercase tracking-widest text-neutral-400 hover:text-[#00FF41] transition"
                 >
                     ← Trở lại cửa hàng
@@ -57,7 +58,7 @@ export default function WishlistView({
                         </p>
                     </div>
                     <button
-                        onClick={() => setCurrentView("store")}
+                        onClick={() => navigate(ROUTES.products)}
                         className="bg-[#00FF41] text-black font-extrabold px-8 py-3.5 rounded-xl text-xs uppercase tracking-wider hover:bg-[#00cc34] transition shadow-lg shadow-[#00FF41]/20"
                     >
                         Khám phá Laptop ngay
@@ -97,7 +98,7 @@ export default function WishlistView({
                                     <h3
                                         onClick={() => {
                                             setSelectedProduct(laptop);
-                                            setCurrentView("product-detail");
+                                            navigate(productPath(laptop.id));
                                         }}
                                         className="font-bold text-sm leading-snug line-clamp-2 hover:underline cursor-pointer min-h-[2.5rem] text-white"
                                     >
@@ -117,7 +118,7 @@ export default function WishlistView({
                                     <button
                                         onClick={() => {
                                             setSelectedProduct(laptop);
-                                            setCurrentView("product-detail");
+                                            navigate(productPath(laptop.id));
                                         }}
                                         className="border border-neutral-800 hover:border-white py-2.5 rounded-xl text-xs font-semibold text-neutral-300 transition"
                                     >
@@ -126,7 +127,7 @@ export default function WishlistView({
                                     <button
                                         onClick={() => {
                                             setSelectedProduct(laptop);
-                                            setCurrentView("product-detail");
+                                            navigate(productPath(laptop.id));
                                         }}
                                         className="bg-[#00FF41] text-black py-2.5 rounded-xl text-xs font-bold hover:bg-[#00cc34] transition"
                                     >
