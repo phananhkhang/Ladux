@@ -171,21 +171,38 @@ public class UserServiceImpl implements UserService {
         User user = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id));
 
-        if (request.password() != null) {
-            user.setPassword(encoder.encode(request.password()));
-            // Doi mat khau -> bump tokenVersion (tren entity managed) + thu hoi refresh token.
-            user.setTokenVersion(user.getTokenVersion() + 1);
-            refreshTokenService.revokeAllRefreshTokens(id);
+        Customer customer = getOrCreateCustomer(user);
+
+        if (request.fullName() != null && !request.fullName().isBlank()) {
+            customer.setFullName(request.fullName().trim());
         }
-        if (request.fullName() != null) {
-            getOrCreateCustomer(user).setFullName(request.fullName().trim());
+        if (request.phone() != null && !request.phone().isBlank()) {
+            customer.setPhone(request.phone().trim());
         }
-        if (request.phone() != null) {
-            getOrCreateCustomer(user).setPhone(request.phone());
+
+        // Logic chinh sua mat khau neu nguoi dung nhap mat khau
+        boolean hasPasswordInput = (request.currentPassword() != null && !request.currentPassword().isBlank())
+                || (request.newPassword() != null && !request.newPassword().isBlank())
+                || (request.confirmPassword() != null && !request.confirmPassword().isBlank());
+
+        if (hasPasswordInput) {
+            if (request.currentPassword() == null || request.currentPassword().isBlank()
+                    || request.newPassword() == null || request.newPassword().isBlank()
+                    || request.confirmPassword() == null || request.confirmPassword().isBlank()) {
+                throw new BusinessRuleException("Vui lòng điền đầy đủ các trường mật khẩu để thay đổi mật khẩu.");
+            }
+            if (!encoder.matches(request.currentPassword(), user.getPassword())) {
+                throw new BusinessRuleException("Mật khẩu hiện tại không đúng.");
+            }
+            if (!request.newPassword().equals(request.confirmPassword())) {
+                throw new BusinessRuleException("Mật khẩu mới và xác nhận mật khẩu không khớp.");
+            }
+            if (request.newPassword().length() < 8) {
+                throw new BusinessRuleException("Mật khẩu mới phải có tối thiểu 8 ký tự.");
+            }
+            user.setPassword(encoder.encode(request.newPassword()));
         }
-        if (request.avatarUrl() != null) {
-            getOrCreateCustomer(user).setAvatarUrl(request.avatarUrl().trim());
-        }
+
         return UserResponse.fromEntity(user);
     }
 

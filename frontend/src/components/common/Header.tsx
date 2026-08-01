@@ -51,14 +51,18 @@ export default function Header({
                     {/* Text Input */}
                     <input
                         type="text"
-                        placeholder="Tìm kiếm sản phẩm"
+                        placeholder="Tìm kiếm sản phẩm..."
                         value={searchQuery}
                         onChange={(e) => {
                             setSearchQuery(e.target.value);
-                            setCurrentView("store");
+                            if (e.target.value.trim()) {
+                                setCurrentView("all-products");
+                            }
                         }}
                         onKeyDown={(e) => {
-                            if (e.key === "Enter") setCurrentView("store");
+                            if (e.key === "Enter") {
+                                setCurrentView("all-products");
+                            }
                         }}
                         className="flex-1 bg-transparent px-4 text-sm text-white placeholder:text-neutral-500 focus:outline-none min-w-0"
                     />
@@ -72,7 +76,7 @@ export default function Header({
                             value={selectedCategory}
                             onChange={(e) => {
                                 setSelectedCategory(e.target.value);
-                                setCurrentView("store");
+                                setCurrentView("all-products");
                             }}
                             className="appearance-none bg-transparent pl-4 pr-8 h-full text-[11px] font-bold uppercase tracking-widest text-neutral-300 focus:outline-none cursor-pointer hover:text-white transition-colors"
                         >
@@ -100,7 +104,7 @@ export default function Header({
 
                     {/* Search Button */}
                     <button
-                        onClick={() => setCurrentView("store")}
+                        onClick={() => setCurrentView("all-products")}
                         className="flex items-center justify-center w-12 bg-[#00FF41] hover:bg-[#00cc34] active:bg-[#00b32d] transition-colors shrink-0"
                         aria-label="Tìm kiếm"
                     >

@@ -13,7 +13,7 @@ public record OrderResponse(
         Integer id,
         Integer userId,
         Integer couponCode,
-        BigDecimal subTotalord,
+        BigDecimal subTotal,
         BigDecimal discountAmount,
         BigDecimal finalAmount,
         OrderStatus status,

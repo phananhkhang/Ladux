@@ -185,11 +185,12 @@ export function mapProductResponseToLaptopProduct(
     };
 }
 
-export const formatVND = (amount: number): string => {
+export const formatVND = (amount?: number | string | null): string => {
+    const num = Number(amount ?? 0);
     return new Intl.NumberFormat("vi-VN", {
         style: "currency",
         currency: "VND",
-    }).format(amount);
+    }).format(isNaN(num) ? 0 : num);
 };
 
 export function getAvatarUrl(avatarPath?: string | null): string {

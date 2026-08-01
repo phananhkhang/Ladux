@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { ChevronRight } from "lucide-react";
+import React, { useState, useMemo, useEffect } from "react";
+import { ChevronRight, Search, X } from "lucide-react";
 import { useProductStore, useWishlistStore, useCartStore } from "../stores";
 import ProductCard from "../components/product/ProductCard";
 import { LaptopProduct, ViewType, mapProductResponseToLaptopProduct } from "../types";
@@ -10,6 +10,8 @@ export interface AllProductsViewProps {
     setSelectedBrand?: (brand: string) => void;
     selectedCategory?: string;
     setSelectedCategory?: (category: string) => void;
+    searchQuery?: string;
+    setSearchQuery?: (query: string) => void;
     wishlist?: number[];
     toggleWishlist?: (laptopId: number) => void;
     setSelectedProduct: (product: LaptopProduct) => void;
@@ -25,6 +27,13 @@ export interface AllProductsViewProps {
 }
 
 export default function AllProductsView({
+    allProducts,
+    selectedBrand,
+    setSelectedBrand,
+    selectedCategory,
+    setSelectedCategory,
+    searchQuery = "",
+    setSearchQuery,
     toggleWishlist,
     setSelectedProduct,
     setCurrentView,
@@ -35,6 +44,9 @@ export default function AllProductsView({
         categories,
         filters,
         isLoading,
+        fetchProducts,
+        fetchBrands,
+        fetchCategories,
         setBrandFilter,
         setCategoryFilter,
     } = useProductStore();
@@ -42,6 +54,7 @@ export default function AllProductsView({
     const { wishlistProductIds, toggleWishlist: storeToggleWishlist } = useWishlistStore();
     const { addToCart } = useCartStore();
 
+    const [sidebarSearch, setSidebarSearch] = useState<string>("");
     const [selectedRam, setSelectedRam] = useState<string>("All");
     const [selectedRom, setSelectedRom] = useState<string>("All");
     const [maxPrice, setMaxPrice] = useState<number>(280000000);
@@ -49,29 +62,110 @@ export default function AllProductsView({
     const [currentPage, setCurrentPage] = useState<number>(1);
     const itemsPerPage = 8;
 
+    // Trigger store fetch if products/brands/categories are not loaded yet
+    useEffect(() => {
+        if (products.length === 0) fetchProducts();
+        if (brands.length === 0) fetchBrands();
+        if (categories.length === 0) fetchCategories();
+    }, []);
+
     // Chuyển đổi dữ liệu Backend ProductResponse DTO sang LaptopProduct UI model
     const mappedProducts = useMemo(() => {
+        if (allProducts && allProducts.length > 0) {
+            return allProducts;
+        }
         return products.map((p) => mapProductResponseToLaptopProduct(p));
-    }, [products]);
+    }, [allProducts, products]);
 
-    // Client-side filtering bổ sung cho RAM, ROM, Giá & Sắp xếp
+    // Combined search & filter logic for Brand, Category, Header Search, Sidebar Filter Search, RAM, ROM, Price & Sorting
     const filteredProducts = useMemo(() => {
         let list = [...mappedProducts];
 
-        // RAM filter
+        // 1. Brand Filter
+        if (selectedBrand && selectedBrand !== "All") {
+            list = list.filter((p) => (p.brand || "").toLowerCase() === selectedBrand.toLowerCase());
+        } else if (filters.brandId !== null) {
+            const foundBrand = brands.find((b) => b.id === filters.brandId);
+            if (foundBrand) {
+                list = list.filter((p) => (p.brand || "").toLowerCase() === foundBrand.name.toLowerCase());
+            }
+        }
+
+        // 2. Category Filter
+        if (selectedCategory && selectedCategory !== "All") {
+            list = list.filter((p) => (p.category || "").toLowerCase() === selectedCategory.toLowerCase());
+        } else if (filters.categoryId !== null) {
+            const foundCat = categories.find((c) => c.id === filters.categoryId);
+            if (foundCat) {
+                list = list.filter((p) => (p.category || "").toLowerCase() === foundCat.name.toLowerCase());
+            }
+        }
+
+        // 3. Header Search Query filter (from Header search bar)
+        const headerQuery = (searchQuery || "").toLowerCase().trim();
+        if (headerQuery) {
+            list = list.filter((p) => {
+                if (!p) return false;
+                const name = (p.name || "").toLowerCase();
+                const brand = (p.brand || "").toLowerCase();
+                const category = (p.category || "").toLowerCase();
+                const cpu = (p.cpu || "").toLowerCase();
+                const gpu = (p.gpu || "").toLowerCase();
+                const ram = (p.ram || "").toLowerCase();
+                const rom = (p.rom || "").toLowerCase();
+                return (
+                    name.includes(headerQuery) ||
+                    brand.includes(headerQuery) ||
+                    category.includes(headerQuery) ||
+                    cpu.includes(headerQuery) ||
+                    gpu.includes(headerQuery) ||
+                    ram.includes(headerQuery) ||
+                    rom.includes(headerQuery)
+                );
+            });
+        }
+
+        // 4. Sidebar Filter Text (independent search inside sidebar filter)
+        const sidebarQuery = sidebarSearch.toLowerCase().trim();
+        if (sidebarQuery) {
+            list = list.filter((p) => {
+                if (!p) return false;
+                const name = (p.name || "").toLowerCase();
+                const brand = (p.brand || "").toLowerCase();
+                const category = (p.category || "").toLowerCase();
+                const cpu = (p.cpu || "").toLowerCase();
+                const gpu = (p.gpu || "").toLowerCase();
+                const ram = (p.ram || "").toLowerCase();
+                const rom = (p.rom || "").toLowerCase();
+                return (
+                    name.includes(sidebarQuery) ||
+                    brand.includes(sidebarQuery) ||
+                    category.includes(sidebarQuery) ||
+                    cpu.includes(sidebarQuery) ||
+                    gpu.includes(sidebarQuery) ||
+                    ram.includes(sidebarQuery) ||
+                    rom.includes(sidebarQuery)
+                );
+            });
+        }
+
+        // 5. RAM filter
         if (selectedRam !== "All") {
             list = list.filter((p) => p && p.ram && p.ram.includes(selectedRam));
         }
 
-        // ROM filter
+        // 6. ROM filter
         if (selectedRom !== "All") {
             list = list.filter((p) => p && p.rom && p.rom.includes(selectedRom));
         }
 
-        // Price filter
-        list = list.filter((p) => (p.discountPrice || p.price) <= maxPrice);
+        // 7. Price filter (Safely check undefined/null)
+        list = list.filter((p) => {
+            const cost = p.discountPrice ?? p.price ?? 0;
+            return cost <= maxPrice;
+        });
 
-        // Sorting
+        // 8. Sorting
         if (sortBy === "price-asc") {
             list.sort((a, b) => (a.discountPrice || a.price) - (b.discountPrice || b.price));
         } else if (sortBy === "price-desc") {
@@ -83,7 +177,7 @@ export default function AllProductsView({
         }
 
         return list;
-    }, [mappedProducts, selectedRam, selectedRom, maxPrice, sortBy]);
+    }, [mappedProducts, selectedBrand, selectedCategory, filters.brandId, filters.categoryId, brands, categories, searchQuery, sidebarSearch, selectedRam, selectedRom, maxPrice, sortBy]);
 
     // Pagination
     const totalPages = Math.ceil(filteredProducts.length / itemsPerPage) || 1;
@@ -146,7 +240,53 @@ export default function AllProductsView({
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                     {/* Left Sidebar Filter Column */}
                     <aside className="lg:col-span-3 space-y-8 bg-[#0f1112]/60 p-6 rounded-2xl border border-white/[0.06] backdrop-blur-md">
-                        {/* 1. THƯƠNG HIỆU ĐỘNG TỪ BACKEND */}
+                        {/* 0. TÌM KIẾM BỘ LỌC ĐỘC LẬP */}
+                        <div>
+                            <div className="flex items-center justify-between mb-3">
+                                <h3 className="text-xs font-mono font-bold tracking-widest text-neutral-400 uppercase">
+                                    LỌC TỪ KHÓA
+                                </h3>
+                                {(sidebarSearch || searchQuery || selectedRam !== "All" || selectedRom !== "All" || maxPrice < 280000000 || filters.brandId !== null || filters.categoryId !== null) && (
+                                    <button
+                                        onClick={() => {
+                                            setSidebarSearch("");
+                                            if (setSearchQuery) setSearchQuery("");
+                                            setSelectedRam("All");
+                                            setSelectedRom("All");
+                                            setMaxPrice(280000000);
+                                            setBrandFilter(null);
+                                            setCategoryFilter(null);
+                                            setCurrentPage(1);
+                                        }}
+                                        className="text-[11px] font-bold text-[#00FF41] hover:underline flex items-center gap-1 cursor-pointer"
+                                    >
+                                        <X className="w-3 h-3" />
+                                        <span>Đặt lại</span>
+                                    </button>
+                                )}
+                            </div>
+                            <div className="relative">
+                                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                                <input
+                                    type="text"
+                                    value={sidebarSearch}
+                                    onChange={(e) => {
+                                        setSidebarSearch(e.target.value);
+                                        setCurrentPage(1);
+                                    }}
+                                    placeholder="Lọc tên laptop, CPU..."
+                                    className="w-full bg-[#181a1b] border border-white/10 rounded-xl pl-9 pr-8 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#00FF41] transition font-medium"
+                                />
+                                {sidebarSearch && (
+                                    <button
+                                        onClick={() => setSidebarSearch("")}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+                                    >
+                                        <X className="w-3.5 h-3.5" />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                         <div>
                             <h3 className="text-xs font-mono font-bold tracking-widest text-neutral-400 uppercase mb-3">
                                 THƯƠNG HIỆU
@@ -157,11 +297,10 @@ export default function AllProductsView({
                                         setBrandFilter(null);
                                         setCurrentPage(1);
                                     }}
-                                    className={`text-xs font-bold transition-all text-left ${
-                                        filters.brandId === null
+                                    className={`text-xs font-bold transition-all text-left ${filters.brandId === null
                                             ? "bg-[#00FF41] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00FF41]/20"
                                             : "text-neutral-400 hover:text-white py-1.5 px-4"
-                                    }`}
+                                        }`}
                                 >
                                     Tất cả thương hiệu
                                 </button>
@@ -174,11 +313,10 @@ export default function AllProductsView({
                                                 setBrandFilter(b.id);
                                                 setCurrentPage(1);
                                             }}
-                                            className={`text-xs font-bold transition-all text-left ${
-                                                isActive
+                                            className={`text-xs font-bold transition-all text-left ${isActive
                                                     ? "bg-[#00FF41] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00FF41]/20"
                                                     : "text-neutral-400 hover:text-white py-1.5 px-4"
-                                            }`}
+                                                }`}
                                         >
                                             {b.name}
                                         </button>
@@ -198,11 +336,10 @@ export default function AllProductsView({
                                         setCategoryFilter(null);
                                         setCurrentPage(1);
                                     }}
-                                    className={`text-xs font-bold transition-all text-left ${
-                                        filters.categoryId === null
+                                    className={`text-xs font-bold transition-all text-left ${filters.categoryId === null
                                             ? "bg-[#00FF41] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00FF41]/20"
                                             : "text-neutral-400 hover:text-white py-1.5 px-4"
-                                    }`}
+                                        }`}
                                 >
                                     Tất cả dòng máy
                                 </button>
@@ -215,11 +352,10 @@ export default function AllProductsView({
                                                 setCategoryFilter(c.id);
                                                 setCurrentPage(1);
                                             }}
-                                            className={`text-xs font-bold transition-all text-left ${
-                                                isActive
+                                            className={`text-xs font-bold transition-all text-left ${isActive
                                                     ? "bg-[#00FF41] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00FF41]/20"
                                                     : "text-neutral-400 hover:text-white py-1.5 px-4"
-                                            }`}
+                                                }`}
                                         >
                                             {c.name}
                                         </button>
@@ -280,11 +416,10 @@ export default function AllProductsView({
                                                 setSelectedRam(item.value);
                                                 setCurrentPage(1);
                                             }}
-                                            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
-                                                isActive
+                                            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${isActive
                                                     ? "bg-[#00FF41] text-black shadow-md shadow-[#00FF41]/20"
                                                     : "border border-neutral-800 text-neutral-300 hover:border-neutral-600"
-                                            }`}
+                                                }`}
                                         >
                                             {item.label}
                                         </button>
@@ -314,11 +449,10 @@ export default function AllProductsView({
                                                 setSelectedRom(item.value);
                                                 setCurrentPage(1);
                                             }}
-                                            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
-                                                isActive
+                                            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${isActive
                                                     ? "bg-[#00FF41] text-black shadow-md shadow-[#00FF41]/20"
                                                     : "border border-neutral-800 text-neutral-300 hover:border-neutral-600"
-                                            }`}
+                                                }`}
                                         >
                                             {item.label}
                                         </button>
@@ -393,11 +527,10 @@ export default function AllProductsView({
                                         <button
                                             key={pageNum}
                                             onClick={() => setCurrentPage(pageNum)}
-                                            className={`w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center transition-all ${
-                                                isActive
+                                            className={`w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center transition-all ${isActive
                                                     ? "bg-[#00FF41] text-black shadow-md shadow-[#00FF41]/20"
                                                     : "border border-neutral-800 text-neutral-300 hover:border-neutral-600"
-                                            }`}
+                                                }`}
                                         >
                                             {pageNum}
                                         </button>

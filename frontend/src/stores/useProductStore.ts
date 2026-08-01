@@ -59,7 +59,7 @@ const initialFilters: ProductFilterParams = {
   categoryId: null,
   brandId: null,
   page: 0,
-  size: 12,
+  size: 1000,
   sort: 'createdAt,desc',
 };
 
@@ -78,29 +78,12 @@ export const useProductStore = create<ProductState>((set, get) => ({
 
   fetchProducts: async () => {
     set({ isLoading: true, error: null });
-    const { filters } = get();
     try {
-      let res;
-      if (filters.categoryId) {
-        res = await productService.getProductsByCategoryId(filters.categoryId, {
-          page: filters.page,
-          size: filters.size,
-          sort: filters.sort,
-        });
-      } else if (filters.brandId) {
-        res = await productService.getProductsByBrandId(filters.brandId, {
-          page: filters.page,
-          size: filters.size,
-          sort: filters.sort,
-        });
-      } else {
-        res = await productService.getAllProducts({
-          search: filters.search || undefined,
-          page: filters.page,
-          size: filters.size,
-          sort: filters.sort,
-        });
-      }
+      const res = await productService.getAllProducts({
+        page: 0,
+        size: 1000,
+        sort: 'createdAt,desc',
+      });
 
       set({
         products: res.content || [],

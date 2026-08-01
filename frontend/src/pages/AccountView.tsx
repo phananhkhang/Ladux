@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Award,
     ChevronRight,
@@ -14,7 +14,7 @@ import {
     MapPin,
 } from "lucide-react";
 import { ShippingAddressRequest, OrderItemRecord, ViewType, getAvatarUrl } from "../types";
-import { useAddressStore, useAuthStore } from "../stores";
+import { useAddressStore, useAuthStore, useOrderStore } from "../stores";
 
 export interface AccountViewProps {
     currentView: ViewType;
@@ -45,6 +45,13 @@ export default function AccountView({
 }: AccountViewProps) {
     const addressStore = useAddressStore();
     const authStore = useAuthStore();
+    const { orders: storeOrders, fetchOrders, totalElements } = useOrderStore();
+
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
+    const totalOrderCount = storeOrders.length > 0 ? storeOrders.length : (totalElements || orders.length);
 
     // Map store addresses to ShippingAddressRequest
     const addressesList: ShippingAddressRequest[] = addressStore.addresses.length > 0
@@ -64,6 +71,16 @@ export default function AccountView({
     const [showAddrFormModal, setShowAddrFormModal] = useState(false);
     const [editingAddrId, setEditingAddrId] = useState<number | null>(null);
     const [addrSaving, setAddrSaving] = useState(false);
+
+    const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+    const [profileSaving, setProfileSaving] = useState(false);
+    const [editProfileForm, setEditProfileForm] = useState({
+        fullName: "",
+        phone: "",
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+    });
 
     const [addrForm, setAddrForm] = useState<Omit<ShippingAddressRequest, "id">>({
         fullName: "",
@@ -565,10 +582,11 @@ export default function AccountView({
                                         setUserAvatar(localPreview);
                                         try {
                                             await authStore.uploadAvatar(file);
-                                            if (authStore.user?.avatar) {
-                                                setUserAvatar(getAvatarUrl(authStore.user.avatar));
+                                            const updatedUser = useAuthStore.getState().user;
+                                            if (updatedUser?.avatar) {
+                                                setUserAvatar(getAvatarUrl(updatedUser.avatar));
                                             }
-                                            showToast("Đã cập nhật và lưu ảnh đại diện thành công!");
+                                            showToast("Đã tải ảnh đại diện lên thư mục uploads/avatar và lưu vào Database thành công!");
                                         } catch (err: any) {
                                             const errMsg = err?.response?.data?.message || err?.message || "Tải ảnh đại diện thất bại!";
                                             showToast(errMsg);
@@ -578,14 +596,31 @@ export default function AccountView({
                             />
                         </div>
                         <div>
-                            <p className="font-bold text-white text-base">{userFullName}</p>
-                            <p className="mt-0.5 font-mono text-[10px] text-neutral-400">LADUX / GOLD MEMBER</p>
-                            <label
-                                htmlFor="avatar-upload"
-                                className="inline-block mt-1 text-[11px] font-bold text-[#00FF41] hover:underline cursor-pointer"
+                            <h2 className="text-xl font-bold text-white leading-tight">
+                                {authStore.user?.fullName || userFullName}
+                            </h2>
+                            <p className="mt-1 font-mono text-xs text-neutral-400">
+                                SĐT: {authStore.user?.phone || "0988 123 456"}
+                            </p>
+                            <p className="mt-1 font-mono text-[10px] font-bold text-[#00FF41] tracking-wider uppercase">
+                                LADUX / GOLD MEMBER
+                            </p>
+                            <button
+                                onClick={() => {
+                                    setEditProfileForm({
+                                        fullName: authStore.user?.fullName || (userFullName !== "Thành viên LADUX" ? userFullName : ""),
+                                        phone: authStore.user?.phone || "",
+                                        currentPassword: "",
+                                        newPassword: "",
+                                        confirmPassword: "",
+                                    });
+                                    setShowEditProfileModal(true);
+                                }}
+                                className="mt-2.5 flex items-center gap-1.5 text-xs font-bold text-[#00FF41] hover:underline transition cursor-pointer"
                             >
-                                Tải lên ảnh mới
-                            </label>
+                                <Pencil className="w-3.5 h-3.5" />
+                                <span>Sửa thông tin cá nhân</span>
+                            </button>
                         </div>
                     </div>
 
@@ -599,7 +634,7 @@ export default function AccountView({
                             className="w-full rounded-xl px-4 py-3 text-left text-neutral-400 transition hover:bg-white/[0.06] hover:text-white flex items-center justify-between"
                         >
                             <span>Đơn hàng của tôi</span>
-                            <span className="font-mono text-xs text-[#00FF41] font-bold">{orders.length}</span>
+                            <span className="font-mono text-xs text-[#00FF41] font-bold">{totalOrderCount}</span>
                         </button>
                         <button
                             onClick={() => setCurrentView("addresses")}
@@ -682,6 +717,198 @@ export default function AccountView({
 
             {/* Modal Add / Edit Address */}
             {showAddrFormModal && renderModalContent()}
+
+            {/* Edit User Profile Modal */}
+            {showEditProfileModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                    <div className="w-full max-w-md rounded-2xl border border-neutral-800 bg-[#0F0F11] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                        {/* Header */}
+                        <div className="flex items-center justify-between border-b border-neutral-800 px-6 py-5">
+                            <div>
+                                <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-[#00FF41]">
+                                    CẬP NHẬT TÀI KHOẢN
+                                </span>
+                                <h3 className="text-lg font-extrabold text-white mt-0.5">
+                                    Chỉnh sửa thông tin cá nhân
+                                </h3>
+                            </div>
+                            <button
+                                onClick={() => setShowEditProfileModal(false)}
+                                className="rounded-full p-2 text-neutral-400 hover:bg-neutral-800 hover:text-white transition"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        {/* Form Body */}
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                if (!editProfileForm.fullName.trim()) {
+                                    showToast("Vui lòng nhập họ và tên!");
+                                    return;
+                                }
+                                if (!editProfileForm.phone.trim()) {
+                                    showToast("Vui lòng nhập số điện thoại!");
+                                    return;
+                                }
+                                if (
+                                    editProfileForm.newPassword ||
+                                    editProfileForm.currentPassword ||
+                                    editProfileForm.confirmPassword
+                                ) {
+                                    if (!editProfileForm.currentPassword) {
+                                        showToast("Vui lòng nhập mật khẩu hiện tại!");
+                                        return;
+                                    }
+                                    if (editProfileForm.newPassword.length < 8) {
+                                        showToast("Mật khẩu mới phải có tối thiểu 8 ký tự!");
+                                        return;
+                                    }
+                                    if (editProfileForm.newPassword !== editProfileForm.confirmPassword) {
+                                        showToast("Mật khẩu mới và xác nhận mật khẩu không khớp!");
+                                        return;
+                                    }
+                                }
+
+                                setProfileSaving(true);
+                                try {
+                                    await authStore.updateProfile({
+                                        fullName: editProfileForm.fullName.trim(),
+                                        phone: editProfileForm.phone.trim(),
+                                        ...(editProfileForm.newPassword
+                                            ? {
+                                                  currentPassword: editProfileForm.currentPassword,
+                                                  newPassword: editProfileForm.newPassword,
+                                                  confirmPassword: editProfileForm.confirmPassword,
+                                              }
+                                            : {}),
+                                    });
+                                    showToast("Cập nhật thông tin cá nhân thành công!");
+                                    setShowEditProfileModal(false);
+                                } catch (err: any) {
+                                    const errorMsg =
+                                        err?.response?.data?.message ||
+                                        err?.message ||
+                                        "Cập nhật thất bại. Vui lòng kiểm tra lại!";
+                                    showToast(errorMsg);
+                                } finally {
+                                    setProfileSaving(false);
+                                }
+                            }}
+                            className="p-6 space-y-4"
+                        >
+                            <div>
+                                <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                                    HỌ VÀ TÊN <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={editProfileForm.fullName}
+                                    onChange={(e) =>
+                                        setEditProfileForm({ ...editProfileForm, fullName: e.target.value })
+                                    }
+                                    placeholder="Nhập họ và tên..."
+                                    className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition font-medium"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                                    SỐ ĐIỆN THOẠI <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={editProfileForm.phone}
+                                    onChange={(e) =>
+                                        setEditProfileForm({ ...editProfileForm, phone: e.target.value })
+                                    }
+                                    placeholder="Nhập số điện thoại..."
+                                    className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition font-medium"
+                                />
+                            </div>
+
+                            <div className="pt-3 border-t border-neutral-800 space-y-4">
+                                <span className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[#00FF41]">
+                                    ĐỔI MẬT KHẨU (KHÔNG BẮT BUỘC)
+                                </span>
+
+                                <div>
+                                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                                        MẬT KHẨU HIỆN TẠI
+                                    </label>
+                                    <input
+                                        type="password"
+                                        value={editProfileForm.currentPassword}
+                                        onChange={(e) =>
+                                            setEditProfileForm({ ...editProfileForm, currentPassword: e.target.value })
+                                        }
+                                        placeholder="........"
+                                        className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                                        MẬT KHẨU MỚI
+                                    </label>
+                                    <input
+                                        type="password"
+                                        value={editProfileForm.newPassword}
+                                        onChange={(e) =>
+                                            setEditProfileForm({ ...editProfileForm, newPassword: e.target.value })
+                                        }
+                                        placeholder="Tối thiểu 8 ký tự"
+                                        className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                                        XÁC NHẬN MẬT KHẨU MỚI
+                                    </label>
+                                    <input
+                                        type="password"
+                                        value={editProfileForm.confirmPassword}
+                                        onChange={(e) =>
+                                            setEditProfileForm({ ...editProfileForm, confirmPassword: e.target.value })
+                                        }
+                                        placeholder="Nhập lại mật khẩu mới"
+                                        className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="flex items-center gap-3 pt-4 border-t border-neutral-800">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowEditProfileModal(false)}
+                                    className="flex-1 rounded-xl border border-neutral-800 bg-transparent py-3.5 text-xs font-bold uppercase tracking-wider text-neutral-300 hover:bg-neutral-800 transition cursor-pointer"
+                                >
+                                    HỦY
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={profileSaving}
+                                    className="flex-1 rounded-xl bg-[#00FF41] py-3.5 text-xs font-extrabold uppercase tracking-wider text-black hover:bg-[#00cc34] transition flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(0,255,65,0.3)] disabled:opacity-50 cursor-pointer"
+                                >
+                                    {profileSaving ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <>
+                                            <Check className="h-4 w-4 stroke-[3]" />
+                                            <span>LƯU THAY ĐỔI</span>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }

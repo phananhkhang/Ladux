@@ -358,7 +358,7 @@ export default function App() {
             {/* Views Router */}
             {currentView === "store" && (
                 <ProductStoreView
-                    filteredProducts={filteredProducts}
+                    filteredProducts={allDisplayProducts}
                     allProducts={allDisplayProducts}
                     selectedBrand={selectedBrand}
                     setSelectedBrand={setSelectedBrand}
@@ -383,6 +383,8 @@ export default function App() {
                     setSelectedBrand={setSelectedBrand}
                     selectedCategory={selectedCategory}
                     setSelectedCategory={setSelectedCategory}
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
                     wishlist={activeWishlist}
                     toggleWishlist={toggleWishlist}
                     setSelectedProduct={setSelectedProduct}

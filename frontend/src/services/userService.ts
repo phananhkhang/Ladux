@@ -12,11 +12,11 @@ export interface UserResponse {
 }
 
 export interface UserProfileUpdateRequest {
-  email?: string;
-  username?: string;
-  password?: string;
   fullName?: string;
   phone?: string;
+  currentPassword?: string;
+  newPassword?: string;
+  confirmPassword?: string;
 }
 
 export const userService = {
