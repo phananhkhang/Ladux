@@ -1,6 +1,6 @@
 package org.akira.ladux.model.enums;
 
-public enum PhoneVerificationStatus {
+public enum EmailVerificationStatus {
     PENDING,
     VERIFIED,
     CONSUMED,

@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { ShippingAddressRequest, OrderItemRecord, getAvatarUrl, mapProductResponseToLaptopProduct } from "../types";
 import { useAddressStore, useAuthStore, useOrderStore } from "../stores";
+import { customerService, userService } from "../services";
 import { ROUTES } from "../app/routePaths";
 
 export interface AccountViewProps {
@@ -190,12 +191,32 @@ export default function AccountView({
     const [addrSaving, setAddrSaving] = useState(false);
 
     const [activeTab, setActiveTab] = useState<"overview" | "security">("overview");
-    const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+    const [activeProfileModal, setActiveProfileModal] = useState<"name" | "phone" | "email" | "password" | null>(null);
     const [profileSaving, setProfileSaving] = useState(false);
-    const [editProfileForm, setEditProfileForm] = useState({
-        fullName: "",
-        phone: "",
-        email: "",
+    const [nameInput, setNameInput] = useState("");
+    const [phoneInput, setPhoneInput] = useState("");
+    const [phoneOtpInput, setPhoneOtpInput] = useState("");
+    const [phoneVerificationId, setPhoneVerificationId] = useState<string | null>(null);
+    const [phoneMasked, setPhoneMasked] = useState("");
+    const [emailStep, setEmailStep] = useState<"INPUT" | "OTP">("INPUT");
+    const [newEmail, setNewEmail] = useState("");
+    const [emailOtp, setEmailOtp] = useState("");
+    const [emailVerificationId, setEmailVerificationId] = useState<string | null>(null);
+    const [maskedEmail, setMaskedEmail] = useState("");
+    const [sendingEmailOtp, setSendingEmailOtp] = useState(false);
+    const [verifyingEmailOtp, setVerifyingEmailOtp] = useState(false);
+    const [pwdStep, setPwdStep] = useState<1 | 2>(1);
+    const [authMethod, setAuthMethod] = useState<"phone" | "email">("phone");
+    const [verifyTarget, setVerifyTarget] = useState("");
+    const [otpSent, setOtpSent] = useState(false);
+    const [otpVerified, setOtpVerified] = useState(false);
+    const [otpInput, setOtpInput] = useState("");
+    const [passwordVerificationId, setPasswordVerificationId] = useState<string | null>(null);
+    const [passwordMaskedTarget, setPasswordMaskedTarget] = useState("");
+    const [otpSending, setOtpSending] = useState(false);
+    const [otpVerifying, setOtpVerifying] = useState(false);
+    const [changingPassword, setChangingPassword] = useState(false);
+    const [passwordForm, setPasswordForm] = useState({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
@@ -210,6 +231,176 @@ export default function AccountView({
         city: "Hà Nội",
         isDefault: false,
     });
+
+    const getErrorMessage = (error: any, fallback: string) =>
+        error?.response?.data?.message || error?.message || fallback;
+
+    const resetEmailVerification = () => {
+        setEmailStep("INPUT");
+        setNewEmail("");
+        setEmailOtp("");
+        setEmailVerificationId(null);
+        setMaskedEmail("");
+    };
+
+    const handleSendEmailOtp = async () => {
+        const normalizedEmail = newEmail.trim().toLowerCase();
+        if (!normalizedEmail) {
+            showToast("Vui lòng nhập email");
+            return;
+        }
+
+        setSendingEmailOtp(true);
+        try {
+            const response = await customerService.sendEmailOtp(normalizedEmail);
+            setEmailVerificationId(response.verificationId);
+            setMaskedEmail(response.maskedEmail);
+            setEmailOtp("");
+            setEmailStep("OTP");
+            showToast(`Mã xác thực đã được gửi tới ${response.maskedEmail}`);
+        } catch (error: any) {
+            showToast(getErrorMessage(error, "Không thể gửi mã xác thực email"));
+        } finally {
+            setSendingEmailOtp(false);
+        }
+    };
+
+    const handleVerifyEmailOtp = async () => {
+        if (!emailVerificationId) {
+            showToast("Không tìm thấy phiên xác thực");
+            return;
+        }
+        if (!/^\d{6}$/.test(emailOtp)) {
+            showToast("Mã xác thực phải gồm đúng 6 chữ số");
+            return;
+        }
+
+        setVerifyingEmailOtp(true);
+        try {
+            await customerService.verifyEmailOtp({
+                verificationId: emailVerificationId,
+                otp: emailOtp,
+            });
+            await authStore.fetchCurrentUser();
+            resetEmailVerification();
+            setActiveProfileModal(null);
+            showToast("Email đã được xác minh và cập nhật");
+        } catch (error: any) {
+            showToast(getErrorMessage(error, "Mã xác thực không chính xác"));
+        } finally {
+            setVerifyingEmailOtp(false);
+        }
+    };
+
+    const handleSendPasswordOtp = async () => {
+        if (authMethod === "phone" && !authStore.user?.phone) {
+            showToast("Tài khoản chưa có số điện thoại. Vui lòng thêm số điện thoại trước!");
+            return;
+        }
+        if (authMethod === "email" && !authStore.user?.email) {
+            showToast("Tài khoản chưa có email. Vui lòng thêm và xác minh email trước!");
+            return;
+        }
+
+        setOtpSending(true);
+        try {
+            const response = authMethod === "phone"
+                ? await userService.sendPasswordPhoneOtp()
+                : await userService.sendPasswordEmailOtp();
+
+            setPasswordVerificationId(response.verificationId);
+            setPasswordMaskedTarget(
+                "maskedPhone" in response ? response.maskedPhone : response.maskedEmail,
+            );
+            setOtpSent(true);
+            setOtpVerified(false);
+            setOtpInput("");
+            showToast(
+                authMethod === "phone"
+                    ? "Mã xác thực số điện thoại đã được gửi"
+                    : "Mã xác thực đã được gửi vào email",
+            );
+        } catch (error: any) {
+            showToast(getErrorMessage(error, "Không thể gửi mã xác thực"));
+        } finally {
+            setOtpSending(false);
+        }
+    };
+
+    const handleVerifyPasswordOtp = async () => {
+        if (!passwordVerificationId) {
+            showToast("Không tìm thấy phiên xác thực");
+            return;
+        }
+        if (!/^\d{6}$/.test(otpInput)) {
+            showToast("Mã xác thực phải gồm đúng 6 chữ số");
+            return;
+        }
+
+        const request = {
+            verificationId: passwordVerificationId,
+            otp: otpInput,
+        };
+
+        setOtpVerifying(true);
+        try {
+            if (authMethod === "phone") {
+                await userService.verifyPasswordPhoneOtp(request);
+            } else {
+                await userService.verifyPasswordEmailOtp(request);
+            }
+            setOtpVerified(true);
+            setPwdStep(2);
+            showToast("Xác minh thành công. Bạn có thể đổi mật khẩu");
+        } catch (error: any) {
+            setOtpVerified(false);
+            showToast(getErrorMessage(error, "Mã xác thực không chính xác"));
+        } finally {
+            setOtpVerifying(false);
+        }
+    };
+
+    const handleChangePassword = async () => {
+        if (!otpVerified) {
+            showToast("Vui lòng xác minh OTP trước");
+            setPwdStep(1);
+            return;
+        }
+        if (!passwordVerificationId) {
+            showToast("Phiên xác thực không hợp lệ");
+            setPwdStep(1);
+            return;
+        }
+        if (!passwordForm.currentPassword) {
+            showToast("Vui lòng nhập mật khẩu hiện tại!");
+            return;
+        }
+        if (passwordForm.newPassword.length < 8) {
+            showToast("Mật khẩu mới phải có tối thiểu 8 ký tự!");
+            return;
+        }
+        if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+            showToast("Mật khẩu mới và xác nhận mật khẩu không khớp!");
+            return;
+        }
+
+        setChangingPassword(true);
+        try {
+            await authStore.changePassword({
+                currentPassword: passwordForm.currentPassword,
+                newPassword: passwordForm.newPassword,
+                confirmPassword: passwordForm.confirmPassword,
+                verificationId: passwordVerificationId,
+            });
+            showToast("Đổi mật khẩu thành công. Vui lòng đăng nhập lại");
+            setActiveProfileModal(null);
+            handleLogout();
+        } catch (error: any) {
+            showToast(getErrorMessage(error, "Không thể đổi mật khẩu"));
+        } finally {
+            setChangingPassword(false);
+        }
+    };
 
     const openAddAddr = () => {
         setEditingAddrId(null);
@@ -726,15 +917,8 @@ export default function AccountView({
                             </p>
                             <button
                                 onClick={() => {
-                                    setEditProfileForm({
-                                        fullName: authStore.user?.fullName || (userFullName !== "Thành viên LADUX" ? userFullName : ""),
-                                        phone: authStore.user?.phone || "",
-                                        email: authStore.user?.email || "",
-                                        currentPassword: "",
-                                        newPassword: "",
-                                        confirmPassword: "",
-                                    });
-                                    setShowEditProfileModal(true);
+                                    setNameInput(authStore.user?.fullName || (userFullName !== "Thành viên LADUX" ? userFullName : ""));
+                                    setActiveProfileModal("name");
                                 }}
                                 className="mt-2.5 flex items-center gap-1.5 text-xs font-bold text-[#00FF41] hover:underline transition cursor-pointer"
                             >
@@ -835,15 +1019,11 @@ export default function AccountView({
                                     </div>
                                     <button
                                         onClick={() => {
-                                            setEditProfileForm({
-                                                fullName: authStore.user?.fullName || "",
-                                                phone: authStore.user?.phone || "",
-                                                email: authStore.user?.email || "",
-                                                currentPassword: "",
-                                                newPassword: "",
-                                                confirmPassword: "",
-                                            });
-                                            setShowEditProfileModal(true);
+                                            setPhoneInput(authStore.user?.phone || "");
+                                            setPhoneOtpInput("");
+                                            setPhoneVerificationId(null);
+                                            setPhoneMasked("");
+                                            setActiveProfileModal("phone");
                                         }}
                                         className="shrink-0 rounded-full border border-[#00FF41]/40 bg-[#00FF41]/10 px-4 py-2 text-xs font-bold text-[#00FF41] hover:bg-[#00FF41]/20 transition cursor-pointer"
                                     >
@@ -868,15 +1048,8 @@ export default function AccountView({
                                     </div>
                                     <button
                                         onClick={() => {
-                                            setEditProfileForm({
-                                                fullName: authStore.user?.fullName || "",
-                                                phone: authStore.user?.phone || "",
-                                                email: authStore.user?.email || "",
-                                                currentPassword: "",
-                                                newPassword: "",
-                                                confirmPassword: "",
-                                            });
-                                            setShowEditProfileModal(true);
+                                            resetEmailVerification();
+                                            setActiveProfileModal("email");
                                         }}
                                         className="shrink-0 rounded-full border border-[#00FF41]/40 bg-[#00FF41]/10 px-4 py-2 text-xs font-bold text-[#00FF41] hover:bg-[#00FF41]/20 transition cursor-pointer"
                                     >
@@ -902,15 +1075,17 @@ export default function AccountView({
                                 </div>
                                 <button
                                     onClick={() => {
-                                        setEditProfileForm({
-                                            fullName: authStore.user?.fullName || "",
-                                            phone: authStore.user?.phone || "",
-                                            email: authStore.user?.email || "",
-                                            currentPassword: "",
-                                            newPassword: "",
-                                            confirmPassword: "",
-                                        });
-                                        setShowEditProfileModal(true);
+                                        setPwdStep(1);
+                                        const initialMethod = authStore.user?.phone ? "phone" : authStore.user?.email ? "email" : "phone";
+                                        setAuthMethod(initialMethod);
+                                        setVerifyTarget(initialMethod === "phone" ? (authStore.user?.phone || "") : (authStore.user?.email || ""));
+                                        setOtpSent(false);
+                                        setOtpVerified(false);
+                                        setOtpInput("");
+                                        setPasswordVerificationId(null);
+                                        setPasswordMaskedTarget("");
+                                        setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+                                        setActiveProfileModal("password");
                                     }}
                                     className="shrink-0 rounded-full border border-white/20 bg-white/[0.06] px-5 py-2.5 text-xs font-bold text-white hover:bg-white/[0.12] transition cursor-pointer"
                                 >
@@ -1011,81 +1186,40 @@ export default function AccountView({
             {/* Modal Add / Edit Address */}
             {showAddrFormModal && renderModalContent()}
 
-            {/* Edit User Profile Modal */}
-            {showEditProfileModal && (
+            {/* Modal 1: Sửa Họ & Tên */}
+            {activeProfileModal === "name" && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
                     <div className="w-full max-w-md rounded-2xl border border-neutral-800 bg-[#0F0F11] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-                        {/* Header */}
                         <div className="flex items-center justify-between border-b border-neutral-800 px-6 py-5">
                             <div>
                                 <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-[#00FF41]">
-                                    CẬP NHẬT TÀI KHOẢN
+                                    THÔNG TIN CÁ NHÂN
                                 </span>
                                 <h3 className="text-lg font-extrabold text-white mt-0.5">
-                                    Chỉnh sửa thông tin cá nhân
+                                    Cập nhật Họ & Tên
                                 </h3>
                             </div>
                             <button
-                                onClick={() => setShowEditProfileModal(false)}
-                                className="rounded-full p-2 text-neutral-400 hover:bg-neutral-800 hover:text-white transition"
+                                onClick={() => setActiveProfileModal(null)}
+                                className="rounded-full p-2 text-neutral-400 hover:bg-neutral-800 hover:text-white transition cursor-pointer"
                             >
                                 <X className="h-5 w-5" />
                             </button>
                         </div>
-
-                        {/* Form Body */}
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
-                                if (!editProfileForm.fullName.trim()) {
+                                if (!nameInput.trim()) {
                                     showToast("Vui lòng nhập họ và tên!");
                                     return;
                                 }
-                                if (!editProfileForm.phone.trim()) {
-                                    showToast("Vui lòng nhập số điện thoại!");
-                                    return;
-                                }
-                                if (
-                                    editProfileForm.newPassword ||
-                                    editProfileForm.currentPassword ||
-                                    editProfileForm.confirmPassword
-                                ) {
-                                    if (!editProfileForm.currentPassword) {
-                                        showToast("Vui lòng nhập mật khẩu hiện tại!");
-                                        return;
-                                    }
-                                    if (editProfileForm.newPassword.length < 8) {
-                                        showToast("Mật khẩu mới phải có tối thiểu 8 ký tự!");
-                                        return;
-                                    }
-                                    if (editProfileForm.newPassword !== editProfileForm.confirmPassword) {
-                                        showToast("Mật khẩu mới và xác nhận mật khẩu không khớp!");
-                                        return;
-                                    }
-                                }
-
                                 setProfileSaving(true);
                                 try {
-                                    await authStore.updateProfile({
-                                        fullName: editProfileForm.fullName.trim(),
-                                        phone: editProfileForm.phone.trim(),
-                                        email: editProfileForm.email.trim(),
-                                        ...(editProfileForm.newPassword
-                                            ? {
-                                                  currentPassword: editProfileForm.currentPassword,
-                                                  newPassword: editProfileForm.newPassword,
-                                                  confirmPassword: editProfileForm.confirmPassword,
-                                              }
-                                            : {}),
-                                    });
-                                    showToast("Cập nhật thông tin cá nhân thành công!");
-                                    setShowEditProfileModal(false);
+                                    await authStore.updatePersonalInformation({ fullName: nameInput.trim() });
+                                    showToast("Cập nhật họ và tên thành công!");
+                                    setActiveProfileModal(null);
                                 } catch (err: any) {
-                                    const errorMsg =
-                                        err?.response?.data?.message ||
-                                        err?.message ||
-                                        "Cập nhật thất bại. Vui lòng kiểm tra lại!";
-                                    showToast(errorMsg);
+                                    showToast(err?.response?.data?.message || err?.message || "Cập nhật thất bại!");
                                 } finally {
                                     setProfileSaving(false);
                                 }
@@ -1099,101 +1233,16 @@ export default function AccountView({
                                 <input
                                     type="text"
                                     required
-                                    value={editProfileForm.fullName}
-                                    onChange={(e) =>
-                                        setEditProfileForm({ ...editProfileForm, fullName: e.target.value })
-                                    }
+                                    value={nameInput}
+                                    onChange={(e) => setNameInput(e.target.value)}
                                     placeholder="Nhập họ và tên..."
                                     className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition font-medium"
                                 />
                             </div>
-
-                            <div>
-                                <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
-                                    SỐ ĐIỆN THOẠI
-                                </label>
-                                <input
-                                    type="text"
-                                    value={editProfileForm.phone}
-                                    onChange={(e) =>
-                                        setEditProfileForm({ ...editProfileForm, phone: e.target.value })
-                                    }
-                                    placeholder="Nhập số điện thoại..."
-                                    className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition font-medium"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
-                                    ĐỊA CHỈ EMAIL
-                                </label>
-                                <input
-                                    type="email"
-                                    value={editProfileForm.email}
-                                    onChange={(e) =>
-                                        setEditProfileForm({ ...editProfileForm, email: e.target.value })
-                                    }
-                                    placeholder="Nhập địa chỉ email..."
-                                    className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition font-medium"
-                                />
-                            </div>
-
-                            <div className="pt-3 border-t border-neutral-800 space-y-4">
-                                <span className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[#00FF41]">
-                                    ĐỔI MẬT KHẨU (KHÔNG BẮT BUỘC)
-                                </span>
-
-                                <div>
-                                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
-                                        MẬT KHẨU HIỆN TẠI
-                                    </label>
-                                    <input
-                                        type="password"
-                                        value={editProfileForm.currentPassword}
-                                        onChange={(e) =>
-                                            setEditProfileForm({ ...editProfileForm, currentPassword: e.target.value })
-                                        }
-                                        placeholder="........"
-                                        className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
-                                        MẬT KHẨU MỚI
-                                    </label>
-                                    <input
-                                        type="password"
-                                        value={editProfileForm.newPassword}
-                                        onChange={(e) =>
-                                            setEditProfileForm({ ...editProfileForm, newPassword: e.target.value })
-                                        }
-                                        placeholder="Tối thiểu 8 ký tự"
-                                        className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
-                                        XÁC NHẬN MẬT KHẨU MỚI
-                                    </label>
-                                    <input
-                                        type="password"
-                                        value={editProfileForm.confirmPassword}
-                                        onChange={(e) =>
-                                            setEditProfileForm({ ...editProfileForm, confirmPassword: e.target.value })
-                                        }
-                                        placeholder="Nhập lại mật khẩu mới"
-                                        className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Buttons */}
                             <div className="flex items-center gap-3 pt-4 border-t border-neutral-800">
                                 <button
                                     type="button"
-                                    onClick={() => setShowEditProfileModal(false)}
+                                    onClick={() => setActiveProfileModal(null)}
                                     className="flex-1 rounded-xl border border-neutral-800 bg-transparent py-3.5 text-xs font-bold uppercase tracking-wider text-neutral-300 hover:bg-neutral-800 transition cursor-pointer"
                                 >
                                     HỦY
@@ -1208,12 +1257,475 @@ export default function AccountView({
                                     ) : (
                                         <>
                                             <Check className="h-4 w-4 stroke-[3]" />
-                                            <span>LƯU THAY ĐỔI</span>
+                                            <span>LƯU TÊN</span>
                                         </>
                                     )}
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal 2: Cập nhật SĐT */}
+            {activeProfileModal === "phone" && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                    <div className="w-full max-w-md rounded-2xl border border-neutral-800 bg-[#0F0F11] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="flex items-center justify-between border-b border-neutral-800 px-6 py-5">
+                            <div>
+                                <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-[#00FF41]">
+                                    SỐ ĐIỆN THOẠI
+                                </span>
+                                <h3 className="text-lg font-extrabold text-white mt-0.5">
+                                    {authStore.user?.phone ? "Cập nhật Số Điện Thoại" : "Thêm Số Điện Thoại"}
+                                </h3>
+                            </div>
+                            <button
+                                onClick={() => setActiveProfileModal(null)}
+                                className="rounded-full p-2 text-neutral-400 hover:bg-neutral-800 hover:text-white transition cursor-pointer"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                setProfileSaving(true);
+                                try {
+                                    if (!phoneVerificationId) {
+                                        if (!phoneInput.trim()) {
+                                            showToast("Vui lòng nhập số điện thoại!");
+                                            return;
+                                        }
+                                        const response = await customerService.sendPhoneOtp({
+                                            phone: phoneInput.replace(/\s/g, ""),
+                                        });
+                                        setPhoneVerificationId(response.verificationId);
+                                        setPhoneMasked(response.maskedPhone);
+                                        showToast("Đã tạo OTP. Dùng mã 123456 để xác minh.");
+                                        return;
+                                    }
+
+                                    if (!/^\d{6}$/.test(phoneOtpInput)) {
+                                        showToast("OTP phải gồm đúng 6 chữ số!");
+                                        return;
+                                    }
+
+                                    await customerService.verifyPhoneOtp({
+                                        verificationId: phoneVerificationId,
+                                        otp: phoneOtpInput,
+                                    });
+                                    await authStore.fetchCurrentUser();
+                                    showToast("Xác minh và cập nhật số điện thoại thành công!");
+                                    setPhoneVerificationId(null);
+                                    setPhoneOtpInput("");
+                                    setPhoneMasked("");
+                                    setActiveProfileModal(null);
+                                } catch (err: any) {
+                                    showToast(err?.response?.data?.message || err?.message || "Cập nhật thất bại!");
+                                } finally {
+                                    setProfileSaving(false);
+                                }
+                            }}
+                            className="p-6 space-y-4"
+                        >
+                            <div>
+                                <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                                    SỐ ĐIỆN THOẠI <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="tel"
+                                    required
+                                    value={phoneInput}
+                                    onChange={(e) => setPhoneInput(e.target.value)}
+                                    disabled={phoneVerificationId !== null}
+                                    placeholder="0988 123 456"
+                                    className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition font-mono disabled:opacity-60"
+                                />
+                            </div>
+                            {phoneVerificationId && (
+                                <div>
+                                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                                        MÃ OTP <span className="text-red-500">*</span>
+                                    </label>
+                                    <p className="mb-2 text-xs text-neutral-500">
+                                        Mã có hiệu lực cho {phoneMasked || "số điện thoại đã nhập"}.
+                                    </p>
+                                    <input
+                                        type="text"
+                                        inputMode="numeric"
+                                        maxLength={6}
+                                        required
+                                        value={phoneOtpInput}
+                                        onChange={(e) => setPhoneOtpInput(e.target.value.replace(/\D/g, ""))}
+                                        placeholder="123456"
+                                        className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition font-mono tracking-[0.35em]"
+                                    />
+                                </div>
+                            )}
+                            <div className="flex items-center gap-3 pt-4 border-t border-neutral-800">
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveProfileModal(null)}
+                                    className="flex-1 rounded-xl border border-neutral-800 bg-transparent py-3.5 text-xs font-bold uppercase tracking-wider text-neutral-300 hover:bg-neutral-800 transition cursor-pointer"
+                                >
+                                    HỦY
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={profileSaving}
+                                    className="flex-1 rounded-xl bg-[#00FF41] py-3.5 text-xs font-extrabold uppercase tracking-wider text-black hover:bg-[#00cc34] transition flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(0,255,65,0.3)] disabled:opacity-50 cursor-pointer"
+                                >
+                                    {profileSaving ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <>
+                                            <Check className="h-4 w-4 stroke-[3]" />
+                                            <span>{phoneVerificationId ? "XÁC MINH OTP" : "GỬI OTP"}</span>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal 3: Cập nhật Email */}
+            {activeProfileModal === "email" && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                    <div className="w-full max-w-md rounded-2xl border border-neutral-800 bg-[#0F0F11] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="flex items-center justify-between border-b border-neutral-800 px-6 py-5">
+                            <div>
+                                <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-[#00FF41]">
+                                    ĐỊA CHỈ EMAIL
+                                </span>
+                                <h3 className="text-lg font-extrabold text-white mt-0.5">
+                                    {authStore.user?.email ? "Cập nhật Địa Chỉ Email" : "Thêm Địa Chỉ Email"}
+                                </h3>
+                            </div>
+                            <button
+                                onClick={() => setActiveProfileModal(null)}
+                                className="rounded-full p-2 text-neutral-400 hover:bg-neutral-800 hover:text-white transition cursor-pointer"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+                        <form
+                            onSubmit={(event) => {
+                                event.preventDefault();
+                                void (emailStep === "INPUT" ? handleSendEmailOtp() : handleVerifyEmailOtp());
+                            }}
+                            className="p-6 space-y-4"
+                        >
+                            {emailStep === "INPUT" ? (
+                                <div>
+                                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                                        EMAIL MỚI <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="email"
+                                        required
+                                        autoComplete="email"
+                                        value={newEmail}
+                                        onChange={(event) => setNewEmail(event.target.value)}
+                                        placeholder="you@example.com"
+                                        className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition font-mono"
+                                    />
+                                    <p className="mt-2 text-xs text-neutral-500">
+                                        Email chỉ được cập nhật sau khi bạn nhập đúng mã được gửi tới hộp thư mới.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    <p className="text-sm text-neutral-300">
+                                        Mã xác thực đã được gửi tới <strong className="text-white">{maskedEmail}</strong>
+                                    </p>
+                                    <div>
+                                        <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                                            MÃ XÁC THỰC <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            inputMode="numeric"
+                                            autoComplete="one-time-code"
+                                            maxLength={6}
+                                            value={emailOtp}
+                                            onChange={(event) => {
+                                                const value = event.target.value.replace(/\D/g, "").slice(0, 6);
+                                                setEmailOtp(value);
+                                            }}
+                                            placeholder="Nhập mã 6 chữ số"
+                                            className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-center text-sm font-mono tracking-[0.25em] text-white focus:border-[#00FF41] focus:outline-none transition"
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmailStep("INPUT");
+                                            setEmailVerificationId(null);
+                                            setEmailOtp("");
+                                            setMaskedEmail("");
+                                        }}
+                                        className="text-xs font-bold text-[#00FF41] hover:underline"
+                                    >
+                                        Đổi email khác
+                                    </button>
+                                </div>
+                            )}
+                            <div className="flex items-center gap-3 pt-4 border-t border-neutral-800">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        resetEmailVerification();
+                                        setActiveProfileModal(null);
+                                    }}
+                                    className="flex-1 rounded-xl border border-neutral-800 bg-transparent py-3.5 text-xs font-bold uppercase tracking-wider text-neutral-300 hover:bg-neutral-800 transition cursor-pointer"
+                                >
+                                    HỦY
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={
+                                        emailStep === "INPUT"
+                                            ? sendingEmailOtp
+                                            : verifyingEmailOtp || emailOtp.length !== 6
+                                    }
+                                    className="flex-1 rounded-xl bg-[#00FF41] py-3.5 text-xs font-extrabold uppercase tracking-wider text-black hover:bg-[#00cc34] transition flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(0,255,65,0.3)] disabled:opacity-50 cursor-pointer"
+                                >
+                                    {sendingEmailOtp || verifyingEmailOtp ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <>
+                                            <Check className="h-4 w-4 stroke-[3]" />
+                                            <span>{emailStep === "INPUT" ? "GỬI MÃ" : "XÁC MINH EMAIL"}</span>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal 4: Đổi mật khẩu (2 Bước: Xác thực danh tính -> Thiết lập mật khẩu mới) */}
+            {activeProfileModal === "password" && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                    <div className="w-full max-w-md rounded-2xl border border-neutral-800 bg-[#0F0F11] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                        {/* Header */}
+                        <div className="flex items-center justify-between border-b border-neutral-800 px-6 py-5">
+                            <div>
+                                <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-[#00FF41]">
+                                    {pwdStep === 1 ? "BƯỚC 1 / 2: XÁC THỰC DANH TÍNH" : "BƯỚC 2 / 2: THIẾT LẬP MẬT KHẨU MỚI"}
+                                </span>
+                                <h3 className="text-xl font-extrabold text-white mt-0.5 tracking-tight">
+                                    {pwdStep === 1 ? "Xác thực OTP / Email" : "Đổi Mật Khẩu"}
+                                </h3>
+                            </div>
+                            <button
+                                onClick={() => setActiveProfileModal(null)}
+                                className="rounded-full p-2 text-neutral-400 hover:bg-neutral-800 hover:text-white transition cursor-pointer"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        {pwdStep === 1 ? (
+                            /* Step 1: Identity Verification Form */
+                            <form
+                                onSubmit={(event) => {
+                                    event.preventDefault();
+                                    void handleVerifyPasswordOtp();
+                                }}
+                                className="p-6 space-y-5"
+                            >
+                                {/* Field 1: Phương thức xác thực */}
+                                <div>
+                                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                                        PHƯƠNG THỨC XÁC THỰC <span className="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        value={authMethod}
+                                        onChange={(e) => {
+                                            const method = e.target.value as "phone" | "email";
+                                            setAuthMethod(method);
+                                            setVerifyTarget(method === "phone" ? (authStore.user?.phone || "") : (authStore.user?.email || ""));
+                                            setOtpSent(false);
+                                            setOtpVerified(false);
+                                            setOtpInput("");
+                                            setPasswordVerificationId(null);
+                                            setPasswordMaskedTarget("");
+                                        }}
+                                        className="w-full rounded-2xl border border-neutral-800 bg-black/60 px-4 py-3.5 text-sm text-white focus:border-[#00FF41] focus:outline-none transition appearance-none font-medium cursor-pointer"
+                                    >
+                                        <option value="phone" className="bg-neutral-900">
+                                            Xác thực qua Số điện thoại (OTP SMS)
+                                        </option>
+                                        <option value="email" className="bg-neutral-900">
+                                            Xác thực qua Địa chỉ Email (Mã Email)
+                                        </option>
+                                    </select>
+                                </div>
+
+                                {/* Field 2: Target Input */}
+                                <div>
+                                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                                        {authMethod === "phone" ? "SỐ ĐIỆN THOẠI CỦA TÀI KHOẢN *" : "ĐỊA CHỈ EMAIL CỦA TÀI KHOẢN *"}
+                                    </label>
+                                    <div className="flex items-center gap-2.5">
+                                        <input
+                                            type={authMethod === "phone" ? "tel" : "email"}
+                                            required
+                                            value={passwordMaskedTarget || verifyTarget}
+                                            readOnly
+                                            placeholder={authMethod === "phone" ? "0988 123 456" : "you@example.com"}
+                                            className="flex-1 rounded-2xl border border-neutral-800 bg-black/60 px-4 py-3.5 text-sm text-white font-mono placeholder:text-neutral-600 focus:border-[#00FF41] focus:outline-none transition"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => void handleSendPasswordOtp()}
+                                            disabled={otpSending}
+                                            className="shrink-0 rounded-2xl border border-[#00FF41]/40 bg-[#00FF41]/10 px-4 py-3.5 text-xs font-bold text-[#00FF41] hover:bg-[#00FF41]/20 transition cursor-pointer disabled:opacity-50"
+                                        >
+                                            {otpSent ? "Gửi lại mã" : authMethod === "phone" ? "Gửi OTP SMS" : "Gửi mã Email"}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* OTP Box when code sent */}
+                                {otpSent && (
+                                    <div className="rounded-2xl border border-[#00FF41]/40 bg-[#00FF41]/[0.05] p-4 space-y-2.5 animate-in fade-in duration-200">
+                                        <div className="flex items-center justify-between font-mono text-[10px]">
+                                            <span className="font-bold uppercase tracking-wider text-[#00FF41]">
+                                                NHẬP MÃ XÁC THỰC (OTP / CODE) <span className="text-red-400">*</span>
+                                            </span>
+                                            {authMethod === "phone" && (
+                                                <span className="text-[#00FF41] font-bold">
+                                                    Mã dùng thử: <span className="underline">123456</span>
+                                                </span>
+                                            )}
+                                        </div>
+                                        <input
+                                            type="text"
+                                            inputMode="numeric"
+                                            autoComplete="one-time-code"
+                                            maxLength={6}
+                                            value={otpInput}
+                                            onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                                            placeholder="Nhập mã 6 chữ số"
+                                            className="w-full rounded-xl border border-[#00FF41]/60 bg-black/80 px-4 py-3 text-center text-sm font-mono tracking-[0.25em] text-white placeholder:text-neutral-600 placeholder:tracking-normal focus:border-[#00FF41] focus:ring-1 focus:ring-[#00FF41]/30 focus:outline-none transition"
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Buttons */}
+                                <div className="flex items-center gap-3 pt-4 border-t border-neutral-800">
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveProfileModal(null)}
+                                        className="flex-1 rounded-2xl border border-neutral-800 bg-transparent py-3.5 text-xs font-bold uppercase tracking-wider text-neutral-300 hover:bg-neutral-800 transition cursor-pointer"
+                                    >
+                                        HỦY
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={otpVerifying || !otpSent || otpInput.length !== 6}
+                                        className="flex-1 rounded-2xl bg-[#00FF41] py-3.5 text-xs font-extrabold uppercase tracking-wider text-black hover:bg-[#00cc34] transition flex items-center justify-center gap-1.5 shadow-[0_0_20px_rgba(0,255,65,0.3)] cursor-pointer disabled:opacity-50"
+                                    >
+                                        {otpVerifying ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <>
+                                                <span>XÁC THỰC & TIẾP TỤC</span>
+                                                <ChevronRight className="w-4 h-4 stroke-[3]" />
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
+                        ) : (
+                            /* Step 2: New Password Form */
+                            <form
+                                onSubmit={(event) => {
+                                    event.preventDefault();
+                                    void handleChangePassword();
+                                }}
+                                className="p-6 space-y-4"
+                            >
+                                <div>
+                                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                                        MẬT KHẨU HIỆN TẠI <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="password"
+                                        required
+                                        value={passwordForm.currentPassword}
+                                        onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                                        placeholder="••••••••"
+                                        className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                                        MẬT KHẨU MỚI <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="password"
+                                        required
+                                        value={passwordForm.newPassword}
+                                        onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                                        placeholder="Tối thiểu 8 ký tự"
+                                        className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                                        XÁC NHẬN MẬT KHẨU MỚI <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="password"
+                                        required
+                                        value={passwordForm.confirmPassword}
+                                        onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                                        placeholder="Nhập lại mật khẩu mới"
+                                        className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition"
+                                    />
+                                </div>
+
+                                <div className="flex items-center gap-3 pt-4 border-t border-neutral-800">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setPwdStep(1);
+                                            setOtpVerified(false);
+                                            setOtpSent(false);
+                                            setOtpInput("");
+                                            setPasswordVerificationId(null);
+                                            setPasswordMaskedTarget("");
+                                        }}
+                                        className="flex-1 rounded-2xl border border-neutral-800 bg-transparent py-3.5 text-xs font-bold uppercase tracking-wider text-neutral-300 hover:bg-neutral-800 transition cursor-pointer"
+                                    >
+                                        QUAY LẠI
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={changingPassword}
+                                        className="flex-1 rounded-2xl bg-[#00FF41] py-3.5 text-xs font-extrabold uppercase tracking-wider text-black hover:bg-[#00cc34] transition flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,255,65,0.3)] disabled:opacity-50 cursor-pointer"
+                                    >
+                                        {changingPassword ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <>
+                                                <Check className="h-4 w-4 stroke-[3]" />
+                                                <span>LƯU MẬT KHẨU</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
+                        )}
                     </div>
                 </div>
             )}

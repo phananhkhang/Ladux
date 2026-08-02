@@ -1,0 +1,3 @@
+ALTER TABLE customers
+    ADD COLUMN IF NOT EXISTS email_verified_at
+    TIMESTAMP WITH TIME ZONE;

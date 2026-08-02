@@ -95,7 +95,7 @@ public class RefreshTokenService {
 
     /**
      * Thu hoi toan bo refresh token cua user (KHONG tu bump tokenVersion).
-     * Goi tu cac luong dang co User entity managed (updateUser/updateProfile):
+     * Goi tu cac luong dang co User entity managed (updateUser/changePassword):
      * o do caller tu tang user.tokenVersion truc tiep tren entity de tranh bi flush ghi de.
      */
     @Transactional

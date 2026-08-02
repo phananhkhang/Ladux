@@ -15,7 +15,7 @@ import org.springframework.data.repository.query.Param;
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
     // Customer chia se khoa chinh voi User nen id == userId.
-    @EntityGraph(attributePaths = {"user"})
+    @EntityGraph(attributePaths = {"user", "user.roles"})
     Optional<Customer> findByUserId(Integer userId);
 
     @EntityGraph(attributePaths = {"user"})

@@ -5,12 +5,14 @@ import org.akira.ladux.dto.system.response.OtpSendResponse;
 import org.akira.ladux.dto.user.request.PhoneRegisterRequest;
 import org.akira.ladux.dto.user.request.PhoneVerifyRequest;
 import org.akira.ladux.dto.user.response.CustomerResponse;
+import org.akira.ladux.dto.system.response.PasswordVerificationResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.model.Customer;
 import org.akira.ladux.model.PhoneVerification;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.UserPrincipal;
 import org.akira.ladux.model.enums.PhoneVerificationStatus;
+import org.akira.ladux.model.enums.PhoneVerificationPurpose;
 import org.akira.ladux.repository.CustomerRepository;
 import org.akira.ladux.repository.PhoneVerificationRepository;
 import org.akira.ladux.service.impl.DevPhoneOtpProvider;
@@ -72,6 +74,7 @@ class PhoneVerificationServiceImplTest {
                 .id(CUSTOMER_ID)
                 .user(user)
                 .fullName("OTP User")
+                .email("otp@example.com")
                 .build();
         user.setCustomer(customer);
 
@@ -102,7 +105,10 @@ class PhoneVerificationServiceImplTest {
     @Test
     void sendPhoneOtp_createsPendingSession() {
         when(verificationRepository
-                .findFirstByCustomerIdOrderByCreatedAtDesc(CUSTOMER_ID))
+                .findFirstByCustomerIdAndPurposeOrderByCreatedAtDesc(
+                        CUSTOMER_ID,
+                        PhoneVerificationPurpose.PHONE_UPDATE
+                ))
                 .thenReturn(Optional.empty());
 
         OtpSendResponse response = service.sendPhoneOtp(
@@ -116,6 +122,7 @@ class PhoneVerificationServiceImplTest {
         PhoneVerification saved = captor.getValue();
         assertEquals(NORMALIZED_PHONE, saved.getPhoneNumber());
         assertEquals(PhoneVerificationStatus.PENDING, saved.getStatus());
+        assertEquals(PhoneVerificationPurpose.PHONE_UPDATE, saved.getPurpose());
         assertEquals(0, saved.getFailedAttempts());
         assertTrue(saved.getProviderVerificationId().startsWith("FIXED-"));
         assertEquals(
@@ -131,9 +138,10 @@ class PhoneVerificationServiceImplTest {
     @Test
     void verifyPhoneOtp_updatesPhone_whenCodeIs123456() {
         PhoneVerification verification = pendingVerification();
-        when(verificationRepository.findByVerificationIdAndCustomerId(
+        when(verificationRepository.findByVerificationIdAndCustomerIdAndPurpose(
                 "verification-1",
-                CUSTOMER_ID
+                CUSTOMER_ID,
+                PhoneVerificationPurpose.PHONE_UPDATE
         )).thenReturn(Optional.of(verification));
 
         CustomerResponse response = service.verifyPhoneOtp(
@@ -142,6 +150,8 @@ class PhoneVerificationServiceImplTest {
 
         assertEquals(NORMALIZED_PHONE, customer.getPhone());
         assertEquals(NORMALIZED_PHONE, response.phone());
+        assertEquals("OTP User", customer.getFullName());
+        assertEquals("otp@example.com", customer.getEmail());
         assertEquals(PhoneVerificationStatus.VERIFIED, verification.getStatus());
         assertNotNull(verification.getVerifiedAt());
     }
@@ -149,9 +159,10 @@ class PhoneVerificationServiceImplTest {
     @Test
     void verifyPhoneOtp_rejectsWrongCode_andInvalidatesAfterFiveAttempts() {
         PhoneVerification verification = pendingVerification();
-        when(verificationRepository.findByVerificationIdAndCustomerId(
+        when(verificationRepository.findByVerificationIdAndCustomerIdAndPurpose(
                 "verification-1",
-                CUSTOMER_ID
+                CUSTOMER_ID,
+                PhoneVerificationPurpose.PHONE_UPDATE
         )).thenReturn(Optional.of(verification));
 
         for (int attempt = 1; attempt <= 4; attempt++) {
@@ -186,9 +197,10 @@ class PhoneVerificationServiceImplTest {
     void verifyPhoneOtp_marksExpiredSession() {
         PhoneVerification verification = pendingVerification();
         verification.setExpiresAt(Instant.now().minusSeconds(1));
-        when(verificationRepository.findByVerificationIdAndCustomerId(
+        when(verificationRepository.findByVerificationIdAndCustomerIdAndPurpose(
                 "verification-1",
-                CUSTOMER_ID
+                CUSTOMER_ID,
+                PhoneVerificationPurpose.PHONE_UPDATE
         )).thenReturn(Optional.of(verification));
 
         BusinessRuleException exception = assertThrows(
@@ -207,7 +219,10 @@ class PhoneVerificationServiceImplTest {
         PhoneVerification previous = pendingVerification();
         previous.setCreatedAt(Instant.now());
         when(verificationRepository
-                .findFirstByCustomerIdOrderByCreatedAtDesc(CUSTOMER_ID))
+                .findFirstByCustomerIdAndPurposeOrderByCreatedAtDesc(
+                        CUSTOMER_ID,
+                        PhoneVerificationPurpose.PHONE_UPDATE
+                ))
                 .thenReturn(Optional.of(previous));
 
         BusinessRuleException exception = assertThrows(
@@ -220,6 +235,136 @@ class PhoneVerificationServiceImplTest {
         assertTrue(exception.getMessage().contains("trước khi gửi lại OTP"));
     }
 
+    @Test
+    void sendPasswordChangeOtp_usesCurrentAccountPhoneAndSeparatePurpose() {
+        customer.setPhone(NORMALIZED_PHONE);
+        when(verificationRepository
+                .findFirstByCustomerIdAndPurposeOrderByCreatedAtDesc(
+                        CUSTOMER_ID,
+                        PhoneVerificationPurpose.PASSWORD_CHANGE
+                ))
+                .thenReturn(Optional.empty());
+
+        OtpSendResponse response = service.sendPasswordChangeOtp();
+
+        ArgumentCaptor<PhoneVerification> captor =
+                ArgumentCaptor.forClass(PhoneVerification.class);
+        org.mockito.Mockito.verify(verificationRepository).save(captor.capture());
+
+        PhoneVerification saved = captor.getValue();
+        assertEquals(NORMALIZED_PHONE, saved.getPhoneNumber());
+        assertEquals(
+                PhoneVerificationPurpose.PASSWORD_CHANGE,
+                saved.getPurpose()
+        );
+        assertEquals(PhoneVerificationStatus.PENDING, saved.getStatus());
+        assertEquals(saved.getVerificationId(), response.verificationId());
+    }
+
+    @Test
+    void verifyPasswordChangeOtp_marksProofVerified_withoutUpdatingContact() {
+        customer.setPhone(NORMALIZED_PHONE);
+        PhoneVerification verification = pendingPasswordVerification();
+        when(verificationRepository.findByVerificationIdAndCustomerIdAndPurpose(
+                "password-verification-1",
+                CUSTOMER_ID,
+                PhoneVerificationPurpose.PASSWORD_CHANGE
+        )).thenReturn(Optional.of(verification));
+
+        PasswordVerificationResponse response = service.verifyPasswordChangeOtp(
+                new PhoneVerifyRequest("password-verification-1", "123456")
+        );
+
+        assertEquals(
+                "password-verification-1",
+                response.verificationId()
+        );
+        assertEquals(PhoneVerificationStatus.VERIFIED, verification.getStatus());
+        assertNotNull(verification.getVerifiedAt());
+        assertNull(verification.getConsumedAt());
+        assertEquals(NORMALIZED_PHONE, customer.getPhone());
+    }
+
+    @Test
+    void consumePasswordChangeVerification_isOneTimeOnly() {
+        customer.setPhone(NORMALIZED_PHONE);
+        PhoneVerification verification = pendingPasswordVerification();
+        verification.setStatus(PhoneVerificationStatus.VERIFIED);
+        verification.setVerifiedAt(Instant.now());
+        when(verificationRepository.findByVerificationIdAndCustomerIdAndPurpose(
+                "password-verification-1",
+                CUSTOMER_ID,
+                PhoneVerificationPurpose.PASSWORD_CHANGE
+        )).thenReturn(Optional.of(verification));
+
+        service.consumePasswordChangeVerification(
+                CUSTOMER_ID,
+                "password-verification-1"
+        );
+
+        assertEquals(PhoneVerificationStatus.CONSUMED, verification.getStatus());
+        assertNotNull(verification.getConsumedAt());
+
+        BusinessRuleException exception = assertThrows(
+                BusinessRuleException.class,
+                () -> service.consumePasswordChangeVerification(
+                        CUSTOMER_ID,
+                        "password-verification-1"
+                )
+        );
+        assertTrue(exception.getMessage().contains("đã được sử dụng"));
+    }
+
+    @Test
+    void verifyPasswordChangeOtp_rejectsWrongCodeAndCountsAttempt() {
+        customer.setPhone(NORMALIZED_PHONE);
+        PhoneVerification verification = pendingPasswordVerification();
+        when(verificationRepository.findByVerificationIdAndCustomerIdAndPurpose(
+                "password-verification-1",
+                CUSTOMER_ID,
+                PhoneVerificationPurpose.PASSWORD_CHANGE
+        )).thenReturn(Optional.of(verification));
+
+        BusinessRuleException exception = assertThrows(
+                BusinessRuleException.class,
+                () -> service.verifyPasswordChangeOtp(
+                        new PhoneVerifyRequest(
+                                "password-verification-1",
+                                "000000"
+                        )
+                )
+        );
+
+        assertEquals("Mã OTP không chính xác", exception.getMessage());
+        assertEquals(1, verification.getFailedAttempts());
+        assertEquals(PhoneVerificationStatus.PENDING, verification.getStatus());
+    }
+
+    @Test
+    void verifyPasswordChangeOtp_rejectsExpiredSession() {
+        customer.setPhone(NORMALIZED_PHONE);
+        PhoneVerification verification = pendingPasswordVerification();
+        verification.setExpiresAt(Instant.now().minusSeconds(1));
+        when(verificationRepository.findByVerificationIdAndCustomerIdAndPurpose(
+                "password-verification-1",
+                CUSTOMER_ID,
+                PhoneVerificationPurpose.PASSWORD_CHANGE
+        )).thenReturn(Optional.of(verification));
+
+        BusinessRuleException exception = assertThrows(
+                BusinessRuleException.class,
+                () -> service.verifyPasswordChangeOtp(
+                        new PhoneVerifyRequest(
+                                "password-verification-1",
+                                "123456"
+                        )
+                )
+        );
+
+        assertEquals("Mã OTP đã hết hạn", exception.getMessage());
+        assertEquals(PhoneVerificationStatus.EXPIRED, verification.getStatus());
+    }
+
     private PhoneVerification pendingVerification() {
         Instant now = Instant.now();
         return PhoneVerification.builder()
@@ -227,6 +372,22 @@ class PhoneVerificationServiceImplTest {
                 .providerVerificationId("FIXED-provider-id")
                 .customerId(CUSTOMER_ID)
                 .phoneNumber(NORMALIZED_PHONE)
+                .purpose(PhoneVerificationPurpose.PHONE_UPDATE)
+                .status(PhoneVerificationStatus.PENDING)
+                .failedAttempts(0)
+                .createdAt(now.minusSeconds(30))
+                .expiresAt(now.plusSeconds(270))
+                .build();
+    }
+
+    private PhoneVerification pendingPasswordVerification() {
+        Instant now = Instant.now();
+        return PhoneVerification.builder()
+                .verificationId("password-verification-1")
+                .providerVerificationId("FIXED-password-provider-id")
+                .customerId(CUSTOMER_ID)
+                .phoneNumber(NORMALIZED_PHONE)
+                .purpose(PhoneVerificationPurpose.PASSWORD_CHANGE)
                 .status(PhoneVerificationStatus.PENDING)
                 .failedAttempts(0)
                 .createdAt(now.minusSeconds(30))

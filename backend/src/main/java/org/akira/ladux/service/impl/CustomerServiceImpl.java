@@ -1,7 +1,10 @@
 package org.akira.ladux.service.impl;
 
 import org.akira.ladux.dto.user.request.AdminCustomerUpdateRequest;
+import org.akira.ladux.dto.user.request.EmailRegisterRequest;
+import org.akira.ladux.dto.user.request.UpdateInformationPersonal;
 import org.akira.ladux.dto.user.response.CustomerResponse;
+import org.akira.ladux.dto.user.response.UserResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Customer;
@@ -9,12 +12,16 @@ import org.akira.ladux.model.enums.CustomerLevel;
 import org.akira.ladux.repository.CustomerRepository;
 import org.akira.ladux.service.CustomerService;
 import org.akira.ladux.utils.PhoneNumberUtils;
+import org.akira.ladux.utils.SecurityUtils;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -80,6 +87,17 @@ public class CustomerServiceImpl implements CustomerService {
         }
         return CustomerResponse.fromEntity(customer);
     }
+    @Override
+    @Transactional
+    @CacheEvict(value = "users", allEntries = true)
+    public UserResponse updateInformationPersonal(UpdateInformationPersonal request) {
+        Integer userId = SecurityUtils.getCurrentUserId();
+        Customer customer = findOrThrow(userId);
+        customer.setFullName(request.fullName().trim());
+        return UserResponse.fromEntity(customer.getUser());
+    }
+
+
 
     private Customer findOrThrow(int userId) {
         return repo.findByUserId(userId)

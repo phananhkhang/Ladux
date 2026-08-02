@@ -1,5 +1,6 @@
 import apiClient from './apiClient';
 import { PageParams, PageResponse } from './productService';
+import type { UserResponse } from './userService';
 
 export type CustomerLevel = 'BROWSER' | 'SILVER' | 'GOLD' | 'RUBY';
 
@@ -16,6 +17,18 @@ export interface CustomerResponse {
   totalSpent: number;
 }
 
+export interface EmailOtpSendResponse {
+    verificationId: string;
+    maskedEmail: string;
+    expiresAt: string;
+    resendAfterSeconds: number;
+}
+
+export interface EmailOtpVerifyRequest {
+    verificationId: string;
+    otp: string;
+}
+
 export interface CustomerUpdateRequest {
   fullName?: string;
   phone?: string;
@@ -25,7 +38,48 @@ export interface CustomerUpdateRequest {
   totalSpent?: number;
 }
 
+export interface PersonalInformationUpdateRequest {
+  fullName: string;
+}
+
+export interface PhoneOtpSendRequest {
+  phone: string;
+}
+
+export interface PhoneOtpSendResponse {
+  verificationId: string;
+  maskedPhone: string;
+  expiresInSeconds: number;
+}
+
+export interface PhoneOtpVerifyRequest {
+  verificationId: string;
+  otp: string;
+}
+
 export const customerService = {
+  updatePersonalInformation: (
+    data: PersonalInformationUpdateRequest,
+  ): Promise<UserResponse> => {
+    return apiClient.put('/customers/me/information-personal', data);
+  },
+
+  sendEmailOtp: (email: string): Promise<EmailOtpSendResponse> => {
+    return apiClient.post('/customers/me/email/otp', { email });
+  },
+
+  verifyEmailOtp: (data: EmailOtpVerifyRequest): Promise<UserResponse> => {
+    return apiClient.post('/customers/me/email/verify', data);
+  },
+
+  sendPhoneOtp: (data: PhoneOtpSendRequest): Promise<PhoneOtpSendResponse> => {
+    return apiClient.post('/customers/me/phone/otp', data);
+  },
+
+  verifyPhoneOtp: (data: PhoneOtpVerifyRequest): Promise<CustomerResponse> => {
+    return apiClient.post('/customers/me/phone/verify', data);
+  },
+
   /**
    * Lấy tất cả thông tin khách hàng (Có phân trang)
    * GET /api/v1/admin/customers

@@ -3,6 +3,7 @@ package org.akira.ladux.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.akira.ladux.model.enums.PhoneVerificationStatus;
+import org.akira.ladux.model.enums.PhoneVerificationPurpose;
 
 import java.time.Instant;
 
@@ -44,6 +45,10 @@ public class PhoneVerification {
         private String phoneNumber;
 
         @Enumerated(EnumType.STRING)
+        @Column(nullable = false, length = 30)
+        private PhoneVerificationPurpose purpose;
+
+        @Enumerated(EnumType.STRING)
         @Column(nullable = false)
         private PhoneVerificationStatus status;
 
@@ -59,4 +64,7 @@ public class PhoneVerification {
 
         @Column(name = "verified_at")
         private Instant verifiedAt;
+
+        @Column(name = "consumed_at")
+        private Instant consumedAt;
 }

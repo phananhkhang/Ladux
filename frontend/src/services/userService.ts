@@ -2,7 +2,7 @@ import apiClient from './apiClient';
 
 export interface UserResponse {
   id: number;
-  email: string;
+  email: string | null;
   username: string;
   fullName: string | null;
   phone: string | null;
@@ -11,13 +11,35 @@ export interface UserResponse {
   roles: string[];
 }
 
-export interface UserProfileUpdateRequest {
-  fullName?: string;
-  phone?: string;
-  email?: string;
-  currentPassword?: string;
-  newPassword?: string;
-  confirmPassword?: string;
+export interface UserUpdatePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+  verificationId: string;
+}
+
+export interface PasswordPhoneOtpSendResponse {
+  verificationId: string;
+  maskedPhone: string;
+  expiresInSeconds: number;
+}
+
+export interface PasswordPhoneOtpVerifyRequest {
+  verificationId: string;
+  otp: string;
+}
+
+export interface PasswordEmailOtpSendResponse {
+  verificationId: string;
+  maskedEmail: string;
+  expiresAt: string;
+  resendAfterSeconds: number;
+}
+
+export interface PasswordVerificationResponse {
+  verificationId: string;
+  verifiedAt: string;
+  expiresAt: string;
 }
 
 export const userService = {
@@ -30,11 +52,31 @@ export const userService = {
   },
 
   /**
-   * Cập nhật thông tin profile cá nhân (họ tên, email, sđt, mật khẩu mới...)
-   * PUT /api/v1/users/me
+   * Đổi mật khẩu của người dùng hiện tại.
+   * PUT /api/v1/users/me/password
    */
-  updateProfile: (data: UserProfileUpdateRequest): Promise<UserResponse> => {
-    return apiClient.put('/users/me', data);
+  sendPasswordPhoneOtp: (): Promise<PasswordPhoneOtpSendResponse> => {
+    return apiClient.post('/users/me/password/phone/otp');
+  },
+
+  verifyPasswordPhoneOtp: (
+    data: PasswordPhoneOtpVerifyRequest
+  ): Promise<PasswordVerificationResponse> => {
+    return apiClient.post('/users/me/password/phone/verify', data);
+  },
+
+  sendPasswordEmailOtp: (): Promise<PasswordEmailOtpSendResponse> => {
+    return apiClient.post('/users/me/password/email/otp');
+  },
+
+  verifyPasswordEmailOtp: (
+    data: PasswordPhoneOtpVerifyRequest
+  ): Promise<PasswordVerificationResponse> => {
+    return apiClient.post('/users/me/password/email/verify', data);
+  },
+
+  changePassword: (data: UserUpdatePasswordRequest): Promise<void> => {
+    return apiClient.put('/users/me/password', data);
   },
 
   /**

@@ -6,11 +6,13 @@ import org.akira.ladux.dto.system.response.OtpSendResponse;
 import org.akira.ladux.dto.user.request.PhoneRegisterRequest;
 import org.akira.ladux.dto.user.request.PhoneVerifyRequest;
 import org.akira.ladux.dto.user.response.CustomerResponse;
+import org.akira.ladux.dto.system.response.PasswordVerificationResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Customer;
 import org.akira.ladux.model.PhoneVerification;
 import org.akira.ladux.model.enums.PhoneVerificationStatus;
+import org.akira.ladux.model.enums.PhoneVerificationPurpose;
 import org.akira.ladux.repository.CustomerRepository;
 import org.akira.ladux.repository.PhoneVerificationRepository;
 import org.akira.ladux.service.PhoneOtpProvider;
@@ -80,67 +82,10 @@ public class PhoneVerificationServiceImpl
             );
         }
 
-        Instant now = Instant.now();
-
-        repo.findFirstByCustomerIdOrderByCreatedAtDesc(customerId)
-                .ifPresent(previous ->
-                        validateResendCooldown(previous, now)
-                );
-
-        repo.invalidatePendingByCustomerId(
+        return createVerification(
                 customerId,
-                PhoneVerificationStatus.INVALIDATED
-        );
-
-        /*
-         * Nhà cung cấp tự tạo OTP và gửi SMS đến SIM.
-         * Backend không biết và không lưu mã OTP.
-         */
-        ProviderOtpResponse providerResponse;
-
-        try {
-            providerResponse =
-                    phoneOtpProvider.sendOtp(normalizedPhone);
-        } catch (Exception exception) {
-            throw new BusinessRuleException(
-                    "Không thể gửi mã OTP. Vui lòng thử lại sau"
-            );
-        }
-
-        if (providerResponse == null
-                || providerResponse.providerVerificationId() == null
-                || providerResponse.providerVerificationId().isBlank()) {
-            throw new BusinessRuleException(
-                    "Nhà cung cấp OTP không trả về mã xác thực hợp lệ"
-            );
-        }
-
-        PhoneVerification verification =
-                PhoneVerification.builder()
-                        .verificationId(UUID.randomUUID().toString())
-                        .providerVerificationId(
-                                providerResponse.providerVerificationId()
-                        )
-                        .customerId(customerId)
-                        .phoneNumber(normalizedPhone)
-                        .status(PhoneVerificationStatus.PENDING)
-                        .failedAttempts(0)
-                        .createdAt(now)
-                        .expiresAt(
-                                now.plusSeconds(
-                                        OTP_EXPIRES_IN_SECONDS
-                                )
-                        )
-                        .build();
-
-        repo.save(verification);
-
-        return new OtpSendResponse(
-                verification.getVerificationId(),
-                phoneNumberUtils.maskKeepCountryCode(
-                        normalizedPhone
-                ),
-                OTP_EXPIRES_IN_SECONDS
+                normalizedPhone,
+                PhoneVerificationPurpose.PHONE_UPDATE
         );
     }
 
@@ -184,9 +129,10 @@ public class PhoneVerificationServiceImpl
                 ));
 
         PhoneVerification verification = repo
-                .findByVerificationIdAndCustomerId(
+                .findByVerificationIdAndCustomerIdAndPurpose(
                         request.verificationId(),
-                        customerId
+                        customerId,
+                        PhoneVerificationPurpose.PHONE_UPDATE
                 )
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Không tìm thấy phiên xác thực số điện thoại"
@@ -274,5 +220,264 @@ public class PhoneVerificationServiceImpl
         repo.save(verification);
 
         return CustomerResponse.fromEntity(customer);
+    }
+
+    @Override
+    @Transactional
+    public OtpSendResponse sendPasswordChangeOtp() {
+        Integer customerId = SecurityUtils.getCurrentUserId();
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Không tìm thấy hồ sơ khách hàng với userId = "
+                                + customerId
+                ));
+
+        if (customer.getPhone() == null || customer.getPhone().isBlank()) {
+            throw new BusinessRuleException(
+                    "Tài khoản chưa có số điện thoại để xác thực đổi mật khẩu"
+            );
+        }
+
+        String normalizedPhone;
+        try {
+            normalizedPhone = phoneNumberUtils.normalize(customer.getPhone());
+        } catch (IllegalArgumentException exception) {
+            throw new BusinessRuleException(
+                    "Số điện thoại hiện tại của tài khoản không hợp lệ"
+            );
+        }
+
+        return createVerification(
+                customerId,
+                normalizedPhone,
+                PhoneVerificationPurpose.PASSWORD_CHANGE
+        );
+    }
+
+    @Override
+    @Transactional(noRollbackFor = BusinessRuleException.class)
+    public PasswordVerificationResponse verifyPasswordChangeOtp(
+            PhoneVerifyRequest request
+    ) {
+        Integer customerId = SecurityUtils.getCurrentUserId();
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Không tìm thấy hồ sơ khách hàng với userId = "
+                                + customerId
+                ));
+
+        PhoneVerification verification = findPendingAndVerifyOtp(
+                request,
+                customerId,
+                PhoneVerificationPurpose.PASSWORD_CHANGE
+        );
+
+        String currentPhone;
+        try {
+            currentPhone = phoneNumberUtils.normalize(customer.getPhone());
+        } catch (IllegalArgumentException exception) {
+            verification.setStatus(PhoneVerificationStatus.INVALIDATED);
+            repo.save(verification);
+            throw new BusinessRuleException(
+                    "Số điện thoại của tài khoản đã thay đổi hoặc không còn hợp lệ"
+            );
+        }
+
+        if (!verification.getPhoneNumber().equals(currentPhone)) {
+            verification.setStatus(PhoneVerificationStatus.INVALIDATED);
+            repo.save(verification);
+            throw new BusinessRuleException(
+                    "Số điện thoại của tài khoản đã thay đổi. Vui lòng gửi OTP mới"
+            );
+        }
+
+        Instant now = Instant.now();
+        verification.setStatus(PhoneVerificationStatus.VERIFIED);
+        verification.setVerifiedAt(now);
+        repo.save(verification);
+
+        return new PasswordVerificationResponse(
+                verification.getVerificationId(),
+                now,
+                verification.getExpiresAt()
+        );
+    }
+
+    @Override
+    @Transactional
+    public void consumePasswordChangeVerification(
+            Integer customerId,
+            String verificationId
+    ) {
+        PhoneVerification verification = repo
+                .findByVerificationIdAndCustomerIdAndPurpose(
+                        verificationId,
+                        customerId,
+                        PhoneVerificationPurpose.PASSWORD_CHANGE
+                )
+                .orElseThrow(() -> new BusinessRuleException(
+                        "Phiên xác thực đổi mật khẩu không hợp lệ"
+                ));
+
+        Instant now = Instant.now();
+        if (verification.getStatus() != PhoneVerificationStatus.VERIFIED
+                || verification.getConsumedAt() != null) {
+            throw new BusinessRuleException(
+                    "Phiên xác thực đổi mật khẩu chưa được xác minh hoặc đã được sử dụng"
+            );
+        }
+
+        if (!now.isBefore(verification.getExpiresAt())) {
+            verification.setStatus(PhoneVerificationStatus.EXPIRED);
+            repo.save(verification);
+            throw new BusinessRuleException(
+                    "Phiên xác thực đổi mật khẩu đã hết hạn"
+            );
+        }
+
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Không tìm thấy hồ sơ khách hàng với userId = "
+                                + customerId
+                ));
+
+        String currentPhone;
+        try {
+            currentPhone = phoneNumberUtils.normalize(customer.getPhone());
+        } catch (IllegalArgumentException exception) {
+            throw new BusinessRuleException(
+                    "Số điện thoại của tài khoản không còn hợp lệ"
+            );
+        }
+
+        if (!verification.getPhoneNumber().equals(currentPhone)) {
+            verification.setStatus(PhoneVerificationStatus.INVALIDATED);
+            repo.save(verification);
+            throw new BusinessRuleException(
+                    "Số điện thoại của tài khoản đã thay đổi. Vui lòng xác thực lại"
+            );
+        }
+
+        verification.setStatus(PhoneVerificationStatus.CONSUMED);
+        verification.setConsumedAt(now);
+        repo.save(verification);
+    }
+
+    private OtpSendResponse createVerification(
+            Integer customerId,
+            String normalizedPhone,
+            PhoneVerificationPurpose purpose
+    ) {
+        Instant now = Instant.now();
+
+        repo.findFirstByCustomerIdAndPurposeOrderByCreatedAtDesc(
+                        customerId,
+                        purpose
+                )
+                .ifPresent(previous -> validateResendCooldown(previous, now));
+
+        repo.invalidateActiveByCustomerIdAndPurpose(
+                customerId,
+                purpose,
+                PhoneVerificationStatus.INVALIDATED
+        );
+
+        ProviderOtpResponse providerResponse;
+        try {
+            providerResponse = phoneOtpProvider.sendOtp(normalizedPhone);
+        } catch (Exception exception) {
+            throw new BusinessRuleException(
+                    "Không thể gửi mã OTP. Vui lòng thử lại sau"
+            );
+        }
+
+        if (providerResponse == null
+                || providerResponse.providerVerificationId() == null
+                || providerResponse.providerVerificationId().isBlank()) {
+            throw new BusinessRuleException(
+                    "Nhà cung cấp OTP không trả về mã xác thực hợp lệ"
+            );
+        }
+
+        PhoneVerification verification = PhoneVerification.builder()
+                .verificationId(UUID.randomUUID().toString())
+                .providerVerificationId(
+                        providerResponse.providerVerificationId()
+                )
+                .customerId(customerId)
+                .phoneNumber(normalizedPhone)
+                .purpose(purpose)
+                .status(PhoneVerificationStatus.PENDING)
+                .failedAttempts(0)
+                .createdAt(now)
+                .expiresAt(now.plusSeconds(OTP_EXPIRES_IN_SECONDS))
+                .build();
+
+        repo.save(verification);
+
+        return new OtpSendResponse(
+                verification.getVerificationId(),
+                phoneNumberUtils.maskKeepCountryCode(normalizedPhone),
+                OTP_EXPIRES_IN_SECONDS
+        );
+    }
+
+    private PhoneVerification findPendingAndVerifyOtp(
+            PhoneVerifyRequest request,
+            Integer customerId,
+            PhoneVerificationPurpose purpose
+    ) {
+        PhoneVerification verification = repo
+                .findByVerificationIdAndCustomerIdAndPurpose(
+                        request.verificationId(),
+                        customerId,
+                        purpose
+                )
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Không tìm thấy phiên xác thực OTP"
+                ));
+
+        Instant now = Instant.now();
+        if (verification.getStatus() != PhoneVerificationStatus.PENDING) {
+            throw new BusinessRuleException(
+                    "Phiên xác thực không còn hiệu lực"
+            );
+        }
+
+        if (!now.isBefore(verification.getExpiresAt())) {
+            verification.setStatus(PhoneVerificationStatus.EXPIRED);
+            repo.save(verification);
+            throw new BusinessRuleException("Mã OTP đã hết hạn");
+        }
+
+        boolean valid;
+        try {
+            valid = phoneOtpProvider.verifyOtp(
+                    verification.getProviderVerificationId(),
+                    request.otp()
+            );
+        } catch (Exception exception) {
+            throw new BusinessRuleException(
+                    "Không thể xác minh mã OTP. Vui lòng thử lại sau"
+            );
+        }
+
+        if (!valid) {
+            int failedAttempts = verification.getFailedAttempts() + 1;
+            verification.setFailedAttempts(failedAttempts);
+            if (failedAttempts >= OTP_MAX_FAILED_ATTEMPTS) {
+                verification.setStatus(PhoneVerificationStatus.INVALIDATED);
+            }
+            repo.save(verification);
+
+            if (failedAttempts >= OTP_MAX_FAILED_ATTEMPTS) {
+                throw new BusinessRuleException(
+                        "Bạn đã nhập sai OTP quá 5 lần. Vui lòng gửi lại mã mới"
+                );
+            }
+            throw new BusinessRuleException("Mã OTP không chính xác");
+        }
+
+        return verification;
     }
 }

@@ -1,6 +1,7 @@
 package org.akira.ladux.model;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 import org.akira.ladux.model.enums.CustomerLevel;
 
@@ -53,6 +54,9 @@ public class Customer {
 
     @Column(length = 150)
     private String email;
+
+    @Column(name = "email_verified_at")
+    private Instant emailVerifiedAt;
 
     @Column(name = "avatar_url")
     private String avatarUrl;

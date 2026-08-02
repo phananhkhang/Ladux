@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.akira.ladux.dto.user.request.RegisterRequest;
 import org.akira.ladux.dto.user.request.UserAdminUpdateRequest;
+import org.akira.ladux.dto.user.request.UserUpdatePassword;
 import org.akira.ladux.dto.user.response.UserResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
@@ -20,10 +21,7 @@ import org.akira.ladux.repository.CartRepository;
 import org.akira.ladux.repository.CustomerRepository;
 import org.akira.ladux.repository.RoleRepository;
 import org.akira.ladux.repository.UserRepository;
-import org.akira.ladux.service.FileStorageService;
-import org.akira.ladux.service.RefreshTokenService;
-import org.akira.ladux.service.UserService;
-import org.akira.ladux.utils.PhoneNumberUtils;
+import org.akira.ladux.service.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -36,7 +34,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 
-import org.akira.ladux.dto.user.request.UserProfileUpdateRequest;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -46,8 +43,8 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
     private final RefreshTokenService refreshTokenService;
+    private final PasswordVerificationService passwordVerificationService;
     private final FileStorageService fileStorage;
-    private final PhoneNumberUtils phoneNumberUtils;
 
     @Value("${app.upload.avatar-dir:avatar}")
     private String avatarUploadDir;
@@ -118,12 +115,6 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Cacheable(value = "users", key = "'active:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<UserResponse> getActiveUsers(Pageable pageable) {
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    @Cacheable(value = "users", key = "'active:' + #pageable.pageNumber + ':' + #pageable.pageSize")
-    public Page<UserResponse> getActiveUsers(Pageable pageable) {
         return repo.findByIsActiveTrue(pageable)
                 .map(UserResponse::fromEntity);
     }
@@ -139,7 +130,12 @@ public class UserServiceImpl implements UserService {
             if (customerRepository.existsByEmailIgnoreCaseAndIdNot(normalizedEmail, id)) {
                 throw new BusinessRuleException("Email nay da duoc tai khoan khac su dung.");
             }
-            getOrCreateCustomer(user).setEmail(normalizedEmail);
+            Customer customer = getOrCreateCustomer(user);
+            if (customer.getEmail() == null
+                    || !customer.getEmail().equalsIgnoreCase(normalizedEmail)) {
+                customer.setEmail(normalizedEmail);
+                customer.setEmailVerifiedAt(null);
+            }
         }
         if (request.username() != null) {
             user.setUsername(request.username());
@@ -175,48 +171,71 @@ public class UserServiceImpl implements UserService {
         return UserResponse.fromEntity(user);
     }
 
-    @Override
     @Transactional
     @CacheEvict(value = "users", allEntries = true)
-    public UserResponse updateProfile(int id, UserProfileUpdateRequest request) {
+    @Override
+    public void changePassword(
+            Integer id,
+            UserUpdatePassword request
+    ) {
         User user = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Không tìm thấy người dùng"
+                        )
+                );
 
-        Customer customer = getOrCreateCustomer(user);
-
-        if (request.fullName() != null && !request.fullName().isBlank()) {
-            customer.setFullName(request.fullName().trim());
-        }
-        if (request.phone() != null && !request.phone().isBlank()) {
-            customer.setPhone(request.phone().trim());
-        }
-        if (request.email() != null && !request.email().isBlank()) {
-            customer.setEmail(request.email().trim());
-        }
-
-        boolean hasPasswordInput = (request.currentPassword() != null && !request.currentPassword().isBlank())
-                || (request.newPassword() != null && !request.newPassword().isBlank())
-                || (request.confirmPassword() != null && !request.confirmPassword().isBlank());
-
-        if (hasPasswordInput) {
-            if (request.currentPassword() == null || request.currentPassword().isBlank()
-                    || request.newPassword() == null || request.newPassword().isBlank()
-                    || request.confirmPassword() == null || request.confirmPassword().isBlank()) {
-                throw new BusinessRuleException("Vui lòng điền đầy đủ các trường mật khẩu để thay đổi mật khẩu.");
-            }
-            if (!encoder.matches(request.currentPassword(), user.getPassword())) {
-                throw new BusinessRuleException("Mật khẩu hiện tại không đúng.");
-            }
-            if (!request.newPassword().equals(request.confirmPassword())) {
-                throw new BusinessRuleException("Mật khẩu mới và xác nhận mật khẩu không khớp.");
-            }
-            if (request.newPassword().length() < 8) {
-                throw new BusinessRuleException("Mật khẩu mới phải có tối thiểu 8 ký tự.");
-            }
-            user.setPassword(encoder.encode(request.newPassword()));
+        if (!request.newPassword().equals(
+                request.confirmPassword()
+        )) {
+            throw new BusinessRuleException(
+                    "Mật khẩu xác nhận không khớp"
+            );
         }
 
-        return UserResponse.fromEntity(user);
+        if (!encoder.matches(
+                request.currentPassword(),
+                user.getPassword()
+        )) {
+            throw new BusinessRuleException(
+                    "Mật khẩu hiện tại không chính xác"
+            );
+        }
+
+        if (encoder.matches(
+                request.newPassword(),
+                user.getPassword()
+        )) {
+            throw new BusinessRuleException(
+                    "Mật khẩu mới không được trùng mật khẩu hiện tại"
+            );
+        }
+
+        /*
+         * Có thể là proof phone hoặc email.
+         */
+        passwordVerificationService.consume(
+                id,
+                request.verificationId()
+        );
+
+        /*
+         * Chỉ đổi password sau khi proof hợp lệ.
+         */
+        user.setPassword(
+                encoder.encode(
+                        request.newPassword()
+                )
+        );
+
+        user.setTokenVersion(
+                user.getTokenVersion() + 1
+        );
+
+        repo.save(user);
+
+        refreshTokenService
+                .revokeAllRefreshTokens(id);
     }
 
     @Override

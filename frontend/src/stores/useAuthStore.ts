@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 import {
   authService,
+  customerService,
   userService,
   LoginRequest,
   RegisterRequest,
   UserResponse,
-  UserProfileUpdateRequest,
+  UserUpdatePasswordRequest,
+  PersonalInformationUpdateRequest,
 } from '@/services';
 
 interface AuthState {
@@ -20,7 +22,8 @@ interface AuthState {
   register: (data: RegisterRequest) => Promise<UserResponse>;
   logout: () => Promise<void>;
   fetchCurrentUser: () => Promise<void>;
-  updateProfile: (data: UserProfileUpdateRequest) => Promise<void>;
+  updatePersonalInformation: (data: PersonalInformationUpdateRequest) => Promise<void>;
+  changePassword: (data: UserUpdatePasswordRequest) => Promise<void>;
   uploadAvatar: (file: File) => Promise<void>;
   setAccessToken: (token: string | null) => void;
   clearError: () => void;
@@ -96,13 +99,26 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  updateProfile: async (data) => {
+  updatePersonalInformation: async (data) => {
     set({ isLoading: true, error: null });
     try {
-      const updatedUser = await userService.updateProfile(data);
+      const updatedUser = await customerService.updatePersonalInformation(data);
       set({ user: updatedUser });
     } catch (err: any) {
-      const message = err?.response?.data?.message || err?.message || 'Cập nhật thông tin thất bại!';
+      const message = err?.response?.data?.message || err?.message || 'Cập nhật họ và tên thất bại!';
+      set({ error: message });
+      throw err;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  changePassword: async (data) => {
+    set({ isLoading: true, error: null });
+    try {
+      await userService.changePassword(data);
+    } catch (err: any) {
+      const message = err?.response?.data?.message || err?.message || 'Đổi mật khẩu thất bại!';
       set({ error: message });
       throw err;
     } finally {

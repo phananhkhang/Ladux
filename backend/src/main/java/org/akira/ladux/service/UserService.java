@@ -2,12 +2,12 @@ package org.akira.ladux.service;
 
 import org.akira.ladux.dto.user.request.RegisterRequest;
 import org.akira.ladux.dto.user.request.UserAdminUpdateRequest;
+import org.akira.ladux.dto.user.request.UserUpdatePassword;
 import org.akira.ladux.dto.user.response.UserResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
-import org.akira.ladux.dto.user.request.UserProfileUpdateRequest;
 public interface UserService {
     Page<UserResponse> getAllUsers(Pageable pageable);
 
@@ -19,7 +19,7 @@ public interface UserService {
 
     UserResponse updateUser(int id, UserAdminUpdateRequest request);
 
-    UserResponse updateProfile(int id, UserProfileUpdateRequest request);
+    void changePassword(Integer id, UserUpdatePassword request);
 
     UserResponse updateAvatar(int id, MultipartFile file);
 
