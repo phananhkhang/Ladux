@@ -11,7 +11,6 @@ export interface RegisterViewProps {
 export default function RegisterView({ onRegister, onGoLogin, onBack }: RegisterViewProps) {
     const [name, setName] = useState("");
     const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
     const [loading, setLoading] = useState(false);
@@ -33,7 +32,6 @@ export default function RegisterView({ onRegister, onGoLogin, onBack }: Register
             await register({
                 fullName: name.trim(),
                 username: username.trim(),
-                email: email.trim(),
                 password: password,
             });
 
@@ -109,19 +107,6 @@ export default function RegisterView({ onRegister, onGoLogin, onBack }: Register
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-2">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="you@example.com"
-                                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#00FF41]/60 focus:ring-1 focus:ring-[#00FF41]/30 transition"
-                            />
-                        </div>
 
                         <div>
                             <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-2">

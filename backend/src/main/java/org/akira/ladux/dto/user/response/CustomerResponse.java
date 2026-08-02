@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 import org.akira.ladux.model.Customer;
+import org.akira.ladux.model.User;
 import org.akira.ladux.model.enums.CustomerLevel;
 
 public record CustomerResponse(
@@ -22,11 +23,11 @@ public record CustomerResponse(
         if (customer == null) {
             return null;
         }
-        var user = customer.getUser();
+        User user = customer.getUser();
         return new CustomerResponse(
                 customer.getId(),
                 user == null ? null : user.getId(),
-                user == null ? null : user.getEmail(),
+                user == null ? null : customer.getEmail(),
                 user == null ? null : user.getUsername(),
                 customer.getFullName(),
                 customer.getPhone(),

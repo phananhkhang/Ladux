@@ -14,6 +14,7 @@ export interface UserResponse {
 export interface UserProfileUpdateRequest {
   fullName?: string;
   phone?: string;
+  email?: string;
   currentPassword?: string;
   newPassword?: string;
   confirmPassword?: string;

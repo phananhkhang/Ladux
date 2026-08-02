@@ -17,11 +17,13 @@ import org.akira.ladux.model.User;
 import org.akira.ladux.model.enums.CustomerLevel;
 import org.akira.ladux.model.enums.RoleName;
 import org.akira.ladux.repository.CartRepository;
+import org.akira.ladux.repository.CustomerRepository;
 import org.akira.ladux.repository.RoleRepository;
 import org.akira.ladux.repository.UserRepository;
 import org.akira.ladux.service.FileStorageService;
 import org.akira.ladux.service.RefreshTokenService;
 import org.akira.ladux.service.UserService;
+import org.akira.ladux.utils.PhoneNumberUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -39,11 +41,13 @@ import org.akira.ladux.dto.user.request.UserProfileUpdateRequest;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository repo;
+    private final CustomerRepository customerRepository;
     private final CartRepository cartRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
     private final RefreshTokenService refreshTokenService;
     private final FileStorageService fileStorage;
+    private final PhoneNumberUtils phoneNumberUtils;
 
     @Value("${app.upload.avatar-dir:avatar}")
     private String avatarUploadDir;
@@ -52,12 +56,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @CacheEvict(value = "users", allEntries = true)
     public UserResponse savedUser(RegisterRequest request) {
-        String email = request.email().trim();
         String username = request.username().trim();
 
-        if (repo.existsByEmail(email)) {
-            throw new BusinessRuleException("Email nay da ton tai trong DB. Hay dung email khac.");
-        }
         if (repo.existsByUsername(username)) {
             throw new BusinessRuleException("Username nay da ton tai trong DB. Hay dung username khac.");
         }
@@ -67,7 +67,6 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException("Khong tim thay role CUSTOMER");
         }
         User user = User.builder()
-                .email(email)
                 .username(username)
                 .password(encoder.encode(request.password()))
                 .isActive(true)
@@ -77,7 +76,6 @@ public class UserServiceImpl implements UserService {
         Customer customer = Customer.builder()
                 .user(user)
                 .fullName(request.fullName().trim())
-                .phone(request.phone())
                 .level(CustomerLevel.BROWSER)
                 .loyaltyPoints(0L)
                 .totalSpent(BigDecimal.ZERO)
@@ -108,7 +106,18 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Cacheable(value = "users", key = "'email:' + #email")
     public UserResponse getUserByEmail(String email) {
-        return UserResponse.fromEntity(repo.findByEmail(email));
+        return UserResponse.fromEntity(
+                repo.findByCustomerEmail(email)
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Khong tim thay user voi email = " + email
+                        ))
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "users", key = "'active:' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    public Page<UserResponse> getActiveUsers(Pageable pageable) {
     }
 
     @Override
@@ -126,14 +135,17 @@ public class UserServiceImpl implements UserService {
         User user = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id));
         if (request.email() != null) {
-            user.setEmail(request.email());
+            String normalizedEmail = request.email().trim().toLowerCase();
+            if (customerRepository.existsByEmailIgnoreCaseAndIdNot(normalizedEmail, id)) {
+                throw new BusinessRuleException("Email nay da duoc tai khoan khac su dung.");
+            }
+            getOrCreateCustomer(user).setEmail(normalizedEmail);
         }
         if (request.username() != null) {
             user.setUsername(request.username());
         }
         if (request.password() != null) {
             user.setPassword(encoder.encode(request.password()));
-            // Doi mat khau -> bump tokenVersion (tren entity managed) + thu hoi refresh token.
             user.setTokenVersion(user.getTokenVersion() + 1);
             refreshTokenService.revokeAllRefreshTokens(id);
         }
@@ -148,7 +160,6 @@ public class UserServiceImpl implements UserService {
         }
         if (request.isActive() != null) {
             user.setActive(request.isActive());
-            // Khoa tai khoan -> bump tokenVersion + thu hoi refresh token de da user ra ngay.
             if (!request.isActive()) {
                 user.setTokenVersion(user.getTokenVersion() + 1);
                 refreshTokenService.revokeAllRefreshTokens(id);
@@ -179,8 +190,10 @@ public class UserServiceImpl implements UserService {
         if (request.phone() != null && !request.phone().isBlank()) {
             customer.setPhone(request.phone().trim());
         }
+        if (request.email() != null && !request.email().isBlank()) {
+            customer.setEmail(request.email().trim());
+        }
 
-        // Logic chinh sua mat khau neu nguoi dung nhap mat khau
         boolean hasPasswordInput = (request.currentPassword() != null && !request.currentPassword().isBlank())
                 || (request.newPassword() != null && !request.newPassword().isBlank())
                 || (request.confirmPassword() != null && !request.confirmPassword().isBlank());

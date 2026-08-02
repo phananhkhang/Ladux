@@ -2,11 +2,13 @@ package org.akira.ladux.service.impl;
 
 import org.akira.ladux.dto.user.request.AdminCustomerUpdateRequest;
 import org.akira.ladux.dto.user.response.CustomerResponse;
+import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Customer;
 import org.akira.ladux.model.enums.CustomerLevel;
 import org.akira.ladux.repository.CustomerRepository;
 import org.akira.ladux.service.CustomerService;
+import org.akira.ladux.utils.PhoneNumberUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository repo;
+    private final PhoneNumberUtils phoneNumberUtils;
 
     @Override
     @Transactional(readOnly = true)
@@ -52,7 +55,16 @@ public class CustomerServiceImpl implements CustomerService {
             customer.setFullName(request.fullName().trim());
         }
         if (request.phone() != null) {
-            customer.setPhone(request.phone());
+            String normalizedPhone;
+            try {
+                normalizedPhone = phoneNumberUtils.normalize(request.phone());
+            } catch (IllegalArgumentException exception) {
+                throw new BusinessRuleException(exception.getMessage());
+            }
+            if (repo.existsByPhoneAndIdNot(normalizedPhone, userId)) {
+                throw new BusinessRuleException("Số điện thoại đã được tài khoản khác sử dụng");
+            }
+            customer.setPhone(normalizedPhone);
         }
         if (request.avatarUrl() != null) {
             customer.setAvatarUrl(request.avatarUrl());

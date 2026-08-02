@@ -13,6 +13,9 @@ import {
     Trash2,
     Loader2,
     MapPin,
+    Phone,
+    Mail,
+    Lock,
 } from "lucide-react";
 import { ShippingAddressRequest, OrderItemRecord, getAvatarUrl, mapProductResponseToLaptopProduct } from "../types";
 import { useAddressStore, useAuthStore, useOrderStore } from "../stores";
@@ -186,11 +189,13 @@ export default function AccountView({
     const [editingAddrId, setEditingAddrId] = useState<number | null>(null);
     const [addrSaving, setAddrSaving] = useState(false);
 
+    const [activeTab, setActiveTab] = useState<"overview" | "security">("overview");
     const [showEditProfileModal, setShowEditProfileModal] = useState(false);
     const [profileSaving, setProfileSaving] = useState(false);
     const [editProfileForm, setEditProfileForm] = useState({
         fullName: "",
         phone: "",
+        email: "",
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
@@ -714,7 +719,7 @@ export default function AccountView({
                                 {authStore.user?.fullName || userFullName}
                             </h2>
                             <p className="mt-1 font-mono text-xs text-neutral-400">
-                                SĐT: {authStore.user?.phone || "0988 123 456"}
+                                {authStore.user?.phone ? `SĐT: ${authStore.user.phone}` : authStore.user?.email ? `Email: ${authStore.user.email}` : "Chưa cập nhật SĐT"}
                             </p>
                             <p className="mt-1 font-mono text-[10px] font-bold text-[#00FF41] tracking-wider uppercase">
                                 {memberTierInfo.rankName}
@@ -724,6 +729,7 @@ export default function AccountView({
                                     setEditProfileForm({
                                         fullName: authStore.user?.fullName || (userFullName !== "Thành viên LADUX" ? userFullName : ""),
                                         phone: authStore.user?.phone || "",
+                                        email: authStore.user?.email || "",
                                         currentPassword: "",
                                         newPassword: "",
                                         confirmPassword: "",
@@ -739,30 +745,48 @@ export default function AccountView({
                     </div>
 
                     <nav className="space-y-1 text-sm">
-                        <button className="flex w-full items-center justify-between rounded-xl bg-[#00FF41] px-4 py-3 font-bold text-[#000000]">
+                        <button
+                            onClick={() => setActiveTab("overview")}
+                            className={`flex w-full items-center justify-between rounded-xl px-4 py-3 font-bold transition cursor-pointer ${
+                                activeTab === "overview"
+                                    ? "bg-[#00FF41] text-black"
+                                    : "text-neutral-400 hover:bg-white/[0.06] hover:text-white"
+                            }`}
+                        >
                             <span>Tổng quan</span>
                             <ChevronRight className="h-4 w-4" />
                         </button>
                         <button
                             onClick={() => navigate(ROUTES.orders)}
-                            className="w-full rounded-xl px-4 py-3 text-left text-neutral-400 transition hover:bg-white/[0.06] hover:text-white flex items-center justify-between"
+                            className="w-full rounded-xl px-4 py-3 text-left text-neutral-400 transition hover:bg-white/[0.06] hover:text-white flex items-center justify-between cursor-pointer"
                         >
                             <span>Đơn hàng của tôi</span>
                             <span className="font-mono text-xs text-[#00FF41] font-bold">{totalOrderCount}</span>
                         </button>
                         <button
                             onClick={() => navigate(ROUTES.addresses)}
-                            className="w-full rounded-xl px-4 py-3 text-left text-neutral-400 transition hover:bg-white/[0.06] hover:text-white flex items-center justify-between"
+                            className="w-full rounded-xl px-4 py-3 text-left text-neutral-400 transition hover:bg-white/[0.06] hover:text-white flex items-center justify-between cursor-pointer"
                         >
                             <span>Địa chỉ giao hàng</span>
                             <span className="font-mono text-xs text-[#00FF41] font-bold">{addressesList.length}</span>
                         </button>
                         <button
                             onClick={() => navigate(ROUTES.wishlist)}
-                            className="w-full rounded-xl px-4 py-3 text-left text-neutral-400 transition hover:bg-white/[0.06] hover:text-white flex items-center justify-between"
+                            className="w-full rounded-xl px-4 py-3 text-left text-neutral-400 transition hover:bg-white/[0.06] hover:text-white flex items-center justify-between cursor-pointer"
                         >
                             <span>Danh sách yêu thích</span>
                             <span className="font-mono text-xs text-[#00FF41] font-bold">{wishlistCount}</span>
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("security")}
+                            className={`flex w-full items-center justify-between rounded-xl px-4 py-3 font-bold transition cursor-pointer ${
+                                activeTab === "security"
+                                    ? "bg-[#00FF41] text-black"
+                                    : "text-neutral-400 hover:bg-white/[0.06] hover:text-white"
+                            }`}
+                        >
+                            <span>Bảo mật</span>
+                            <Lock className="h-4 w-4" />
                         </button>
                     </nav>
 
@@ -778,91 +802,210 @@ export default function AccountView({
                     </div>
                 </aside>
 
-                <section className="space-y-5">
-                    {/* Hộp Điểm Thành Viên Thật */}
-                    <div className="rounded-2xl border border-white/10 bg-[linear-gradient(118deg,rgba(0,255,65,0.13),rgba(255,255,255,0.035)_44%,rgba(103,76,174,0.14))] p-6 sm:p-8">
-                        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#00FF41]">
-                            ĐIỂM THÀNH VIÊN
-                        </p>
-                        <div className="mt-4 flex flex-wrap items-end justify-between gap-6">
+                {activeTab === "security" ? (
+                    <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-6 sm:p-8 space-y-6">
+                        <div className="flex items-center gap-4 pb-6 border-b border-white/10">
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#00FF41]/15 border border-[#00FF41]/30 text-[#00FF41]">
+                                <Lock className="w-6 h-6" />
+                            </div>
                             <div>
-                                <p className="text-5xl font-black tracking-[-0.045em] text-white">
-                                    {realMemberPoints.toLocaleString("vi-VN")}
-                                </p>
-                                <p className="mt-2 text-sm text-neutral-400 font-medium">
-                                    {memberTierInfo.subtext}
+                                <h2 className="text-xl font-black text-white tracking-tight">Cài đặt Bảo mật</h2>
+                                <p className="mt-1 text-xs text-neutral-400">
+                                    Thêm số điện thoại, email và mật khẩu tài khoản
                                 </p>
                             </div>
-                            <Award className="h-12 w-12 text-[#00FF41]" />
-                        </div>
-                        <div className="mt-7 h-2 overflow-hidden rounded-full bg-black/40 border border-white/10">
-                            <div
-                                className="h-full rounded-full bg-[#00FF41] transition-all duration-500 shadow-[0_0_12px_rgba(0,255,65,0.5)]"
-                                style={{ width: `${memberTierInfo.progressPercent}%` }}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Hộp Đơn Hàng Gần Đây (Hiển thị tối đa 3 đơn hàng) */}
-                    <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-6">
-                        <div className="mb-5 flex items-center justify-between">
-                            <h2 className="text-lg font-bold text-white">Đơn hàng gần đây</h2>
-                            <button
-                                onClick={() => navigate(ROUTES.orders)}
-                                className="text-xs font-bold text-[#00FF41] hover:underline flex items-center gap-1 cursor-pointer"
-                            >
-                                <span>Xem tất cả</span>
-                                <ChevronRight className="w-3.5 h-3.5" />
-                            </button>
                         </div>
 
-                        {recent3Orders.length > 0 ? (
-                            <div className="space-y-3">
-                                {recent3Orders.map((ord) => (
-                                    <div
-                                        key={ord.id}
-                                        onClick={() => navigate(ROUTES.orders)}
-                                        className="flex flex-col gap-3 rounded-xl border border-white/[0.08] bg-black/30 p-4 sm:flex-row sm:items-center sm:justify-between hover:border-[#00FF41]/40 transition cursor-pointer group"
-                                    >
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-mono text-xs font-bold text-[#00FF41] group-hover:underline">
-                                                    #{ord.orderNumber}
-                                                </span>
-                                                <span className="text-[10px] text-neutral-400 font-mono">
-                                                    ({ord.items.length} sản phẩm)
-                                                </span>
-                                            </div>
-                                            <p className="mt-1 text-sm font-semibold text-white line-clamp-1">
-                                                {ord.items[0]?.product?.name || "Sản phẩm Laptop LADUX"}
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Số điện thoại */}
+                                <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/[0.08] bg-black/40 p-5 hover:border-white/20 transition-all">
+                                    <div className="flex items-center gap-3.5 min-w-0">
+                                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-300">
+                                            <Phone className="w-5 h-5" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-400">
+                                                SỐ ĐIỆN THOẠI
                                             </p>
-                                            <p className="mt-1 text-xs text-neutral-400 font-mono">
-                                                {ord.date} · <span className="text-white font-bold">{ord.finalAmount.toLocaleString("vi-VN")} ₫</span>
+                                            <p className="text-sm font-extrabold text-white font-mono truncate mt-0.5">
+                                                {authStore.user?.phone ? authStore.user.phone : "Chưa cập nhật"}
                                             </p>
                                         </div>
-                                        <span className="w-fit rounded-full border border-[#00FF41]/30 bg-[#00FF41]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#00FF41] shrink-0">
-                                            {ord.status}
-                                        </span>
                                     </div>
-                                ))}
+                                    <button
+                                        onClick={() => {
+                                            setEditProfileForm({
+                                                fullName: authStore.user?.fullName || "",
+                                                phone: authStore.user?.phone || "",
+                                                email: authStore.user?.email || "",
+                                                currentPassword: "",
+                                                newPassword: "",
+                                                confirmPassword: "",
+                                            });
+                                            setShowEditProfileModal(true);
+                                        }}
+                                        className="shrink-0 rounded-full border border-[#00FF41]/40 bg-[#00FF41]/10 px-4 py-2 text-xs font-bold text-[#00FF41] hover:bg-[#00FF41]/20 transition cursor-pointer"
+                                    >
+                                        {authStore.user?.phone ? "Cập nhật SĐT" : "Thêm số điện thoại"}
+                                    </button>
+                                </div>
 
-                                {displayOrders.length > 3 && (
-                                    <div className="pt-3 text-center border-t border-white/5">
-                                        <button
-                                            onClick={() => navigate(ROUTES.orders)}
-                                            className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#00FF41] hover:underline cursor-pointer transition"
-                                        >
-                                            <span>Xem thêm {displayOrders.length - 3} đơn hàng khác</span>
-                                            <ChevronRight className="w-3.5 h-3.5" />
-                                        </button>
+                                {/* Email */}
+                                <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/[0.08] bg-black/40 p-5 hover:border-white/20 transition-all">
+                                    <div className="flex items-center gap-3.5 min-w-0">
+                                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-300">
+                                            <Mail className="w-5 h-5" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-400">
+                                                ĐỊA CHỈ EMAIL
+                                            </p>
+                                            <p className="text-sm font-extrabold text-white font-mono truncate mt-0.5">
+                                                {authStore.user?.email ? authStore.user.email : "Chưa cập nhật"}
+                                            </p>
+                                        </div>
                                     </div>
-                                )}
+                                    <button
+                                        onClick={() => {
+                                            setEditProfileForm({
+                                                fullName: authStore.user?.fullName || "",
+                                                phone: authStore.user?.phone || "",
+                                                email: authStore.user?.email || "",
+                                                currentPassword: "",
+                                                newPassword: "",
+                                                confirmPassword: "",
+                                            });
+                                            setShowEditProfileModal(true);
+                                        }}
+                                        className="shrink-0 rounded-full border border-[#00FF41]/40 bg-[#00FF41]/10 px-4 py-2 text-xs font-bold text-[#00FF41] hover:bg-[#00FF41]/20 transition cursor-pointer"
+                                    >
+                                        {authStore.user?.email ? "Cập nhật email" : "Thêm địa chỉ email"}
+                                    </button>
+                                </div>
                             </div>
-                        ) : (
-                            <p className="text-xs text-neutral-500 font-mono py-6 text-center">Chưa có đơn hàng nào.</p>
-                        )}
-                    </div>
-                </section>
+
+                            {/* Mật khẩu */}
+                            <div className="flex items-center justify-between gap-4 rounded-2xl border border-white/[0.08] bg-black/40 p-5 hover:border-white/20 transition-all">
+                                <div className="flex items-center gap-3.5 min-w-0">
+                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-300">
+                                        <Lock className="w-5 h-5" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-400">
+                                            MẬT KHẨU ĐĂNG NHẬP
+                                        </p>
+                                        <p className="text-xs font-medium text-neutral-300 font-mono mt-0.5">
+                                            •••••••••••• <span className="text-neutral-500 text-[11px]">(Được bảo mật mã hóa 256-bit)</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setEditProfileForm({
+                                            fullName: authStore.user?.fullName || "",
+                                            phone: authStore.user?.phone || "",
+                                            email: authStore.user?.email || "",
+                                            currentPassword: "",
+                                            newPassword: "",
+                                            confirmPassword: "",
+                                        });
+                                        setShowEditProfileModal(true);
+                                    }}
+                                    className="shrink-0 rounded-full border border-white/20 bg-white/[0.06] px-5 py-2.5 text-xs font-bold text-white hover:bg-white/[0.12] transition cursor-pointer"
+                                >
+                                    Đổi mật khẩu
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                ) : (
+                    <section className="space-y-5">
+                        {/* Hộp Điểm Thành Viên Thật */}
+                        <div className="rounded-2xl border border-white/10 bg-[linear-gradient(118deg,rgba(0,255,65,0.13),rgba(255,255,255,0.035)_44%,rgba(103,76,174,0.14))] p-6 sm:p-8">
+                            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#00FF41]">
+                                ĐIỂM THÀNH VIÊN
+                            </p>
+                            <div className="mt-4 flex flex-wrap items-end justify-between gap-6">
+                                <div>
+                                    <p className="text-5xl font-black tracking-[-0.045em] text-white">
+                                        {realMemberPoints.toLocaleString("vi-VN")}
+                                    </p>
+                                    <p className="mt-2 text-sm text-neutral-400 font-medium">
+                                        {memberTierInfo.subtext}
+                                    </p>
+                                </div>
+                                <Award className="h-12 w-12 text-[#00FF41]" />
+                            </div>
+                            <div className="mt-7 h-2 overflow-hidden rounded-full bg-black/40 border border-white/10">
+                                <div
+                                    className="h-full rounded-full bg-[#00FF41] transition-all duration-500 shadow-[0_0_12px_rgba(0,255,65,0.5)]"
+                                    style={{ width: `${memberTierInfo.progressPercent}%` }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Hộp Đơn Hàng Gần Đây (Hiển thị tối đa 3 đơn hàng) */}
+                        <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-6">
+                            <div className="mb-5 flex items-center justify-between">
+                                <h2 className="text-lg font-bold text-white">Đơn hàng gần đây</h2>
+                                <button
+                                    onClick={() => navigate(ROUTES.orders)}
+                                    className="text-xs font-bold text-[#00FF41] hover:underline flex items-center gap-1 cursor-pointer"
+                                >
+                                    <span>Xem tất cả</span>
+                                    <ChevronRight className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
+
+                            {recent3Orders.length > 0 ? (
+                                <div className="space-y-3">
+                                    {recent3Orders.map((ord) => (
+                                        <div
+                                            key={ord.id}
+                                            onClick={() => navigate(ROUTES.orders)}
+                                            className="flex flex-col gap-3 rounded-xl border border-white/[0.08] bg-black/30 p-4 sm:flex-row sm:items-center sm:justify-between hover:border-[#00FF41]/40 transition cursor-pointer group"
+                                        >
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-mono text-xs font-bold text-[#00FF41] group-hover:underline">
+                                                        #{ord.orderNumber}
+                                                    </span>
+                                                    <span className="text-[10px] text-neutral-400 font-mono">
+                                                        ({ord.items.length} sản phẩm)
+                                                    </span>
+                                                </div>
+                                                <p className="mt-1 text-sm font-semibold text-white line-clamp-1">
+                                                    {ord.items[0]?.product?.name || "Sản phẩm Laptop LADUX"}
+                                                </p>
+                                                <p className="mt-1 text-xs text-neutral-400 font-mono">
+                                                    {ord.date} · <span className="text-white font-bold">{ord.finalAmount.toLocaleString("vi-VN")} ₫</span>
+                                                </p>
+                                            </div>
+                                            <span className="w-fit rounded-full border border-[#00FF41]/30 bg-[#00FF41]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#00FF41] shrink-0">
+                                                {ord.status}
+                                            </span>
+                                        </div>
+                                    ))}
+
+                                    {displayOrders.length > 3 && (
+                                        <div className="pt-3 text-center border-t border-white/5">
+                                            <button
+                                                onClick={() => navigate(ROUTES.orders)}
+                                                className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#00FF41] hover:underline cursor-pointer transition"
+                                            >
+                                                <span>Xem thêm {displayOrders.length - 3} đơn hàng khác</span>
+                                                <ChevronRight className="w-3.5 h-3.5" />
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <p className="text-xs text-neutral-500 font-mono py-6 text-center">Chưa có đơn hàng nào.</p>
+                            )}
+                        </div>
+                    </section>
+                )}
             </div>
 
             {/* Modal Add / Edit Address */}
@@ -926,6 +1069,7 @@ export default function AccountView({
                                     await authStore.updateProfile({
                                         fullName: editProfileForm.fullName.trim(),
                                         phone: editProfileForm.phone.trim(),
+                                        email: editProfileForm.email.trim(),
                                         ...(editProfileForm.newPassword
                                             ? {
                                                   currentPassword: editProfileForm.currentPassword,
@@ -966,16 +1110,30 @@ export default function AccountView({
 
                             <div>
                                 <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
-                                    SỐ ĐIỆN THOẠI <span className="text-red-500">*</span>
+                                    SỐ ĐIỆN THOẠI
                                 </label>
                                 <input
                                     type="text"
-                                    required
                                     value={editProfileForm.phone}
                                     onChange={(e) =>
                                         setEditProfileForm({ ...editProfileForm, phone: e.target.value })
                                     }
                                     placeholder="Nhập số điện thoại..."
+                                    className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition font-medium"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                                    ĐỊA CHỈ EMAIL
+                                </label>
+                                <input
+                                    type="email"
+                                    value={editProfileForm.email}
+                                    onChange={(e) =>
+                                        setEditProfileForm({ ...editProfileForm, email: e.target.value })
+                                    }
+                                    placeholder="Nhập địa chỉ email..."
                                     className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#00FF41] focus:outline-none transition font-medium"
                                 />
                             </div>

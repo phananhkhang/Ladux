@@ -22,7 +22,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
     Page<Customer> findByLevel(CustomerLevel level, Pageable pageable);
 
     @Query("SELECT new org.akira.ladux.dto.user.response.CustomerResponse(" +
-           "c.id, u.id, u.email, u.username, c.fullName, c.phone, c.avatarUrl, " +
+           "c.id, u.id, c.email, u.username, c.fullName, c.phone, c.avatarUrl, " +
            "c.loyaltyPoints, c.level, c.totalSpent) " +
            "FROM Customer c JOIN c.user u WHERE " +
            "(:name IS NULL OR c.fullName LIKE %:name%) OR " +
@@ -30,4 +30,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
     Page<CustomerResponse> findByNameOrPhone(@Param("name") String name,
                                             @Param("phone") String phone,
                                             Pageable pageable);
+
+    boolean existsByPhoneAndIdNot(String normalizedPhone, Integer id);
+
+    boolean existsByEmailIgnoreCaseAndIdNot(String email, Integer id);
 }

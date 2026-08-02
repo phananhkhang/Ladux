@@ -66,7 +66,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             return;
         }
 
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByCustomerEmail(email)
+                .orElse(null);
         if (user == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "OAuth2 user is not registered");
             return;

@@ -79,14 +79,14 @@ export default function LoginView({ onLoginSuccess, onLogin, onGoRegister, onBac
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
                             <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-2">
-                                Tên đăng nhập / Email
+                                Tên đăng nhập
                             </label>
                             <input
                                 type="text"
                                 required
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Nhập username hoặc email..."
+                                placeholder="Nhập tên đăng nhập..."
                                 className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#00FF41]/60 focus:ring-1 focus:ring-[#00FF41]/30 transition"
                             />
                         </div>

@@ -1,6 +1,6 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, type ReactElement } from "react";
 import { Check } from "lucide-react";
-import { Link, Navigate, Outlet, Route, Routes, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, Outlet, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 import Footer from "../components/common/Footer";
 import Header from "../components/common/Header";
 import laduxLogoImg from "../assets/ladux-logo.png";
@@ -103,6 +103,7 @@ function HomeRoute() {
             filteredProducts={storefront.allDisplayProducts}
             setSelectedProduct={storefront.setSelectedProduct}
             toggleWishlist={storefront.toggleWishlist}
+            addToCartCustom={storefront.addToCartCustom}
             showToast={storefront.showToast}
         />
     );
@@ -120,6 +121,7 @@ function ProductsRoute() {
             searchQuery={storefront.searchQuery}
             setSearchQuery={storefront.setSearchQuery}
             toggleWishlist={storefront.toggleWishlist}
+            addToCartCustom={storefront.addToCartCustom}
             setSelectedProduct={storefront.setSelectedProduct}
         />
     );
@@ -228,13 +230,35 @@ function ContactRoute() {
     return <ContactView showToast={showToast} />;
 }
 
+function RequireAuth({ children }: { children: ReactElement }) {
+    const location = useLocation();
+    const { isAuthReady, isLoggedIn } = useStorefront();
+
+    if (!isAuthReady) return <RouteLoading />;
+
+    if (!isLoggedIn) {
+        return (
+            <Navigate
+                to={ROUTES.login}
+                replace
+                state={{ from: `${location.pathname}${location.search}` }}
+            />
+        );
+    }
+
+    return children;
+}
+
 function LoginRoute() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { showToast } = useStorefront();
+    const from = (location.state as { from?: string } | null)?.from || ROUTES.account;
+
     return (
         <LoginView
             onLoginSuccess={() => {
-                navigate(ROUTES.account);
+                navigate(from, { replace: true });
                 showToast("Đăng nhập thành công! Phiên làm việc đã được khôi phục.");
             }}
             onGoRegister={() => navigate(ROUTES.register)}
@@ -267,12 +291,12 @@ export default function AppRouter() {
                 <Route index element={<HomeRoute />} />
                 <Route path={ROUTES.products} element={<ProductsRoute />} />
                 <Route path={productPath(":id")} element={<ProductDetailRoute />} />
-                <Route path={ROUTES.cart} element={<CartRoute />} />
-                <Route path={ROUTES.checkout} element={<CheckoutRoute />} />
-                <Route path={ROUTES.orders} element={<OrdersRoute />} />
-                <Route path={ROUTES.wishlist} element={<WishlistRoute />} />
-                <Route path={ROUTES.account} element={<AccountRoute view="account" />} />
-                <Route path={ROUTES.addresses} element={<AccountRoute view="addresses" />} />
+                <Route path={ROUTES.cart} element={<RequireAuth><CartRoute /></RequireAuth>} />
+                <Route path={ROUTES.checkout} element={<RequireAuth><CheckoutRoute /></RequireAuth>} />
+                <Route path={ROUTES.orders} element={<RequireAuth><OrdersRoute /></RequireAuth>} />
+                <Route path={ROUTES.wishlist} element={<RequireAuth><WishlistRoute /></RequireAuth>} />
+                <Route path={ROUTES.account} element={<RequireAuth><AccountRoute view="account" /></RequireAuth>} />
+                <Route path={ROUTES.addresses} element={<RequireAuth><AccountRoute view="addresses" /></RequireAuth>} />
                 <Route path={ROUTES.about} element={<AboutView />} />
                 <Route path={ROUTES.contact} element={<ContactRoute />} />
                 <Route path="*" element={<Navigate to={ROUTES.home} replace />} />

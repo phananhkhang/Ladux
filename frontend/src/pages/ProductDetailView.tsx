@@ -7,7 +7,7 @@ import { ROUTES } from "../app/routePaths";
 
 export interface ProductDetailViewProps {
     selectedProduct: LaptopProduct;
-    toggleWishlist?: (id: number) => void;
+    toggleWishlist?: (id: number) => Promise<void>;
     addToCartCustom: (
         product: LaptopProduct,
         ram: string,
@@ -15,7 +15,7 @@ export interface ProductDetailViewProps {
         colorName: string,
         colorHex: string,
         quantity: number
-    ) => void;
+    ) => Promise<boolean>;
     handleAddReview: (e: React.FormEvent) => void;
     newRating: number;
     setNewRating: (rating: number) => void;
@@ -133,7 +133,9 @@ export default function ProductDetailView({
                                 </h1>
                             </div>
                             <button
-                                onClick={() => (toggleWishlist ? toggleWishlist(selectedProduct.id) : wishlistStore.toggleWishlist(selectedProduct.id))}
+                                onClick={() => {
+                                    void toggleWishlist?.(selectedProduct.id);
+                                }}
                                 className={`p-3 rounded-xl border transition ${
                                     isWishlisted
                                         ? "bg-red-500/10 border-red-500 text-red-500"
@@ -299,7 +301,7 @@ export default function ProductDetailView({
                              {/* Add to Cart Button */}
                             <button
                                 onClick={() => {
-                                    addToCartCustom(
+                                    void addToCartCustom(
                                         selectedProduct,
                                         selectedRam,
                                         selectedStorage,
@@ -316,8 +318,8 @@ export default function ProductDetailView({
                         </div>
 
                         <button
-                            onClick={() => {
-                                addToCartCustom(
+                            onClick={async () => {
+                                const added = await addToCartCustom(
                                     selectedProduct,
                                     selectedRam,
                                     selectedStorage,
@@ -325,7 +327,7 @@ export default function ProductDetailView({
                                     selectedColor.hex,
                                     productQuantity
                                 );
-                                navigate(ROUTES.checkout);
+                                if (added) navigate(ROUTES.checkout);
                             }}
                             className="w-full bg-white text-black py-3.5 rounded-xl font-extrabold text-sm uppercase tracking-wider hover:bg-neutral-200 transition"
                         >

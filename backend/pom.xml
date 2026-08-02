@@ -180,6 +180,12 @@
             <artifactId>bucket4j_jdk17-lettuce</artifactId>
             <version>8.14.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.twilio.sdk</groupId>
+            <artifactId>twilio</artifactId>
+            <version>12.1.1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

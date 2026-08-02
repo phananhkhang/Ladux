@@ -2,8 +2,8 @@ import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductHero from "../components/product/ProductHero";
 import ProductCard from "../components/product/ProductCard";
-import { LaptopProduct, mapProductResponseToLaptopProduct } from "../types";
-import { useProductStore, useWishlistStore, useCartStore } from "../stores";
+import { LaptopProduct } from "../types";
+import { useProductStore, useWishlistStore } from "../stores";
 import { productPath, ROUTES } from "../app/routePaths";
 
 const BRAND_SECTIONS = [
@@ -122,7 +122,7 @@ export interface ProductStoreViewProps {
     setPriceRange?: (price: number) => void;
     setSearchQuery?: (query: string) => void;
     wishlist?: number[];
-    toggleWishlist?: (laptopId: number) => void;
+    toggleWishlist?: (laptopId: number) => Promise<void>;
     setSelectedProduct: (product: LaptopProduct) => void;
     allProducts?: LaptopProduct[];
     addToCartCustom?: (
@@ -132,7 +132,7 @@ export interface ProductStoreViewProps {
         colorName: string,
         colorHex: string,
         quantity: number
-    ) => void;
+    ) => Promise<boolean>;
     showToast: (msg: string) => void;
 }
 
@@ -140,12 +140,12 @@ export default function ProductStoreView({
     filteredProducts,
     toggleWishlist,
     setSelectedProduct,
+    addToCartCustom,
     showToast,
 }: ProductStoreViewProps) {
     const navigate = useNavigate();
-    const { products, brands, categories, setBrandFilter, setCategoryFilter, setSearch, isLoading } = useProductStore();
-    const { wishlistProductIds, toggleWishlist: storeToggleWishlist } = useWishlistStore();
-    const { addToCart } = useCartStore();
+    const { brands, categories, setBrandFilter, setCategoryFilter, setSearch, isLoading } = useProductStore();
+    const { wishlistProductIds } = useWishlistStore();
 
     const productsList = filteredProducts || [];
 
@@ -365,13 +365,15 @@ export default function ProductStoreView({
                                         key={laptop.id}
                                         laptop={laptop}
                                         isWishlisted={wishlistProductIds.includes(laptop.id)}
-                                        onToggleWishlist={(id) => (toggleWishlist ? toggleWishlist(id) : storeToggleWishlist(id))}
+                                        onToggleWishlist={(id) => {
+                                            void toggleWishlist?.(id);
+                                        }}
                                         onSelectProduct={(p) => {
                                             setSelectedProduct(p);
                                             navigate(productPath(p.id));
                                         }}
                                         onAddToCart={(p) => {
-                                            addToCart({ productId: p.id, quantity: 1 });
+                                            void addToCartCustom?.(p, p.ram || "", p.rom || "", "", "", 1);
                                         }}
                                     />
                                 ))}
@@ -425,13 +427,15 @@ export default function ProductStoreView({
                                                 key={laptop.id}
                                                 laptop={laptop}
                                                 isWishlisted={wishlistProductIds.includes(laptop.id)}
-                                                onToggleWishlist={(id) => (toggleWishlist ? toggleWishlist(id) : storeToggleWishlist(id))}
+                                                onToggleWishlist={(id) => {
+                                                    void toggleWishlist?.(id);
+                                                }}
                                                 onSelectProduct={(p) => {
                                                     setSelectedProduct(p);
                                                     navigate(productPath(p.id));
                                                 }}
                                                 onAddToCart={(p) => {
-                                                    addToCart({ productId: p.id, quantity: 1 });
+                                                    void addToCartCustom?.(p, p.ram || "", p.rom || "", "", "", 1);
                                                 }}
                                             />
                                         ))}

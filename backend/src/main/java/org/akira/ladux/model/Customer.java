@@ -51,6 +51,9 @@ public class Customer {
     @Column(length = 20)
     private String phone;
 
+    @Column(length = 150)
+    private String email;
+
     @Column(name = "avatar_url")
     private String avatarUrl;
 

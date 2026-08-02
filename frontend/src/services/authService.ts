@@ -4,7 +4,7 @@ import { UserResponse } from './userService';
 export interface RegisterRequest {
   fullName: string;
   username: string;
-  email: string;
+  email?: string;
   password: string;
   phone?: string;
 }

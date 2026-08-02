@@ -15,8 +15,9 @@ import org.springframework.data.repository.query.Param;
 import jakarta.persistence.LockModeType;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
-    @EntityGraph(attributePaths = {"roles"})
-    User findByEmail(String email);
+    @EntityGraph(attributePaths = {"roles", "customer"})
+    @Query("select u from User u join u.customer c where lower(c.email) = lower(:email)")
+    Optional<User> findByCustomerEmail(@Param("email") String email);
 
     @EntityGraph(attributePaths = {"roles"})
     @Override
@@ -36,11 +37,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @EntityGraph(attributePaths = {"roles"})
     Optional<User> findByUsername(String username);
 
-    boolean existsByEmail(String email);
-
     boolean existsByUsername(String username);
-
-    boolean existsByEmailAndIdNot(String email, Integer id);
 
     boolean existsByUsernameAndIdNot(String username, Integer id);
 
@@ -48,4 +45,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Query("update User u set u.tokenVersion = u.tokenVersion + 1 where u.id = :id")
     void incrementTokenVersion(@Param("id") Integer id);
+
 }

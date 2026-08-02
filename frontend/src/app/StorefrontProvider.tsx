@@ -11,7 +11,7 @@ import {
     type ReactNode,
     type SetStateAction,
 } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore, useCartStore, useProductStore, useUIStore, useWishlistStore } from "../stores";
 import {
     type LaptopProduct,
@@ -41,6 +41,7 @@ interface StorefrontContextValue {
     displayAvatar: string;
     userName?: string;
     isLoggedIn: boolean;
+    isAuthReady: boolean;
     wishlistProductIds: number[];
     wishlistCount: number;
     cartCount: number;
@@ -60,7 +61,7 @@ interface StorefrontContextValue {
         colorName: string,
         colorHex: string,
         quantity: number
-    ) => Promise<void>;
+    ) => Promise<boolean>;
     handleAddReview: (event: FormEvent) => void;
 }
 
@@ -76,6 +77,7 @@ export function useStorefront(): StorefrontContextValue {
 
 export function StorefrontProvider({ children }: { children: ReactNode }) {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const user = useAuthStore((state) => state.user);
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -100,6 +102,7 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
     const theme = useUIStore((state) => state.theme);
 
     const [isCatalogReady, setIsCatalogReady] = useState(false);
+    const [isAuthReady, setIsAuthReady] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<LaptopProduct | null>(null);
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [selectedBrand, setSelectedBrand] = useState("All");
@@ -115,10 +118,18 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
     const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
-        void fetchCurrentUser();
+        let isMounted = true;
+
+        fetchCurrentUser().finally(() => {
+            if (isMounted) setIsAuthReady(true);
+        });
         Promise.allSettled([fetchProducts(), fetchBrands(), fetchCategories()]).finally(() => {
             setIsCatalogReady(true);
         });
+
+        return () => {
+            isMounted = false;
+        };
     }, [fetchBrands, fetchCategories, fetchCurrentUser, fetchProducts]);
 
     useEffect(() => {
@@ -147,6 +158,18 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
         toastTimer.current = setTimeout(() => setNotificationMsg(null), 3000);
     }, []);
 
+    const requireLogin = useCallback(
+        (message: string) => {
+            showToast(message);
+            navigate(ROUTES.login, {
+                state: {
+                    from: `${location.pathname}${location.search}`,
+                },
+            });
+        },
+        [location.pathname, location.search, navigate, showToast]
+    );
+
     const handleRegister = useCallback(() => {
         navigate(ROUTES.account);
         showToast("Tạo tài khoản thành công! Chào mừng thành viên mới.");
@@ -160,21 +183,33 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
 
     const addToCartCustom = useCallback(
         async (product: LaptopProduct, _ram: string, _storage: string, _colorName: string, _colorHex: string, quantity: number) => {
+            if (!isLoggedIn) {
+                requireLogin("Vui lòng đăng nhập trước khi thêm sản phẩm vào giỏ hàng.");
+                return false;
+            }
+
             const rawProduct = products.find((item) => item.id === product.id);
             const variant = rawProduct?.variants?.find((item) => item.isActive) ?? rawProduct?.variants?.[0];
 
             try {
                 await addToCart({ productId: variant?.id ?? product.id, quantity });
                 showToast(`Đã thêm ${quantity} máy ${product.name} vào giỏ hàng!`);
+                return true;
             } catch {
                 showToast("Không thể thêm sản phẩm vào giỏ hàng.");
+                return false;
             }
         },
-        [addToCart, products, showToast]
+        [addToCart, isLoggedIn, products, requireLogin, showToast]
     );
 
     const toggleWishlist = useCallback(
         async (productId: number) => {
+            if (!isLoggedIn) {
+                requireLogin("Vui lòng đăng nhập trước khi thêm sản phẩm vào yêu thích.");
+                return;
+            }
+
             try {
                 await toggleWishlistInStore(productId);
                 showToast(
@@ -186,7 +221,7 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
                 showToast("Lỗi khi cập nhật danh sách yêu thích.");
             }
         },
-        [isInWishlist, showToast, toggleWishlistInStore]
+        [isInWishlist, isLoggedIn, requireLogin, showToast, toggleWishlistInStore]
     );
 
     const handleAddReview = useCallback(
@@ -237,6 +272,7 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
             displayAvatar: user?.avatar || userAvatar,
             userName: user?.fullName || user?.username,
             isLoggedIn,
+            isAuthReady,
             wishlistProductIds,
             wishlistCount: wishlistProductIds.length,
             cartCount,
@@ -262,6 +298,7 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
             handleRegister,
             isCatalogReady,
             isLoggedIn,
+            isAuthReady,
             newComment,
             newRating,
             notificationMsg,

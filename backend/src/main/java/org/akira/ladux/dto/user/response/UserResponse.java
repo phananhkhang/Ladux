@@ -40,7 +40,7 @@ public record UserResponse(
 
         return new UserResponse(
                 user.getId(),
-                user.getEmail(),
+                customer == null ? null : customer.getEmail(),
                 user.getUsername(),
                 fullName,
                 phone,

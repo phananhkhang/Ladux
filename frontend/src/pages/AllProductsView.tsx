@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, Search, X } from "lucide-react";
-import { useProductStore, useWishlistStore, useCartStore } from "../stores";
+import { useProductStore, useWishlistStore } from "../stores";
 import ProductCard from "../components/product/ProductCard";
 import { LaptopProduct, mapProductResponseToLaptopProduct } from "../types";
 import { productPath, ROUTES } from "../app/routePaths";
@@ -15,7 +15,7 @@ export interface AllProductsViewProps {
     searchQuery?: string;
     setSearchQuery?: (query: string) => void;
     wishlist?: number[];
-    toggleWishlist?: (laptopId: number) => void;
+    toggleWishlist?: (laptopId: number) => Promise<void>;
     setSelectedProduct: (product: LaptopProduct) => void;
     addToCartCustom?: (
         product: LaptopProduct,
@@ -24,7 +24,7 @@ export interface AllProductsViewProps {
         colorName: string,
         colorHex: string,
         quantity: number
-    ) => void;
+    ) => Promise<boolean>;
 }
 
 export default function AllProductsView({
@@ -37,6 +37,7 @@ export default function AllProductsView({
     setSearchQuery,
     toggleWishlist,
     setSelectedProduct,
+    addToCartCustom,
 }: AllProductsViewProps) {
     const navigate = useNavigate();
     const {
@@ -52,8 +53,7 @@ export default function AllProductsView({
         setCategoryFilter,
     } = useProductStore();
 
-    const { wishlistProductIds, toggleWishlist: storeToggleWishlist } = useWishlistStore();
-    const { addToCart } = useCartStore();
+    const { wishlistProductIds } = useWishlistStore();
 
     const [sidebarSearch, setSidebarSearch] = useState<string>("");
     const [selectedRam, setSelectedRam] = useState<string>("All");
@@ -477,16 +477,15 @@ export default function AllProductsView({
                                         key={laptop.id}
                                         laptop={laptop}
                                         isWishlisted={wishlistProductIds.includes(laptop.id)}
-                                        onToggleWishlist={(id) => (toggleWishlist ? toggleWishlist(id) : storeToggleWishlist(id))}
+                                        onToggleWishlist={(id) => {
+                                            void toggleWishlist?.(id);
+                                        }}
                                         onSelectProduct={(p) => {
                                             setSelectedProduct(p);
                                             navigate(productPath(p.id));
                                         }}
                                         onAddToCart={(p) => {
-                                            const rawProduct = products.find((prod) => prod.id === p.id);
-                                            const activeVariant = rawProduct?.variants?.find((v) => v.isActive) ?? rawProduct?.variants?.[0];
-                                            const targetVariantId = activeVariant ? activeVariant.id : p.id;
-                                            addToCart({ productId: targetVariantId, quantity: 1 });
+                                            void addToCartCustom?.(p, p.ram || "", p.rom || "", "", "", 1);
                                         }}
                                     />
                                 ))}
