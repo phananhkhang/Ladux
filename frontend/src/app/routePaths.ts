@@ -8,6 +8,7 @@ export const ROUTES = {
     account: "/account",
     addresses: "/addresses",
     login: "/login",
+    oauth2Success: "/auth/oauth2/success",
     register: "/register",
     about: "/about",
     contact: "/contact",

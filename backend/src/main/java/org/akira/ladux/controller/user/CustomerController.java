@@ -62,14 +62,11 @@ public class CustomerController {
      * Bước này chưa cập nhật Customer.email.
      */
     @PostMapping("/email/otp")
-    public ResponseEntity<EmailOtpSendResponse>
-    sendEmailOtp(
+    public ResponseEntity<EmailOtpSendResponse> sendEmailOtp(
             @Valid
             @RequestBody EmailRegisterRequest request
     ) {
-        return ResponseEntity.ok(
-                emailVerificationService
-                        .sendEmailUpdateOtp(request)
+        return ResponseEntity.ok(emailVerificationService.sendEmailUpdateOtp(request)
         );
     }
 

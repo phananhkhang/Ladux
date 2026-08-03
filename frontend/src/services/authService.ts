@@ -1,6 +1,47 @@
 import apiClient from './apiClient';
 import { UserResponse } from './userService';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+const OAUTH2_RETURN_TO_KEY = 'ladux.oauth2.returnTo';
+
+function normalizeReturnTo(returnTo?: string): string {
+  if (!returnTo || !returnTo.startsWith('/') || returnTo.startsWith('//')) {
+    return '/account';
+  }
+  return returnTo;
+}
+
+function googleAuthorizationUrl(): string {
+  const apiUrl = new URL(API_BASE_URL, window.location.origin);
+  return new URL('/oauth2/authorization/google', apiUrl.origin).toString();
+}
+
+function storeOAuth2ReturnTo(returnTo?: string): void {
+  try {
+    sessionStorage.setItem(OAUTH2_RETURN_TO_KEY, normalizeReturnTo(returnTo));
+  } catch {
+    // OAuth2 vẫn hoạt động nếu trình duyệt chặn sessionStorage; callback sẽ về /account.
+  }
+}
+
+function takeOAuth2ReturnTo(): string {
+  try {
+    const returnTo = normalizeReturnTo(sessionStorage.getItem(OAUTH2_RETURN_TO_KEY) || undefined);
+    sessionStorage.removeItem(OAUTH2_RETURN_TO_KEY);
+    return returnTo;
+  } catch {
+    return '/account';
+  }
+}
+
+function removeOAuth2ReturnTo(): void {
+  try {
+    sessionStorage.removeItem(OAUTH2_RETURN_TO_KEY);
+  } catch {
+    // Không cần chặn luồng đăng nhập nếu storage không khả dụng.
+  }
+}
+
 export interface RegisterRequest {
   fullName: string;
   username: string;
@@ -31,6 +72,19 @@ export interface CsrfResponse {
 }
 
 export const authService = {
+  /**
+   * Chuyển trình duyệt tới Spring Security để bắt đầu Authorization Code flow.
+   * Điểm đến sau đăng nhập được lưu trong sessionStorage, không đưa vào OAuth state/token URL.
+  */
+  startGoogleLogin: (returnTo?: string): void => {
+    storeOAuth2ReturnTo(returnTo);
+    window.location.assign(googleAuthorizationUrl());
+  },
+
+  consumeOAuth2ReturnTo: takeOAuth2ReturnTo,
+
+  clearOAuth2ReturnTo: removeOAuth2ReturnTo,
+
   /**
    * Đăng ký tài khoản người dùng mới
    * POST /api/v1/auth/register

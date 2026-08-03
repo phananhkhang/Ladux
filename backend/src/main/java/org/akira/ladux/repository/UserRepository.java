@@ -46,4 +46,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("update User u set u.tokenVersion = u.tokenVersion + 1 where u.id = :id")
     void incrementTokenVersion(@Param("id") Integer id);
 
+    @EntityGraph(attributePaths = {"roles", "customer"})
+    Optional<User> findByGoogleSubject(String googleSubject);
 }

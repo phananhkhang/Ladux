@@ -15,7 +15,7 @@ import {
 import laduxLogoImg from "../../assets/ladux-logo.png";
 import { getAvatarUrl } from "../../types";
 import { ROUTES } from "../../app/routePaths";
-import { useAuthStore, useOrderStore, useWishlistStore } from "../../stores";
+import { useAuthStore, useOrderStore, useProductStore, useWishlistStore } from "../../stores";
 
 export interface HeaderProps {
     searchQuery: string;
@@ -51,6 +51,7 @@ export default function Header({
     const orders = useOrderStore((state) => state.orders);
     const totalOrderElements = useOrderStore((state) => state.totalElements);
     const wishlistProductIds = useWishlistStore((state) => state.wishlistProductIds);
+    const categories = useProductStore((state) => state.categories);
 
     const isLoggedIn = authIsLoggedIn || propsIsLoggedIn;
     const displayName = user?.fullName || user?.username || propsUserName || "Thành viên LADUX";
@@ -75,12 +76,12 @@ export default function Header({
 
     return (
         <header className="sticky top-0 z-50 border-b border-white/10 bg-[#080a0b]/80 text-white backdrop-blur-xl">
-            <div className="container mx-auto px-5 sm:px-6 h-[72px] relative flex items-center justify-between">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-[72px] flex items-center justify-between gap-3 md:gap-6">
                 {/* ── Logo ── */}
                 <div className="z-10 flex items-center shrink-0">
                     <Link
                         to={ROUTES.home}
-                        className="flex items-center ml-10 gap-2.5 group shrink-0 cursor-pointer"
+                        className="flex items-center ml-2 sm:ml-4 lg:ml-10 gap-2.5 group shrink-0 cursor-pointer"
                     >
                         <img
                             src={laduxLogoImg}
@@ -91,8 +92,8 @@ export default function Header({
                     </Link>
                 </div>
 
-                {/* ── Independent Centered Search Bar (w-900) ── */}
-                <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-[min(900px,calc(100%-280px))] hidden sm:flex items-stretch h-11 rounded-[1px] overflow-hidden border border-white/[0.12] bg-white/[0.04] focus-within:border-[#00FF41]/60 focus-within:ring-1 focus-within:ring-[#00FF41]/20 transition-all z-10">
+                {/* ── Dynamic Flex Search Bar (max-w-[900px]) ── */}
+                <div className="flex-1 max-w-[900px] hidden sm:flex items-stretch h-11 rounded-[1px] overflow-hidden border border-white/[0.12] bg-white/[0.04] focus-within:border-[#00FF41]/60 focus-within:ring-1 focus-within:ring-[#00FF41]/20 transition-all z-10 mx-2 md:mx-4 lg:mx-8">
                     {/* Text Input */}
                     <input
                         type="text"
@@ -125,26 +126,20 @@ export default function Header({
                                     handleNavigate(ROUTES.products);
                                 }
                             }}
-                            className="appearance-none bg-transparent pl-4 pr-8 h-full text-[11px] font-bold uppercase tracking-widest text-neutral-300 focus:outline-none cursor-pointer hover:text-white transition-colors"
+                            className="appearance-none bg-transparent pl-3 sm:pl-4 pr-7 sm:pr-8 h-full text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-neutral-300 focus:outline-none cursor-pointer hover:text-white transition-colors"
                         >
                             <option value="All" className="bg-[#0d0f10] text-white">
                                 Chọn danh mục
                             </option>
-                            <option value="Gaming" className="bg-[#0d0f10] text-white">
-                                Gaming
-                            </option>
-                            <option value="Ultrabook" className="bg-[#0d0f10] text-white">
-                                Ultrabook
-                            </option>
-                            <option value="MacBook" className="bg-[#0d0f10] text-white">
-                                MacBook
-                            </option>
-                            <option value="Workstation" className="bg-[#0d0f10] text-white">
-                                Workstation
-                            </option>
-                            <option value="Doanh Nhân" className="bg-[#0d0f10] text-white">
-                                Doanh Nhân
-                            </option>
+                            {categories.map((category) => (
+                                <option
+                                    key={category.id}
+                                    value={category.name}
+                                    className="bg-[#0d0f10] text-white"
+                                >
+                                    {category.name}
+                                </option>
+                            ))}
                         </select>
                         <ChevronRight className="absolute right-2 w-3.5 h-3.5 text-neutral-400 rotate-90 pointer-events-none" />
                     </div>
@@ -152,7 +147,7 @@ export default function Header({
                     {/* Search Button */}
                     <button
                         onClick={() => handleNavigate(ROUTES.products)}
-                        className="flex items-center justify-center w-12 bg-[#00FF41] hover:bg-[#00cc34] active:bg-[#00b32d] transition-colors shrink-0"
+                        className="flex items-center justify-center w-11 sm:w-12 bg-[#00FF41] hover:bg-[#00cc34] active:bg-[#00b32d] transition-colors shrink-0"
                         aria-label="Tìm kiếm"
                     >
                         <Search className="w-5 h-5 text-black stroke-[2.5]" />
@@ -160,7 +155,7 @@ export default function Header({
                 </div>
 
                 {/* ── Right Actions ── */}
-                <div className="z-10 flex items-center gap-2 shrink-0 ml-auto mr-10">
+                <div className="z-10 flex items-center gap-2 shrink-0 mr-2 sm:mr-4 lg:mr-10">
                     {/* Wishlist Badge */}
                     <Link
                         to={ROUTES.wishlist}

@@ -23,12 +23,15 @@ export interface BrandResponse {
   id: number;
   name: string;
   slug: string;
+  logoUrl?: string | null;
 }
 
 export interface CategoryResponse {
   id: number;
   name: string;
   slug: string;
+  parentId?: number | null;
+  imageUrl?: string | null;
 }
 
 export interface ProductImageResponse {
@@ -246,4 +249,4 @@ export const productService = {
   deleteProductImage: (productId: number, imageId: number): Promise<void> => {
     return apiClient.delete(`/admin/products/${productId}/images/${imageId}`);
   },
-};
+};

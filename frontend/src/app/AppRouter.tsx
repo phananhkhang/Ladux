@@ -4,6 +4,7 @@ import { Link, Navigate, Outlet, Route, Routes, useLocation, useNavigate, usePar
 import Footer from "../components/common/Footer";
 import Header from "../components/common/Header";
 import laduxLogoImg from "../assets/ladux-logo.png";
+import { authService } from "../services";
 import { productPath, ROUTES } from "./routePaths";
 import { useStorefront } from "./StorefrontProvider";
 
@@ -263,7 +264,36 @@ function LoginRoute() {
             }}
             onGoRegister={() => navigate(ROUTES.register)}
             onBack={() => navigate(ROUTES.home)}
+            oauthReturnTo={from}
         />
+    );
+}
+
+function OAuth2SuccessRoute() {
+    const navigate = useNavigate();
+    const { isAuthReady, isLoggedIn, showToast } = useStorefront();
+
+    useEffect(() => {
+        if (!isAuthReady) return;
+
+        if (!isLoggedIn) {
+            authService.clearOAuth2ReturnTo();
+            navigate(`${ROUTES.login}?oauth2Error=true&reason=session_not_established`, { replace: true });
+            return;
+        }
+
+        const returnTo = authService.consumeOAuth2ReturnTo();
+        navigate(returnTo, { replace: true });
+        showToast("Đăng nhập bằng Google thành công!");
+    }, [isAuthReady, isLoggedIn, navigate, showToast]);
+
+    return (
+        <main className="flex min-h-[70vh] items-center justify-center px-6">
+            <div className="text-center">
+                <div className="mx-auto mb-4 h-9 w-9 animate-spin rounded-full border-2 border-white/15 border-t-[#00FF41]" />
+                <p className="text-sm font-semibold text-neutral-300">Đang hoàn tất đăng nhập Google...</p>
+            </div>
+        </main>
     );
 }
 
@@ -284,6 +314,7 @@ export default function AppRouter() {
         <Routes>
             <Route element={<AuthLayout />}>
                 <Route path={ROUTES.login} element={<LoginRoute />} />
+                <Route path={ROUTES.oauth2Success} element={<OAuth2SuccessRoute />} />
                 <Route path={ROUTES.register} element={<RegisterRoute />} />
             </Route>
 

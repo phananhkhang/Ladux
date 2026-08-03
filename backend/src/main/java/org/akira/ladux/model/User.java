@@ -1,20 +1,10 @@
 package org.akira.ladux.model;
 
+import org.akira.ladux.model.enums.AuthProvider;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -54,6 +44,14 @@ public class User {
     @ToString.Exclude
     @Builder.Default
     private Set<Role> roles = new LinkedHashSet<>();
+
+    @Column(name = "auth_provider", nullable = false, length = 20)
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private AuthProvider authProvider = AuthProvider.LOCAL;
+
+    @Column(name="google_subject", unique = true, length = 255)
+    private String googleSubject;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Customer customer;

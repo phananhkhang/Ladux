@@ -1,56 +1,9 @@
-import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductHero from "../components/product/ProductHero";
 import ProductCard from "../components/product/ProductCard";
 import { LaptopProduct } from "../types";
 import { useProductStore, useWishlistStore } from "../stores";
 import { productPath, ROUTES } from "../app/routePaths";
-
-const BRAND_SECTIONS = [
-    {
-        brandId: "MSI",
-        title: "LAPTOP MSI",
-        tabs: [
-            { label: "MSI PRESTIGE", query: "Prestige" },
-            { label: "MSI MODERN", query: "Modern" },
-            { label: "MSI CYBORG", query: "Cyborg" },
-            { label: "MSI KATANA", query: "Katana" }
-        ]
-    },
-    {
-        brandId: "Dell",
-        title: "LAPTOP DELL",
-        tabs: [
-            { label: "DELL XPS", query: "XPS" },
-            { label: "DELL PRECISION", query: "Precision" },
-            { label: "DELL LATITUDE", query: "Latitude" },
-            { label: "DELL ALIENWARE", query: "Alienware" }
-        ]
-    },
-    {
-        brandId: "Apple",
-        title: "LAPTOP APPLE",
-        tabs: [
-            { label: "MACBOOK PRO", query: "Pro" },
-            { label: "MACBOOK AIR", query: "Air" }
-        ]
-    },
-    {
-        brandId: "Lenovo",
-        title: "LAPTOP LENOVO",
-        tabs: [
-            { label: "THINKPAD X1", query: "X1" },
-            { label: "THINKPAD T", query: "T" }
-        ]
-    },
-    {
-        brandId: "ASUS ROG",
-        title: "LAPTOP ASUS",
-        tabs: [
-            { label: "ROG DUO", query: "Duo" }
-        ]
-    }
-];
 
 // Import Brand Logos
 import logoAsus from "../assets/Brand/Logo-ASUS.png";
@@ -59,58 +12,22 @@ import logoLenovo from "../assets/Brand/Logo-Lenovo.jpg";
 import logoMsi from "../assets/Brand/Logo-MSI.jpg";
 import logoDell from "../assets/Brand/Logo-dell.jpg";
 
-const BRANDS = [
-    { id: "dell", logo: logoDell, alt: "Dell" },
-    { id: "apple", logo: logoApple, alt: "Apple" },
-    { id: "asus", logo: logoAsus, alt: "ASUS" },
-    { id: "lenovo", logo: logoLenovo, alt: "Lenovo" },
-    { id: "msi", logo: logoMsi, alt: "MSI" },
-];
+const BRAND_LOGOS: Record<string, string> = {
+    apple: logoApple,
+    asus: logoAsus,
+    dell: logoDell,
+    lenovo: logoLenovo,
+    msi: logoMsi,
+};
 
-const NEEDS = [
-    {
-        id: "doanh-nhan",
-        label: "Laptop Doanh nhân",
-        category: "Doanh Nhân",
-        image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&fit=crop&auto=format"
-    },
-    {
-        id: "gaming",
-        label: "Laptop Gaming",
-        category: "Gaming",
-        image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400&fit=crop&auto=format"
-    },
-    {
-        id: "van-phong",
-        label: "Laptop văn phòng mới",
-        category: "Doanh Nhân",
-        image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=400&fit=crop&auto=format"
-    },
-    {
-        id: "sinh-vien",
-        label: "Laptop sinh viên",
-        category: "Ultrabook",
-        image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&fit=crop&auto=format"
-    },
-    {
-        id: "mong-nhe",
-        label: "Laptop mỏng nhẹ",
-        category: "Ultrabook",
-        image: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=400&fit=crop&auto=format"
-    },
-    {
-        id: "workstation",
-        label: "Laptop Workstation",
-        category: "Workstation",
-        image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&fit=crop&auto=format"
-    },
-    {
-        id: "do-hoa",
-        label: "Laptop đồ họa",
-        category: "Workstation",
-        image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&fit=crop&auto=format"
-    }
-];
+const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1")
+    .replace(/\/api\/v1\/?$/, "");
+
+function resolvePublicAssetUrl(path?: string | null): string | null {
+    if (!path) return null;
+    if (/^(https?:|data:|blob:)/i.test(path)) return path;
+    return `${API_ORIGIN}${path.startsWith("/") ? "" : "/"}${path}`;
+}
 
 export interface ProductStoreViewProps {
     filteredProducts?: LaptopProduct[];
@@ -144,10 +61,20 @@ export default function ProductStoreView({
     showToast,
 }: ProductStoreViewProps) {
     const navigate = useNavigate();
-    const { brands, categories, setBrandFilter, setCategoryFilter, setSearch, isLoading } = useProductStore();
+    const { brands, categories, setBrandFilter, setCategoryFilter, isLoading } = useProductStore();
     const { wishlistProductIds } = useWishlistStore();
 
     const productsList = filteredProducts || [];
+
+    const openBrand = (brandId: number) => {
+        setBrandFilter(brandId);
+        navigate(ROUTES.products);
+    };
+
+    const openCategory = (categoryId: number) => {
+        setCategoryFilter(categoryId);
+        navigate(ROUTES.products);
+    };
 
     return (
         <main>
@@ -187,8 +114,7 @@ export default function ProductStoreView({
                                 <button
                                     onClick={() => {
                                         const lenovoBrand = brands.find((b) => b.name.toLowerCase().includes("lenovo"));
-                                        if (lenovoBrand) setBrandFilter(lenovoBrand.id);
-                                        document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
+                                        if (lenovoBrand) openBrand(lenovoBrand.id);
                                     }}
                                     className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00FF41]/10 hover:border-[#00FF41] hover:shadow-[0_0_15px_rgba(0,255,65,0.15)] text-white hover:text-[#00FF41] transition-all duration-300 group"
                                 >
@@ -198,8 +124,7 @@ export default function ProductStoreView({
                                 <button
                                     onClick={() => {
                                         const lenovoBrand = brands.find((b) => b.name.toLowerCase().includes("lenovo"));
-                                        if (lenovoBrand) setBrandFilter(lenovoBrand.id);
-                                        document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
+                                        if (lenovoBrand) openBrand(lenovoBrand.id);
                                     }}
                                     className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00FF41]/10 hover:border-[#00FF41] hover:shadow-[0_0_15px_rgba(0,255,65,0.15)] text-white hover:text-[#00FF41] transition-all duration-300 group"
                                 >
@@ -218,8 +143,7 @@ export default function ProductStoreView({
                                 <button
                                     onClick={() => {
                                         const dellBrand = brands.find((b) => b.name.toLowerCase().includes("dell"));
-                                        if (dellBrand) setBrandFilter(dellBrand.id);
-                                        document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
+                                        if (dellBrand) openBrand(dellBrand.id);
                                     }}
                                     className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00FF41]/10 hover:border-[#00FF41] hover:shadow-[0_0_15px_rgba(0,255,65,0.15)] text-white hover:text-[#00FF41] transition-all duration-300 group"
                                 >
@@ -229,8 +153,7 @@ export default function ProductStoreView({
                                 <button
                                     onClick={() => {
                                         const dellBrand = brands.find((b) => b.name.toLowerCase().includes("dell"));
-                                        if (dellBrand) setBrandFilter(dellBrand.id);
-                                        document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
+                                        if (dellBrand) openBrand(dellBrand.id);
                                     }}
                                     className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00FF41]/10 hover:border-[#00FF41] hover:shadow-[0_0_15px_rgba(0,255,65,0.15)] text-white hover:text-[#00FF41] transition-all duration-300 group"
                                 >
@@ -251,8 +174,7 @@ export default function ProductStoreView({
                                 <button
                                     onClick={() => {
                                         const hpBrand = brands.find((b) => b.name.toLowerCase().includes("hp"));
-                                        if (hpBrand) setBrandFilter(hpBrand.id);
-                                        document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
+                                        if (hpBrand) openBrand(hpBrand.id);
                                     }}
                                     className="w-full flex flex-col items-center justify-center py-3 px-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#00FF41]/10 hover:border-[#00FF41] hover:shadow-[0_0_15px_rgba(0,255,65,0.15)] text-white hover:text-[#00FF41] transition-all duration-300 group"
                                 >
@@ -276,27 +198,24 @@ export default function ProductStoreView({
                     </div>
 
                     <div className="flex items-start justify-start md:justify-center gap-6 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-                        {NEEDS.map((need) => (
-                            <div
-                                key={need.id}
-                                onClick={() => {
-                                    const cat = categories.find((c) => c.name.toLowerCase().includes(need.category.toLowerCase()));
-                                    if (cat) setCategoryFilter(cat.id);
-                                    document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
-                                }}
+                        {categories.map((category) => (
+                            <button
+                                key={category.id}
+                                type="button"
+                                onClick={() => openCategory(category.id)}
                                 className="flex flex-col items-center text-center shrink-0 w-28 cursor-pointer group"
                             >
                                 <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white border border-white/10 flex items-center justify-center p-2 shadow-lg group-hover:shadow-[#00FF41]/20 group-hover:scale-105 group-hover:border-[#00FF41] transition-all duration-300">
                                     <img
-                                        src={need.image}
-                                        alt={need.label}
+                                        src={resolvePublicAssetUrl(category.imageUrl) || "https://placehold.co/160x160/ffffff/111111?text=Laptop"}
+                                        alt={category.name}
                                         className="max-h-full max-w-full object-contain filter group-hover:brightness-105 transition-all"
                                     />
                                 </div>
                                 <span className="text-xs sm:text-[13px] text-neutral-300 font-medium mt-3 leading-snug group-hover:text-[#00FF41] transition-colors max-w-[100px] h-10 flex items-center justify-center">
-                                    {need.label}
+                                    {category.name}
                                 </span>
-                            </div>
+                            </button>
                         ))}
                     </div>
                 </div>
@@ -308,24 +227,29 @@ export default function ProductStoreView({
                     <span className="text-xs font-mono uppercase tracking-widest text-[#00FF41] block mb-5">
                         THƯƠNG HIỆU
                     </span>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                        {BRANDS.map((brand) => {
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                        {brands.map((brand) => {
+                            const logoUrl = resolvePublicAssetUrl(brand.logoUrl)
+                                || BRAND_LOGOS[brand.slug.toLowerCase()];
                             return (
-                                <div
+                                <button
                                     key={brand.id}
-                                    onClick={() => {
-                                        const matched = brands.find((b) => b.name.toLowerCase().includes(brand.id));
-                                        if (matched) setBrandFilter(matched.id);
-                                        document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
-                                    }}
+                                    type="button"
+                                    onClick={() => openBrand(brand.id)}
                                     className="flex items-center justify-center bg-white rounded-xl p-4 h-16 sm:h-20 border border-white/5 shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:shadow-[#00FF41]/10 hover:scale-[1.03] hover:border-[#00FF41]/30 transition-all duration-300 cursor-pointer"
                                 >
-                                    <img
-                                        src={brand.logo}
-                                        alt={brand.alt}
-                                        className="max-h-8 sm:max-h-12 max-w-full object-contain"
-                                    />
-                                </div>
+                                    {logoUrl ? (
+                                        <img
+                                            src={logoUrl}
+                                            alt={brand.name}
+                                            className="max-h-8 sm:max-h-12 max-w-full object-contain"
+                                        />
+                                    ) : (
+                                        <span className="text-sm font-black uppercase tracking-wide text-neutral-900">
+                                            {brand.name}
+                                        </span>
+                                    )}
+                                </button>
                             );
                         })}
                     </div>
@@ -381,40 +305,28 @@ export default function ProductStoreView({
                         </div>
 
                         {/* Phân nhóm theo thương hiệu nếu có */}
-                        {BRAND_SECTIONS.map((section) => {
+                        {brands.map((brand) => {
                             const brandProducts = productsList.filter(
-                                (p) => p && p.brand && p.brand.toLowerCase().includes(section.brandId.toLowerCase())
+                                (product) => product.brandId === brand.id
+                                    || product.brand.toLowerCase() === brand.name.toLowerCase()
                             );
                             if (brandProducts.length === 0) return null;
                             return (
-                                <div key={section.brandId} className="space-y-6">
+                                <div key={brand.id} className="space-y-6">
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/[0.08] pb-3 gap-4">
                                         <div className="flex items-center gap-4 flex-wrap">
                                             <div
                                                 className="bg-[#0a3a60] text-white font-extrabold px-6 py-2.5 text-xs sm:text-sm tracking-wider uppercase shrink-0"
                                                 style={{ clipPath: "polygon(0 0, 100% 0, 88% 100%, 0 100%)" }}
                                             >
-                                                {section.title}
+                                                LAPTOP {brand.name}
                                             </div>
-                                            <div className="flex items-center gap-4 text-xs font-bold text-neutral-400 overflow-x-auto py-1">
-                                                {section.tabs.map((tab) => (
-                                                    <button
-                                                        key={tab.label}
-                                                        onClick={() => {
-                                                            setSearch(tab.query);
-                                                            document.getElementById("catalog-section")?.scrollIntoView({ behavior: "smooth" });
-                                                        }}
-                                                        className="hover:text-[#00FF41] transition-colors shrink-0 uppercase whitespace-nowrap"
-                                                    >
-                                                        {tab.label}
-                                                    </button>
-                                                ))}
-                                            </div>
+                                            <span className="text-xs font-bold uppercase text-neutral-400">
+                                                {brandProducts.length} sản phẩm
+                                            </span>
                                         </div>
                                         <button
-                                            onClick={() => {
-                                                navigate(ROUTES.products);
-                                            }}
+                                            onClick={() => openBrand(brand.id)}
                                             className="text-xs sm:text-sm font-bold text-[#00FF41] hover:underline shrink-0 text-right"
                                         >
                                             Xem tất cả &rarr;
