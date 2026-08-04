@@ -23,6 +23,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
@@ -88,6 +90,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .product(product)
                 .rating(request.rating())
                 .comment(request.comment())
+                .createdAt(Instant.now())
                 .build();
         return ReviewResponse.fromEntity(repo.save(review));
     }
@@ -110,6 +113,7 @@ public class ReviewServiceImpl implements ReviewService {
         if (request.comment() != null) {
             review.setComment(request.comment());
         }
+        review.setCreatedAt(Instant.now());
         return ReviewResponse.fromEntity(review);
     }
 

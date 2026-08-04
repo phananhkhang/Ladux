@@ -259,7 +259,7 @@ export default function OrdersView({
                         <h2 className="text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-500 mb-3">
                             Danh sách đơn hàng ({displayOrders.length})
                         </h2>
-                        <div className="space-y-2 max-h-[calc(100vh-280px)] overflow-y-auto pr-1 scrollbar-thin">
+                        <div className="custom-scrollbar space-y-2 max-h-[calc(100vh-280px)] overflow-y-auto pr-1">
                             {displayOrders.map((ord) => (
                                 <button
                                     key={ord.id}

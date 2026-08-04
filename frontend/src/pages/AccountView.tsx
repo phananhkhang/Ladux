@@ -460,7 +460,7 @@ export default function AccountView({
                     </button>
                 </div>
 
-                <div className="px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto">
+                <div className="custom-scrollbar px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto">
                     <div>
                         <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-1.5">
                             Họ và tên người nhận <span className="text-red-400">*</span>

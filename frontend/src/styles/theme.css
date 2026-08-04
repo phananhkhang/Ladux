@@ -252,6 +252,7 @@
 
 .custom-sidebar-scrollbar::-webkit-scrollbar {
   width: 5px;
+  height: 5px;
 }
 
 .custom-sidebar-scrollbar::-webkit-scrollbar-track {
@@ -259,7 +260,7 @@
 }
 
 .custom-sidebar-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
+  background: rgba(148, 163, 184, 0.25);
   border-radius: 9999px;
   transition: all 0.25s ease-in-out;
 }
@@ -274,6 +275,50 @@
 }
 
 .custom-sidebar-scrollbar::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Custom Neon Green Scrollbar for Storefront (Tổng quan đơn hàng, etc.) */
+.custom-scrollbar,
+.store-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 255, 65, 0.4) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar,
+.store-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track,
+.store-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb,
+.store-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 65, 0.3);
+  border-radius: 9999px;
+  transition: all 0.25s ease-in-out;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb,
+.store-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 65, 0.65);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover,
+.store-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #00FF41;
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.8);
+}
+
+.custom-scrollbar::-webkit-scrollbar-button,
+.store-scrollbar::-webkit-scrollbar-button {
   display: none;
   width: 0;
   height: 0;

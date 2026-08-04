@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 // State machine quan ly vong doi don hang.
 // Chuyen trang thai hop le:
@@ -60,11 +61,12 @@ public class OrderStateMachineImpl implements OrderStateMachine {
             orderLifecycleService.cancelOrder(order, "Order cancelled by user");
             return OrderResponse.fromEntity(order);
         }
+        // Tao ma trackingNumber khi chuyen sang SHIPPED (tu dong neu khong duoc truyen hoac rong).
         if (target == OrderStatus.SHIPPED) {
-            if (request.trackingNumber() == null || request.trackingNumber().isBlank()) {
-                throw new BusinessRuleException("TrackingNumber bat buoc khi chuyen sang SHIPPED");
-            }
-            order.setTrackingNumber(request.trackingNumber());
+            String trackingNumber = (request != null && request.trackingNumber() != null && !request.trackingNumber().isBlank())
+                    ? request.trackingNumber().trim()
+                    : generateTrackingNumber();
+            order.setTrackingNumber(trackingNumber);
         }
 
         order.setStatus(target);
@@ -132,6 +134,10 @@ public class OrderStateMachineImpl implements OrderStateMachine {
         if (!allowed) {
             throw new BusinessRuleException("Trạng thái đơn hàng không hợp lệ khi chuyển từ " + current + " sang " + target);
         }
+    }
+    private String generateTrackingNumber() {
+         String prefix = "TRK" + UUID.randomUUID().toString().substring(0, 8);
+         return prefix.toUpperCase();
     }
 }
 

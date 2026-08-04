@@ -483,7 +483,7 @@ export default function CheckoutView({
                         </h2>
 
                         {/* Itemized List */}
-                        <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+                        <div className="custom-scrollbar space-y-3 max-h-60 overflow-y-auto pr-1">
                             {cartItemsList.map((item) => {
                                 if (!item.product) return null;
                                 const mapped = mapProductResponseToLaptopProduct(item.product, item.productVariant?.id);

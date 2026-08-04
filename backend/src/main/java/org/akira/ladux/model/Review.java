@@ -3,6 +3,7 @@ package org.akira.ladux.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 
@@ -10,6 +11,7 @@ import java.time.Instant;
 @Table(name = "reviews", uniqueConstraints = {
         @UniqueConstraint(name = "uk_reviews_user_product", columnNames = {"user_id", "product_id"})
 })
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 @Builder
@@ -38,5 +40,13 @@ public class Review {
 
     @Column(nullable = false, updatable = false)
     @CreatedDate
-    private Instant createdAt;
+    @Builder.Default
+    private Instant createdAt = Instant.now();
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+    }
 }
