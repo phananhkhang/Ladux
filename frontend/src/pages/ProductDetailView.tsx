@@ -66,9 +66,53 @@ export default function ProductDetailView({
         { label: "Khối lượng", value: selectedProduct.weight },
     ].filter((item) => item.value && item.value.toString().trim());
 
+    const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
+    const [isZooming, setIsZooming] = useState<boolean>(false);
+    const [zoomPos, setZoomPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+    const [lensPos, setLensPos] = useState<{ left: number; top: number; width: number; height: number }>({
+        left: 0,
+        top: 0,
+        width: 0,
+        height: 0,
+    });
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const width = rect.width;
+        const height = rect.height;
+
+        const lensW = width * 0.3;
+        const lensH = height * 0.3;
+
+        let lensLeft = x - lensW / 2;
+        let lensTop = y - lensH / 2;
+
+        if (lensLeft < 0) lensLeft = 0;
+        if (lensLeft > width - lensW) lensLeft = width - lensW;
+        if (lensTop < 0) lensTop = 0;
+        if (lensTop > height - lensH) lensTop = height - lensH;
+
+        const pctX = width > lensW ? (lensLeft / (width - lensW)) * 100 : 0;
+        const pctY = height > lensH ? (lensTop / (height - lensH)) * 100 : 0;
+
+        setZoomPos({ x: pctX, y: pctY });
+        setLensPos({ left: lensLeft, top: lensTop, width: lensW, height: lensH });
+        setIsZooming(true);
+    };
+
+    const handleMouseLeave = () => {
+        setIsZooming(false);
+    };
+
+    const currentImage = selectedProduct.images[activeImageIndex] || selectedProduct.images[0];
+
     useEffect(() => {
         setSelectedVariantId(selectedProduct.defaultVariantId ?? availableVariants[0]?.id ?? null);
         setProductQuantity(1);
+        setActiveImageIndex(0);
+        setIsZooming(false);
     }, [selectedProduct.id]);
 
     return (
@@ -90,22 +134,77 @@ export default function ProductDetailView({
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                 {/* Left Column: Product Gallery & Overview */}
                 <div className="lg:col-span-6 space-y-6">
-                    <div className="aspect-[4/3] bg-neutral-900 rounded-xl overflow-hidden border border-neutral-800 relative group">
-                        {selectedProduct.images[0] ? (
-                            <img
-                                src={selectedProduct.images[0]}
-                                alt={selectedProduct.name}
-                                className="w-full h-full object-cover transition-transform duration-500"
-                            />
-                        ) : (
-                            <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-neutral-600">
-                                <ImageOff className="h-10 w-10" />
-                                <span className="text-xs">Sản phẩm chưa có ảnh</span>
+                    <div className="relative select-none">
+                        {/* Main Image Container */}
+                        <div
+                            onMouseMove={handleMouseMove}
+                            onMouseLeave={handleMouseLeave}
+                            onMouseEnter={() => setIsZooming(true)}
+                            className="aspect-[4/3] bg-neutral-900 rounded-xl overflow-hidden border border-neutral-800 relative cursor-crosshair group"
+                        >
+                            {currentImage ? (
+                                <img
+                                    src={currentImage}
+                                    alt={selectedProduct.name}
+                                    className="w-full h-full object-cover transition-transform duration-500"
+                                />
+                            ) : (
+                                <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-neutral-600">
+                                    <ImageOff className="h-10 w-10" />
+                                    <span className="text-xs">Sản phẩm chưa có ảnh</span>
+                                </div>
+                            )}
+
+                            <span className="absolute top-4 left-4 bg-black/60 border border-[#00FF41]/40 text-[#00FF41] text-[10px] font-mono font-bold px-3 py-1 rounded-full backdrop-blur-md z-10 pointer-events-none">
+                                CHÍNH HÃNG NGUYÊN SEAL
+                            </span>
+
+                            {/* Target Lens Box (Green Rectangle) */}
+                            {isZooming && currentImage && (
+                                <div
+                                    style={{
+                                        left: `${lensPos.left}px`,
+                                        top: `${lensPos.top}px`,
+                                        width: `${lensPos.width}px`,
+                                        height: `${lensPos.height}px`,
+                                    }}
+                                    className="absolute pointer-events-none border-2 border-[#00FF41] bg-[#00FF41]/10 shadow-[0_0_15px_rgba(0,255,65,0.4)] z-20"
+                                />
+                            )}
+                        </div>
+
+                        {/* Large Magnifier Zoom Preview Window */}
+                        {isZooming && currentImage && (
+                            <div className="absolute left-[calc(100%+1.5rem)] -top-[96px] z-50 w-[440px] sm:w-[500px] xl:w-[560px] h-[440px] sm:h-[500px] xl:h-[560px] rounded-2xl border-2 border-[#00FF41] bg-neutral-950 overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_30px_rgba(0,255,65,0.25)] pointer-events-none hidden lg:block">
+                                <div
+                                    className="w-full h-full bg-no-repeat bg-neutral-950"
+                                    style={{
+                                        backgroundImage: `url(${currentImage})`,
+                                        backgroundPosition: `${zoomPos.x}% ${zoomPos.y}%`,
+                                        backgroundSize: '320% 320%',
+                                    }}
+                                />
                             </div>
                         )}
-                        <span className="absolute top-4 left-4 bg-black/60 border border-[#00FF41]/40 text-[#00FF41] text-[10px] font-mono font-bold px-3 py-1 rounded-full backdrop-blur-md z-10">
-                            CHÍNH HÃNG NGUYÊN SEAL
-                        </span>
+
+                        {/* Thumbnails Gallery */}
+                        {selectedProduct.images && selectedProduct.images.length > 1 && (
+                            <div className="flex items-center gap-3 overflow-x-auto pb-2 mt-4 scrollbar-thin scrollbar-thumb-white/10">
+                                {selectedProduct.images.map((imgUrl, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => setActiveImageIndex(idx)}
+                                        className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
+                                            activeImageIndex === idx
+                                                ? "border-[#00FF41] shadow-[0_0_10px_rgba(0,255,65,0.3)] scale-105"
+                                                : "border-neutral-800 opacity-60 hover:opacity-100 hover:border-neutral-600"
+                                        }`}
+                                    >
+                                        <img src={imgUrl} alt={`${selectedProduct.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Specifications Overview Cards */}
