@@ -41,6 +41,66 @@
   --sidebar-ring: #00FF41;
 }
 
+/* Admin portal night mode. Explicit selectors keep the storefront theme isolated. */
+.admin-theme-dark .admin-dark {
+  background: #080d1a !important;
+  color: #e2e8f0;
+  color-scheme: dark;
+}
+
+.admin-theme-dark .admin-dark header,
+.admin-theme-dark .admin-dark .bg-white,
+.admin-theme-dark [data-slot="dialog-content"] {
+  background-color: #111827 !important;
+  color: #f8fafc !important;
+}
+
+.admin-theme-dark .admin-dark .bg-slate-50,
+.admin-theme-dark .admin-dark .bg-slate-50\/50,
+.admin-theme-dark .admin-dark .bg-slate-50\/70,
+.admin-theme-dark .admin-dark .bg-slate-50\/80,
+.admin-theme-dark .admin-dark .bg-slate-100 {
+  background-color: #1e293b !important;
+}
+
+.admin-theme-dark .admin-dark .text-slate-950,
+.admin-theme-dark .admin-dark .text-slate-900,
+.admin-theme-dark .admin-dark .text-slate-800,
+.admin-theme-dark [data-slot="dialog-content"] .text-slate-950,
+.admin-theme-dark [data-slot="dialog-content"] .text-slate-900 {
+  color: #f8fafc !important;
+}
+
+.admin-theme-dark .admin-dark .text-slate-700,
+.admin-theme-dark .admin-dark .text-slate-600,
+.admin-theme-dark [data-slot="dialog-content"] .text-slate-700 {
+  color: #cbd5e1 !important;
+}
+
+.admin-theme-dark .admin-dark .text-slate-500,
+.admin-theme-dark .admin-dark .text-slate-400,
+.admin-theme-dark [data-slot="dialog-content"] .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+.admin-theme-dark .admin-dark .border-slate-200,
+.admin-theme-dark .admin-dark .border-slate-200\/80,
+.admin-theme-dark .admin-dark .border-slate-100,
+.admin-theme-dark [data-slot="dialog-content"] {
+  border-color: #334155 !important;
+}
+
+.admin-theme-dark .admin-dark input,
+.admin-theme-dark .admin-dark select,
+.admin-theme-dark .admin-dark textarea,
+.admin-theme-dark [data-slot="dialog-content"] input,
+.admin-theme-dark [data-slot="dialog-content"] select,
+.admin-theme-dark [data-slot="dialog-content"] textarea {
+  border-color: #334155 !important;
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+
 .dark {
   --font-size: 16px;
   --background: oklch(0.105 0.012 195);

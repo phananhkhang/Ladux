@@ -238,11 +238,7 @@ export const productService = {
   uploadProductImages: (productId: number, files: File[]): Promise<ProductImageResponse[]> => {
     const formData = new FormData();
     files.forEach((file) => formData.append('file', file));
-    return apiClient.post(`/admin/products/${productId}/images/upload`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    return apiClient.post(`/admin/products/${productId}/images/upload`, formData);
   },
 
   /**

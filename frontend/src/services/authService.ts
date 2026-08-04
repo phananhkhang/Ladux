@@ -1,7 +1,8 @@
 import apiClient from './apiClient';
 import { UserResponse } from './userService';
+import { env } from '../config/env';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+const API_BASE_URL = env.apiBaseUrl;
 const OAUTH2_RETURN_TO_KEY = 'ladux.oauth2.returnTo';
 
 function normalizeReturnTo(returnTo?: string): string {

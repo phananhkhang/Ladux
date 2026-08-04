@@ -1,55 +1,71 @@
-import axios from 'axios';
+import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import { env } from "../config/env";
 
-// 1. Khởi tạo instance với Base URL lấy từ file .env
+interface RetryableRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
+
 const apiClient = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    withCredentials: true, // Để gửi/nhận HttpOnly Cookie (RefreshToken)
+  baseURL: env.apiBaseUrl,
+  withCredentials: true,
+  headers: {
+    Accept: "application/json",
+  },
 });
 
-// 2. REQUEST INTERCEPTOR: Chạy TRƯỚC KHI request được gửi đi
-apiClient.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('accessToken'); // Lấy AccessToken từ bộ nhớ
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`; // Tự động dán Token vào Header
-        }
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
+let refreshPromise: Promise<void> | null = null;
 
-// 3. RESPONSE INTERCEPTOR: Chạy NGAY KHI nhận được response từ Backend
+function redirectAfterSessionExpired(): void {
+  window.dispatchEvent(new CustomEvent("ladux:auth-expired"));
+
+  const loginPath = window.location.pathname.startsWith("/admin")
+    ? "/admin/login"
+    : "/login";
+
+  if (window.location.pathname !== loginPath) {
+    window.location.assign(loginPath);
+  }
+}
+
+function refreshSession(): Promise<void> {
+  if (!refreshPromise) {
+    refreshPromise = axios
+      .post(`${env.apiBaseUrl}/auth/refresh`, undefined, {
+        withCredentials: true,
+        headers: { Accept: "application/json" },
+      })
+      .then(() => undefined)
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+
+  return refreshPromise;
+}
+
 apiClient.interceptors.response.use(
-    (response) => response.data, // Chỉ trả về phần 'data' sạch (bỏ bớt rác HTTP Wrapper)
-    async (error) => {
-        const originalRequest = error.config;
-        const url = originalRequest?.url || '';
-        const isAuthEndpoint = url.includes('/auth/login') || url.includes('/auth/register') || url.includes('/auth/refresh');
+  (response) => response.data,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as RetryableRequestConfig | undefined;
+    const url = originalRequest?.url ?? "";
+    const isAuthEndpoint = ["/auth/login", "/auth/register", "/auth/refresh", "/auth/logout"].some(
+      (endpoint) => url.includes(endpoint),
+    );
 
-        // Nếu Backend trả về 401 (Hết hạn Token) và không phải API Auth (login/register/refresh)
-        if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
-            originalRequest._retry = true;
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !isAuthEndpoint) {
+      originalRequest._retry = true;
 
-            try {
-                // Tự động gọi API Refresh Token ngầm
-                await axios.post(
-                    `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1'}/auth/refresh`,
-                    {},
-                    { withCredentials: true }
-                );
-
-                // Gọi lại request ban đầu với Cookie mới
-                return apiClient(originalRequest);
-            } catch (refreshError) {
-                return Promise.reject(refreshError);
-            }
-        }
-
-        return Promise.reject(error);
+      try {
+        await refreshSession();
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        redirectAfterSessionExpired();
+        return Promise.reject(refreshError);
+      }
     }
+
+    return Promise.reject(error);
+  },
 );
 
 export default apiClient;

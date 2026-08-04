@@ -1,11 +1,31 @@
+# Ladux Frontend
 
-# LADUX - Premium Laptop Store Frontend
+Ứng dụng React + Tailwind CSS gồm storefront tại `/` và Ladux Admin Portal độc lập tại `/admin`.
 
-Ứng dụng web e-commerce React + Tailwind CSS cho cửa hàng máy tính LADUX.
+## Cấu hình
 
-## Running the code
+Sao chép `.env.example` thành `.env` và cấu hình:
 
-  Run `npm i` to install the dependencies.
+```env
+VITE_API_BASE_URL=http://localhost:8080
+VITE_ENABLE_UNSAFE_ORDER_RETURN_TRANSITIONS=false
+```
 
-  Run `npm run dev` to start the development server.
-  
+`VITE_API_BASE_URL` có thể là origin backend hoặc URL đã có `/api/v1`. Admin Portal dùng HttpOnly Cookie và không lưu access/refresh token trong browser storage.
+
+## Chạy dự án
+
+```bash
+npm install
+npm run dev
+```
+
+Kiểm tra production build:
+
+```bash
+npm run typecheck
+npm run test
+npm run build
+```
+
+Các API backend còn thiếu được ghi tại `../docs/backend-integration-gaps.md`.
