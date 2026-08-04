@@ -12,7 +12,7 @@ import {
     type SetStateAction,
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuthStore, useCartStore, useOrderStore, useProductStore, useUIStore, useWishlistStore } from "../stores";
+import { useAddressStore, useAuthStore, useCartStore, useNotificationStore, useOrderStore, useProductStore, useUIStore, useWishlistStore } from "../stores";
 import { reviewService } from "../services";
 import {
     type LaptopProduct,
@@ -78,6 +78,7 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
     const fetchCurrentUser = useAuthStore((state) => state.fetchCurrentUser);
     const logout = useAuthStore((state) => state.logout);
+    const clearSession = useAuthStore((state) => state.clearSession);
 
     const products = useProductStore((state) => state.products);
     const catalogError = useProductStore((state) => state.error);
@@ -89,6 +90,11 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
     const fetchCart = useCartStore((state) => state.fetchCart);
     const cartCount = useCartStore((state) => state.totalItems);
     const fetchOrders = useOrderStore((state) => state.fetchOrders);
+    const resetOrders = useOrderStore((state) => state.reset);
+    const resetCart = useCartStore((state) => state.reset);
+    const resetWishlist = useWishlistStore((state) => state.reset);
+    const resetAddresses = useAddressStore((state) => state.reset);
+    const resetNotifications = useNotificationStore((state) => state.reset);
 
     const wishlistProductIds = useWishlistStore((state) => state.wishlistProductIds);
     const fetchWishlist = useWishlistStore((state) => state.fetchWishlist);
@@ -108,6 +114,7 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
     const [newRating, setNewRating] = useState(5);
     const [newComment, setNewComment] = useState("");
     const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const accountScopeRef = useRef<number | null>(null);
 
     useEffect(() => {
         let isMounted = true;
@@ -123,6 +130,24 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
             isMounted = false;
         };
     }, [fetchBrands, fetchCategories, fetchCurrentUser, fetchProducts]);
+
+    useEffect(() => {
+        const handleAuthExpired = () => clearSession();
+        window.addEventListener("ladux:auth-expired", handleAuthExpired);
+        return () => window.removeEventListener("ladux:auth-expired", handleAuthExpired);
+    }, [clearSession]);
+
+    useEffect(() => {
+        const nextAccountId = user?.id ?? null;
+        if (accountScopeRef.current === nextAccountId) return;
+
+        accountScopeRef.current = nextAccountId;
+        resetAddresses();
+        resetCart();
+        resetWishlist();
+        resetOrders();
+        resetNotifications();
+    }, [resetAddresses, resetCart, resetNotifications, resetOrders, resetWishlist, user?.id]);
 
     useEffect(() => {
         if (!isLoggedIn) return;

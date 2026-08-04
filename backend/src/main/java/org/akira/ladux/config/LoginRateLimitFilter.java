@@ -31,7 +31,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class LoginRateLimitFilter extends OncePerRequestFilter {
 
-    private static final String LOGIN_PATH = "/api/v1/auth/login";
+    private static final String USER_LOGIN_PATH = "/api/v1/auth/login";
+    private static final String ADMIN_LOGIN_PATH = "/api/v1/admin/auth/login";
     private static final String TOO_MANY_REQUESTS_BODY =
             "{\"message\":\"Bạn đăng nhập quá nhiều, hãy thử lại sau!\"}";
 
@@ -48,11 +49,13 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
         this.refillPeriod = Duration.ofMinutes(refillMinutes);
     }
 
-    /** Chi ap dung cho POST /api/v1/auth/login (ke ca co dau "/" cuoi). */
+    /** Ap dung cho ca login storefront va admin (ke ca co dau "/" cuoi). */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        boolean isLoginPost = "POST".equalsIgnoreCase(request.getMethod())
-                && request.getRequestURI().startsWith(LOGIN_PATH);
+        String requestUri = request.getRequestURI();
+        boolean isLoginPath = requestUri.startsWith(USER_LOGIN_PATH)
+                || requestUri.startsWith(ADMIN_LOGIN_PATH);
+        boolean isLoginPost = "POST".equalsIgnoreCase(request.getMethod()) && isLoginPath;
         return !isLoginPost;
     }
 

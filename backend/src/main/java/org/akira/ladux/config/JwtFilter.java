@@ -43,8 +43,9 @@ public class JwtFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String jwt = resolveJwt(request);
-        boolean fromCookie = readJwtFromCookie(request) != null;
+        String cookieJwt = readJwtFromCookie(request);
+        String jwt = cookieJwt != null ? cookieJwt : readJwtFromAuthorizationHeader(request);
+        boolean fromCookie = cookieJwt != null;
 
         if (jwt == null) {
             filterChain.doFilter(request, response);
@@ -58,7 +59,7 @@ public class JwtFilter extends OncePerRequestFilter {
             username = jwtService.extractUsername(jwt);
         } catch (JwtException | IllegalArgumentException ex) {
             // Token het han / sai chu ky / malform — bo qua auth, giu request public.
-            clearInvalidToken(response, fromCookie);
+            clearInvalidToken(request, response, fromCookie);
             filterChain.doFilter(request, response);
             return;
         }
@@ -70,14 +71,14 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 userDetails = this.userDetailsService.loadUserByUsername(username);
             } catch (UsernameNotFoundException ex) {
-                clearInvalidToken(response, fromCookie);
+                clearInvalidToken(request, response, fromCookie);
                 filterChain.doFilter(request, response);
                 return;
             }
 
             // (A) User bi khoa / vo hieu hoa — khong dung token do, van cho xem catalog public.
             if (!userDetails.isEnabled()) {
-                clearInvalidToken(response, fromCookie);
+                clearInvalidToken(request, response, fromCookie);
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -90,7 +91,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 Integer tokenVersion = jwtService.extractTokenVersion(jwt);
                 int currentVersion = (userDetails instanceof UserPrincipal up) ? up.getTokenVersion() : -1;
                 if (tokenVersion == null || tokenVersion != currentVersion) {
-                    clearInvalidToken(response, fromCookie);
+                    clearInvalidToken(request, response, fromCookie);
                     filterChain.doFilter(request, response);
                     return;
                 }
@@ -108,7 +109,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             } else if (fromCookie) {
                 // Token cookie het han / khong hop le — xoa de lan sau khong gui lai.
-                clearInvalidToken(response, true);
+                clearInvalidToken(request, response, true);
             }
         }
 
@@ -116,19 +117,16 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String resolveJwt(HttpServletRequest request) {
-        String cookieToken = readJwtFromCookie(request);
-        if (cookieToken != null) {
-            return cookieToken;
-        }
-        return readJwtFromAuthorizationHeader(request);
-    }
-
     /** Xoa SecurityContext + cookie access (neu co). Khong set status 401 — de authorization quyet dinh. */
-    private void clearInvalidToken(HttpServletResponse response, boolean fromCookie) {
+    private void clearInvalidToken(HttpServletRequest request, HttpServletResponse response, boolean fromCookie) {
         SecurityContextHolder.clearContext();
         if (fromCookie) {
-            response.addHeader(HttpHeaders.SET_COOKIE, authCookieService.clearAccessCookie().toString());
+            response.addHeader(
+                    HttpHeaders.SET_COOKIE,
+                    (isAdminRequest(request)
+                            ? authCookieService.clearAdminAccessCookie()
+                            : authCookieService.clearAccessCookie()).toString()
+            );
         }
     }
 
@@ -136,12 +134,20 @@ public class JwtFilter extends OncePerRequestFilter {
         if (request.getCookies() == null) {
             return null;
         }
+        String cookieName = isAdminRequest(request)
+                ? authCookieService.adminAccessCookieName()
+                : authCookieService.accessCookieName();
         for (Cookie cookie : request.getCookies()) {
-            if (authCookieService.accessCookieName().equals(cookie.getName())) {
+            if (cookieName.equals(cookie.getName())) {
                 return cookie.getValue();
             }
         }
         return null;
+    }
+
+    private boolean isAdminRequest(HttpServletRequest request) {
+        String path = request.getRequestURI().substring(request.getContextPath().length());
+        return path.equals("/api/v1/admin") || path.startsWith("/api/v1/admin/");
     }
 
     private String readJwtFromAuthorizationHeader(HttpServletRequest request) {

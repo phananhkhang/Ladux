@@ -26,6 +26,7 @@ interface AuthState {
   changePassword: (data: UserUpdatePasswordRequest) => Promise<void>;
   uploadAvatar: (file: File) => Promise<void>;
   setAccessToken: (token: string | null) => void;
+  clearSession: () => void;
   clearError: () => void;
   isAdmin: () => boolean;
   isStaff: () => boolean;
@@ -40,6 +41,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   setAccessToken: (token) => {
     set({ accessToken: token, isLoggedIn: !!token });
+  },
+
+  clearSession: () => {
+    set({ accessToken: null, user: null, isLoggedIn: false, isLoading: false, error: null });
   },
 
   clearError: () => set({ error: null }),
@@ -80,8 +85,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (error) {
       console.error('Lỗi khi logout backend:', error);
     } finally {
-      get().setAccessToken(null);
-      set({ user: null, isLoggedIn: false, isLoading: false, error: null });
+      get().clearSession();
     }
   },
 
@@ -92,8 +96,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ user: userData, isLoggedIn: true });
     } catch (error) {
       // Nếu session không hợp lệ hoặc hết hạn thì clear session state
-      get().setAccessToken(null);
-      set({ user: null, isLoggedIn: false });
+      get().clearSession();
     } finally {
       set({ isLoading: false });
     }

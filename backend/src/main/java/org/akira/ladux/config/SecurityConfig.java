@@ -82,6 +82,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/v1/payments/vnpay-webhook").permitAll()
                         .requestMatchers("/error", "/api/v1/auth/**", "/oauth2/**", "/login/oauth2/**").permitAll()
+                        .requestMatchers(
+                                "/api/v1/admin/auth/login", "/api/v1/admin/auth/login/",
+                                "/api/v1/admin/auth/refresh", "/api/v1/admin/auth/refresh/",
+                                "/api/v1/admin/auth/logout", "/api/v1/admin/auth/logout/"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/api/v1/products", "/api/v1/products/**",

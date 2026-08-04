@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.Optional;
 
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.model.RefreshToken;
@@ -48,8 +49,18 @@ public class RefreshTokenService {
                 .revoked(false)
                 .build();
         RefreshToken savedToken = repo.save(token);
-        savedToken.setToken(rawToken); // Tra ve token MOI (chua hash)
-        return savedToken;
+
+        // Khong gan rawToken len savedToken: entity nay dang managed, JPA dirty checking se
+        // ghi de hash trong DB bang token tho khi transaction commit. Tra mot holder tach
+        // biet cho controller de dua raw token vao cookie.
+        return RefreshToken.builder()
+                .id(savedToken.getId())
+                .token(rawToken)
+                .user(savedToken.getUser())
+                .expiryDate(savedToken.getExpiryDate())
+                .revoked(savedToken.isRevoked())
+                .createdAt(savedToken.getCreatedAt())
+                .build();
     }
 
     /**
@@ -61,8 +72,7 @@ public class RefreshTokenService {
         if (rawToken == null || rawToken.isBlank()) {
             throw new BusinessRuleException("Thieu refresh token");
         }
-        String hashedToken = hashToken(rawToken);
-        RefreshToken current = repo.findByToken(hashedToken)
+        RefreshToken current = findStoredToken(rawToken)
                 .orElseThrow(() -> new BusinessRuleException("Refresh token khong hop le"));
         if (!current.isUsable()) {
             throw new BusinessRuleException("Refresh token da het han hoac da bi thu hoi");
@@ -76,8 +86,7 @@ public class RefreshTokenService {
         if (rawToken == null || rawToken.isBlank()) {
             return;
         }
-        String hashedToken = hashToken(rawToken);
-        repo.findByToken(hashedToken).ifPresent(token -> token.setRevoked(true));
+        findStoredToken(rawToken).ifPresent(token -> token.setRevoked(true));
     }
 
    // Thu hoi dong thoi tăng tokenVersion cho user -> vo hieu hoa TUC THI access token cu cua user.
@@ -86,8 +95,7 @@ public class RefreshTokenService {
         if (rawToken == null || rawToken.isBlank()) {
             return;
         }
-        String hashedToken = hashToken(rawToken);
-        repo.findByToken(hashedToken).ifPresent(token -> {
+        findStoredToken(rawToken).ifPresent(token -> {
             token.setRevoked(true);
             userRepository.incrementTokenVersion(token.getUser().getId());
         });
@@ -108,6 +116,16 @@ public class RefreshTokenService {
         RANDOM.nextBytes(bytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
+
+    /**
+     * Uu tien token da bam. Fallback token tho chi de cac phien tao boi ban cu
+     * tiep tuc refresh/logout duoc; lan rotate ke tiep se tu dong luu dung hash.
+     */
+    private Optional<RefreshToken> findStoredToken(String rawToken) {
+        Optional<RefreshToken> hashed = repo.findByToken(hashToken(rawToken));
+        return hashed.isPresent() ? hashed : repo.findByToken(rawToken);
+    }
+
     private String hashToken(String rawToken) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

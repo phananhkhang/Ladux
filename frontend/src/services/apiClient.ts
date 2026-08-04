@@ -17,13 +17,8 @@ let refreshPromise: Promise<void> | null = null;
 
 function redirectAfterSessionExpired(): void {
   window.dispatchEvent(new CustomEvent("ladux:auth-expired"));
-
-  const loginPath = window.location.pathname.startsWith("/admin")
-    ? "/admin/login"
-    : "/login";
-
-  if (window.location.pathname !== loginPath) {
-    window.location.assign(loginPath);
+  if (window.location.pathname !== "/login") {
+    window.location.assign("/login");
   }
 }
 

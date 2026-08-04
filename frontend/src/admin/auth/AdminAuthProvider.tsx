@@ -26,8 +26,8 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const clearSession = () => queryClient.setQueryData(adminQueryKeys.auth, null);
-    window.addEventListener("ladux:auth-expired", clearSession);
-    return () => window.removeEventListener("ladux:auth-expired", clearSession);
+    window.addEventListener("ladux:admin-auth-expired", clearSession);
+    return () => window.removeEventListener("ladux:admin-auth-expired", clearSession);
   }, [queryClient]);
 
   const loginMutation = useMutation({
