@@ -20,7 +20,6 @@ import { useOrderStore } from "../stores";
 import { ROUTES } from "../app/routePaths";
 
 export interface OrdersViewProps {
-    orders?: OrderItemRecord[];
     selectedOrderId?: string;
     setSelectedAddressOrderId?: (id: string) => void;
     setOrders?: React.Dispatch<React.SetStateAction<OrderItemRecord[]>>;
@@ -78,7 +77,6 @@ function HistoryStatusIcon({ status }: { status: string }) {
 }
 
 export default function OrdersView({
-    orders = [],
     selectedOrderId = "",
     setSelectedAddressOrderId = () => {},
     showToast,
@@ -119,34 +117,29 @@ export default function OrdersView({
     const displayOrders: OrderItemRecord[] = useMemo(() => {
         if (storeOrders.length > 0) {
             return storeOrders.map((ord) => {
-                const itemsMapped = (ord.orderItems || []).map((it) => {
-                    const actualPrice = (it as any).priceAtPurchase ?? 0;
-                    const prod = it.product
-                        ? mapProductResponseToLaptopProduct(it.product)
-                        : {
-                              id: it.id,
-                              name: "Sản phẩm Laptop LADUX",
-                              images: ["https://placehold.co/400x300/121214/666?text=Laptop"],
-                              price: actualPrice,
-                          };
-                    return {
-                        product: prod as any,
+                const itemsMapped = (ord.orderItems || []).flatMap((it) => {
+                    if (!it.product) return [];
+                    const actualPrice = Number(it.priceAtPurchase ?? 0);
+                    const variant = it.product.variants?.find((item) => item.id === it.productVariantId);
+                    const prod = mapProductResponseToLaptopProduct(it.product, it.productVariantId ?? undefined);
+                    return [{
+                        product: prod,
                         quantity: it.quantity,
-                        selectedRam: (it.product as any)?.ram || "",
-                        selectedStorage: (it.product as any)?.rom || "",
-                        selectedColorName: "Standard",
-                        selectedColorHex: "#1D1D1F",
+                        selectedRam: variant?.ram || "",
+                        selectedStorage: variant?.rom || "",
+                        selectedColorName: variant?.color?.name || "",
+                        selectedColorHex: variant?.color?.hexCode || "",
                         price: actualPrice,
-                    };
+                    }];
                 });
 
                 return {
                     id: ord.id.toString(),
-                    orderNumber: ord.trackingNumber || `LDX-${String(ord.id).padStart(6, "0")}`,
-                    date: ord.createdAt ? new Date(ord.createdAt).toLocaleString("vi-VN") : "Vừa xong",
+                    orderNumber: String(ord.id),
+                    date: ord.createdAt ? new Date(ord.createdAt).toLocaleString("vi-VN") : "Chưa cập nhật",
                     status: ord.status,
-                    paymentMethod: ord.paymentProvider || "COD",
-                    trackingNumber: ord.trackingNumber || `VNPOST-${String(ord.id).padStart(8, "0")}`,
+                    paymentMethod: ord.paymentProvider,
+                    trackingNumber: ord.trackingNumber || "",
                     items: itemsMapped,
                     subTotal: Number(ord.subTotal) || 0,
                     discountAmount: Number(ord.discountAmount) || 0,
@@ -154,7 +147,7 @@ export default function OrdersView({
                     finalAmount: Number(ord.finalAmount) || 0,
                     shippingAddress: {
                         id: ord.shippingAddress?.id || 0,
-                        fullName: ord.shippingAddress?.receiverName || "Khách hàng",
+                        fullName: ord.shippingAddress?.receiverName || "",
                         phone: ord.shippingAddress?.phone || "",
                         addressDetail: ord.shippingAddress?.street || "",
                         ward: ord.shippingAddress?.ward || "",
@@ -165,8 +158,8 @@ export default function OrdersView({
                 };
             });
         }
-        return orders;
-    }, [storeOrders, orders]);
+        return [];
+    }, [storeOrders]);
 
     // Sync active order when list loads
     useEffect(() => {
@@ -284,7 +277,7 @@ export default function OrdersView({
                                         <span className="text-[10px] text-neutral-600 font-mono">{ord.date.split(",")[0]}</span>
                                     </div>
                                     <p className="text-xs font-semibold text-white line-clamp-1 leading-snug">
-                                        {ord.items[0]?.product?.name || "Sản phẩm Laptop"}
+                                        {ord.items[0]?.product?.name || "Không còn thông tin sản phẩm"}
                                         {ord.items.length > 1 && (
                                             <span className="text-neutral-500 font-normal"> (+{ord.items.length - 1} khác)</span>
                                         )}
@@ -322,7 +315,7 @@ export default function OrdersView({
                                                 Khởi tạo lúc{" "}
                                                 <span className="text-neutral-300">{currentOrder.date}</span>
                                                 {" · "}Cổng thanh toán:{" "}
-                                                <span className="font-bold text-white">{currentOrder.paymentMethod}</span>
+                                                <span className="font-bold text-white">{currentOrder.paymentMethod || "Chưa cập nhật"}</span>
                                             </p>
                                         </div>
                                         <div className="sm:text-right shrink-0">
@@ -331,7 +324,7 @@ export default function OrdersView({
                                             </span>
                                             <span className="inline-flex items-center gap-2 text-xs font-mono font-bold text-white bg-neutral-900 border border-neutral-800 px-3 py-2 rounded-lg">
                                                 <Truck className="w-3.5 h-3.5 text-[#00FF41]" />
-                                                {currentOrder.trackingNumber}
+                                                {currentOrder.trackingNumber || "Chưa có mã vận đơn"}
                                             </span>
                                         </div>
                                     </div>
@@ -420,17 +413,20 @@ export default function OrdersView({
                                                 className="flex items-center justify-between gap-4 p-4 bg-neutral-900/50 border border-neutral-900 rounded-xl"
                                             >
                                                 <div className="flex items-center gap-3 min-w-0">
-                                                    <img
-                                                        src={
-                                                            it.product?.images?.[0] ||
-                                                            "https://placehold.co/400x300/121214/666?text=Laptop"
-                                                        }
-                                                        alt={it.product?.name || "Laptop"}
-                                                        className="w-16 h-16 shrink-0 bg-neutral-950 rounded-lg object-contain p-1.5 border border-neutral-800"
-                                                    />
+                                                    {it.product.images?.[0] ? (
+                                                        <img
+                                                            src={it.product.images[0]}
+                                                            alt={it.product.name}
+                                                            className="w-16 h-16 shrink-0 bg-neutral-950 rounded-lg object-contain p-1.5 border border-neutral-800"
+                                                        />
+                                                    ) : (
+                                                        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-neutral-800 bg-neutral-950 text-[9px] text-neutral-500">
+                                                            Chưa có ảnh
+                                                        </div>
+                                                    )}
                                                     <div className="min-w-0">
                                                         <h4 className="text-xs font-bold text-white leading-snug line-clamp-2">
-                                                            {it.product?.name || "Sản phẩm Laptop"}
+                                                            {it.product.name}
                                                         </h4>
                                                         {/* Specs line */}
                                                         {(it.selectedRam || it.selectedStorage || it.selectedColorName) && (
@@ -438,9 +434,7 @@ export default function OrdersView({
                                                                 {[
                                                                     it.selectedRam,
                                                                     it.selectedStorage,
-                                                                    it.selectedColorName !== "Standard"
-                                                                        ? `Màu: ${it.selectedColorName}`
-                                                                        : null,
+                                                                    it.selectedColorName ? `Màu: ${it.selectedColorName}` : null,
                                                                 ]
                                                                     .filter(Boolean)
                                                                     .join(" · ")}

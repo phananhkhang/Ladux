@@ -10,9 +10,10 @@ public record CartResponse(
         Integer id,
         Integer userId,
         List<CartItemResponse> items,
-        BigDecimal totalPrice
+        BigDecimal totalPrice,
+        BigDecimal shippingFee
 ) implements Serializable {
-    public static CartResponse fromEntity(Cart cart) {
+    public static CartResponse fromEntity(Cart cart, BigDecimal shippingFee) {
         if (cart == null) {
             return null;
         }
@@ -30,7 +31,8 @@ public record CartResponse(
                 cart.getItems() == null ? List.of() : cart.getItems().stream()
                         .map(CartItemResponse::fromEntity)
                         .toList(),
-                totalPrice
+                totalPrice,
+                shippingFee
         );
     }
 }

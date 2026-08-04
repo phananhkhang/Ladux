@@ -17,6 +17,7 @@ import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,10 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "reviews", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "reviews", allEntries = true),
+            @CacheEvict(value = "products", allEntries = true)
+    })
     public ReviewResponse createReview(int userId, ReviewCreateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + userId));
@@ -90,7 +94,10 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "reviews", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "reviews", allEntries = true),
+            @CacheEvict(value = "products", allEntries = true)
+    })
     public ReviewResponse updateReview(int userId, int reviewId, ReviewUpdateRequest request) {
         Review review = repo.findByUserIdAndId(userId, reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + reviewId + " va userId = " + userId));
@@ -108,7 +115,10 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "reviews", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "reviews", allEntries = true),
+            @CacheEvict(value = "products", allEntries = true)
+    })
     public void deleteReviewById(int userId, int reviewId) {
         Review review = repo.findByUserIdAndId(userId, reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay review voi id = " + reviewId + " va userId = " + userId));

@@ -31,7 +31,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    @Cacheable(value = "products", key = "'v3:all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<ProductResponse> getAllProducts(Pageable pageable) {
         return repo.findAll(pageable)
                 .map(ProductResponse::summaryFromEntity);
@@ -39,7 +39,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'id:' + #id")
+    @Cacheable(value = "products", key = "'v3:id:' + #id")
     public ProductResponse getProductById(int id) {
         return ProductResponse.fromEntity(repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product voi id = " + id)));
@@ -47,7 +47,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'slug:' + #slug")
+    @Cacheable(value = "products", key = "'v3:slug:' + #slug")
     public ProductResponse getProductBySlug(String slug) {
         Product p = repo.findBySlug(slug);
         if (p == null) {
@@ -59,7 +59,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'brand:' + #brandId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    @Cacheable(value = "products", key = "'v3:brand:' + #brandId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<ProductResponse> getProductsByBrandId(int brandId, Pageable pageable) {
         return repo.findByBrandId(brandId, pageable)
                 .map(ProductResponse::summaryFromEntity);
@@ -67,7 +67,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'category:' + #categoryId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    @Cacheable(value = "products", key = "'v3:category:' + #categoryId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<ProductResponse> getProductsByCategoryId(int categoryId, Pageable pageable) {
         return repo.findByCategoryId(categoryId, pageable)
                 .map(ProductResponse::summaryFromEntity);
@@ -75,7 +75,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'active:' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    @Cacheable(value = "products", key = "'v3:active:' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<ProductResponse> getActiveProducts(Pageable pageable) {
         return repo.findByIsActiveTrue(pageable)
                 .map(ProductResponse::summaryFromEntity);
@@ -83,7 +83,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'search:' + #search + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    @Cacheable(value = "products", key = "'v3:search:' + #search + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<ProductResponse> searchProducts(String search, Pageable pageable) {
         if (search == null || search.isBlank()) {
             return getAllProducts(pageable);

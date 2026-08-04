@@ -16,6 +16,7 @@ import laduxLogoImg from "../../assets/ladux-logo.png";
 import { getAvatarUrl } from "../../types";
 import { ROUTES } from "../../app/routePaths";
 import { useAuthStore, useOrderStore, useProductStore, useWishlistStore } from "../../stores";
+import { STOREFRONT_CONTACT } from "../../config/storefront";
 
 export interface HeaderProps {
     searchQuery: string;
@@ -59,7 +60,7 @@ export default function Header({
     const userAvatar = getAvatarUrl(user?.avatar || propsUserAvatar);
 
     const displayWishlistCount = wishlistProductIds.length > 0 ? wishlistProductIds.length : wishlistCount;
-    const displayOrderCount = totalOrderElements > 0 ? totalOrderElements : (orders.length > 0 ? orders.length : 1);
+    const displayOrderCount = totalOrderElements || orders.length;
 
     const handleLogout = async () => {
         try {
@@ -192,11 +193,17 @@ export default function Header({
                                 onClick={() => navigate(ROUTES.account)}
                                 className="flex items-center gap-2 rounded-full border border-emerald-500/40 bg-white/[0.04] py-1 pl-1 pr-3 text-neutral-100 transition hover:border-[#00FF41] hover:bg-white/[0.08]"
                             >
-                                <img
-                                    src={userAvatar}
-                                    alt="Avatar"
-                                    className="h-7 w-7 rounded-full object-cover border-2 border-[#00FF41]"
-                                />
+                                {userAvatar ? (
+                                    <img
+                                        src={userAvatar}
+                                        alt="Avatar"
+                                        className="h-7 w-7 rounded-full object-cover border-2 border-[#00FF41]"
+                                    />
+                                ) : (
+                                    <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-[#00FF41] bg-neutral-900">
+                                        <User className="h-3.5 w-3.5 text-[#00FF41]" />
+                                    </span>
+                                )}
                                 <span className="text-xs font-bold truncate max-w-[110px]">
                                     {displayName}
                                 </span>
@@ -221,7 +228,7 @@ export default function Header({
                                         <div className="px-1 py-0.5">
                                             <div className="font-extrabold text-sm text-white truncate">{displayName}</div>
                                             <div className="text-[11px] font-mono text-[#00FF41] font-semibold flex items-center gap-1 mt-0.5">
-                                                <span>GOLD MEMBER</span>
+                                                 <span>{user?.level || "BROWSER"} MEMBER</span>
                                                 <span>·</span>
                                                 <span>{userPhone}</span>
                                             </div>
@@ -379,13 +386,13 @@ export default function Header({
 
                     {/* Right side info */}
                     <div className="flex items-center gap-6 text-[15px]">
-                        <div className="flex items-center gap-2.5 group cursor-pointer">
+                        {STOREFRONT_CONTACT.phone && <div className="flex items-center gap-2.5 group cursor-pointer">
                             <Phone className="w-[18px] h-[18px] text-[#00FF41] group-hover:scale-110 transition-transform" />
                             <span className="text-neutral-400 group-hover:text-white transition-colors">
-                                Hotline: <strong className="text-white font-medium">0352 060306</strong> (Miễn phí)
+                                Hotline: <strong className="text-white font-medium">{STOREFRONT_CONTACT.phone}</strong>
                             </span>
-                        </div>
-                        <span className="text-white/10 hidden sm:inline">|</span>
+                        </div>}
+                        {STOREFRONT_CONTACT.phone && <span className="text-white/10 hidden sm:inline">|</span>}
                         <div className="flex items-center gap-2.5 text-[#00FF41] font-semibold">
                             <span className="w-2 h-2 rounded-full bg-[#00FF41] animate-pulse" />
                             <span>Giao hỏa tốc 2H</span>

@@ -13,6 +13,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Value;
+
+import java.math.BigDecimal;
 
 import java.util.Optional;
 
@@ -25,15 +28,18 @@ public class CartServiceImpl implements CartService {
     private final CartRepository repo;
     private final UserRepository userRepository;
     private final ProductVariantRepository productVariantRepository;
+
+    @Value("${app.order.shipping-fee:30000}")
+    private BigDecimal configuredShippingFee;
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "carts", key = "'user:' + #userId")
+    @Cacheable(value = "carts", key = "'v2:user:' + #userId")
     public CartResponse getCartByUserId(int userId) {
         Cart cart = repo.findByUserId(userId);
         if (cart == null) {
             throw new ResourceNotFoundException("Khong tim thay cart voi userId = " + userId);
         }
-        return CartResponse.fromEntity(cart);
+        return CartResponse.fromEntity(cart, configuredShippingFee);
     }
     @Override
     @Transactional

@@ -6,9 +6,6 @@ import { useWishlistStore } from "../stores";
 import { productPath, ROUTES } from "../app/routePaths";
 
 export interface WishlistViewProps {
-    wishlist?: number[];
-    toggleWishlist?: (laptopId: number) => void;
-    products?: LaptopProduct[];
     setSelectedProduct: (product: LaptopProduct) => void;
 }
 

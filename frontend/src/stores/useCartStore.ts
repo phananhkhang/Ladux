@@ -149,8 +149,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   getSelectedTotalAmount: () => {
     const selectedItems = get().getSelectedItems();
     return selectedItems.reduce((sum, item) => {
-      // Giả sử có giá biến thể hoặc giá sản phẩm
-      const price = item.product?.images ? (item.product as any).price || 0 : 0;
+      const price = Number(item.productVariant?.discountPrice || item.productVariant?.price || 0);
       return sum + price * item.quantity;
     }, 0);
   },

@@ -36,7 +36,7 @@ export default function ProductHero({ onShopNowClick, onAiConsultClick }: Produc
                     </div>
 
                     <p className="text-neutral-400 text-sm sm:text-base max-w-lg leading-relaxed pt-1">
-                        Trải nghiệm sức mạnh đỉnh cao từ chip M3/M4 Series. Chuẩn mực hiệu năng cho công việc sáng tạo, lập trình & đồ họa chuyên nghiệp.
+                        Khám phá danh mục laptop đang bán với cấu hình, mức giá và tình trạng kho được cập nhật trực tiếp từ hệ thống.
                     </p>
 
                     <div className="flex flex-wrap items-center gap-4 pt-2">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronRight, Star, Check, ShoppingBag, MessageSquare, Send, Heart } from "lucide-react";
+import { ChevronRight, Star, ShoppingBag, MessageSquare, Send, Heart, ImageOff } from "lucide-react";
 import { LaptopProduct, formatVND } from "../types";
 import { useWishlistStore } from "../stores";
 import { ROUTES } from "../app/routePaths";
@@ -10,13 +10,10 @@ export interface ProductDetailViewProps {
     toggleWishlist?: (id: number) => Promise<void>;
     addToCartCustom: (
         product: LaptopProduct,
-        ram: string,
-        storage: string,
-        colorName: string,
-        colorHex: string,
+        variantId: number,
         quantity: number
     ) => Promise<boolean>;
-    handleAddReview: (e: React.FormEvent) => void;
+    handleAddReview: (e: React.FormEvent) => Promise<void>;
     newRating: number;
     setNewRating: (rating: number) => void;
     newComment: string;
@@ -38,25 +35,41 @@ export default function ProductDetailView({
         window.scrollTo(0, 0);
     }, [selectedProduct?.id]);
 
-    const [selectedRam, setSelectedRam] = useState<"16GB" | "32GB" | "64GB">("32GB");
-    const [selectedStorage, setSelectedStorage] = useState<"512GB SSD" | "1TB SSD" | "2TB SSD">("1TB SSD");
-    const [selectedColor, setSelectedColor] = useState<{ name: string; hex: string }>({
-        name: "Space Black",
-        hex: "#1D1D1F",
-    });
+    const availableVariants = selectedProduct.variants.filter((variant) => variant.isActive);
+    const [selectedVariantId, setSelectedVariantId] = useState<number | null>(
+        selectedProduct.defaultVariantId ?? availableVariants[0]?.id ?? null
+    );
     const [productQuantity, setProductQuantity] = useState<number>(1);
 
     const wishlistStore = useWishlistStore();
     const isWishlisted = wishlistStore.isInWishlist(selectedProduct.id);
 
-    const computeVariantPrice = (basePrice: number, ram: string, storage: string) => {
-        let extra = 0;
-        if (ram === "32GB") extra += 3000000;
-        if (ram === "64GB") extra += 8000000;
-        if (storage === "1TB SSD") extra += 2500000;
-        if (storage === "2TB SSD") extra += 6000000;
-        return basePrice + extra;
-    };
+    const selectedVariant = availableVariants.find((variant) => variant.id === selectedVariantId)
+        ?? availableVariants[0];
+    const selectedColorName = selectedVariant?.color?.name?.trim();
+    const variantConfigParts = [
+        selectedVariant?.ram,
+        selectedVariant?.rom,
+        selectedColorName && selectedColorName.toLowerCase() !== "default" ? selectedColorName : "",
+    ].filter(Boolean);
+    const selectedVariantLabel = variantConfigParts.length > 0
+        ? variantConfigParts.join(" · ")
+        : selectedVariant?.sku || "Cấu hình mặc định";
+    const technicalSpecs = [
+        { label: "Bộ xử lý (CPU)", value: selectedProduct.cpu },
+        { label: "Đồ họa (GPU)", value: selectedProduct.gpu },
+        { label: "Màn hình", value: selectedProduct.display },
+        { label: "RAM", value: selectedVariant?.ram },
+        { label: "Lưu trữ", value: selectedVariant?.rom },
+        { label: "Hệ điều hành", value: selectedProduct.os },
+        { label: "Pin", value: selectedProduct.battery },
+        { label: "Khối lượng", value: selectedProduct.weight },
+    ].filter((item) => item.value && item.value.toString().trim());
+
+    useEffect(() => {
+        setSelectedVariantId(selectedProduct.defaultVariantId ?? availableVariants[0]?.id ?? null);
+        setProductQuantity(1);
+    }, [selectedProduct.id]);
 
     return (
         <main className="container mx-auto px-6 py-12">
@@ -77,13 +90,20 @@ export default function ProductDetailView({
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                 {/* Left Column: Product Gallery & Overview */}
                 <div className="lg:col-span-6 space-y-6">
-                    <div className="aspect-[4/3] bg-neutral-900 rounded-2xl overflow-hidden border border-neutral-800 flex items-center justify-center p-6 relative group">
-                        <img
-                            src={selectedProduct.images[0]}
-                            alt={selectedProduct.name}
-                            className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
-                        />
-                        <span className="absolute top-4 left-4 bg-black/60 border border-[#00FF41]/40 text-[#00FF41] text-[10px] font-mono font-bold px-3 py-1 rounded-full backdrop-blur-md">
+                    <div className="aspect-[4/3] bg-neutral-900 rounded-xl overflow-hidden border border-neutral-800 relative group">
+                        {selectedProduct.images[0] ? (
+                            <img
+                                src={selectedProduct.images[0]}
+                                alt={selectedProduct.name}
+                                className="w-full h-full object-cover transition-transform duration-500"
+                            />
+                        ) : (
+                            <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-neutral-600">
+                                <ImageOff className="h-10 w-10" />
+                                <span className="text-xs">Sản phẩm chưa có ảnh</span>
+                            </div>
+                        )}
+                        <span className="absolute top-4 left-4 bg-black/60 border border-[#00FF41]/40 text-[#00FF41] text-[10px] font-mono font-bold px-3 py-1 rounded-full backdrop-blur-md z-10">
                             CHÍNH HÃNG NGUYÊN SEAL
                         </span>
                     </div>
@@ -94,27 +114,29 @@ export default function ProductDetailView({
                             Thông số kỹ thuật chi tiết
                         </h3>
                         <div className="grid grid-cols-2 gap-3 text-xs font-mono">
-                            <div className="p-3.5 bg-neutral-950 border border-neutral-900 rounded-xl space-y-1">
-                                <span className="text-neutral-500 block text-[10px] uppercase">Bộ xử lý (CPU)</span>
-                                <span className="font-semibold text-neutral-200 block truncate">
-                                    {selectedProduct.cpu || "Intel Core i7 Gen 13/14 / Apple M-Series"}
-                                </span>
-                            </div>
-                            <div className="p-3.5 bg-neutral-950 border border-neutral-900 rounded-xl space-y-1">
-                                <span className="text-neutral-500 block text-[10px] uppercase">Đồ họa (GPU)</span>
-                                <span className="font-semibold text-neutral-200 block truncate">
-                                    {selectedProduct.gpu || "NVIDIA GeForce RTX 40-Series / Integrated"}
-                                </span>
-                            </div>
-                            <div className="p-3.5 bg-neutral-950 border border-neutral-900 rounded-xl space-y-1">
-                                <span className="text-neutral-500 block text-[10px] uppercase">Màn hình</span>
-                                <span className="font-semibold text-neutral-200 block truncate">
-                                    {selectedProduct.display || "15.6 inch 2.5K 165Hz / Liquid Retina"}
-                                </span>
-                            </div>
+                            {technicalSpecs.slice(0, 3).map((spec) => (
+                                <div key={spec.label} className="p-3.5 bg-neutral-950 border border-neutral-900 rounded-xl space-y-1">
+                                    <span className="text-neutral-500 block text-[10px] uppercase">{spec.label}</span>
+                                    <span className="font-semibold text-neutral-200 block truncate">
+                                        {spec.value}
+                                    </span>
+                                </div>
+                            ))}
+                            {technicalSpecs.length === 0 && (
+                                <div className="p-3.5 bg-neutral-950 border border-neutral-900 rounded-xl space-y-1">
+                                    <span className="text-neutral-500 block text-[10px] uppercase">Thông số</span>
+                                    <span className="font-semibold text-neutral-200 block truncate">
+                                        Chưa cập nhật
+                                    </span>
+                                </div>
+                            )}
                             <div className="p-3.5 bg-neutral-950 border border-neutral-900 rounded-xl space-y-1">
                                 <span className="text-neutral-500 block text-[10px] uppercase">Tình trạng kho</span>
-                                <span className="font-semibold text-emerald-500 block">Sẵn hàng ({selectedProduct.stockQuantity || 10} máy)</span>
+                                <span className={`font-semibold block ${selectedVariant?.stockQuantity ? "text-emerald-500" : "text-red-400"}`}>
+                                    {selectedVariant?.stockQuantity
+                                        ? `Sẵn hàng (${selectedVariant.stockQuantity} máy)`
+                                        : "Tạm hết hàng"}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -147,17 +169,21 @@ export default function ProductDetailView({
                             </button>
                         </div>
                         <div className="mt-3 flex items-center gap-3 text-xs text-neutral-400">
-                            <div className="flex items-center gap-1 text-amber-400 font-bold">
-                                <Star className="w-4 h-4 fill-amber-400" /> {selectedProduct.rating}
-                            </div>
-                            <span>•</span>
-                            <span>{selectedProduct.reviewCount} Đánh giá từ khách hàng</span>
-                            <span>•</span>
-                            <span className="text-[#00FF41] font-mono">Bảo hành 24 Tháng</span>
+                            {selectedProduct.reviewCount > 0 ? (
+                                <>
+                                    <div className="flex items-center gap-1 text-amber-400 font-bold">
+                                        <Star className="w-4 h-4 fill-amber-400" /> {selectedProduct.rating.toFixed(1)}
+                                    </div>
+                                    <span>•</span>
+                                    <span>{selectedProduct.reviewCount} đánh giá từ khách hàng</span>
+                                </>
+                            ) : (
+                                <span>Chưa có đánh giá</span>
+                            )}
                         </div>
                     </div>
 
-                    {/* Dynamic Price Display */}
+                    {/* Giá thật của biến thể đang chọn */}
                     <div className="p-6 bg-neutral-950 rounded-2xl border border-neutral-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <span className="text-xs font-mono text-neutral-500 uppercase block mb-1">
@@ -165,114 +191,74 @@ export default function ProductDetailView({
                             </span>
                             <div className="flex items-baseline gap-3">
                                 <span className="text-3xl font-black font-mono text-[#00FF41]">
-                                    {formatVND(
-                                        computeVariantPrice(
-                                            selectedProduct.discountPrice || selectedProduct.price,
-                                            selectedRam,
-                                            selectedStorage
-                                        )
-                                    )}
+                                    {selectedVariant
+                                        ? formatVND(selectedVariant.discountPrice || selectedVariant.price)
+                                        : "Chưa có giá"}
                                 </span>
-                                {selectedProduct.discountPrice && (
+                                {selectedVariant?.discountPrice
+                                    && Number(selectedVariant.discountPrice) < Number(selectedVariant.price) && (
                                     <span className="text-sm font-mono text-neutral-500 line-through">
-                                        {formatVND(
-                                            computeVariantPrice(selectedProduct.price, selectedRam, selectedStorage)
-                                        )}
+                                        {formatVND(selectedVariant.price)}
                                     </span>
                                 )}
                             </div>
                         </div>
                         <span className="self-start sm:self-center text-[10px] font-bold uppercase tracking-widest text-[#00FF41] bg-[#00FF41]/10 border border-[#00FF41]/30 px-3 py-1.5 rounded-full">
-                            Miễn phí giao hàng toàn quốc
+                            Phí giao hàng hiển thị tại bước thanh toán
                         </span>
                     </div>
 
-                    {/* Variant Selectors */}
+                    {/* Các biến thể thật từ backend */}
                     <div className="space-y-6 border-t border-neutral-900 pt-6">
-                        {/* RAM Selection */}
                         <div>
                             <div className="flex justify-between items-center mb-3">
                                 <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
-                                    1. Chọn Bộ Nhớ RAM:
+                                    Chọn cấu hình:
                                 </label>
-                                <span className="text-xs font-mono text-[#00FF41] font-bold">{selectedRam}</span>
+                                {selectedVariant && (
+                                    <span className="text-xs font-mono text-[#00FF41] font-bold">
+                                        SKU: {selectedVariant.sku}
+                                    </span>
+                                )}
                             </div>
-                            <div className="grid grid-cols-3 gap-3">
-                                {(["16GB", "32GB", "64GB"] as const).map((ram) => (
+                            {availableVariants.length > 0 ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {availableVariants.map((variant) => (
                                     <button
-                                        key={ram}
-                                        onClick={() => setSelectedRam(ram)}
-                                        className={`py-3 px-4 rounded-xl font-mono text-xs font-bold border transition-all ${
-                                            selectedRam === ram
+                                        key={variant.id}
+                                        onClick={() => {
+                                            setSelectedVariantId(variant.id);
+                                            setProductQuantity(1);
+                                        }}
+                                        className={`flex items-center justify-between gap-3 py-3 px-4 rounded-xl text-left text-xs border transition-all ${
+                                            selectedVariant?.id === variant.id
                                                 ? "border-[#00FF41] bg-[#00FF41]/10 text-[#00FF41] shadow-[0_0_15px_rgba(0,255,65,0.15)]"
                                                 : "border-neutral-800 bg-neutral-950 text-neutral-400 hover:border-neutral-700 hover:text-white"
                                         }`}
                                     >
-                                        {ram}
+                                            <span>
+                                                <span className="block font-bold text-white">
+                                                    {[
+                                                        variant.ram,
+                                                        variant.rom,
+                                                        variant.color?.name?.trim()?.toLowerCase() === "default" ? "" : variant.color?.name,
+                                                    ].filter(Boolean).join(" · ") || variant.sku || "Cấu hình mặc định"}
+                                                </span>
+                                                <span className="mt-1 block font-mono text-[10px]">
+                                                    Còn {variant.stockQuantity} máy
+                                            </span>
+                                        </span>
+                                        <span className="font-mono font-bold">
+                                            {formatVND(variant.discountPrice || variant.price)}
+                                        </span>
                                     </button>
                                 ))}
-                            </div>
-                        </div>
-
-                        {/* Storage Selection */}
-                        <div>
-                            <div className="flex justify-between items-center mb-3">
-                                <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
-                                    2. Chọn Ổ Cứng (SSD):
-                                </label>
-                                <span className="text-xs font-mono text-[#00FF41] font-bold">{selectedStorage}</span>
-                            </div>
-                            <div className="grid grid-cols-3 gap-3">
-                                {(["512GB SSD", "1TB SSD", "2TB SSD"] as const).map((storage) => (
-                                    <button
-                                        key={storage}
-                                        onClick={() => setSelectedStorage(storage)}
-                                        className={`py-3 px-4 rounded-xl font-mono text-xs font-bold border transition-all ${
-                                            selectedStorage === storage
-                                                ? "border-[#00FF41] bg-[#00FF41]/10 text-[#00FF41] shadow-[0_0_15px_rgba(0,255,65,0.15)]"
-                                                : "border-neutral-800 bg-neutral-950 text-neutral-400 hover:border-neutral-700 hover:text-white"
-                                        }`}
-                                    >
-                                        {storage}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Color Swatches */}
-                        <div>
-                            <div className="flex justify-between items-center mb-3">
-                                <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
-                                    3. Chọn Màu Sắc Vỏ Máy:
-                                </label>
-                                <span className="text-xs font-mono text-[#00FF41] font-bold">{selectedColor.name}</span>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                {[
-                                    { name: "Space Black", hex: "#1D1D1F" },
-                                    { name: "Silver", hex: "#E3E4E5" },
-                                    { name: "Midnight Green", hex: "#1B2824" },
-                                ].map((col) => (
-                                    <button
-                                        key={col.name}
-                                        onClick={() => setSelectedColor(col)}
-                                        className={`group relative flex items-center gap-2.5 px-4 py-2.5 rounded-xl border text-xs font-medium transition-all ${
-                                            selectedColor.name === col.name
-                                                ? "border-[#00FF41] bg-[#00FF41]/10 text-white"
-                                                : "border-neutral-800 bg-neutral-950 text-neutral-400 hover:border-neutral-700"
-                                        }`}
-                                    >
-                                        <span
-                                            className="w-4 h-4 rounded-full border border-white/20 shadow-inner"
-                                            style={{ backgroundColor: col.hex }}
-                                        />
-                                        <span>{col.name}</span>
-                                        {selectedColor.name === col.name && (
-                                            <Check className="w-3.5 h-3.5 text-[#00FF41] ml-1" />
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
+                                </div>
+                            ) : (
+                                <p className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-xs text-red-300">
+                                    Sản phẩm chưa có cấu hình đang bán.
+                                </p>
+                            )}
                         </div>
                     </div>
 
@@ -291,7 +277,8 @@ export default function ProductDetailView({
                                     {productQuantity}
                                 </span>
                                 <button
-                                    onClick={() => setProductQuantity((q) => q + 1)}
+                                    onClick={() => setProductQuantity((q) => Math.min(selectedVariant?.stockQuantity ?? 1, q + 1))}
+                                    disabled={!selectedVariant || productQuantity >= selectedVariant.stockQuantity}
                                     className="w-10 h-10 flex items-center justify-center text-neutral-400 hover:text-white font-bold transition"
                                 >
                                     +
@@ -301,16 +288,12 @@ export default function ProductDetailView({
                              {/* Add to Cart Button */}
                             <button
                                 onClick={() => {
-                                    void addToCartCustom(
-                                        selectedProduct,
-                                        selectedRam,
-                                        selectedStorage,
-                                        selectedColor.name,
-                                        selectedColor.hex,
-                                        productQuantity
-                                    );
+                                    if (selectedVariant) {
+                                        void addToCartCustom(selectedProduct, selectedVariant.id, productQuantity);
+                                    }
                                 }}
-                                className="flex-1 bg-[#00FF41] text-black py-3.5 px-6 rounded-xl font-extrabold text-sm uppercase tracking-wider hover:bg-[#00cc34] transition shadow-lg shadow-[#00FF41]/20 flex items-center justify-center gap-2"
+                                disabled={!selectedVariant || selectedVariant.stockQuantity <= 0}
+                                className="flex-1 bg-[#00FF41] text-black py-3.5 px-6 rounded-xl font-extrabold text-sm uppercase tracking-wider hover:bg-[#00cc34] transition shadow-lg shadow-[#00FF41]/20 flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 <ShoppingBag className="w-4 h-4" />
                                 <span>Thêm Vào Giỏ Hàng</span>
@@ -319,23 +302,25 @@ export default function ProductDetailView({
 
                         <button
                             onClick={async () => {
-                                const added = await addToCartCustom(
-                                    selectedProduct,
-                                    selectedRam,
-                                    selectedStorage,
-                                    selectedColor.name,
-                                    selectedColor.hex,
-                                    productQuantity
-                                );
+                                if (!selectedVariant) return;
+                                const added = await addToCartCustom(selectedProduct, selectedVariant.id, productQuantity);
                                 if (added) navigate(ROUTES.checkout);
                             }}
-                            className="w-full bg-white text-black py-3.5 rounded-xl font-extrabold text-sm uppercase tracking-wider hover:bg-neutral-200 transition"
+                            disabled={!selectedVariant || selectedVariant.stockQuantity <= 0}
+                            className="w-full bg-white text-black py-3.5 rounded-xl font-extrabold text-sm uppercase tracking-wider hover:bg-neutral-200 transition disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                            Mua Ngay Với Cấu Hình Này
+                            Mua Ngay: {selectedVariantLabel}
                         </button>
                     </div>
                 </div>
             </div>
+
+            <section className="mt-12 max-w-4xl rounded-2xl border border-neutral-900 bg-neutral-950 p-6">
+                <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-white">Mô tả sản phẩm</h2>
+                <p className="whitespace-pre-line text-sm leading-relaxed text-neutral-400">
+                    {selectedProduct.description || "Thông tin mô tả đang được cập nhật."}
+                </p>
+            </section>
 
             {/* Reviews */}
             <section className="mt-16 pt-12 border-t border-neutral-900 max-w-4xl">
@@ -393,11 +378,17 @@ export default function ProductDetailView({
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <img
-                                        src={rev.avatar}
-                                        alt={rev.reviewerName}
-                                        className="w-8 h-8 rounded-full object-cover"
-                                    />
+                                    {rev.avatar ? (
+                                        <img
+                                            src={rev.avatar}
+                                            alt={rev.reviewerName}
+                                            className="w-8 h-8 rounded-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-800 text-xs font-bold text-[#00FF41]">
+                                            {rev.reviewerName.trim().charAt(0).toUpperCase() || "?"}
+                                        </div>
+                                    )}
                                     <div>
                                         <span className="font-bold text-xs text-white block">
                                             {rev.reviewerName}

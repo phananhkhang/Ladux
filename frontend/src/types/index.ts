@@ -71,7 +71,7 @@ export interface OrderItemRecord {
     date: string;
     items: CartItem[];
     shippingAddress: ShippingAddressRequest;
-    paymentMethod: PaymentProvider;
+    paymentMethod: PaymentProvider | null;
     subTotal: number;
     discountAmount: number;
     shippingFee: number;
@@ -102,7 +102,7 @@ export interface ReviewItem {
     rating: number;
     comment: string;
     createdAt: string;
-    avatar: string;
+    avatar?: string;
 }
 
 import type { ProductResponse, ProductVariantResponse } from "../services/productService";
@@ -118,6 +118,10 @@ export interface LaptopProduct {
     cpu: string;
     gpu: string;
     display: string;
+    battery: string;
+    weight: string;
+    numberOfFans: number;
+    os: string;
     ram: string;
     rom: string;
     price: number;
@@ -128,6 +132,8 @@ export interface LaptopProduct {
     images: string[];
     description: string;
     reviews: ReviewItem[];
+    variants: ProductVariantResponse[];
+    defaultVariantId?: number;
     isNew?: boolean;
     isFeatured?: boolean;
 }
@@ -138,17 +144,23 @@ export interface LaptopProduct {
  */
 export function mapProductResponseToLaptopProduct(
     product: ProductResponse,
-    variants?: ProductVariantResponse[]
+    selectedVariantId?: number
 ): LaptopProduct {
     const API_BASE = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1").replace("/api/v1", "");
 
     // Lấy variant chính (ưu tiên variant active đầu tiên)
-    const availableVariants = variants || product.variants;
-    const activeVariant = availableVariants?.find((v) => v.isActive) ?? availableVariants?.[0];
+    const availableVariants = (product.variants || []).filter((variant) => variant.isActive);
+    const activeVariant = availableVariants.find((variant) => variant.id === selectedVariantId)
+        ?? availableVariants.reduce<ProductVariantResponse | undefined>((lowest, variant) => {
+            if (!lowest) return variant;
+            const currentPrice = Number(variant.discountPrice || variant.price);
+            const lowestPrice = Number(lowest.discountPrice || lowest.price);
+            return currentPrice < lowestPrice ? variant : lowest;
+        }, undefined);
 
     // Map images: backend trả { imageUrl } relative → cần prefix API_BASE nếu là relative path
-    const imageUrls = (product.images || []).map((img) => {
-        if (!img?.imageUrl) return "https://placehold.co/400x300/121214/666?text=No+Image";
+    const imageUrls = (product.images || []).flatMap((img) => {
+        if (!img?.imageUrl) return [];
         if (img.imageUrl.startsWith("http")) return img.imageUrl;
         return `${API_BASE}${img.imageUrl.startsWith("/") ? "" : "/"}${img.imageUrl}`;
     });
@@ -170,16 +182,22 @@ export function mapProductResponseToLaptopProduct(
         cpu: product.cpu || "",
         gpu: product.gpu || "",
         display: product.display || "",
+        battery: product.battery || "",
+        weight: product.weight || "",
+        numberOfFans: product.numberOfFans || 0,
+        os: product.os || "",
         ram: activeVariant?.ram || "",
         rom: activeVariant?.rom || "",
         price: activeVariant ? Number(activeVariant.price) : 0,
         discountPrice: activeVariant?.discountPrice ? Number(activeVariant.discountPrice) : undefined,
-        stockQuantity: activeVariant?.stockQuantity ?? 0,
-        rating: 0,
-        reviewCount: 0,
-        images: imageUrls.length > 0 ? imageUrls : ["https://placehold.co/400x300/121214/666?text=No+Image"],
-        description: "",
+        stockQuantity: availableVariants.reduce((total, variant) => total + variant.stockQuantity, 0),
+        rating: Number(product.averageRating || 0),
+        reviewCount: Number(product.reviewCount || 0),
+        images: imageUrls,
+        description: product.description || "",
         reviews: [],
+        variants: availableVariants,
+        defaultVariantId: activeVariant?.id,
         isNew,
         isFeatured: false,
     };
@@ -195,7 +213,7 @@ export const formatVND = (amount?: number | string | null): string => {
 
 export function getAvatarUrl(avatarPath?: string | null): string {
     if (!avatarPath) {
-        return "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&fit=crop&auto=format";
+        return "";
     }
     if (avatarPath.startsWith("http") || avatarPath.startsWith("blob:")) {
         return avatarPath;

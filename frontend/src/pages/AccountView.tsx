@@ -27,9 +27,6 @@ export interface AccountViewProps {
     userAvatar: string;
     setUserAvatar: (avatar: string) => void;
     userFullName?: string;
-    orders?: OrderItemRecord[];
-    savedAddresses?: ShippingAddressRequest[];
-    setSavedAddresses?: (addresses: ShippingAddressRequest[]) => void;
     wishlistCount: number;
     handleLogout: () => void;
     showToast: (msg: string) => void;
@@ -40,9 +37,6 @@ export default function AccountView({
     userAvatar,
     setUserAvatar,
     userFullName = "Thành viên LADUX",
-    orders = [],
-    savedAddresses = [],
-    setSavedAddresses = () => {},
     wishlistCount,
     handleLogout,
     showToast,
@@ -50,7 +44,8 @@ export default function AccountView({
     const navigate = useNavigate();
     const addressStore = useAddressStore();
     const authStore = useAuthStore();
-    const { orders: storeOrders, fetchOrders, totalElements } = useOrderStore();
+    const { orders: storeOrders, fetchOrders } = useOrderStore();
+    const resolvedAvatar = getAvatarUrl(userAvatar || authStore.user?.avatar);
 
     useEffect(() => {
         void Promise.allSettled([fetchOrders(), addressStore.fetchAddresses()]);
@@ -60,34 +55,29 @@ export default function AccountView({
     const displayOrders: OrderItemRecord[] = useMemo(() => {
         if (storeOrders && storeOrders.length > 0) {
             return storeOrders.map((ord) => {
-                const itemsMapped = (ord.orderItems || []).map((it) => {
-                    const actualPrice = (it as any).priceAtPurchase ?? 0;
-                    const prod = it.product
-                        ? mapProductResponseToLaptopProduct(it.product)
-                        : {
-                              id: it.id,
-                              name: "Sản phẩm Laptop LADUX",
-                              images: ["https://placehold.co/400x300/121214/666?text=Laptop"],
-                              price: actualPrice,
-                          };
-                    return {
-                        product: prod as any,
+                const itemsMapped = (ord.orderItems || []).flatMap((it) => {
+                    if (!it.product) return [];
+                    const actualPrice = Number(it.priceAtPurchase ?? 0);
+                    const variant = it.product.variants?.find((item) => item.id === it.productVariantId);
+                    const prod = mapProductResponseToLaptopProduct(it.product, it.productVariantId ?? undefined);
+                    return [{
+                        product: prod,
                         quantity: it.quantity,
-                        selectedRam: (it.product as any)?.ram || "",
-                        selectedStorage: (it.product as any)?.rom || "",
-                        selectedColorName: "Standard",
-                        selectedColorHex: "#1D1D1F",
+                        selectedRam: variant?.ram || "",
+                        selectedStorage: variant?.rom || "",
+                        selectedColorName: variant?.color?.name || "",
+                        selectedColorHex: variant?.color?.hexCode || "",
                         price: actualPrice,
-                    };
+                    }];
                 });
 
                 return {
                     id: ord.id.toString(),
-                    orderNumber: ord.trackingNumber || `LDX-${String(ord.id).padStart(6, "0")}`,
-                    date: ord.createdAt ? new Date(ord.createdAt).toLocaleString("vi-VN") : "Vừa xong",
+                    orderNumber: String(ord.id),
+                    date: ord.createdAt ? new Date(ord.createdAt).toLocaleString("vi-VN") : "Chưa cập nhật",
                     status: ord.status,
-                    paymentMethod: ord.paymentProvider || "COD",
-                    trackingNumber: ord.trackingNumber || `VNPOST-${String(ord.id).padStart(8, "0")}`,
+                    paymentMethod: ord.paymentProvider,
+                    trackingNumber: ord.trackingNumber || "",
                     items: itemsMapped,
                     subTotal: Number(ord.subTotal) || 0,
                     discountAmount: Number(ord.discountAmount) || 0,
@@ -106,65 +96,17 @@ export default function AccountView({
                 };
             });
         }
-        return orders;
-    }, [storeOrders, orders]);
+        return [];
+    }, [storeOrders]);
 
     const totalOrderCount = displayOrders.length;
 
-    // Tính tổng chi tiêu thực tế từ các đơn hàng
-    const totalSpent = useMemo(() => {
-        return displayOrders.reduce((sum, ord) => sum + (ord.finalAmount || 0), 0);
-    }, [displayOrders]);
-
-    // Điểm thành viên thực tế (100.000 VNĐ = 1 điểm thành viên)
-    const realMemberPoints = useMemo(() => {
-        return Math.floor(totalSpent / 100000);
-    }, [totalSpent]);
-
-    // Cấp bậc thành viên & Điểm cần nâng hạng
-    const memberTierInfo = useMemo(() => {
-        const points = realMemberPoints;
-        if (points >= 10000) {
-            return {
-                rankName: "DIAMOND MEMBER",
-                nextRankName: "",
-                pointsNeeded: 0,
-                progressPercent: 100,
-                subtext: "Chúc mừng! Bạn đã đạt cấp bậc thành viên Diamond cao nhất.",
-            };
-        }
-        if (points >= 3000) {
-            const needed = 10000 - points;
-            const pct = Math.min(100, Math.max(0, Math.floor(((points - 3000) / 7000) * 100)));
-            return {
-                rankName: "RUBY MEMBER",
-                nextRankName: "Diamond",
-                pointsNeeded: needed,
-                progressPercent: pct,
-                subtext: `Chỉ còn ${needed.toLocaleString("vi-VN")} điểm để lên hạng Diamond.`,
-            };
-        }
-        if (points >= 1000) {
-            const needed = 3000 - points;
-            const pct = Math.min(100, Math.max(0, Math.floor(((points - 1000) / 2000) * 100)));
-            return {
-                rankName: "GOLD MEMBER",
-                nextRankName: "Ruby",
-                pointsNeeded: needed,
-                progressPercent: pct,
-                subtext: `Chỉ còn ${needed.toLocaleString("vi-VN")} điểm để lên hạng Ruby.`,
-            };
-        }
-        const needed = 1000 - points;
-        const pct = Math.min(100, Math.max(0, Math.floor((points / 1000) * 100)));
-        return {
-            rankName: "SILVER MEMBER",
-            nextRankName: "Gold",
-            pointsNeeded: needed,
-            progressPercent: pct,
-            subtext: `Chỉ còn ${needed.toLocaleString("vi-VN")} điểm để lên hạng Gold.`,
-        };
-    }, [realMemberPoints]);
+    const realMemberPoints = Number(authStore.user?.loyaltyPoints || 0);
+    const realTotalSpent = Number(authStore.user?.totalSpent || 0);
+    const memberTierInfo = {
+        rankName: `${authStore.user?.level || "BROWSER"} MEMBER`,
+        subtext: `Tổng chi tiêu tích lũy: ${realTotalSpent.toLocaleString("vi-VN")} ₫`,
+    };
 
     // Lấy tối đa 3 đơn hàng gần đây nhất
     const recent3Orders = useMemo(() => {
@@ -172,8 +114,7 @@ export default function AccountView({
     }, [displayOrders]);
 
     // Map store addresses to ShippingAddressRequest
-    const addressesList: ShippingAddressRequest[] = addressStore.addresses.length > 0
-        ? addressStore.addresses.map((a) => ({
+    const addressesList: ShippingAddressRequest[] = addressStore.addresses.map((a) => ({
             id: a.id,
             fullName: a.receiverName,
             phone: a.phone,
@@ -182,8 +123,7 @@ export default function AccountView({
             district: a.district || "",
             city: a.city,
             isDefault: a.isDefault,
-        }))
-        : savedAddresses;
+        }));
 
     const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
     const [showAddrFormModal, setShowAddrFormModal] = useState(false);
@@ -228,7 +168,7 @@ export default function AccountView({
         addressDetail: "",
         ward: "",
         district: "",
-        city: "Hà Nội",
+        city: "",
         isDefault: false,
     });
 
@@ -450,7 +390,8 @@ export default function AccountView({
     };
 
     const saveAddrForm = async () => {
-        if (!addrForm.fullName.trim() || !addrForm.phone.trim() || !addrForm.addressDetail.trim()) {
+        if (!addrForm.fullName.trim() || !addrForm.phone.trim() || !addrForm.addressDetail.trim()
+            || !addrForm.ward.trim() || !addrForm.district.trim() || !addrForm.city.trim()) {
             showToast("Vui lòng điền đầy đủ các thông tin bắt buộc!");
             return;
         }
@@ -468,9 +409,9 @@ export default function AccountView({
                 receiverName: addrForm.fullName.trim(),
                 phone: cleanPhone,
                 street: addrForm.addressDetail.trim(),
-                ward: addrForm.ward.trim() || "Chưa chọn Phường/Xã",
-                district: addrForm.district.trim() || "Chưa chọn Quận/Huyện",
-                city: addrForm.city.trim() || "Hà Nội",
+                ward: addrForm.ward.trim(),
+                district: addrForm.district.trim(),
+                city: addrForm.city.trim(),
                 isDefault: addrForm.isDefault,
             };
 
@@ -590,30 +531,13 @@ export default function AccountView({
                         <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-1.5">
                             Tỉnh / Thành phố <span className="text-red-400">*</span>
                         </label>
-                        <select
+                        <input
+                            type="text"
                             value={addrForm.city}
                             onChange={(e) => setAddrForm({ ...addrForm, city: e.target.value })}
-                            className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00FF41]/60 focus:ring-1 focus:ring-[#00FF41]/20 transition appearance-none"
-                        >
-                            {[
-                                "Hà Nội",
-                                "TP. Hồ Chí Minh",
-                                "Đà Nẵng",
-                                "Hải Phòng",
-                                "Cần Thơ",
-                                "An Giang",
-                                "Bắc Giang",
-                                "Bắc Ninh",
-                                "Bình Dương",
-                                "Đồng Nai",
-                                "Quảng Ninh",
-                                "Thừa Thiên Huế",
-                            ].map((city) => (
-                                <option key={city} value={city} className="bg-neutral-900">
-                                    {city}
-                                </option>
-                            ))}
-                        </select>
+                            placeholder="Nhập tỉnh / thành phố"
+                            className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00FF41]/60 focus:ring-1 focus:ring-[#00FF41]/20 transition"
+                        />
                     </div>
 
                     <div
@@ -869,11 +793,17 @@ export default function AccountView({
                 <aside className="rounded-2xl border border-white/10 bg-white/[0.035] p-6">
                     <div className="mb-7 flex items-center gap-4 border-b border-white/10 pb-6">
                         <div className="relative group">
-                            <img
-                                src={getAvatarUrl(userAvatar || authStore.user?.avatar)}
-                                alt="Avatar"
-                                className="h-16 w-16 rounded-full object-cover border-2 border-[#00FF41] shadow-[0_0_15px_rgba(0,255,65,0.3)]"
-                            />
+                            {resolvedAvatar ? (
+                                <img
+                                    src={resolvedAvatar}
+                                    alt="Avatar"
+                                    className="h-16 w-16 rounded-full object-cover border-2 border-[#00FF41] shadow-[0_0_15px_rgba(0,255,65,0.3)]"
+                                />
+                            ) : (
+                                <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#00FF41] bg-neutral-900 text-xl font-black text-[#00FF41]">
+                                    {(authStore.user?.fullName || authStore.user?.username || "?").trim().charAt(0).toUpperCase()}
+                                </div>
+                            )}
                             <label
                                 htmlFor="avatar-upload"
                                 className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer text-white text-[10px] font-bold uppercase tracking-wider"
@@ -1112,12 +1042,6 @@ export default function AccountView({
                                 </div>
                                 <Award className="h-12 w-12 text-[#00FF41]" />
                             </div>
-                            <div className="mt-7 h-2 overflow-hidden rounded-full bg-black/40 border border-white/10">
-                                <div
-                                    className="h-full rounded-full bg-[#00FF41] transition-all duration-500 shadow-[0_0_12px_rgba(0,255,65,0.5)]"
-                                    style={{ width: `${memberTierInfo.progressPercent}%` }}
-                                />
-                            </div>
                         </div>
 
                         {/* Hộp Đơn Hàng Gần Đây (Hiển thị tối đa 3 đơn hàng) */}
@@ -1151,7 +1075,7 @@ export default function AccountView({
                                                     </span>
                                                 </div>
                                                 <p className="mt-1 text-sm font-semibold text-white line-clamp-1">
-                                                    {ord.items[0]?.product?.name || "Sản phẩm Laptop LADUX"}
+                                                    {ord.items[0]?.product?.name || "Không còn thông tin sản phẩm"}
                                                 </p>
                                                 <p className="mt-1 text-xs text-neutral-400 font-mono">
                                                     {ord.date} · <span className="text-white font-bold">{ord.finalAmount.toLocaleString("vi-VN")} ₫</span>

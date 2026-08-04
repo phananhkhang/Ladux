@@ -65,6 +65,7 @@ export interface ProductResponse {
   category: CategoryResponse | null;
   name: string;
   slug: string;
+  description: string | null;
   cpu: string;
   gpu: string;
   display: string;
@@ -76,6 +77,8 @@ export interface ProductResponse {
   createdAt: string;
   images: ProductImageResponse[];
   variants?: ProductVariantResponse[];
+  averageRating: number;
+  reviewCount: number;
 }
 
 // --- Interfaces Request (Dành cho Create/Update) ---

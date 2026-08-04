@@ -12,10 +12,12 @@ import {
     type SetStateAction,
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuthStore, useCartStore, useProductStore, useUIStore, useWishlistStore } from "../stores";
+import { useAuthStore, useCartStore, useOrderStore, useProductStore, useUIStore, useWishlistStore } from "../stores";
+import { reviewService } from "../services";
 import {
     type LaptopProduct,
     type ReviewItem,
+    getAvatarUrl,
     mapProductResponseToLaptopProduct,
 } from "../types";
 import { ROUTES } from "./routePaths";
@@ -28,12 +30,8 @@ interface StorefrontContextValue {
     setSelectedProduct: Dispatch<SetStateAction<LaptopProduct | null>>;
     selectedCategory: string;
     setSelectedCategory: Dispatch<SetStateAction<string>>;
-    selectedBrand: string;
-    setSelectedBrand: Dispatch<SetStateAction<string>>;
     searchQuery: string;
     setSearchQuery: Dispatch<SetStateAction<string>>;
-    priceRange: number;
-    setPriceRange: Dispatch<SetStateAction<number>>;
     selectedOrderId: string;
     setSelectedOrderId: Dispatch<SetStateAction<string>>;
     userAvatar: string;
@@ -56,13 +54,10 @@ interface StorefrontContextValue {
     toggleWishlist: (productId: number) => Promise<void>;
     addToCartCustom: (
         product: LaptopProduct,
-        ram: string,
-        storage: string,
-        colorName: string,
-        colorHex: string,
+        variantId: number,
         quantity: number
     ) => Promise<boolean>;
-    handleAddReview: (event: FormEvent) => void;
+    handleAddReview: (event: FormEvent) => Promise<void>;
 }
 
 const StorefrontContext = createContext<StorefrontContextValue | null>(null);
@@ -93,6 +88,7 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
     const addToCart = useCartStore((state) => state.addToCart);
     const fetchCart = useCartStore((state) => state.fetchCart);
     const cartCount = useCartStore((state) => state.totalItems);
+    const fetchOrders = useOrderStore((state) => state.fetchOrders);
 
     const wishlistProductIds = useWishlistStore((state) => state.wishlistProductIds);
     const fetchWishlist = useWishlistStore((state) => state.fetchWishlist);
@@ -105,13 +101,9 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
     const [isAuthReady, setIsAuthReady] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<LaptopProduct | null>(null);
     const [selectedCategory, setSelectedCategory] = useState("All");
-    const [selectedBrand, setSelectedBrand] = useState("All");
     const [searchQuery, setSearchQuery] = useState("");
-    const [priceRange, setPriceRange] = useState(150000000);
     const [selectedOrderId, setSelectedOrderId] = useState("");
-    const [userAvatar, setUserAvatar] = useState(
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&fit=crop&auto=format"
-    );
+    const [userAvatar, setUserAvatar] = useState("");
     const [notificationMsg, setNotificationMsg] = useState<string | null>(null);
     const [newRating, setNewRating] = useState(5);
     const [newComment, setNewComment] = useState("");
@@ -134,8 +126,46 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         if (!isLoggedIn) return;
-        void Promise.allSettled([fetchCart(), fetchWishlist()]);
-    }, [fetchCart, fetchWishlist, isLoggedIn]);
+        void Promise.allSettled([fetchCart(), fetchWishlist(), fetchOrders(0, 10)]);
+    }, [fetchCart, fetchOrders, fetchWishlist, isLoggedIn]);
+
+    useEffect(() => {
+        const productId = selectedProduct?.id;
+        if (!productId) return;
+
+        let isMounted = true;
+        reviewService
+            .getReviewsByProductId(productId, { page: 0, size: 100, sort: "createdAt,desc" })
+            .then((response) => {
+                if (!isMounted) return;
+                const reviews: ReviewItem[] = (response.content || []).map((review) => ({
+                    id: review.id,
+                    reviewerName: review.reviewerName,
+                    rating: review.rating,
+                    comment: review.comment,
+                    createdAt: review.createdAt
+                        ? new Date(review.createdAt).toLocaleString("vi-VN")
+                        : "",
+                    avatar: getAvatarUrl(review.reviewerAvatar),
+                }));
+                setSelectedProduct((current) =>
+                    current?.id === productId
+                        ? {
+                              ...current,
+                              reviews,
+                              reviewCount: response.totalElements,
+                          }
+                        : current
+                );
+            })
+            .catch(() => {
+                // Giữ dữ liệu tổng hợp từ ProductResponse nếu endpoint review tạm thời lỗi.
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [selectedProduct?.id]);
 
     useEffect(() => {
         document.documentElement.classList.toggle("dark", theme === "dark");
@@ -182,17 +212,27 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
     }, [logout, navigate, showToast]);
 
     const addToCartCustom = useCallback(
-        async (product: LaptopProduct, _ram: string, _storage: string, _colorName: string, _colorHex: string, quantity: number) => {
+        async (product: LaptopProduct, variantId: number, quantity: number) => {
             if (!isLoggedIn) {
                 requireLogin("Vui lòng đăng nhập trước khi thêm sản phẩm vào giỏ hàng.");
                 return false;
             }
 
             const rawProduct = products.find((item) => item.id === product.id);
-            const variant = rawProduct?.variants?.find((item) => item.isActive) ?? rawProduct?.variants?.[0];
+            const variant = rawProduct?.variants?.find((item) => item.id === variantId && item.isActive);
+
+            if (!variant) {
+                showToast("Cấu hình sản phẩm không còn khả dụng.");
+                return false;
+            }
+
+            if (quantity > variant.stockQuantity) {
+                showToast(`Chỉ còn ${variant.stockQuantity} sản phẩm trong kho.`);
+                return false;
+            }
 
             try {
-                await addToCart({ productId: variant?.id ?? product.id, quantity });
+                await addToCart({ productId: variant.id, quantity });
                 showToast(`Đã thêm ${quantity} máy ${product.name} vào giỏ hàng!`);
                 return true;
             } catch {
@@ -225,29 +265,50 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
     );
 
     const handleAddReview = useCallback(
-        (event: FormEvent) => {
+        async (event: FormEvent) => {
             event.preventDefault();
             if (!newComment.trim() || !selectedProduct) return;
 
-            const newReview: ReviewItem = {
-                id: Date.now(),
-                reviewerName: user?.fullName || user?.username || "Khách hàng LADUX",
-                rating: newRating,
-                comment: newComment,
-                createdAt: "Vừa xong",
-                avatar: user?.avatar || userAvatar,
-            };
+            if (!isLoggedIn) {
+                requireLogin("Vui lòng đăng nhập trước khi gửi đánh giá.");
+                return;
+            }
 
-            setSelectedProduct({
-                ...selectedProduct,
-                reviews: [newReview, ...selectedProduct.reviews],
-                reviewCount: selectedProduct.reviewCount + 1,
-            });
-            setNewComment("");
-            setNewRating(5);
-            showToast("Cảm ơn bạn đã gửi đánh giá cho sản phẩm!");
+            try {
+                const response = await reviewService.createReview({
+                    productId: selectedProduct.id,
+                    rating: newRating,
+                    comment: newComment.trim(),
+                });
+                const newReview: ReviewItem = {
+                    id: response.id,
+                    reviewerName: response.reviewerName,
+                    rating: response.rating,
+                    comment: response.comment,
+                    createdAt: response.createdAt
+                        ? new Date(response.createdAt).toLocaleString("vi-VN")
+                        : "",
+                    avatar: getAvatarUrl(response.reviewerAvatar),
+                };
+
+                setSelectedProduct((current) => {
+                    if (!current || current.id !== selectedProduct.id) return current;
+                    const reviewCount = current.reviewCount + 1;
+                    return {
+                        ...current,
+                        reviews: [newReview, ...current.reviews],
+                        reviewCount,
+                        rating: ((current.rating * current.reviewCount) + newReview.rating) / reviewCount,
+                    };
+                });
+                setNewComment("");
+                setNewRating(5);
+                showToast("Cảm ơn bạn đã gửi đánh giá cho sản phẩm!");
+            } catch (error: any) {
+                showToast(error?.response?.data?.message || "Không thể gửi đánh giá sản phẩm.");
+            }
         },
-        [newComment, newRating, selectedProduct, showToast, user, userAvatar]
+        [isLoggedIn, newComment, newRating, requireLogin, selectedProduct, showToast]
     );
 
     const value = useMemo<StorefrontContextValue>(
@@ -259,17 +320,13 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
             setSelectedProduct,
             selectedCategory,
             setSelectedCategory,
-            selectedBrand,
-            setSelectedBrand,
             searchQuery,
             setSearchQuery,
-            priceRange,
-            setPriceRange,
             selectedOrderId,
             setSelectedOrderId,
             userAvatar,
             setUserAvatar,
-            displayAvatar: user?.avatar || userAvatar,
+            displayAvatar: getAvatarUrl(user?.avatar || userAvatar),
             userName: user?.fullName || user?.username,
             isLoggedIn,
             isAuthReady,
@@ -302,9 +359,7 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
             newComment,
             newRating,
             notificationMsg,
-            priceRange,
             searchQuery,
-            selectedBrand,
             selectedCategory,
             selectedOrderId,
             selectedProduct,

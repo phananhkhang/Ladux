@@ -1,4 +1,5 @@
 import apiClient from './apiClient';
+import type { CustomerLevel } from './customerService';
 
 export interface UserResponse {
   id: number;
@@ -7,6 +8,9 @@ export interface UserResponse {
   fullName: string | null;
   phone: string | null;
   avatar: string | null;
+  loyaltyPoints: number;
+  level: CustomerLevel;
+  totalSpent: number;
   isActive: boolean;
   roles: string[];
 }

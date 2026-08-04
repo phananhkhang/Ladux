@@ -38,6 +38,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 
 import lombok.RequiredArgsConstructor;
 
@@ -64,7 +65,11 @@ public class OrderServiceImpl implements OrderService {
     private final OrderStateMachine orderStateMachine;
     private final StockMovementService stockMovementService;
 
-    private static final BigDecimal FIXED_SHIPPING_FEE = BigDecimal.valueOf(30000);
+    @Value("${app.order.shipping-fee:30000}")
+    private BigDecimal configuredShippingFee;
+
+    @Value("${app.order.carrier:VNPOST}")
+    private String configuredCarrier;
 
     @Override
     @Transactional(readOnly = true)
@@ -163,8 +168,8 @@ public class OrderServiceImpl implements OrderService {
         CouponRedemptionResult redemption = couponRedemptionService.redeem(request.couponCode(), subTotal);
         Coupon coupon = redemption.coupon();
         BigDecimal discountAmount = redemption.discountAmount();
-        BigDecimal shippingFee = FIXED_SHIPPING_FEE;
-        String carrier = "VNPOST";
+        BigDecimal shippingFee = configuredShippingFee;
+        String carrier = configuredCarrier;
         // B7: tính số tiền cuối cùng sau khi trừ giảm giá, đảm bảo không âm.
         BigDecimal finalAmount = subTotal.subtract(discountAmount)
                 .add(shippingFee)

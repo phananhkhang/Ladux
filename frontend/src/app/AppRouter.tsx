@@ -115,10 +115,7 @@ function ProductsRoute() {
     return (
         <AllProductsView
             allProducts={storefront.allDisplayProducts}
-            selectedBrand={storefront.selectedBrand}
-            setSelectedBrand={storefront.setSelectedBrand}
             selectedCategory={storefront.selectedCategory}
-            setSelectedCategory={storefront.setSelectedCategory}
             searchQuery={storefront.searchQuery}
             setSearchQuery={storefront.setSearchQuery}
             toggleWishlist={storefront.toggleWishlist}

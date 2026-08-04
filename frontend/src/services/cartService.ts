@@ -1,9 +1,10 @@
 import apiClient from './apiClient';
-import { ProductResponse } from './productService';
+import { ProductResponse, ProductVariantResponse } from './productService';
 
 export interface CartItemResponse {
   id: number;
   product: ProductResponse | null;
+  productVariant: ProductVariantResponse | null;
   quantity: number;
 }
 
@@ -12,6 +13,7 @@ export interface CartResponse {
   userId: number | null;
   items: CartItemResponse[];
   totalPrice: number;
+  shippingFee: number;
 }
 
 export interface CartItemRequest {

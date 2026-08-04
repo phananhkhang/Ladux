@@ -137,9 +137,9 @@ class OrderServiceTest extends AbstractIntegrationTest {
         em.clear();
 
         Order order = newestOrderOf(USER_ID);
-        // GIAM10 = giam 10% -> 100 tien giam, final = 900.
+        // GIAM10 = giam 10% -> 100 tien giam; final = 900 + phi giao hang cau hinh.
         assertEquals(0, new BigDecimal("100.00").compareTo(order.getDiscountAmount()));
-        assertEquals(0, new BigDecimal("900.00").compareTo(order.getFinalAmount()));
+        assertEquals(0, new BigDecimal("900.00").add(order.getShippingFee()).compareTo(order.getFinalAmount()));
         // Dung coupon -> usedCount tang 1.
         assertEquals(usedBefore + 1, couponRepository.findByCode("GIAM10").getUsedCount());
     }

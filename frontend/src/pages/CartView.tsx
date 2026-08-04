@@ -1,19 +1,15 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ShoppingBag, Trash2, ChevronRight, ShieldCheck, Truck } from "lucide-react";
-import { CartItem, CouponItem, LaptopProduct, formatVND, mapProductResponseToLaptopProduct } from "../types";
+import { LaptopProduct, formatVND, mapProductResponseToLaptopProduct } from "../types";
 import { useCartStore } from "../stores";
 import { productPath, ROUTES } from "../app/routePaths";
 
 export interface CartViewProps {
-    cartItems?: CartItem[];
-    updateCartQuantity?: (index: number, quantity: number) => void;
-    appliedCoupon?: CouponItem | null;
     setSelectedProduct: (product: LaptopProduct) => void;
 }
 
 export default function CartView({
-    appliedCoupon,
     setSelectedProduct,
 }: CartViewProps) {
     const navigate = useNavigate();
@@ -22,8 +18,8 @@ export default function CartView({
     const cartItemsList = cart?.items || [];
     const totalCount = cartItemsList.reduce((acc, i) => acc + i.quantity, 0);
     const subTotal = cart?.totalPrice || 0;
-    const discountAmount = appliedCoupon?.discountAmount || 0;
-    const finalAmount = Math.max(0, subTotal - discountAmount);
+    const shippingFee = Number(cart?.shippingFee || 0);
+    const finalAmount = subTotal + shippingFee;
 
     return (
         <main className="container mx-auto px-6 py-12 max-w-6xl">
@@ -74,8 +70,9 @@ export default function CartView({
                     <div className="lg:col-span-8 space-y-4">
                         {cartItemsList.map((item) => {
                             if (!item.product) return null;
-                            const mappedProduct = mapProductResponseToLaptopProduct(item.product);
-                            const itemPrice = mappedProduct.discountPrice || mappedProduct.price;
+                            const mappedProduct = mapProductResponseToLaptopProduct(item.product, item.productVariant?.id);
+                            const itemPrice = Number(item.productVariant?.discountPrice || item.productVariant?.price || 0);
+                            const variantId = item.productVariant?.id;
 
                             return (
                                 <div
@@ -105,7 +102,9 @@ export default function CartView({
                                             </h3>
                                             <p className="text-xs font-mono text-neutral-400 flex items-center gap-2">
                                                 <span>
-                                                    {mappedProduct.ram || "Standard"} / {mappedProduct.rom || "SSD"}
+                                                    {[item.productVariant?.ram, item.productVariant?.rom, item.productVariant?.color?.name]
+                                                        .filter(Boolean)
+                                                        .join(" / ") || "Chưa có thông tin cấu hình"}
                                                 </span>
                                             </p>
                                             <p className="text-sm font-mono font-bold text-[#00FF41] pt-1">
@@ -119,11 +118,9 @@ export default function CartView({
                                         <div className="flex items-center border border-neutral-800 bg-neutral-900 rounded-xl p-1">
                                             <button
                                                 onClick={() => {
-                                                    if (item.quantity > 1) {
-                                                        updateQuantity(item.product!.id, item.quantity - 1);
-                                                    } else {
-                                                        removeItem(item.product!.id);
-                                                    }
+                                                    if (!variantId) return;
+                                                    if (item.quantity > 1) updateQuantity(variantId, item.quantity - 1);
+                                                    else removeItem(variantId);
                                                 }}
                                                 className="w-8 h-8 flex items-center justify-center text-neutral-400 hover:text-white font-bold transition"
                                             >
@@ -133,7 +130,8 @@ export default function CartView({
                                                 {item.quantity}
                                             </span>
                                             <button
-                                                onClick={() => updateQuantity(item.product!.id, item.quantity + 1)}
+                                                onClick={() => variantId && updateQuantity(variantId, item.quantity + 1)}
+                                                disabled={!variantId || item.quantity >= (item.productVariant?.stockQuantity ?? 0)}
                                                 className="w-8 h-8 flex items-center justify-center text-neutral-400 hover:text-white font-bold transition"
                                             >
                                                 +
@@ -145,7 +143,8 @@ export default function CartView({
                                         </div>
 
                                         <button
-                                            onClick={() => removeItem(item.product!.id)}
+                                            onClick={() => variantId && removeItem(variantId)}
+                                            disabled={!variantId}
                                             aria-label="Xóa sản phẩm"
                                             className="p-2.5 text-neutral-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition"
                                         >
@@ -174,17 +173,8 @@ export default function CartView({
 
                                 <div className="flex justify-between text-neutral-400">
                                     <span>Phí vận chuyển bảo hiểm:</span>
-                                    <span className="text-[#00FF41] font-semibold">MIỄN PHÍ</span>
+                                    <span className="text-white font-semibold">{formatVND(shippingFee)}</span>
                                 </div>
-
-                                {appliedCoupon && (
-                                    <div className="flex justify-between text-[#00FF41]">
-                                        <span>Giảm giá ({appliedCoupon.code}):</span>
-                                        <span className="font-semibold">
-                                            -{formatVND(appliedCoupon.discountAmount)}
-                                        </span>
-                                    </div>
-                                )}
 
                                 <div className="pt-4 border-t border-neutral-900 flex justify-between items-baseline">
                                     <span className="text-sm font-bold text-white uppercase">Tổng thanh toán:</span>

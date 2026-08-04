@@ -20,24 +20,8 @@ import { useCartStore, useAddressStore, useOrderStore } from "../stores";
 import { ROUTES } from "../app/routePaths";
 
 export interface CheckoutViewProps {
-    cartItems?: any[];
-    savedAddresses?: any[];
-    setSavedAddresses?: (addresses: any[]) => void;
-    selectedAddressId?: number;
-    setSelectedAddressId?: (id: number) => void;
-    appliedCoupon?: CouponItem | null;
-    setAppliedCoupon?: (coupon: CouponItem | null) => void;
-    paymentMethod?: PaymentProvider;
-    setPaymentMethod?: (method: PaymentProvider) => void;
-    orders?: any[];
-    setOrders?: (orders: any[]) => void;
     setSelectedAddressOrderId?: (id: string) => void;
-    setCartItems?: (items: any[]) => void;
     showToast: (msg: string) => void;
-    handleApplyCoupon?: () => void;
-    couponInput?: string;
-    setCouponInput?: (val: string) => void;
-    couponError?: string;
 }
 
 export default function CheckoutView({
@@ -64,7 +48,7 @@ export default function CheckoutView({
         street: "",
         ward: "",
         district: "",
-        city: "Hà Nội",
+        city: "",
         isDefault: false,
     });
 
@@ -81,8 +65,9 @@ export default function CheckoutView({
 
     const cartItemsList = cart?.items || [];
     const subTotal = cart?.totalPrice || 0;
+    const shippingFee = Number(cart?.shippingFee || 0);
     const discountAmount = appliedCouponItem?.discountAmount || 0;
-    const finalAmount = Math.max(0, subTotal - discountAmount);
+    const finalAmount = Math.max(0, subTotal - discountAmount + shippingFee);
 
     const handleApplyCoupon = async () => {
         if (!couponCodeInput.trim()) {
@@ -141,9 +126,9 @@ export default function CheckoutView({
                     receiverName: (selectedAddr.receiverName || (selectedAddr as any).fullName || "").trim(),
                     phone: cleanPhone,
                     street: (selectedAddr.street || (selectedAddr as any).addressLine || (selectedAddr as any).addressDetail || "").trim(),
-                    ward: (selectedAddr.ward || "").trim() || "Chưa chọn Phường/Xã",
-                    district: (selectedAddr.district || "").trim() || "Chưa chọn Quận/Huyện",
-                    city: (selectedAddr.city || "").trim() || "Hà Nội",
+                    ward: (selectedAddr.ward || "").trim(),
+                    district: (selectedAddr.district || "").trim(),
+                    city: (selectedAddr.city || "").trim(),
                 },
             });
 
@@ -350,7 +335,8 @@ export default function CheckoutView({
                                     </button>
                                     <button
                                         onClick={async () => {
-                                            if (!newAddress.receiverName || !newAddress.phone || !newAddress.street) {
+                                            if (!newAddress.receiverName || !newAddress.phone || !newAddress.street
+                                                || !newAddress.ward || !newAddress.district || !newAddress.city) {
                                                 showToast("Vui lòng điền đầy đủ thông tin địa chỉ");
                                                 return;
                                             }
@@ -384,7 +370,7 @@ export default function CheckoutView({
                                 type="text"
                                 value={couponCodeInput}
                                 onChange={(e) => setCouponCodeInput(e.target.value)}
-                                placeholder="Nhập mã (Ví dụ: LADUX2M hoặc WELCOME10)"
+                                placeholder="Nhập mã giảm giá"
                                 className="flex-1 bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-xs text-white font-mono placeholder:text-neutral-600 focus:outline-none focus:border-[#00FF41]"
                             />
                             <button
@@ -500,11 +486,9 @@ export default function CheckoutView({
                         <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
                             {cartItemsList.map((item) => {
                                 if (!item.product) return null;
-                                const mapped = (item.product as any).cpu !== undefined || (item.product as any).brand !== undefined
-                                    ? mapProductResponseToLaptopProduct(item.product as any)
-                                    : (item.product as any);
-                                const price = mapped.discountPrice || mapped.price || 0;
-                                const imageUrl = mapped.images?.[0] || "https://placehold.co/400x300/121214/666?text=No+Image";
+                                const mapped = mapProductResponseToLaptopProduct(item.product, item.productVariant?.id);
+                                const price = Number(item.productVariant?.discountPrice || item.productVariant?.price || 0);
+                                const imageUrl = mapped.images?.[0];
 
                                 return (
                                     <div
@@ -512,15 +496,23 @@ export default function CheckoutView({
                                         className="flex items-center justify-between gap-3 text-xs border-b border-neutral-900/60 pb-3"
                                     >
                                         <div className="flex items-center gap-3">
-                                            <img
-                                                src={imageUrl}
-                                                alt={mapped.name}
-                                                className="w-12 h-12 bg-neutral-900 rounded-lg object-contain p-1 border border-neutral-800 shrink-0"
-                                            />
+                                            {imageUrl ? (
+                                                <img
+                                                    src={imageUrl}
+                                                    alt={mapped.name}
+                                                    className="w-12 h-12 bg-neutral-900 rounded-lg object-contain p-1 border border-neutral-800 shrink-0"
+                                                />
+                                            ) : (
+                                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-neutral-800 bg-neutral-900 text-[9px] text-neutral-500">
+                                                    Chưa có ảnh
+                                                </div>
+                                            )}
                                             <div>
                                                 <p className="font-bold text-white line-clamp-1">{mapped.name}</p>
                                                 <p className="text-[10px] font-mono text-neutral-500">
-                                                    Số lượng: x{item.quantity}
+                                                    {[item.productVariant?.ram, item.productVariant?.rom, item.productVariant?.color?.name]
+                                                        .filter(Boolean)
+                                                        .join(" · ") || "Chưa có cấu hình"} · x{item.quantity}
                                                 </p>
                                             </div>
                                         </div>
@@ -550,7 +542,7 @@ export default function CheckoutView({
 
                             <div className="flex justify-between text-neutral-400">
                                 <span>Phí vận chuyển (shippingFee):</span>
-                                <span className="text-[#00FF41] font-semibold">MIỄN PHÍ</span>
+                                <span className="text-white font-semibold">{formatVND(shippingFee)}</span>
                             </div>
 
                             <div className="pt-4 border-t border-neutral-900 flex justify-between items-baseline">

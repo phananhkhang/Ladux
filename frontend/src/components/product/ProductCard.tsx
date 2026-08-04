@@ -1,5 +1,5 @@
 import React from "react";
-import { Star, Heart, Monitor, Cpu, HardDrive, ShoppingCart, Info } from "lucide-react";
+import { Star, Heart, Monitor, Cpu, HardDrive, ShoppingCart, Info, ImageOff } from "lucide-react";
 import { LaptopProduct, formatVND } from "../../types";
 
 export interface ProductCardProps {
@@ -36,12 +36,19 @@ export default function ProductCard({
 
             <div className="cursor-pointer" onClick={() => onSelectProduct(laptop)}>
                 {/* Product Image Container */}
-                <div className="relative aspect-[4/3] flex items-center justify-center bg-white/[0.02] rounded-xl p-3 mb-4 border border-white/[0.04]">
-                    <img
-                        src={laptop.images[0]}
-                        alt={laptop.name}
-                        className="max-h-[120px] sm:max-h-[140px] max-w-full object-contain group-hover:scale-105 transition-transform duration-500"
-                    />
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-white/[0.02] mb-4 border border-white/[0.04]">
+                    {laptop.images[0] ? (
+                        <img
+                            src={laptop.images[0]}
+                            alt={laptop.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                    ) : (
+                        <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-neutral-600">
+                            <ImageOff className="h-8 w-8" />
+                            <span className="text-[10px]">Chưa có ảnh</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Product Title */}
@@ -54,36 +61,37 @@ export default function ProductCard({
                     <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-left">
                         <div className="flex items-center gap-1.5 truncate">
                             <Monitor className="w-3.5 h-3.5 text-[#00FF41] shrink-0" />
-                            <span className="truncate">{laptop.display || "15.6 inch FHD"}</span>
+                            <span className="truncate">{laptop.display || "Chưa cập nhật"}</span>
                         </div>
                         <div className="flex items-center gap-1.5 truncate">
                             <Cpu className="w-3.5 h-3.5 text-[#00FF41] shrink-0" />
-                            <span className="truncate">{laptop.cpu ? `${laptop.cpu.split(" ")[0]} ${laptop.cpu.split(" ")[1] || ""}` : "Intel Core i7"}</span>
+                            <span className="truncate">{laptop.cpu || "Chưa cập nhật"}</span>
                         </div>
                         <div className="flex items-center gap-1.5 truncate">
                             <Cpu className="w-3.5 h-3.5 text-[#00FF41] shrink-0" />
-                            <span className="truncate">{laptop.ram || "16GB RAM"}</span>
+                            <span className="truncate">{laptop.ram || "Chưa cập nhật"}</span>
                         </div>
                         <div className="flex items-center gap-1.5 truncate">
                             <HardDrive className="w-3.5 h-3.5 text-[#00FF41] shrink-0" />
-                            <span className="truncate">{laptop.rom || "512GB SSD"}</span>
+                            <span className="truncate">{laptop.rom || "Chưa cập nhật"}</span>
                         </div>
                     </div>
                     <div className="flex items-center gap-1.5 pt-1.5 border-t border-white/[0.05] truncate text-left">
                         <Cpu className="w-3.5 h-3.5 text-[#00FF41] shrink-0" />
-                        <span className="truncate font-medium text-neutral-200">{laptop.gpu || "GeForce RTX / Intel Graphics"}</span>
+                        <span className="truncate font-medium text-neutral-200">{laptop.gpu || "Chưa cập nhật"}</span>
                     </div>
                 </div>
 
                 {/* Price block */}
                 <div className="mt-4 space-y-0.5 text-left pl-1">
-                    <div className="text-[14px] text-neutral-400">
-                        Giá gốc: <span className="line-through">{formatVND(laptop.price)}</span>
-                    </div>
+                    {laptop.discountPrice && laptop.discountPrice < laptop.price && (
+                        <div className="text-[14px] text-neutral-400">
+                            Giá gốc: <span className="line-through">{formatVND(laptop.price)}</span>
+                        </div>
+                    )}
                     <div className="text-[20px] font-bold text-[#ff4a4a] flex items-baseline gap-1">
                         <span>Giá Sale:</span>
                         <span className="text-[20px] font-extrabold text-[#ff4a4a]">{formatVND(laptop.discountPrice || laptop.price)}</span>
-                        <span className="text-[12px] font-normal text-red-400 shrink-0 ml-0.5">(+ 8% VAT)</span>
                     </div>
                 </div>
             </div>
@@ -91,11 +99,15 @@ export default function ProductCard({
             {/* Bottom Actions and Rating */}
             <div className="mt-4 pt-3 border-t border-white/[0.05] flex flex-col gap-3">
                 {/* Rating */}
-                <div className="flex items-center justify-center gap-1 text-[11px] text-amber-400 font-bold">
-                    <span>{laptop.rating.toFixed(1)}</span>
-                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                    <span className="text-neutral-400 font-normal">({laptop.reviewCount || 0} Đánh giá)</span>
-                </div>
+                {laptop.reviewCount > 0 ? (
+                    <div className="flex items-center justify-center gap-1 text-[11px] text-amber-400 font-bold">
+                        <span>{laptop.rating.toFixed(1)}</span>
+                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                        <span className="text-neutral-400 font-normal">({laptop.reviewCount} đánh giá)</span>
+                    </div>
+                ) : (
+                    <div className="text-center text-[11px] text-neutral-500">Chưa có đánh giá</div>
+                )}
 
                 {/* Buy buttons */}
                 <div className="grid grid-cols-2 gap-2">
@@ -108,7 +120,8 @@ export default function ProductCard({
                     </button>
                     <button
                         onClick={() => onAddToCart(laptop)}
-                        className="flex items-center justify-center gap-1 bg-[#00FF41] text-black py-1.5 rounded-lg text-xs font-bold hover:bg-[#00cc34] transition-colors"
+                        disabled={!laptop.variants.some((variant) => variant.stockQuantity > 0)}
+                        className="flex items-center justify-center gap-1 bg-[#00FF41] text-black py-1.5 rounded-lg text-xs font-bold hover:bg-[#00cc34] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         <ShoppingCart className="w-3.5 h-3.5" />
                         <span>Thêm giỏ</span>

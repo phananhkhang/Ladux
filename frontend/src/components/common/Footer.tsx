@@ -13,7 +13,7 @@ export default function Footer() {
                     />
                     <span className="text-xl font-black tracking-widest text-white">LADUX</span>
                 </div>
-                <p>© 2026 LADUX. PREMIUM LAPTOP ONLY STORE. ALL RIGHTS RESERVED.</p>
+                <p>© {new Date().getFullYear()} LADUX. PREMIUM LAPTOP ONLY STORE. ALL RIGHTS RESERVED.</p>
             </div>
         </footer>
     );

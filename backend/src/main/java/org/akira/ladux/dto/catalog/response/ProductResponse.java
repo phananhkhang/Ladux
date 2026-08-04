@@ -12,6 +12,7 @@ public record ProductResponse(
         CategoryResponse category,
         String name,
         String slug,
+        String description,
         String cpu,
         String gpu,
         String display,
@@ -22,7 +23,9 @@ public record ProductResponse(
         boolean isActive,
         Instant createdAt,
         List<ProductImageResponse> images,
-        List<ProductVariantResponse> variants
+        List<ProductVariantResponse> variants,
+        double averageRating,
+        long reviewCount
 ) implements Serializable {
     public static ProductResponse fromEntity(Product product) {
         if (product == null) return null;
@@ -32,6 +35,7 @@ public record ProductResponse(
                 product.getCategory() == null ? null : CategoryResponse.fromEntity(product.getCategory()),
                 product.getName(),
                 product.getSlug(),
+                product.getDescription(),
                 product.getCpu(),
                 product.getGpu(),
                 product.getDisplay(),
@@ -46,7 +50,12 @@ public record ProductResponse(
                         .toList(),
                 product.getVariants() == null ? List.of() : product.getVariants().stream()
                         .map(ProductVariantResponse::fromEntity)
-                        .toList()
+                        .toList(),
+                product.getReviews() == null ? 0.0 : product.getReviews().stream()
+                        .mapToInt(review -> review.getRating())
+                        .average()
+                        .orElse(0.0),
+                product.getReviews() == null ? 0L : product.getReviews().size()
         );
     }
 

@@ -8,31 +8,21 @@ import { productPath, ROUTES } from "../app/routePaths";
 
 export interface AllProductsViewProps {
     allProducts?: LaptopProduct[];
-    selectedBrand?: string;
-    setSelectedBrand?: (brand: string) => void;
     selectedCategory?: string;
-    setSelectedCategory?: (category: string) => void;
     searchQuery?: string;
     setSearchQuery?: (query: string) => void;
-    wishlist?: number[];
     toggleWishlist?: (laptopId: number) => Promise<void>;
     setSelectedProduct: (product: LaptopProduct) => void;
     addToCartCustom?: (
         product: LaptopProduct,
-        ram: string,
-        storage: string,
-        colorName: string,
-        colorHex: string,
+        variantId: number,
         quantity: number
     ) => Promise<boolean>;
 }
 
 export default function AllProductsView({
     allProducts,
-    selectedBrand,
-    setSelectedBrand,
     selectedCategory,
-    setSelectedCategory,
     searchQuery = "",
     setSearchQuery,
     toggleWishlist,
@@ -58,8 +48,8 @@ export default function AllProductsView({
     const [sidebarSearch, setSidebarSearch] = useState<string>("");
     const [selectedRam, setSelectedRam] = useState<string>("All");
     const [selectedRom, setSelectedRom] = useState<string>("All");
-    const [maxPrice, setMaxPrice] = useState<number>(280000000);
-    const [sortBy, setSortBy] = useState<string>("featured");
+    const [maxPrice, setMaxPrice] = useState<number>(Number.POSITIVE_INFINITY);
+    const [sortBy, setSortBy] = useState<string>("newest");
     const [currentPage, setCurrentPage] = useState<number>(1);
     const itemsPerPage = 8;
 
@@ -78,14 +68,31 @@ export default function AllProductsView({
         return products.map((p) => mapProductResponseToLaptopProduct(p));
     }, [allProducts, products]);
 
+    const ramOptions = useMemo(
+        () => Array.from(new Set(mappedProducts.flatMap((product) => product.variants.map((variant) => variant.ram)).filter(Boolean))).sort(),
+        [mappedProducts]
+    );
+    const romOptions = useMemo(
+        () => Array.from(new Set(mappedProducts.flatMap((product) => product.variants.map((variant) => variant.rom)).filter(Boolean))).sort(),
+        [mappedProducts]
+    );
+    const catalogMaxPrice = useMemo(() => {
+        const highest = mappedProducts.reduce((max, product) => {
+            const variantMax = product.variants.reduce(
+                (current, variant) => Math.max(current, Number(variant.discountPrice || variant.price)),
+                0
+            );
+            return Math.max(max, variantMax);
+        }, 0);
+        return highest > 0 ? Math.ceil(highest / 1000000) * 1000000 : 0;
+    }, [mappedProducts]);
+
     // Combined search & filter logic for Brand, Category, Header Search, Sidebar Filter Search, RAM, ROM, Price & Sorting
     const filteredProducts = useMemo(() => {
         let list = [...mappedProducts];
 
         // 1. Brand Filter
-        if (selectedBrand && selectedBrand !== "All") {
-            list = list.filter((p) => (p.brand || "").toLowerCase() === selectedBrand.toLowerCase());
-        } else if (filters.brandId !== null) {
+        if (filters.brandId !== null) {
             const foundBrand = brands.find((b) => b.id === filters.brandId);
             if (foundBrand) {
                 list = list.filter((p) => (p.brand || "").toLowerCase() === foundBrand.name.toLowerCase());
@@ -152,12 +159,12 @@ export default function AllProductsView({
 
         // 5. RAM filter
         if (selectedRam !== "All") {
-            list = list.filter((p) => p && p.ram && p.ram.includes(selectedRam));
+            list = list.filter((p) => p.variants.some((variant) => variant.ram === selectedRam));
         }
 
         // 6. ROM filter
         if (selectedRom !== "All") {
-            list = list.filter((p) => p && p.rom && p.rom.includes(selectedRom));
+            list = list.filter((p) => p.variants.some((variant) => variant.rom === selectedRom));
         }
 
         // 7. Price filter (Safely check undefined/null)
@@ -178,7 +185,7 @@ export default function AllProductsView({
         }
 
         return list;
-    }, [mappedProducts, selectedBrand, selectedCategory, filters.brandId, filters.categoryId, brands, categories, searchQuery, sidebarSearch, selectedRam, selectedRom, maxPrice, sortBy]);
+    }, [mappedProducts, selectedCategory, filters.brandId, filters.categoryId, brands, categories, searchQuery, sidebarSearch, selectedRam, selectedRom, maxPrice, sortBy]);
 
     // Pagination
     const totalPages = Math.ceil(filteredProducts.length / itemsPerPage) || 1;
@@ -247,14 +254,14 @@ export default function AllProductsView({
                                 <h3 className="text-xs font-mono font-bold tracking-widest text-neutral-400 uppercase">
                                     LỌC TỪ KHÓA
                                 </h3>
-                                {(sidebarSearch || searchQuery || selectedRam !== "All" || selectedRom !== "All" || maxPrice < 280000000 || filters.brandId !== null || filters.categoryId !== null) && (
+                                {(sidebarSearch || searchQuery || selectedRam !== "All" || selectedRom !== "All" || Number.isFinite(maxPrice) || filters.brandId !== null || filters.categoryId !== null) && (
                                     <button
                                         onClick={() => {
                                             setSidebarSearch("");
                                             if (setSearchQuery) setSearchQuery("");
                                             setSelectedRam("All");
                                             setSelectedRom("All");
-                                            setMaxPrice(280000000);
+                                            setMaxPrice(Number.POSITIVE_INFINITY);
                                             setBrandFilter(null);
                                             setCategoryFilter(null);
                                             setCurrentPage(1);
@@ -372,28 +379,32 @@ export default function AllProductsView({
                                     TẦM GIÁ
                                 </h3>
                                 <button
-                                    onClick={() => setMaxPrice(280000000)}
+                                    onClick={() => setMaxPrice(Number.POSITIVE_INFINITY)}
                                     className="text-[11px] font-medium text-[#00FF41] hover:underline"
                                 >
                                     Tất cả
                                 </button>
                             </div>
-                            <input
-                                type="range"
-                                min={20000000}
-                                max={280000000}
-                                step={10000000}
-                                value={maxPrice}
-                                onChange={(e) => {
-                                    setMaxPrice(Number(e.target.value));
-                                    setCurrentPage(1);
-                                }}
-                                className="w-full accent-[#00FF41] bg-neutral-800 rounded-lg cursor-pointer h-2"
-                            />
-                            <div className="flex justify-between text-[11px] font-mono text-neutral-400 mt-2">
-                                <span>20tr</span>
-                                <span>280tr</span>
-                            </div>
+                            {catalogMaxPrice > 0 && (
+                                <>
+                                    <input
+                                        type="range"
+                                        min={0}
+                                        max={catalogMaxPrice}
+                                        step={1000000}
+                                        value={Number.isFinite(maxPrice) ? maxPrice : catalogMaxPrice}
+                                        onChange={(e) => {
+                                            setMaxPrice(Number(e.target.value));
+                                            setCurrentPage(1);
+                                        }}
+                                        className="w-full accent-[#00FF41] bg-neutral-800 rounded-lg cursor-pointer h-2"
+                                    />
+                                    <div className="flex justify-between text-[11px] font-mono text-neutral-400 mt-2">
+                                        <span>0 ₫</span>
+                                        <span>{new Intl.NumberFormat("vi-VN").format(catalogMaxPrice)} ₫</span>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         {/* 4. DUNG LƯỢNG RAM */}
@@ -402,13 +413,8 @@ export default function AllProductsView({
                                 DUNG LƯỢNG RAM
                             </h3>
                             <div className="flex flex-wrap gap-2">
-                                {[
-                                    { label: "Tất cả", value: "All" },
-                                    { label: "16GB", value: "16GB" },
-                                    { label: "32GB", value: "32GB" },
-                                    { label: "64GB", value: "64GB" },
-                                    { label: "128GB", value: "128GB" },
-                                ].map((item) => {
+                                {["All", ...ramOptions].map((value) => {
+                                    const item = { label: value === "All" ? "Tất cả" : value, value };
                                     const isActive = selectedRam === item.value;
                                     return (
                                         <button
@@ -435,13 +441,8 @@ export default function AllProductsView({
                                 DUNG LƯỢNG Ổ CỨNG (ROM)
                             </h3>
                             <div className="flex flex-wrap gap-2">
-                                {[
-                                    { label: "Tất cả", value: "All" },
-                                    { label: "512GB", value: "512GB" },
-                                    { label: "1TB", value: "1TB" },
-                                    { label: "2TB", value: "2TB" },
-                                    { label: "4TB", value: "4TB" },
-                                ].map((item) => {
+                                {["All", ...romOptions].map((value) => {
+                                    const item = { label: value === "All" ? "Tất cả" : value, value };
                                     const isActive = selectedRom === item.value;
                                     return (
                                         <button
@@ -485,7 +486,9 @@ export default function AllProductsView({
                                             navigate(productPath(p.id));
                                         }}
                                         onAddToCart={(p) => {
-                                            void addToCartCustom?.(p, p.ram || "", p.rom || "", "", "", 1);
+                                            const variant = p.variants.find((item) => item.id === p.defaultVariantId && item.stockQuantity > 0)
+                                                ?? p.variants.find((item) => item.stockQuantity > 0);
+                                            if (variant) void addToCartCustom?.(p, variant.id, 1);
                                         }}
                                     />
                                 ))}
@@ -501,7 +504,7 @@ export default function AllProductsView({
                                         setCategoryFilter(null);
                                         setSelectedRam("All");
                                         setSelectedRom("All");
-                                        setMaxPrice(280000000);
+                                        setMaxPrice(Number.POSITIVE_INFINITY);
                                     }}
                                     className="mt-4 bg-[#00FF41] text-black font-bold text-xs px-5 py-2 rounded-full hover:bg-[#00cc34] transition-colors"
                                 >
