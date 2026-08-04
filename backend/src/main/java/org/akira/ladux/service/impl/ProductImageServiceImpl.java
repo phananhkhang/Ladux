@@ -19,7 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,13 +54,26 @@ public class ProductImageServiceImpl implements ProductImageService {
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham voi id = " + productId));
 
-        List<ProductImage> productImages = imageUrls.stream()
+        Set<String> existingUrls = repo.findByProductId(productId).stream()
+                .map(ProductImage::getImageUrl)
+                .collect(Collectors.toSet());
+        Set<String> uniqueUrls = imageUrls.stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(imageUrl -> !imageUrl.isBlank())
+                .collect(Collectors.toCollection(LinkedHashSet::new)); // dùng linkedHashSet để giữ nguyên thứ tự và loại bỏ trùng lặp
+
+        List<ProductImage> productImages = uniqueUrls.stream()
+                .filter(imageUrl -> !existingUrls.contains(imageUrl))
                 .map(imageUrl -> ProductImage.builder()
                         .product(product)
                         .imageUrl(imageUrl)
                         .isPrimary(false)
                         .build())
                 .toList();
+        if (productImages.isEmpty()) {
+            return List.of(); // Trả về list rỗng nhưng ko có saveAll nên yên tâm không mất dữ liệu ảnh đâu!
+        }
 
         return repo.saveAll(productImages).stream()
                 .map(ProductImageResponse::fromEntity)
@@ -73,7 +90,6 @@ public class ProductImageServiceImpl implements ProductImageService {
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham voi id = " + productId));
         List<ProductImageResponse> responses = new ArrayList<>();
-        boolean thumbnailAssigned = false;
         for (MultipartFile file : files) {
             if (file.isEmpty()) {
                 continue;
@@ -84,11 +100,6 @@ public class ProductImageServiceImpl implements ProductImageService {
                     .imageUrl(url)
                     .build();
             responses.add(ProductImageResponse.fromEntity(repo.save(image)));
-            if (!thumbnailAssigned && (product.getImages().get(0) == null || product.getImages().get(0).getImageUrl().isBlank())) {
-                product.setImages(List.of(image));
-                productRepo.save(product);
-                thumbnailAssigned = true;
-            }
         }
         return responses;
     }

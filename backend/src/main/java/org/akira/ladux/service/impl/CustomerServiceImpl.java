@@ -51,7 +51,17 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional(readOnly = true)
     public Page<CustomerResponse> searchCustomers(String name, String phone, Pageable pageable) {
-        return repo.findByNameOrPhone(name, phone, pageable);
+        String searchName = cleanSearch(name);
+        String searchPhone = cleanSearch(phone);
+        if (searchPhone != null) {
+            searchPhone = searchPhone.replaceAll("[\\s.()\\-]", "");
+            try {
+                searchPhone = phoneNumberUtils.normalize(searchPhone);
+            } catch (IllegalArgumentException ignored) {
+                // Keep raw input so partial/non-Vietnamese phone search still works.
+            }
+        }
+        return repo.findByNameOrPhone(searchName, searchPhone, pageable);
     }
 
     @Override
@@ -102,5 +112,12 @@ public class CustomerServiceImpl implements CustomerService {
     private Customer findOrThrow(int userId) {
         return repo.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay khach hang voi userId = " + userId));
+    }
+
+    private String cleanSearch(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return value.trim();
     }
 }

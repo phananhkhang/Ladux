@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -199,8 +201,8 @@ public class ProductServiceImpl implements ProductService {
         if (request.os() != null) {
             product.setOs(request.os());
         }
-        if (request.imageUrls() != null) {
-            replaceProductImages(product, request.imageUrls());
+        if (request.variants() != null && !request.variants().isEmpty()) {
+            upsertProductVariants(product, request.variants());
         }
         return ProductResponse.fromEntity(repo.save(product));
     }
@@ -255,15 +257,71 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    private void replaceProductImages(Product product, java.util.List<String> imageUrls) {
+    private void replaceProductImages(Product product, List<String> imageUrls) {
         if (imageUrls == null) {
             return;
         }
         product.getImages().clear();
-        imageUrls.forEach(imageUrl -> product.getImages().add(ProductImage.builder()
+        imageUrls.stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(imageUrl -> !imageUrl.isBlank())
+                .distinct() // Loại bỏ trùng lặp
+                .forEach(imageUrl -> product.getImages().add(ProductImage.builder()
                 .product(product)
                 .imageUrl(imageUrl)
                 .build()));
+    }
+
+    private void upsertProductVariants(Product product, List<ProductVariantRequest> variantRequests) {
+        Map<Integer, ProductVariant> existingById = product.getVariants().stream()
+                .filter(variant -> variant.getId() != null)
+                .collect(Collectors.toMap(ProductVariant::getId, variant -> variant));
+
+        for (ProductVariantRequest request : variantRequests) {
+            ProductVariant variant = request.id() == null ? null : existingById.get(request.id());
+            if (request.id() != null && variant == null) {
+                throw new BusinessRuleException("VariantId khong thuoc san pham dang cap nhat: " + request.id());
+            }
+            if (variant == null) {
+                variant = ProductVariant.builder()
+                        .sku(resolveSku(null, buildVariantSkuSeed(product.getName(), request)))
+                        .build();
+                product.addVariant(variant);
+            }
+            applyVariantFields(variant, request);
+        }
+    }
+
+    private void applyVariantFields(ProductVariant variant, ProductVariantRequest request) {
+        variant.setColor(resolveColor(request.colorId()));
+        variant.setRam(request.ram());
+        variant.setRom(request.rom());
+        variant.setPrice(requirePrice(request.price()));
+        variant.setDiscountPrice(request.discountPrice());
+        validateProductPricing(variant.getPrice(), variant.getDiscountPrice());
+        variant.setStockQuantity(request.stockQuantity());
+        variant.setActive(request.isActive());
+    }
+
+    private Color resolveColor(Integer colorId) {
+        if (colorId == null) {
+            throw new BusinessRuleException("ColorId khong duoc de trong");
+        }
+        return colorRepository.findById(colorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay mau sac voi id = " + colorId));
+    }
+
+    private BigDecimal requirePrice(BigDecimal price) {
+        if (price == null) {
+            throw new BusinessRuleException("Price khong duoc de trong");
+        }
+        return price;
+    }
+
+    private String buildVariantSkuSeed(String productName, ProductVariantRequest request) {
+        Color color = resolveColor(request.colorId());
+        return productName + " " + request.ram() + " " + request.rom() + " " + color.getName();
     }
     // == Variant Products ==
     public ProductVariantResponse getProductVariantById(Integer variantId) {

@@ -1,5 +1,6 @@
 package org.akira.ladux.repository;
 
+import io.micrometer.observation.ObservationFilter;
 import jakarta.persistence.LockModeType;
 import org.akira.ladux.model.Review;
 import org.springframework.data.domain.Page;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -31,5 +33,11 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @EntityGraph(attributePaths = {"user"})
     Optional<Review> findByUserIdAndId(int userId, int reviewId);
+
+    @EntityGraph(attributePaths = {"user", "user.customer"})
+    @Query("SELECT r FROM Review r JOIN r.user u LEFT JOIN u.customer c WHERE " +
+            "LOWER(COALESCE(c.fullName, '')) LIKE LOWER(CONCAT('%', :name, '%')) " +
+            "OR LOWER(u.username) LIKE LOWER(CONCAT('%', :name, '%'))")
+    Page<Review> findByReviewerNameContainingIgnoreCase(String name, Pageable pageable);
 }
 

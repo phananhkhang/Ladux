@@ -25,8 +25,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
            "c.id, u.id, c.email, u.username, c.fullName, c.phone, c.avatarUrl, " +
            "c.loyaltyPoints, c.level, c.totalSpent) " +
            "FROM Customer c JOIN c.user u WHERE " +
-           "(:name IS NULL OR c.fullName LIKE %:name%) OR " +
-           "(:phone IS NULL OR c.phone = :phone)")
+           "(:name IS NULL AND :phone IS NULL) OR " +
+           "(:name IS NOT NULL AND LOWER(COALESCE(c.fullName, '')) LIKE LOWER(CONCAT('%', :name, '%'))) OR " +
+           "(:phone IS NOT NULL AND (c.phone LIKE CONCAT('%', :phone, '%') " +
+           "OR REPLACE(c.phone, '+84', '0') LIKE CONCAT('%', :phone, '%')))")
     Page<CustomerResponse> findByNameOrPhone(@Param("name") String name,
                                             @Param("phone") String phone,
                                             Pageable pageable);

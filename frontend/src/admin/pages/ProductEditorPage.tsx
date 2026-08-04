@@ -84,7 +84,7 @@ export default function ProductEditorPage() {
     form.reset({
       brandId: String(product.brand?.id ?? ""), categoryId: String(product.category?.id ?? ""), name: product.name,
       description: product.description ?? "", cpu: product.cpu ?? "", gpu: product.gpu ?? "", display: product.display ?? "", battery: product.battery ?? "", weight: product.weight ?? "", numberOfFans: product.numberOfFans == null ? "" : String(product.numberOfFans), os: product.os ?? "", isActive: product.isActive,
-      imageUrls: (product.images ?? []).map((image) => image.imageUrl).join("\n"),
+      imageUrls: Array.from(new Set((product.images ?? []).map((image) => image.imageUrl).filter(Boolean))).join("\n"),
       variants: (product.variants ?? []).length ? product.variants.map((variant) => ({ id: variant.id, colorId: variant.color?.id ? String(variant.color.id) : "", ram: variant.ram ?? "", rom: variant.rom ?? "", price: String(variant.price ?? ""), discountPrice: variant.discountPrice == null ? "" : String(variant.discountPrice), stockQuantity: String(variant.stockQuantity), isActive: variant.isActive })) : emptyValues.variants,
     });
   }, [form, productQuery.data]);
@@ -109,8 +109,8 @@ export default function ProductEditorPage() {
     const nullable = (value: string) => value.trim() || null;
     mutation.mutate({ payload: {
       brandId: Number(values.brandId), categoryId: Number(values.categoryId), name: values.name.trim(), description: nullable(values.description), cpu: nullable(values.cpu), gpu: nullable(values.gpu), display: nullable(values.display), battery: nullable(values.battery), weight: nullable(values.weight), numberOfFans: values.numberOfFans === "" ? null : Number(values.numberOfFans), os: nullable(values.os), isActive: values.isActive,
-      imageUrls: values.imageUrls.split(/\r?\n/).map((url) => url.trim()).filter(Boolean),
-      variants: values.variants.map((variant) => ({ productId: editing ? id : null, colorId: variant.colorId ? Number(variant.colorId) : null, ram: nullable(variant.ram), rom: nullable(variant.rom), price: Number(variant.price), discountPrice: variant.discountPrice === "" ? null : Number(variant.discountPrice), stockQuantity: Number(variant.stockQuantity), isActive: variant.isActive })),
+      imageUrls: Array.from(new Set(values.imageUrls.split(/\r?\n/).map((url) => url.trim()).filter(Boolean))),
+      variants: values.variants.map((variant) => ({ id: variant.id ?? null, productId: editing ? id : null, colorId: variant.colorId ? Number(variant.colorId) : null, ram: nullable(variant.ram), rom: nullable(variant.rom), price: Number(variant.price), discountPrice: variant.discountPrice === "" ? null : Number(variant.discountPrice), stockQuantity: Number(variant.stockQuantity), isActive: variant.isActive })),
     } });
   });
 

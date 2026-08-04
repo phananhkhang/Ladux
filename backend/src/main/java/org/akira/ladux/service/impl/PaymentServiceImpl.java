@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import lombok.extern.slf4j.Slf4j;
 import org.akira.ladux.dto.system.request.PaymentCallbackRequest;
@@ -198,13 +199,24 @@ public class PaymentServiceImpl implements PaymentService {
             payment.setProvider(request.provider());
         }
         if (request.transactionNo() != null) {
-            payment.setTransactionNo(request.transactionNo());
+            String transactionNo = request.transactionNo().trim();
+            if (!transactionNo.isBlank()) {
+                payment.setTransactionNo(transactionNo);
+            }
         }
         if (request.status() != null) {
+            if (request.status() == PaymentStatus.SUCCESS
+                    && (payment.getTransactionNo() == null || payment.getTransactionNo().isBlank())) {
+                payment.setTransactionNo(generateTransactionNo(payment));
+            }
             payment.setStatus(request.status());
             applyPaymentStatus(order, request.status());
         }
         return PaymentCallbackResponse.fromEntity(payment);
+    }
+
+    private String generateTransactionNo(Payment payment) {
+        return "PAY-" + payment.getOrder().getId() + "-" + payment.getId() + "-" + Instant.now().toEpochMilli() + UUID.randomUUID().toString().substring(0, 4);
     }
 
     // Kiem tra don con nhan thanh toan duoc khong. Qua han -> tu huy don (hoan kho/coupon) roi nem loi.

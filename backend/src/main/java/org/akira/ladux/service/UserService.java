@@ -28,4 +28,6 @@ public interface UserService {
     UserResponse savedUser(RegisterRequest request);
 
     UserResponse uploadAvatar(Integer id, MultipartFile file);
+
+    Page<UserResponse> searchUserByNameOrPhone(String name, String phone, Pageable pageable);
 }

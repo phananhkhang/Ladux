@@ -48,4 +48,15 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @EntityGraph(attributePaths = {"roles", "customer"})
     Optional<User> findByGoogleSubject(String googleSubject);
+
+    @EntityGraph(attributePaths = {"roles", "customer"})
+    @Query("SELECT u FROM User u LEFT JOIN u.customer c WHERE " +
+            "(:name IS NULL AND :phone IS NULL) OR " +
+            "(:name IS NOT NULL AND (LOWER(COALESCE(c.fullName, '')) LIKE LOWER(CONCAT('%', :name, '%')) " +
+            "OR LOWER(u.username) LIKE LOWER(CONCAT('%', :name, '%')))) OR " +
+            "(:phone IS NOT NULL AND (c.phone LIKE CONCAT('%', :phone, '%') " +
+            "OR REPLACE(c.phone, '+84', '0') LIKE CONCAT('%', :phone, '%')))")
+    Page<User> findByNameOrPhone(@Param("name") String name,
+                                 @Param("phone") String phone,
+                                 Pageable pageable);
 }

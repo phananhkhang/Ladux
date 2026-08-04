@@ -21,5 +21,5 @@ public interface ReviewService {
 
     void deleteReviewById(int userId, int reviewId);
 
-    boolean validateReviewRating(int rating);
+    Page<ReviewResponse> findReviewByNameUser(String name, Pageable pageable);
 }

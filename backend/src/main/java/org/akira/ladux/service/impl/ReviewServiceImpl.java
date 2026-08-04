@@ -129,8 +129,17 @@ public class ReviewServiceImpl implements ReviewService {
         repo.delete(review);
     }
 
-    @Override
-    public boolean validateReviewRating(int rating) {
+    private boolean validateReviewRating(int rating) {
         return rating >= 1 && rating <= 5;
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ReviewResponse> findReviewByNameUser(String name, Pageable pageable) {
+        if (name == null || name.isBlank()) {
+            return getAllReviews(pageable);
+        }
+        return repo.findByReviewerNameContainingIgnoreCase(name.trim(), pageable)
+                .map(ReviewResponse::fromEntity);
+    }
+
 }

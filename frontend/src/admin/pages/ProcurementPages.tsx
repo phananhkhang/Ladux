@@ -34,11 +34,23 @@ export function ProductSuppliersPage() {
 const purchaseStatuses: PurchaseOrderStatus[] = ["PENDING", "CONFIRMED", "PARTIALLY_RECEIVED", "RECEIVED", "CANCELLED"];
 
 export function PurchaseOrdersPage() {
-  const [params, setParams] = useSearchParams(); const page = Math.max(0, Number(params.get("page") ?? 0)); const size = Number(params.get("size") ?? 20); const status = (params.get("status") ?? "") as PurchaseOrderStatus | "";
-  const query = useQuery({ queryKey: adminQueryKeys.resource("purchase-orders", { page, size, status }), queryFn: () => status ? adminApi.purchaseOrders.byStatus(status, { page, size }) : adminApi.purchaseOrders.list({ page, size, sort: "createdAt,desc" }), placeholderData: (previous) => previous });
+  const [params, setParams] = useSearchParams(); const [searchDraft, setSearchDraft] = useState(params.get("supplierId") ?? ""); const page = Math.max(0, Number(params.get("page") ?? 0)); const size = Number(params.get("size") ?? 20); const status = (params.get("status") ?? "") as PurchaseOrderStatus | ""; const supplierId = Number(params.get("supplierId") ?? 0);
+  const query = useQuery({
+    queryKey: adminQueryKeys.resource("purchase-orders", { page, size, status, supplierId }),
+    queryFn: async () => {
+      if (supplierId > 0) {
+        const response = await adminApi.purchaseOrders.bySupplier(supplierId, { page, size });
+        if (!status) return response;
+        const content = response.content.filter((order) => order.status === status);
+        return { ...response, content, totalElements: content.length, numberOfElements: content.length, empty: content.length === 0 };
+      }
+      return status ? adminApi.purchaseOrders.byStatus(status, { page, size }) : adminApi.purchaseOrders.list({ page, size, sort: "createdAt,desc" });
+    },
+    placeholderData: (previous) => previous,
+  });
   const updateParam = (key: string, value: string) => { const next = new URLSearchParams(params); value ? next.set(key, value) : next.delete(key); if (key !== "page") next.set("page", "0"); setParams(next); };
   const columns: AdminColumn<PurchaseOrderResponse>[] = [{ key: "id", header: "Đơn nhập", render: (order) => <Link to={`/admin/purchase-orders/${order.id}`} className="font-extrabold text-indigo-600">PO #{order.id}</Link> }, { key: "supplier", header: "Nhà cung cấp", render: (order) => order.supplierName || `NCC #${order.supplierId}` }, { key: "items", header: "Số dòng", render: (order) => order.items?.length ?? 0 }, { key: "amount", header: "Tổng tiền", render: (order) => <strong>{formatCurrency(order.totalAmount)}</strong> }, { key: "status", header: "Trạng thái", render: (order) => <StatusBadge value={order.status} /> }, { key: "created", header: "Ngày tạo", render: (order) => formatBackendDateTime(order.createdAt) }];
-  return <><PageHeader title="Đơn nhập hàng" description="Quản lý mua hàng, xác nhận và nhận từng phần theo dữ liệu backend." actions={<Link to="/admin/purchase-orders/new"><AdminButton><Plus className="h-4 w-4" />Tạo đơn nhập</AdminButton></Link>} /><Panel><div className="flex justify-end border-b border-slate-200 p-4"><select className={`${fieldClassName} sm:w-64`} value={status} onChange={(event) => updateParam("status", event.target.value)}><option value="">Tất cả trạng thái</option>{purchaseStatuses.map((item) => <option key={item}>{item}</option>)}</select></div><AdminTable rows={query.data?.content ?? []} columns={columns} isLoading={query.isLoading} error={query.isError ? getApiErrorMessage(query.error) : null} onRetry={() => query.refetch()} /><PaginationBar page={page} totalPages={query.data?.totalPages ?? 0} totalElements={query.data?.totalElements ?? 0} size={size} onPageChange={(value) => updateParam("page", String(value))} onSizeChange={(value) => updateParam("size", String(value))} /></Panel></>;
+  return <><PageHeader title="Đơn nhập hàng" description="Quản lý mua hàng, xác nhận và nhận từng phần theo dữ liệu backend." actions={<Link to="/admin/purchase-orders/new"><AdminButton><Plus className="h-4 w-4" />Tạo đơn nhập</AdminButton></Link>} /><Panel><div className="flex flex-col gap-3 border-b border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between"><form className="relative flex-1 sm:max-w-sm" onSubmit={(event) => { event.preventDefault(); updateParam("supplierId", searchDraft.trim()); }}><Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" /><input className={`${fieldClassName} pl-10`} inputMode="numeric" placeholder="Tìm theo Supplier ID..." value={searchDraft} onChange={(event) => setSearchDraft(event.target.value)} /></form><select className={`${fieldClassName} sm:w-64`} value={status} onChange={(event) => updateParam("status", event.target.value)}><option value="">Tất cả trạng thái</option>{purchaseStatuses.map((item) => <option key={item}>{item}</option>)}</select></div><AdminTable rows={query.data?.content ?? []} columns={columns} isLoading={query.isLoading} error={query.isError ? getApiErrorMessage(query.error) : null} onRetry={() => query.refetch()} /><PaginationBar page={page} totalPages={query.data?.totalPages ?? 0} totalElements={query.data?.totalElements ?? 0} size={size} onPageChange={(value) => updateParam("page", String(value))} onSizeChange={(value) => updateParam("size", String(value))} /></Panel></>;
 }
 
 export function PurchaseOrderNewPage() {

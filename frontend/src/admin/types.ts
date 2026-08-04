@@ -64,6 +64,11 @@ export interface UserResponse {
   roles: string[];
 }
 
+export interface RoleResponse {
+  id: number;
+  name: string;
+}
+
 export interface BrandResponse {
   id: number;
   name: string;
@@ -127,6 +132,7 @@ export interface ProductResponse {
 }
 
 export interface ProductVariantRequest {
+  id?: number | null;
   productId?: number | null;
   colorId?: number | null;
   ram?: string | null;

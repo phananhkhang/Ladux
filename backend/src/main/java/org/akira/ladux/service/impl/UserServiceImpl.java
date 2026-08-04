@@ -125,31 +125,8 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUser(int id, UserAdminUpdateRequest request) {
         User user = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user voi id = " + id));
-        if (request.email() != null) {
-            String normalizedEmail = request.email().trim().toLowerCase();
-            if (customerRepository.existsByEmailIgnoreCaseAndIdNot(normalizedEmail, id)) {
-                throw new BusinessRuleException("Email nay da duoc tai khoan khac su dung.");
-            }
-            Customer customer = getOrCreateCustomer(user);
-            if (customer.getEmail() == null
-                    || !customer.getEmail().equalsIgnoreCase(normalizedEmail)) {
-                customer.setEmail(normalizedEmail);
-                customer.setEmailVerifiedAt(null);
-            }
-        }
-        if (request.username() != null) {
-            user.setUsername(request.username());
-        }
-        if (request.password() != null) {
-            user.setPassword(encoder.encode(request.password()));
-            user.setTokenVersion(user.getTokenVersion() + 1);
-            refreshTokenService.revokeAllRefreshTokens(id);
-        }
         if (request.fullName() != null) {
             getOrCreateCustomer(user).setFullName(request.fullName());
-        }
-        if (request.phone() != null) {
-            getOrCreateCustomer(user).setPhone(request.phone());
         }
         if (request.avatar() != null) {
             getOrCreateCustomer(user).setAvatarUrl(request.avatar());
@@ -293,5 +270,32 @@ public class UserServiceImpl implements UserService {
             roles.add(role);
         }
         return roles;
+    }
+    public Page<UserResponse> searchUserByNameOrPhone(String name, String phone, Pageable pageable) {
+        String searchName = cleanSearch(name);
+        String searchPhone = cleanSearch(phone);
+        if (searchPhone != null) {
+            try {
+                searchPhone = normalizePhoneForSearch(searchPhone);
+            } catch (IllegalArgumentException ignored) {
+                // Keep raw input for partial/non-Vietnamese phone search.
+            }
+        }
+        return repo.findByNameOrPhone(searchName, searchPhone, pageable)
+                .map(UserResponse::fromEntity);
+    }
+
+    private String cleanSearch(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
+    }
+
+    private String normalizePhoneForSearch(String value) {
+        String compact = value.trim().replaceAll("[\\s.()\\-]", "");
+        if (compact.startsWith("+84") || compact.startsWith("84") || compact.startsWith("0")) {
+            if (compact.startsWith("+84")) return compact;
+            if (compact.startsWith("84")) return "+" + compact;
+            return "+84" + compact.substring(1);
+        }
+        throw new IllegalArgumentException("Not a phone number");
     }
 }

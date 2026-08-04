@@ -37,6 +37,7 @@ import type {
   PurchaseOrderStatus,
   PurchaseOrderStatusUpdateRequest,
   ReviewResponse,
+  RoleResponse,
   StockMovementRequest,
   StockMovementResponse,
   SupplierRequest,
@@ -178,9 +179,14 @@ export const adminApi = {
     list: (params?: PageParams) => get<PageResponse<UserResponse>>("/admin/users", { params }),
     detail: (id: number) => get<UserResponse>(`/admin/users/${id}`),
     byEmail: (email: string) => get<UserResponse>(`/admin/users/email/${encodeURIComponent(email)}`),
+    search: (name?: string, phone?: string, params?: PageParams) => get<PageResponse<UserResponse>>("/admin/users/search", { params: { name, phone, ...params } }),
     active: (params?: PageParams) => get<PageResponse<UserResponse>>("/admin/users/active", { params }),
     update: (id: number, data: UserUpdateRequest) => put<UserResponse>(`/admin/users/${id}`, data),
     delete: (id: number) => remove<void>(`/admin/users/${id}`),
+  },
+
+  roles: {
+    list: () => get<RoleResponse[]>("/admin/roles"),
   },
 
   userAddresses: {
@@ -191,6 +197,7 @@ export const adminApi = {
   reviews: {
     list: (params?: PageParams) => get<PageResponse<ReviewResponse>>("/admin/reviews", { params }),
     byUser: (userId: number, params?: PageParams) => get<PageResponse<ReviewResponse>>(`/admin/reviews/user/${userId}`, { params }),
+    search: (name: string, params?: PageParams) => get<PageResponse<ReviewResponse>>("/admin/reviews/search", { params: { name, ...params } }),
   },
 
   suppliers: {

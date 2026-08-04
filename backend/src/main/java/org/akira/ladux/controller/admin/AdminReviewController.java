@@ -25,4 +25,14 @@ public class AdminReviewController {
     public ResponseEntity<Page<ReviewResponse>> getReviewsByUserId(@PathVariable int userId, Pageable pageable) {
         return ResponseEntity.ok(service.getReviewsByUserId(userId, pageable));
     }
+    @GetMapping("/search/product/{productId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<ReviewResponse>> getReviewsByProductId(@PathVariable int productId, Pageable pageable) {
+        return ResponseEntity.ok(service.getReviewsByProductId(productId, pageable));
+    }
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<ReviewResponse>> findReviewByNameUser(@RequestParam(required = false) String name, Pageable pageable) {
+        return ResponseEntity.ok(service.findReviewByNameUser(name, pageable));
+    }
 }

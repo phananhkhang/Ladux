@@ -3,6 +3,7 @@ package org.akira.ladux.dto.catalog.request;
 import java.math.BigDecimal;
 
 public record ProductVariantRequest(
+        Integer id,
         Integer productId,
         Integer colorId,
         String ram,
