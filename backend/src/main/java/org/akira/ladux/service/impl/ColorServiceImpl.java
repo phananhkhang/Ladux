@@ -7,6 +7,8 @@ import org.akira.ladux.model.Color;
 import org.akira.ladux.repository.ColorRepository;
 import org.akira.ladux.repository.ProductVariantRepository;
 import org.akira.ladux.service.ColorService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class ColorServiceImpl implements ColorService {
     private final ColorRepository colorRepository;
     private final ProductVariantRepository productVariantRepository;
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Color> getAllColors(Pageable pageable) {
+        return colorRepository.findAll(pageable);
+    }
+
     @Override
     @Transactional
     public Color addColor(ColorRequest request) {

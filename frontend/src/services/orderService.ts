@@ -43,7 +43,7 @@ export interface OrderItemResponse {
 export interface OrderResponse {
   id: number;
   userId: number | null;
-  couponCode: number | null;
+  couponCode: string | null;
   subTotal: number;
   discountAmount: number;
   shippingFee?: number;

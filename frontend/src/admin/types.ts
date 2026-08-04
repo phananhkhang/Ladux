@@ -175,7 +175,7 @@ export interface OrderItemResponse {
 export interface OrderResponse {
   id: number;
   userId: number;
-  couponCode: number | null;
+  couponCode: string | null;
   subTotal: number;
   discountAmount: number;
   finalAmount: number;

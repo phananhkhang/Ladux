@@ -1,5 +1,6 @@
 package org.akira.ladux.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.akira.ladux.model.Product;
@@ -24,28 +25,31 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @EntityGraph(attributePaths = {"brand", "category", "images", "variants", "variants.color"})
     Product findBySlug(String slug);
     
-    @EntityGraph(attributePaths = {"brand", "category", "images", "variants", "variants.color"})
-    Page<Product> findAll(Pageable pageable);
+    @Query("select p.id from Product p")
+    Page<Integer> findAllIds(Pageable pageable);
+
+    @Query("select p.id from Product p where p.brand.id = :brandId")
+    Page<Integer> findIdsByBrandId(@Param("brandId") Integer brandId, Pageable pageable);
+
+    @Query("select p.id from Product p where p.category.id = :categoryId")
+    Page<Integer> findIdsByCategoryId(@Param("categoryId") Integer categoryId, Pageable pageable);
+
+    @Query("select p.id from Product p where p.isActive = true")
+    Page<Integer> findIdsByIsActiveTrue(Pageable pageable);
 
     @EntityGraph(attributePaths = {"brand", "category", "images", "variants", "variants.color"})
-    Page<Product> findByBrandId(Integer brandId, Pageable pageable);
-
-    @EntityGraph(attributePaths = {"brand", "category", "images", "variants", "variants.color"})
-    Page<Product> findByCategoryId(Integer categoryId, Pageable pageable);
-
-    @EntityGraph(attributePaths = {"brand", "category", "images", "variants", "variants.color"})
-    Page<Product> findByIsActiveTrue(Pageable pageable);
+    @Query("select distinct p from Product p where p.id in :ids")
+    List<Product> findSummariesByIdIn(@Param("ids") List<Integer> ids);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Product p where p.id = :id")
     Optional<Product> findByIdForUpdate(@Param("id") Integer id);
 
-    @EntityGraph(attributePaths = {"brand", "category", "images", "variants", "variants.color"})
     @Query("""
-        SELECT p FROM Product p
+        SELECT p.id FROM Product p
         WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%'))
         """)
-    Page<Product> search(
+    Page<Integer> searchIds(
             @Param("search") String search,
             Pageable pageable
     );

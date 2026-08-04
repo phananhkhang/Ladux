@@ -101,7 +101,7 @@ export const adminApi = {
   },
 
   colors: {
-    // TODO(BACKEND_API_REQUIRED): GET /api/v1/admin/color
+    list: (params?: PageParams) => get<PageResponse<ColorResponse>>("/admin/color", { params }),
     create: (data: ColorRequest) => post<ColorResponse>("/admin/color", data),
     update: (id: number, data: ColorRequest) => put<ColorResponse>(`/admin/color/${id}`, data),
     delete: (id: number) => remove<void>(`/admin/color/${id}`),
@@ -141,6 +141,7 @@ export const adminApi = {
 
   orders: {
     list: (params?: PageParams) => get<PageResponse<OrderResponse>>("/admin/orders", { params }),
+    detail: (orderId: number) => get<OrderResponse>(`/admin/orders/${orderId}`),
     byStatus: (status: OrderStatus, params?: PageParams) => get<PageResponse<OrderResponse>>(`/admin/orders/status/${status}`, { params }),
     updateStatus: (orderId: number, data: OrderStatusUpdateRequest) => patch<OrderResponse>(`/admin/orders/${orderId}/status`, data),
   },

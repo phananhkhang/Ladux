@@ -14,11 +14,14 @@ import org.akira.ladux.exception.ResourceNotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -31,10 +34,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'v3:all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    @Cacheable(value = "products", key = "'v4:all:' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
     public Page<ProductResponse> getAllProducts(Pageable pageable) {
-        return repo.findAll(pageable)
-                .map(ProductResponse::summaryFromEntity);
+        return toSummaryPage(repo.findAllIds(pageable), pageable);
     }
 
     @Override
@@ -59,37 +61,47 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'v3:brand:' + #brandId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    @Cacheable(value = "products", key = "'v4:brand:' + #brandId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
     public Page<ProductResponse> getProductsByBrandId(int brandId, Pageable pageable) {
-        return repo.findByBrandId(brandId, pageable)
-                .map(ProductResponse::summaryFromEntity);
+        return toSummaryPage(repo.findIdsByBrandId(brandId, pageable), pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'v3:category:' + #categoryId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    @Cacheable(value = "products", key = "'v4:category:' + #categoryId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
     public Page<ProductResponse> getProductsByCategoryId(int categoryId, Pageable pageable) {
-        return repo.findByCategoryId(categoryId, pageable)
-                .map(ProductResponse::summaryFromEntity);
+        return toSummaryPage(repo.findIdsByCategoryId(categoryId, pageable), pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'v3:active:' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    @Cacheable(value = "products", key = "'v4:active:' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
     public Page<ProductResponse> getActiveProducts(Pageable pageable) {
-        return repo.findByIsActiveTrue(pageable)
-                .map(ProductResponse::summaryFromEntity);
+        return toSummaryPage(repo.findIdsByIsActiveTrue(pageable), pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'v3:search:' + #search + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    @Cacheable(value = "products", key = "'v4:search:' + #search + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
     public Page<ProductResponse> searchProducts(String search, Pageable pageable) {
         if (search == null || search.isBlank()) {
             return getAllProducts(pageable);
         }
-        return repo.search(search.trim(), pageable)
-                .map(ProductResponse::summaryFromEntity);
+        return toSummaryPage(repo.searchIds(search.trim(), pageable), pageable);
+    }
+
+    private Page<ProductResponse> toSummaryPage(Page<Integer> idPage, Pageable pageable) {
+        if (idPage.isEmpty()) {
+            return new PageImpl<>(List.of(), pageable, idPage.getTotalElements());
+        }
+        Map<Integer, Product> productsById = repo.findSummariesByIdIn(idPage.getContent()).stream()
+                .collect(java.util.stream.Collectors.toMap(Product::getId, product -> product));
+        List<ProductResponse> content = idPage.getContent().stream()
+                .map(productsById::get)
+                .filter(java.util.Objects::nonNull)
+                .map(ProductResponse::summaryFromEntity)
+                .toList();
+        return new PageImpl<>(content, pageable, idPage.getTotalElements());
     }
 
     @Override

@@ -75,6 +75,7 @@ export default function ProductEditorPage() {
 
   const brandsQuery = useQuery({ queryKey: adminQueryKeys.resource("brands-lookup", {}), queryFn: () => adminApi.brands.list({ page: 0, size: 100 }), staleTime: 5 * 60_000 });
   const categoriesQuery = useQuery({ queryKey: adminQueryKeys.resource("categories-lookup", {}), queryFn: () => adminApi.categories.list({ page: 0, size: 100 }), staleTime: 5 * 60_000 });
+  const colorsQuery = useQuery({ queryKey: adminQueryKeys.resource("colors-lookup", {}), queryFn: () => adminApi.colors.list({ page: 0, size: 100, sort: "name,asc" }), staleTime: 5 * 60_000 });
   const productQuery = useQuery({ queryKey: adminQueryKeys.detail("products", id), queryFn: () => adminApi.products.detail(id), enabled: editing });
 
   useEffect(() => {
@@ -139,9 +140,8 @@ export default function ProductEditorPage() {
 
       <Panel className="overflow-hidden">
         <div className="flex items-center justify-between border-b border-slate-200 p-5 sm:p-6"><div><h2 className="text-lg font-extrabold text-slate-900">Cấu hình sản phẩm</h2><p className="mt-1 text-sm text-slate-500">RAM, ROM, màu, giá và tồn kho theo variant.</p></div><AdminButton type="button" tone="secondary" onClick={() => variants.append({ colorId: "", ram: "", rom: "", price: "", discountPrice: "", stockQuantity: "0", isActive: true })}><Plus className="h-4 w-4" />Thêm cấu hình</AdminButton></div>
-        <div className="border-b border-amber-100 bg-amber-50 px-5 py-3 text-xs font-semibold text-amber-800">Backend chưa có API GET danh sách màu. Trường Color ID được nhập thủ công khi cần. {/* TODO(BACKEND_API_REQUIRED): GET /api/v1/admin/color */}</div>
         <div className="space-y-4 p-5 sm:p-6">{variants.fields.map((field, index) => <div key={field.id} className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4"><div className="mb-4 flex items-center justify-between"><p className="text-sm font-extrabold text-slate-900">Cấu hình {index + 1}</p><AdminButton type="button" tone="ghost" size="icon" aria-label={`Xóa cấu hình ${index + 1}`} className="text-rose-600 hover:bg-rose-50" disabled={variants.fields.length <= 1} onClick={() => variants.remove(index)}><Trash2 className="h-4 w-4" /></AdminButton></div><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <div><label className="mb-1 block text-xs font-bold text-slate-600">Color ID</label><input className={fieldClassName} type="number" min="1" {...form.register(`variants.${index}.colorId`)} /></div>
+          <div><label className="mb-1 block text-xs font-bold text-slate-600">Màu sắc</label><select className={fieldClassName} {...form.register(`variants.${index}.colorId`)}><option value="">Không chọn màu</option>{colorsQuery.data?.content.map((color) => <option key={color.id} value={color.id}>{color.name} ({color.hexCode})</option>)}</select></div>
           <div><label className="mb-1 block text-xs font-bold text-slate-600">RAM</label><input className={fieldClassName} placeholder="16GB" {...form.register(`variants.${index}.ram`)} /></div>
           <div><label className="mb-1 block text-xs font-bold text-slate-600">ROM</label><input className={fieldClassName} placeholder="512GB SSD" {...form.register(`variants.${index}.rom`)} /></div>
           <div><label className="mb-1 block text-xs font-bold text-slate-600">Giá gốc *</label><input className={fieldClassName} type="number" min="0" step="1" {...form.register(`variants.${index}.price`)} /></div>

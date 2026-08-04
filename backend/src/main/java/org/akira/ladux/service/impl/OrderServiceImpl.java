@@ -73,16 +73,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "orders", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    @Cacheable(value = "orders", key = "'v2:all:' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
     public Page<OrderResponse> getAllOrders(Pageable pageable) {
-        // Lấy toàn bộ đơn hàng và chuyển sang DTO để trả về cho API.
-        return repo.findAll(pageable)
-                .map(OrderResponse::summaryFromEntity);
+        return toSummaryPage(repo.findAllIds(pageable), pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "orders", key = "'user:' + #userId + ':order:' + #orderId")
+    @Cacheable(value = "orders", key = "'v2:user:' + #userId + ':order:' + #orderId")
     public OrderResponse getOrderById(int userId, int orderId) {
         // Lấy đơn hàng kèm danh sách item để phục vụ kiểm tra quyền và hiển thị chi tiết.
         Order order = repo.findWithItemsById(orderId)
@@ -92,6 +90,15 @@ public class OrderServiceImpl implements OrderService {
           if (!order.getUser().getId().equals(userId)) {
             throw new BusinessRuleException("Bạn không có quyền xem đơn hàng này!");
         }
+        return OrderResponse.fromEntity(order);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "orders", key = "'v2:admin:order:' + #orderId")
+    public OrderResponse getOrderByIdForAdmin(int orderId) {
+        Order order = repo.findWithItemsById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng"));
         return OrderResponse.fromEntity(order);
     }
 
@@ -117,11 +124,23 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "orders", key = "'status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
+    @Cacheable(value = "orders", key = "'v2:status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
     public Page<OrderResponse> getOrdersByStatus(OrderStatus status, Pageable pageable) {
-        // Lọc đơn hàng theo trạng thái để phục vụ thống kê hoặc tra cứu.
-        return repo.findByStatus(status, pageable)
-                .map(OrderResponse::summaryFromEntity);
+        return toSummaryPage(repo.findIdsByStatus(status, pageable), pageable);
+    }
+
+    private Page<OrderResponse> toSummaryPage(Page<Integer> idPage, Pageable pageable) {
+        if (idPage.isEmpty()) {
+            return new PageImpl<>(List.of(), pageable, idPage.getTotalElements());
+        }
+        Map<Integer, Order> ordersById = repo.findSummariesByIdIn(idPage.getContent()).stream()
+                .collect(java.util.stream.Collectors.toMap(Order::getId, order -> order));
+        List<OrderResponse> content = idPage.getContent().stream()
+                .map(ordersById::get)
+                .filter(java.util.Objects::nonNull)
+                .map(OrderResponse::summaryFromEntity)
+                .toList();
+        return new PageImpl<>(content, pageable, idPage.getTotalElements());
     }
 
     @Override

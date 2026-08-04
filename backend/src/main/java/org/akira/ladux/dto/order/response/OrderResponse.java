@@ -1,7 +1,6 @@
 package org.akira.ladux.dto.order.response;
 
 import org.akira.ladux.model.Order;
-import org.akira.ladux.model.ShippingAddress;
 import org.akira.ladux.model.enums.OrderStatus;
 import org.akira.ladux.model.enums.PaymentProvider;
 import java.io.Serializable;
@@ -12,12 +11,12 @@ import java.util.List;
 public record OrderResponse(
         Integer id,
         Integer userId,
-        Integer couponCode,
+        String couponCode,
         BigDecimal subTotal,
         BigDecimal discountAmount,
         BigDecimal finalAmount,
         OrderStatus status,
-        ShippingAddress shippingAddress,
+        ShippingAddressResponse shippingAddress,
         String trackingNumber,
         String carrier,
         BigDecimal shippingFee,
@@ -34,12 +33,12 @@ public record OrderResponse(
         return new OrderResponse(
                 order.getId(),
                 order.getUser() == null ? null : order.getUser().getId(),
-                order.getCoupon() == null ? null : order.getCoupon().getId(),
+                order.getCoupon() == null ? null : order.getCoupon().getCode(),
                 order.getSubTotal(),
                 order.getDiscountAmount(),
                 order.getFinalAmount(),
                 order.getStatus(),
-                order.getShippingAddress(),
+                ShippingAddressResponse.fromEntity(order.getShippingAddress()),
                 order.getTrackingNumber(),
                 order.getCarrierName(),
                 order.getShippingFee(),
@@ -60,12 +59,12 @@ public record OrderResponse(
         return new OrderResponse(
                 order.getId(),
                 order.getUser() == null ? null : order.getUser().getId(),
-                order.getCoupon() == null ? null : order.getCoupon().getId(),
+                order.getCoupon() == null ? null : order.getCoupon().getCode(),
                 order.getSubTotal(),
                 order.getDiscountAmount(),
                 order.getFinalAmount(),
                 order.getStatus(),
-                order.getShippingAddress(),
+                ShippingAddressResponse.fromEntity(order.getShippingAddress()),
                 order.getTrackingNumber(),
                 order.getCarrierName(),
                 order.getShippingFee(),

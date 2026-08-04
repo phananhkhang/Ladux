@@ -13,6 +13,8 @@ public interface OrderService {
 
     OrderResponse getOrderById(int userId, int orderId);
 
+    OrderResponse getOrderByIdForAdmin(int orderId);
+
     Page<OrderResponse> getOrdersByUserId(int userId, Pageable pageable);
 
     Page<OrderResponse> getOrdersByStatus(OrderStatus status, Pageable pageable);

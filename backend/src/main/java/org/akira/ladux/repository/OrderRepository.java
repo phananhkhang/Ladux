@@ -18,8 +18,17 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
+    // Page only IDs first so pagination always happens in PostgreSQL. Fetching a
+    // collection (payments) in the paged query makes Hibernate paginate in memory.
+    @Query("select o.id from Order o")
+    Page<Integer> findAllIds(Pageable pageable);
+
+    @Query("select o.id from Order o where o.status = :status")
+    Page<Integer> findIdsByStatus(@Param("status") OrderStatus status, Pageable pageable);
+
     @EntityGraph(attributePaths = {"user", "coupon", "payments"})
-    Page<Order> findAll(Pageable pageable);
+    @Query("select distinct o from Order o where o.id in :ids")
+    List<Order> findSummariesByIdIn(@Param("ids") List<Integer> ids);
 
     // Lấy page ID đơn giản, KHÔNG join collection — tránh MultipleBagFetchException với Pageable
     @Query("select o.id from Order o where o.user.id = :userId order by o.id desc")
@@ -29,9 +38,6 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @EntityGraph(attributePaths = {"user", "coupon", "items", "items.product", "items.productVariant"})
     @Query("select o from Order o where o.id in :ids")
     List<Order> findByIdIn(@Param("ids") List<Integer> ids);
-
-    @EntityGraph(attributePaths = {"user", "coupon", "payments"})
-    Page<Order> findByStatus(OrderStatus status, Pageable pageable);
 
     @EntityGraph(attributePaths = {"user", "items", "items.productVariant", "coupon"})
     @Query("select o from Order o where o.id = :id")

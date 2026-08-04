@@ -94,6 +94,7 @@ public class Order {
     private List<OrderHistory> histories = new ArrayList<>();
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt ASC")
     @ToString.Exclude
     @Builder.Default
     private List<Payment> payments = new ArrayList<>();

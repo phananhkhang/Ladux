@@ -243,3 +243,39 @@
     line-height: 1.5;
   }
 }
+
+/* Custom Ultra-Modern Scrollbar for Admin Sidebar */
+.custom-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.35) transparent;
+}
+
+.custom-sidebar-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 9999px;
+  transition: all 0.25s ease-in-out;
+}
+
+.custom-sidebar-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
+
+.custom-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.85);
+}
+
+.custom-sidebar-scrollbar::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+

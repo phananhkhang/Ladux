@@ -30,6 +30,12 @@ public class AdminOrderController {
         return ResponseEntity.ok(service.getOrdersByStatus(status, pageable));
     }
 
+    @GetMapping("/{orderId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable int orderId) {
+        return ResponseEntity.ok(service.getOrderByIdForAdmin(orderId));
+    }
+
     @PatchMapping("/{orderId}/status")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<OrderResponse> updateOrderStatus(
