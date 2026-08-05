@@ -18,5 +18,5 @@ public interface SupplierService {
 
     void deleteSupplierById(int id);
 
-    Page<SupplierResponse> searchSuppliers(String name, String phone, Pageable pabable);
+    Page<SupplierResponse> searchSuppliers(String name, String phone, Pageable pageable);
 }

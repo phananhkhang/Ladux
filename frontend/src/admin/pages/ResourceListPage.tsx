@@ -239,7 +239,7 @@ const definitions: Record<ResourceName, ResourceDefinition> = {
       { key: "supplier", header: "Nhà cung cấp", render: (row) => <div><Link to={`/admin/suppliers/${text(row, "id")}`} className="font-bold text-slate-900 hover:text-indigo-600">{text(row, "name")}</Link><p className="text-xs text-slate-400">{text(row, "email")}</p></div> },
       { key: "phone", header: "Điện thoại", render: (row) => text(row, "phone") },
       { key: "address", header: "Địa chỉ", render: (row) => <span className="max-w-sm whitespace-normal">{text(row, "address")}</span> }, activeColumn, createdColumn,
-    ], fetcher: (params) => params.status === "ACTIVE" ? adminApi.suppliers.active(params).then(asAdminPage) : params.search ? adminApi.suppliers.search(params.search, undefined, params).then(asAdminPage) : adminApi.suppliers.list(params).then(asAdminPage),
+    ], fetcher: (params) => params.status === "ACTIVE" ? adminApi.suppliers.active(params).then(asAdminPage) : params.search ? adminApi.suppliers.search(params.search, params.search, params).then(asAdminPage) : adminApi.suppliers.list(params).then(asAdminPage),
     form: {
       title: "nhà cung cấp", fields: [{ key: "name", label: "Tên nhà cung cấp" }, { key: "address", label: "Địa chỉ" }, { key: "phone", label: "Điện thoại" }, { key: "email", label: "Email", type: "email" }, { key: "isActive", label: "Đang hoạt động", type: "checkbox" }],
       schema: z.object({ name: z.string().trim().min(1).max(150), address: z.string().max(255).optional(), phone: z.string().max(20).optional(), email: z.union([z.string().email(), z.literal("")]), isActive: z.boolean() }).passthrough(),

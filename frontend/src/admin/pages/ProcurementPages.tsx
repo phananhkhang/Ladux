@@ -55,14 +55,78 @@ export function PurchaseOrdersPage() {
 
 export function PurchaseOrderNewPage() {
   const navigate = useNavigate();
-  const [supplierId, setSupplierId] = useState(""); const [note, setNote] = useState(""); const [items, setItems] = useState<Array<{ productVariantId: string; quantity: string; costPrice: string; note: string }>>([{ productVariantId: "", quantity: "1", costPrice: "", note: "" }]); const [error, setError] = useState<string | null>(null);
-  const suppliersQuery = useQuery({ queryKey: adminQueryKeys.resource("active-suppliers", {}), queryFn: () => adminApi.suppliers.active({ page: 0, size: 100 }) });
-  const productsQuery = useQuery({ queryKey: adminQueryKeys.resource("products-variant-lookup", {}), queryFn: () => adminApi.products.list({ page: 0, size: 100, search: "" }) });
-  const mutation = useMutation({ mutationFn: (payload: { supplierId: number; note: string | null; items: PurchaseOrderItemRequest[] }) => adminApi.purchaseOrders.create(payload), onSuccess: (order) => { toast.success("Đã tạo đơn nhập hàng"); navigate(`/admin/purchase-orders/${order.id}`, { replace: true }); }, onError: (mutationError) => setError(getApiErrorMessage(mutationError)) });
-  const variants = productsQuery.data?.content.flatMap((product) => (product.variants ?? []).map((variant) => ({ ...variant, productName: product.name }))) ?? [];
+  const [supplierId, setSupplierId] = useState("");
+  const [note, setNote] = useState("");
+  const [items, setItems] = useState<Array<{ productVariantId: string; quantity: string; costPrice: string; note: string }>>([{ productVariantId: "", quantity: "1", costPrice: "", note: "" }]);
+  const [error, setError] = useState<string | null>(null);
+
+  const selectedSupplierId = Number(supplierId);
+
+  const suppliersQuery = useQuery({
+    queryKey: adminQueryKeys.resource("active-suppliers", {}),
+    queryFn: () => adminApi.suppliers.active({ page: 0, size: 100 }),
+  });
+
+  const productSuppliersQuery = useQuery({
+    queryKey: adminQueryKeys.resource("product-suppliers-by-supplier", { supplierId: selectedSupplierId }),
+    queryFn: () => adminApi.productSuppliers.bySupplier(selectedSupplierId),
+    enabled: selectedSupplierId > 0,
+  });
+
+  const productsQuery = useQuery({
+    queryKey: adminQueryKeys.resource("products-variant-lookup", {}),
+    queryFn: () => adminApi.products.list({ page: 0, size: 100, search: "" }),
+  });
+
+  const mutation = useMutation({
+    mutationFn: (payload: { supplierId: number; note: string | null; items: PurchaseOrderItemRequest[] }) => adminApi.purchaseOrders.create(payload),
+    onSuccess: (order) => { toast.success("Đã tạo đơn nhập hàng"); navigate(`/admin/purchase-orders/${order.id}`, { replace: true }); },
+    onError: (mutationError) => setError(getApiErrorMessage(mutationError)),
+  });
+
+  const allVariants = useMemo(() => {
+    return productsQuery.data?.content.flatMap((product) => (product.variants ?? []).map((variant) => ({ ...variant, productName: product.name }))) ?? [];
+  }, [productsQuery.data]);
+
+  const supplierProductCostMap = useMemo(() => {
+    const map = new Map<number, number | null>();
+    if (productSuppliersQuery.data) {
+      productSuppliersQuery.data.forEach((ps) => map.set(ps.productId, ps.costPrice));
+    }
+    return map;
+  }, [productSuppliersQuery.data]);
+
+  const filteredVariants = useMemo(() => {
+    if (selectedSupplierId <= 0) return [];
+    return allVariants.filter((variant) => supplierProductCostMap.has(variant.productId));
+  }, [selectedSupplierId, allVariants, supplierProductCostMap]);
+
+  const handleSupplierChange = (newSupplierId: string) => {
+    setSupplierId(newSupplierId);
+    setItems([{ productVariantId: "", quantity: "1", costPrice: "", note: "" }]);
+  };
+
+  const handleVariantChange = (index: number, variantIdStr: string) => {
+    const vId = Number(variantIdStr);
+    const selectedVar = filteredVariants.find((v) => v.id === vId);
+    const defaultCost = selectedVar ? supplierProductCostMap.get(selectedVar.productId) : null;
+    const costPriceStr = defaultCost != null ? String(defaultCost) : "";
+
+    setItems((current) => current.map((line, i) => i === index ? { ...line, productVariantId: variantIdStr, costPrice: costPriceStr } : line));
+  };
+
   const previewTotal = items.reduce((sum, item) => sum + (Number(item.quantity) || 0) * (Number(item.costPrice) || 0), 0);
-  const submit = (event: FormEvent) => { event.preventDefault(); setError(null); if (Number(supplierId) <= 0) return setError("Vui lòng chọn nhà cung cấp"); const normalized = items.filter((item) => Number(item.quantity) > 0).map((item) => ({ productVariantId: Number(item.productVariantId), quantity: Number(item.quantity), costPrice: Number(item.costPrice), note: item.note.trim() || null })); if (!normalized.length || normalized.some((item) => item.productVariantId <= 0 || item.quantity <= 0 || item.costPrice < 0)) return setError("Mỗi dòng phải có variant, số lượng dương và giá nhập hợp lệ"); mutation.mutate({ supplierId: Number(supplierId), note: note.trim() || null, items: normalized }); };
-  return <><PageHeader title="Tạo đơn nhập hàng" description="Chọn variant từ ProductResponse. Backend sẽ tính totalAmount làm nguồn sự thật." actions={<Link to="/admin/purchase-orders"><AdminButton tone="secondary"><ArrowLeft className="h-4 w-4" />Danh sách</AdminButton></Link>} /><form className="space-y-6" onSubmit={submit}>{error && <div role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-700">{error}</div>}<Panel className="p-5 sm:p-6"><div className="grid gap-4 md:grid-cols-2"><div><label className="mb-1.5 block text-sm font-bold text-slate-700">Nhà cung cấp *</label><select className={fieldClassName} value={supplierId} onChange={(event) => setSupplierId(event.target.value)}><option value="">Chọn nhà cung cấp</option>{suppliersQuery.data?.content.map((supplier) => <option key={supplier.id} value={supplier.id}>{supplier.name}</option>)}</select></div><div><label className="mb-1.5 block text-sm font-bold text-slate-700">Ghi chú</label><input className={fieldClassName} maxLength={500} value={note} onChange={(event) => setNote(event.target.value)} /></div></div></Panel><Panel className="overflow-hidden"><div className="flex items-center justify-between border-b border-slate-200 p-5"><div><h2 className="font-extrabold text-slate-900">Sản phẩm nhập</h2><p className="mt-1 text-sm text-slate-500">Tổng xem trước: <strong>{formatCurrency(previewTotal)}</strong></p></div><AdminButton type="button" tone="secondary" onClick={() => setItems((current) => [...current, { productVariantId: "", quantity: "1", costPrice: "", note: "" }])}><Plus className="h-4 w-4" />Thêm dòng</AdminButton></div><div className="space-y-4 p-5">{items.map((item, index) => <div key={index} className="grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[2fr_0.7fr_1fr_1.3fr_auto]"><select className={fieldClassName} value={item.productVariantId} onChange={(event) => setItems((current) => current.map((line, i) => i === index ? { ...line, productVariantId: event.target.value } : line))}><option value="">Chọn variant</option>{variants.map((variant) => <option key={variant.id} value={variant.id}>{variant.productName} · {variant.sku} · {[variant.ram, variant.rom, variant.color?.name].filter(Boolean).join("/")}</option>)}</select><input aria-label="Số lượng" className={fieldClassName} type="number" min="1" value={item.quantity} onChange={(event) => setItems((current) => current.map((line, i) => i === index ? { ...line, quantity: event.target.value } : line))} /><input aria-label="Giá nhập" className={fieldClassName} type="number" min="0" value={item.costPrice} onChange={(event) => setItems((current) => current.map((line, i) => i === index ? { ...line, costPrice: event.target.value } : line))} /><input aria-label="Ghi chú dòng" className={fieldClassName} maxLength={255} value={item.note} onChange={(event) => setItems((current) => current.map((line, i) => i === index ? { ...line, note: event.target.value } : line))} /><AdminButton type="button" tone="ghost" size="icon" aria-label="Xóa dòng" className="text-rose-600" disabled={items.length <= 1} onClick={() => setItems((current) => current.filter((_, i) => i !== index))}><Trash2 className="h-4 w-4" /></AdminButton></div>)}</div></Panel><div className="flex justify-end"><AdminButton type="submit" disabled={mutation.isPending}>{mutation.isPending && <LoaderCircle className="h-4 w-4 animate-spin" />}Tạo đơn nhập hàng</AdminButton></div></form></>;
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    setError(null);
+    if (selectedSupplierId <= 0) return setError("Vui lòng chọn nhà cung cấp");
+    const normalized = items.filter((item) => Number(item.quantity) > 0).map((item) => ({ productVariantId: Number(item.productVariantId), quantity: Number(item.quantity), costPrice: Number(item.costPrice), note: item.note.trim() || null }));
+    if (!normalized.length || normalized.some((item) => item.productVariantId <= 0 || item.quantity <= 0 || item.costPrice < 0)) return setError("Mỗi dòng phải có variant, số lượng dương và giá nhập hợp lệ");
+    mutation.mutate({ supplierId: selectedSupplierId, note: note.trim() || null, items: normalized });
+  };
+
+  return <><PageHeader title="Tạo đơn nhập hàng" description="Chọn nhà cung cấp và sản phẩm đã liên kết. Backend sẽ tính totalAmount làm nguồn sự thật." actions={<Link to="/admin/purchase-orders"><AdminButton tone="secondary"><ArrowLeft className="h-4 w-4" />Danh sách</AdminButton></Link>} /><form className="space-y-6" onSubmit={submit}>{error && <div role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-700">{error}</div>}<Panel className="p-5 sm:p-6"><div className="grid gap-4 md:grid-cols-2"><div><label className="mb-1.5 block text-sm font-bold text-slate-700">Nhà cung cấp *</label><select className={fieldClassName} value={supplierId} onChange={(event) => handleSupplierChange(event.target.value)}><option value="">Chọn nhà cung cấp</option>{suppliersQuery.data?.content.map((supplier) => <option key={supplier.id} value={supplier.id}>{supplier.name}</option>)}</select></div><div><label className="mb-1.5 block text-sm font-bold text-slate-700">Ghi chú</label><input className={fieldClassName} maxLength={500} value={note} onChange={(event) => setNote(event.target.value)} /></div></div></Panel><Panel className="overflow-hidden"><div className="flex items-center justify-between border-b border-slate-200 p-5"><div><h2 className="font-extrabold text-slate-900">Sản phẩm nhập</h2><p className="mt-1 text-sm text-slate-500">Tổng xem trước: <strong>{formatCurrency(previewTotal)}</strong></p></div><AdminButton type="button" tone="secondary" disabled={selectedSupplierId <= 0} onClick={() => setItems((current) => [...current, { productVariantId: "", quantity: "1", costPrice: "", note: "" }])}><Plus className="h-4 w-4" />Thêm dòng</AdminButton></div>{selectedSupplierId <= 0 ? <div className="p-8 text-center text-sm font-semibold text-slate-500">Vui lòng chọn nhà cung cấp trước khi chọn sản phẩm.</div> : productSuppliersQuery.isLoading ? <div className="p-8 text-center text-sm font-semibold text-slate-500">Đang tải danh sách sản phẩm liên kết...</div> : filteredVariants.length === 0 ? <div className="p-8 text-center text-sm font-semibold text-amber-700 bg-amber-50 rounded-xl m-5">Nhà cung cấp này chưa được liên kết với sản phẩm nào trong hệ thống. Hãy vào menu "Liên kết NCC" để gán sản phẩm trước.</div> : <div className="space-y-4 p-5">{items.map((item, index) => <div key={index} className="grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[2fr_0.7fr_1fr_1.3fr_auto]"><select className={fieldClassName} value={item.productVariantId} onChange={(event) => handleVariantChange(index, event.target.value)}><option value="">Chọn variant</option>{filteredVariants.map((variant) => <option key={variant.id} value={variant.id}>{variant.productName} · {variant.sku} · {[variant.ram, variant.rom, variant.color?.name].filter(Boolean).join("/")}</option>)}</select><input aria-label="Số lượng" className={fieldClassName} type="number" min="1" value={item.quantity} onChange={(event) => setItems((current) => current.map((line, i) => i === index ? { ...line, quantity: event.target.value } : line))} /><input aria-label="Giá nhập" className={fieldClassName} type="number" min="0" value={item.costPrice} onChange={(event) => setItems((current) => current.map((line, i) => i === index ? { ...line, costPrice: event.target.value } : line))} /><input aria-label="Ghi chú dòng" className={fieldClassName} maxLength={255} value={item.note} onChange={(event) => setItems((current) => current.map((line, i) => i === index ? { ...line, note: event.target.value } : line))} /><AdminButton type="button" tone="ghost" size="icon" aria-label="Xóa dòng" className="text-rose-600" disabled={items.length <= 1} onClick={() => setItems((current) => current.filter((_, i) => i !== index))}><Trash2 className="h-4 w-4" /></AdminButton></div>)}</div>}</Panel><div className="flex justify-end"><AdminButton type="submit" disabled={mutation.isPending || selectedSupplierId <= 0}>{mutation.isPending && <LoaderCircle className="h-4 w-4 animate-spin" />}Tạo đơn nhập hàng</AdminButton></div></form></>;
 }
 
 export function PurchaseOrderDetailPage() {

@@ -38,9 +38,11 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<SupplierResponse> searchSuppliers(String name, String phone, Pageable pageable) {
-        return repo.searchByNameOrPhone(name, phone, pageable);
+        String searchName = (name != null && !name.isBlank()) ? name.trim() : null;
+        String searchPhone = (phone != null && !phone.isBlank()) ? phone.trim() : null;
+        return repo.searchByNameOrPhone(searchName, searchPhone, pageable);
     }
 
     @Override

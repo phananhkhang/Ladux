@@ -33,6 +33,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     private final PurchaseOrderRepository repo;
     private final SupplierRepository supplierRepository;
     private final ProductVariantRepository productVariantRepository;
+    private final ProductSupplierRepository productSupplierRepository;
     private final UserRepository userRepository;
     private final StockMovementService stockMovementService;
 
@@ -56,6 +57,12 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         for (AdminPurchaseOrderItemRequest line : request.items()) {
             ProductVariant productVariant = productVariantRepository.findById(line.productVariantId())
                     .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham id = " + line.productVariantId()));
+
+            boolean isLinked = productSupplierRepository.existsByProductIdAndSupplierId(productVariant.getProduct().getId(), supplier.getId());
+            if (!isLinked) {
+                throw new BusinessRuleException("San pham '" + productVariant.getProduct().getName() + "' (ID " + productVariant.getProduct().getId() + ") chưa duoc lien ket voi nha cung cap '" + supplier.getName() + "'");
+            }
+
             PurchaseOrderItem item = PurchaseOrderItem.builder()
                     .purchaseOrder(po)
                     .productVariant(productVariant)

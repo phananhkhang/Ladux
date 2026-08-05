@@ -63,7 +63,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <PageHeader title="Tổng quan vận hành"  actions={<span className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700"><span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />Dữ liệu trực tiếp</span>} />
+      <PageHeader title="Tổng quan vận hành" description="Báo cáo số liệu tổng quan hệ thống." actions={<span className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700"><span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />Dữ liệu trực tiếp</span>} />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map((card) => {
