@@ -13,6 +13,8 @@ interface NotificationState {
 
   // Actions
   fetchNotifications: (page?: number, size?: number) => Promise<void>;
+  fetchUnreadNotifications: (page?: number, size?: number) => Promise<void>;
+  fetchReadNotifications: (page?: number, size?: number) => Promise<void>;
   fetchUnreadCount: () => Promise<void>;
   markAsRead: (id: number) => Promise<void>;
   markAllAsRead: () => Promise<void>;
@@ -50,6 +52,48 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     } catch (err: any) {
       console.error('Lỗi fetch notifications:', err);
       const message = err?.response?.data?.message || 'Không thể tải danh sách thông báo!';
+      set({ error: message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  fetchUnreadNotifications: async (page = 0, size = 10) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await notificationService.getAllUnReadNotifications(page, size);
+      set({
+        notifications: res.content || [],
+        totalElements: res.totalElements || 0,
+        totalPages: res.totalPages || 0,
+        page,
+        size,
+      });
+      await get().fetchUnreadCount();
+    } catch (err: any) {
+      console.error('Lỗi fetch unread notifications:', err);
+      const message = err?.response?.data?.message || 'Không thể tải thông báo chưa đọc!';
+      set({ error: message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  fetchReadNotifications: async (page = 0, size = 10) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await notificationService.getAllReadNotifications(page, size);
+      set({
+        notifications: res.content || [],
+        totalElements: res.totalElements || 0,
+        totalPages: res.totalPages || 0,
+        page,
+        size,
+      });
+      await get().fetchUnreadCount();
+    } catch (err: any) {
+      console.error('Lỗi fetch read notifications:', err);
+      const message = err?.response?.data?.message || 'Không thể tải thông báo đã đọc!';
       set({ error: message });
     } finally {
       set({ isLoading: false });

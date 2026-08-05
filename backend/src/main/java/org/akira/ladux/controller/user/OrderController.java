@@ -40,6 +40,13 @@ public class OrderController {
         return new ResponseEntity<>(service.createOrder(principal.getId(), request), HttpStatus.CREATED);
     }
 
+    // Hủy đơn hàng
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<Void> cancelOrder(@PathVariable Integer orderId) {
+        service.cancelOrder(orderId);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/{orderId}/payments/retry")
     public ResponseEntity<PaymentCallbackResponse> retryPayment(
             @AuthenticationPrincipal UserPrincipal principal,

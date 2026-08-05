@@ -14,7 +14,7 @@ public class PhoneNumberUtils {
      * +84912345678   -> +84912345678
      * 0912 345 678   -> +84912345678
      */
-    public String normalize(String rawPhoneNumber) {
+    public static String normalize(String rawPhoneNumber) {
         if (rawPhoneNumber == null || rawPhoneNumber.isBlank()) {
             throw new IllegalArgumentException(
                     "Số điện thoại không được để trống"
@@ -53,7 +53,7 @@ public class PhoneNumberUtils {
      * Ví dụ:
      * +84912345678
      */
-    public boolean isValidVietnamPhone(String phoneNumber) {
+    public static boolean isValidVietnamPhone(String phoneNumber) {
         if (phoneNumber == null) {
             return false;
         }
@@ -66,7 +66,7 @@ public class PhoneNumberUtils {
      *
      * +84912345678 -> *******5678
      */
-    public String mask(String phoneNumber) {
+    public static String mask(String phoneNumber) {
         if (phoneNumber == null || phoneNumber.isBlank()) {
             return phoneNumber;
         }
@@ -90,7 +90,7 @@ public class PhoneNumberUtils {
      *
      * +84912345678 -> +84******5678
      */
-    public String maskKeepCountryCode(String rawPhoneNumber) {
+    public static String maskKeepCountryCode(String rawPhoneNumber) {
         String normalized = normalize(rawPhoneNumber);
 
         String countryCode = "+84";
@@ -109,7 +109,7 @@ public class PhoneNumberUtils {
                 + localNumber.substring(hiddenLength);
     }
 
-    private String removeSeparators(String phoneNumber) {
+    private static String removeSeparators(String phoneNumber) {
         return phoneNumber
                 .trim()
                 .replaceAll("[\\s.()-]", "");

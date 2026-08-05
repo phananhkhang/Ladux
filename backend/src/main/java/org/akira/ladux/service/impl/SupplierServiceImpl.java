@@ -1,11 +1,13 @@
 package org.akira.ladux.service.impl;
 
+import com.twilio.type.PhoneNumber;
 import org.akira.ladux.dto.inventory.request.SupplierRequest;
 import org.akira.ladux.dto.inventory.response.SupplierResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Supplier;
 import org.akira.ladux.repository.SupplierRepository;
 import org.akira.ladux.service.SupplierService;
+import org.akira.ladux.utils.PhoneNumberUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -48,10 +50,18 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     @Transactional
     public SupplierResponse createSupplier(SupplierRequest request) {
+        if (request.name() == null || request.name().isBlank()) {
+            throw new IllegalArgumentException("Tên nhà cung cấp không được để trống");
+        }
+        if (request.phone() == null || request.phone().isBlank()) {
+            throw new IllegalArgumentException("Số điện thoại nhà cung cấp không được để trống");
+        }
+        String phoneNormalized = request.phone().trim();
+        phoneNormalized = PhoneNumberUtils.normalize(phoneNormalized);
         Supplier supplier = Supplier.builder()
                 .name(request.name().trim())
                 .address(request.address())
-                .phone(request.phone())
+                .phone(phoneNormalized)
                 .email(request.email())
                 .isActive(request.isActive() == null || request.isActive())
                 .build();

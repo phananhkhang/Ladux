@@ -28,6 +28,7 @@ interface OrderState {
   fetchOrderHistories: (page?: number, size?: number) => Promise<void>;
   createOrder: (data: OrderRequest) => Promise<OrderResponse>;
   retryPayment: (orderId: number) => Promise<OrderPaymentRetryResponse>;
+  cancelOrder: (orderId: number) => Promise<void>;
   clearCurrentOrder: () => void;
   clearError: () => void;
   reset: () => void;
@@ -126,6 +127,25 @@ export const useOrderStore = create<OrderState>((set, get) => ({
     } catch (err: any) {
       console.error('Lỗi retry payment:', err);
       const message = err?.response?.data?.message || 'Thanh toán lại thất bại!';
+      set({ error: message });
+      throw err;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  cancelOrder: async (orderId: number) => {
+    set({ isLoading: true, error: null });
+    try {
+      await orderService.cancelOrder(orderId);
+      await Promise.all([
+        get().fetchOrders(get().page, get().size),
+        get().fetchOrderById(orderId),
+        get().fetchOrderHistories(),
+      ]);
+    } catch (err: any) {
+      console.error('Lỗi cancel order:', err);
+      const message = err?.response?.data?.message || 'Hủy đơn hàng thất bại!';
       set({ error: message });
       throw err;
     } finally {

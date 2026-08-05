@@ -23,12 +23,7 @@ import org.akira.ladux.model.enums.StockReferenceType;
 import org.akira.ladux.repository.CartRepository;
 import org.akira.ladux.repository.OrderRepository;
 import org.akira.ladux.repository.UserRepository;
-import org.akira.ladux.service.CouponRedemptionService;
-import org.akira.ladux.service.InventoryService;
-import org.akira.ladux.service.OrderService;
-import org.akira.ladux.service.OrderStateMachine;
-import org.akira.ladux.service.PaymentAttemptService;
-import org.akira.ladux.service.StockMovementService;
+import org.akira.ladux.service.*;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -64,6 +59,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentAttemptService paymentAttemptService;
     private final OrderStateMachine orderStateMachine;
     private final StockMovementService stockMovementService;
+    private final OrderLifecycleService orderLifecycleService;
 
     @Value("${app.order.shipping-fee:30000}")
     private BigDecimal configuredShippingFee;
@@ -292,5 +288,14 @@ public class OrderServiceImpl implements OrderService {
     })
     public PaymentCallbackResponse retryPayment(int userId, int orderId) {
         return paymentAttemptService.retryPayment(userId, orderId);
+    }
+    @Override
+    @Transactional
+    public void cancelOrder(Integer orderId) {
+        Order order = repo.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng"));
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new BusinessRuleException("Chỉ có thể hủy đơn hàng đang ở trạng thái PENDING");
+        }
+        orderLifecycleService.cancelOrder(order, "Order được hủy bởi người dùng");
     }
 }

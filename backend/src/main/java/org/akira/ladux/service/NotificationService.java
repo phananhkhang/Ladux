@@ -16,8 +16,6 @@ public interface NotificationService {
 
     void markAsRead(Integer id);
 
-    void markAllAsRead();
-
     void deleteNotification(Integer id);
 
     void deleteAllNotifications();

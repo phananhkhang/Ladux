@@ -54,12 +54,7 @@ public class NotificationServiceImpl implements NotificationService {
         Notification notification = notificationRepository.findByIdAndRecipientIdAndIsReadFalse(notificationId, currentUserId).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông báo chưa đọc với id = " + notificationId));
         notification.setRead(true);
     }
-    @Override
-    @Transactional
-    public void markAllAsRead() {
-        Integer currentUserId = SecurityUtils.getCurrentUserId();
-        notificationRepository.markAllAsReadByUserId(currentUserId);
-    }
+
     @Override
     @Transactional
     public void deleteNotification(Integer notificationId) {

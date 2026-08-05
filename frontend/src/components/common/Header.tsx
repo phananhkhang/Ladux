@@ -4,6 +4,7 @@ import {
     Search,
     Heart,
     ShoppingBag,
+    Bell,
     Lock,
     User,
     ChevronRight,
@@ -11,11 +12,13 @@ import {
     MapPin,
     LogOut,
     Package,
+    X,
+    Trash2,
 } from "lucide-react";
 import laduxLogoImg from "../../assets/ladux-logo.png";
 import { getAvatarUrl } from "../../types";
 import { ROUTES } from "../../app/routePaths";
-import { useAuthStore, useOrderStore, useProductStore, useWishlistStore } from "../../stores";
+import { useAuthStore, useNotificationStore, useOrderStore, useProductStore, useWishlistStore } from "../../stores";
 import { STOREFRONT_CONTACT } from "../../config/storefront";
 
 export interface HeaderProps {
@@ -54,6 +57,18 @@ export default function Header({
     const wishlistProductIds = useWishlistStore((state) => state.wishlistProductIds);
     const categories = useProductStore((state) => state.categories);
 
+    const notifications = useNotificationStore((state) => state.notifications);
+    const unreadCount = useNotificationStore((state) => state.unreadCount);
+    const fetchNotifications = useNotificationStore((state) => state.fetchNotifications);
+    const fetchUnreadNotifications = useNotificationStore((state) => state.fetchUnreadNotifications);
+    const fetchReadNotifications = useNotificationStore((state) => state.fetchReadNotifications);
+    const markAsRead = useNotificationStore((state) => state.markAsRead);
+    const markAllAsRead = useNotificationStore((state) => state.markAllAsRead);
+    const deleteNotification = useNotificationStore((state) => state.deleteNotification);
+    const deleteAllNotifications = useNotificationStore((state) => state.deleteAllNotifications);
+
+    const [notifTab, setNotifTab] = React.useState<"all" | "unread" | "read">("all");
+
     const isLoggedIn = authIsLoggedIn || propsIsLoggedIn;
     const displayName = user?.fullName || user?.username || propsUserName || "Thành viên LADUX";
     const userPhone = user?.phone || user?.email || "";
@@ -61,6 +76,18 @@ export default function Header({
 
     const displayWishlistCount = wishlistProductIds.length > 0 ? wishlistProductIds.length : wishlistCount;
     const displayOrderCount = totalOrderElements || orders.length;
+
+    React.useEffect(() => {
+        if (isLoggedIn) {
+            if (notifTab === "unread") {
+                fetchUnreadNotifications(0, 10);
+            } else if (notifTab === "read") {
+                fetchReadNotifications(0, 10);
+            } else {
+                fetchNotifications(0, 10);
+            }
+        }
+    }, [isLoggedIn, notifTab, fetchNotifications, fetchUnreadNotifications, fetchReadNotifications]);
 
     const handleLogout = async () => {
         try {
@@ -157,20 +184,6 @@ export default function Header({
 
                 {/* ── Right Actions ── */}
                 <div className="z-10 flex items-center gap-2 shrink-0 mr-2 sm:mr-4 lg:mr-10">
-                    {/* Wishlist Badge */}
-                    <Link
-                        to={ROUTES.wishlist}
-                        className="relative p-2.5 text-neutral-400 hover:text-white transition rounded-xl hover:bg-white/[0.06]"
-                        aria-label="Danh sách yêu thích"
-                    >
-                        <Heart className="w-5 h-5 text-red-400 fill-red-400/20" />
-                        {displayWishlistCount > 0 && (
-                            <span className="absolute top-1 right-1 w-4 h-4 bg-[#00FF41] text-black font-bold text-[9px] rounded-full flex items-center justify-center">
-                                {displayWishlistCount}
-                            </span>
-                        )}
-                    </Link>
-
                     {/* Cart Badge */}
                     <Link
                         to={ROUTES.cart}
@@ -181,6 +194,155 @@ export default function Header({
                         {cartCount > 0 && (
                             <span className="absolute top-1 right-1 w-4 h-4 bg-[#00FF41] text-black font-bold text-[9px] rounded-full flex items-center justify-center">
                                 {cartCount}
+                            </span>
+                        )}
+                    </Link>
+
+                    {/* Notification Badge & Popover */}
+                    <div className="relative group/notif">
+                        <button
+                            onClick={() => {
+                                if (!isLoggedIn) {
+                                    navigate(ROUTES.login);
+                                }
+                            }}
+                            className="relative p-2 text-neutral-400 hover:text-white transition rounded-xl hover:bg-white/[0.06] flex items-center justify-center cursor-pointer"
+                            aria-label="Thông báo"
+                        >
+                            <Bell className="w-4.5 h-4.5" />
+                            {unreadCount > 0 && (
+                                <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 bg-amber-400 text-black font-bold text-[8px] rounded-full flex items-center justify-center animate-pulse">
+                                    {unreadCount > 99 ? "99+" : unreadCount}
+                                </span>
+                            )}
+                        </button>
+
+                        {/* Notification Dropdown Menu */}
+                        {isLoggedIn && (
+                            <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover/notif:opacity-100 group-hover/notif:visible transition-all duration-200 z-50 pointer-events-none group-hover/notif:pointer-events-auto">
+                                <div className="w-80 sm:w-96 rounded-2xl border border-neutral-800 bg-neutral-950/95 backdrop-blur-xl p-4 shadow-2xl">
+                                    <div className="flex items-center justify-between border-b border-neutral-800 pb-3 mb-3">
+                                    <div className="flex items-center gap-2">
+                                        <Bell className="w-4 h-4 text-[#00FF41]" />
+                                        <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">Thông báo</span>
+                                    </div>
+                                    {unreadCount > 0 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => markAllAsRead()}
+                                            className="text-[10px] font-mono text-[#00FF41] hover:underline"
+                                        >
+                                            Đánh dấu đã đọc
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* ── Tabs: Tất cả | Chưa đọc | Đã đọc ── */}
+                                <div className="grid grid-cols-3 gap-1 bg-neutral-900/90 p-1 rounded-xl mb-3 text-[10px] font-mono font-bold">
+                                    <button
+                                        type="button"
+                                        onClick={() => setNotifTab("all")}
+                                        className={`py-1 rounded-lg transition ${
+                                            notifTab === "all" ? "bg-[#00FF41] text-black shadow" : "text-neutral-400 hover:text-white"
+                                        }`}
+                                    >
+                                        Tất cả
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setNotifTab("unread")}
+                                        className={`py-1 rounded-lg transition ${
+                                            notifTab === "unread" ? "bg-[#00FF41] text-black shadow" : "text-neutral-400 hover:text-white"
+                                        }`}
+                                    >
+                                        Chưa đọc
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setNotifTab("read")}
+                                        className={`py-1 rounded-lg transition ${
+                                            notifTab === "read" ? "bg-[#00FF41] text-black shadow" : "text-neutral-400 hover:text-white"
+                                        }`}
+                                    >
+                                        Đã đọc
+                                    </button>
+                                </div>
+
+                                {/* ── Notification Items List ── */}
+                                {notifications.length === 0 ? (
+                                    <div className="py-8 text-center text-xs font-mono text-neutral-500">
+                                        Không có thông báo nào ({notifTab === "all" ? "Tất cả" : notifTab === "unread" ? "Chưa đọc" : "Đã đọc"})
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                                        {notifications.map((n) => (
+                                            <div
+                                                key={n.id}
+                                                onClick={() => !n.isRead && markAsRead(n.id)}
+                                                className={`group/item relative p-3 rounded-xl border text-xs transition cursor-pointer flex items-start justify-between gap-3 ${
+                                                    n.isRead
+                                                        ? "bg-neutral-900/40 border-neutral-800/60 text-neutral-400"
+                                                        : "bg-neutral-900 border-emerald-500/30 text-white font-medium"
+                                                }`}
+                                            >
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        {!n.isRead && <span className="w-2 h-2 rounded-full bg-[#00FF41] shrink-0" />}
+                                                        <span className="font-bold text-white truncate">{n.title}</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-neutral-300 line-clamp-2 leading-relaxed">{n.message}</p>
+                                                </div>
+
+                                                {/* Dấu X ở bên phải để xóa thông báo cụ thể */}
+                                                <button
+                                                    type="button"
+                                                    title="Xóa thông báo"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        deleteNotification(n.id);
+                                                    }}
+                                                    className="p-1 text-neutral-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition shrink-0"
+                                                >
+                                                    <X className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* ── Bottom Section: Label xóa tất cả ── */}
+                                {notifications.length > 0 && (
+                                    <div className="mt-3 pt-2.5 border-t border-neutral-800 flex items-center justify-between text-[11px] font-mono">
+                                        <span className="text-neutral-500">Tổng: {notifications.length}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (window.confirm("Bạn có chắc muốn xóa tất cả thông báo không?")) {
+                                                    deleteAllNotifications();
+                                                }
+                                            }}
+                                            className="text-red-400 hover:text-red-300 font-bold hover:underline flex items-center gap-1 cursor-pointer"
+                                        >
+                                            <Trash2 className="w-3 h-3" />
+                                            Xóa tất cả thông báo
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                    {/* Wishlist Badge */}
+                    <Link
+                        to={ROUTES.wishlist}
+                        className="relative p-2.5 text-neutral-400 hover:text-white transition rounded-xl hover:bg-white/[0.06]"
+                        aria-label="Danh sách yêu thích"
+                    >
+                        <Heart className="w-5 h-5 text-red-400 fill-red-400/20" />
+                        {displayWishlistCount > 0 && (
+                            <span className="absolute top-1 right-1 w-4 h-4 bg-[#00FF41] text-black font-bold text-[9px] rounded-full flex items-center justify-center">
+                                {displayWishlistCount}
                             </span>
                         )}
                     </Link>

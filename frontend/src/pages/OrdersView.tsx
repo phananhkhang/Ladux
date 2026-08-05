@@ -90,12 +90,27 @@ export default function OrdersView({
         isLoading,
         isLoadingHistories,
         retryPayment,
+        cancelOrder,
         error,
     } = useOrderStore();
 
     const [activeId, setActiveId] = useState<string>(selectedOrderId || "");
+    const [isCancelling, setIsCancelling] = useState<boolean>(false);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+
+    const handleCancelOrder = async (orderId: number) => {
+        if (!window.confirm(`Bạn có chắc chắn muốn hủy đơn hàng #${orderId} không?`)) return;
+        setIsCancelling(true);
+        try {
+            await cancelOrder(orderId);
+            showToast("Đã hủy đơn hàng thành công!");
+        } catch (err: any) {
+            showToast(err?.response?.data?.message || err?.message || "Không thể hủy đơn hàng!");
+        } finally {
+            setIsCancelling(false);
+        }
+    };
 
     // Initial load + polling every 30s
     useEffect(() => {
@@ -481,6 +496,20 @@ export default function OrdersView({
                                                 .filter(Boolean)
                                                 .join(", ")}
                                         </p>
+
+                                        {currentOrder.status === "PENDING" && (
+                                            <div className="pt-3 mt-3 border-t border-neutral-800/80">
+                                                <button
+                                                    type="button"
+                                                    disabled={isCancelling}
+                                                    onClick={() => handleCancelOrder(Number(currentOrder.id))}
+                                                    className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-mono font-bold text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 hover:border-red-500/50 rounded-lg transition-all disabled:opacity-50"
+                                                >
+                                                    <XCircle className="w-4 h-4" />
+                                                    {isCancelling ? "ĐANG HỦY ĐƠN..." : "HỦY ĐƠN HÀNG"}
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Payment Summary */}

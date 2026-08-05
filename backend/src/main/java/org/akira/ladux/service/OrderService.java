@@ -26,4 +26,6 @@ public interface OrderService {
     PaymentCallbackResponse retryPayment(int userid, int orderId);
 
     void expirePendingOrders();
+
+    void cancelOrder(Integer orderId);
 }

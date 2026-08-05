@@ -89,6 +89,14 @@ export const orderService = {
   },
 
   /**
+   * Hủy đơn hàng của người dùng đang ở trạng thái PENDING
+   * DELETE /api/v1/orders/{orderId}
+   */
+  cancelOrder: (orderId: number): Promise<void> => {
+    return apiClient.delete(`/orders/${orderId}`);
+  },
+
+  /**
    * Thực hiện thanh toán lại cho đơn hàng chưa hoàn tất thanh toán
    * POST /api/v1/orders/{orderId}/payments/retry
    */

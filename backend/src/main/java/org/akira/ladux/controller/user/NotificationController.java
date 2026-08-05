@@ -56,13 +56,6 @@ public class NotificationController {
         return ResponseEntity.noContent().build();
     }
 
-    // Đánh dấu tất cả thông báo là đã đọc
-    @PatchMapping("/read-all")
-    public ResponseEntity<Void> markAllAsRead() {
-        notificationService.markAllAsRead();
-        return ResponseEntity.noContent().build();
-    }
-
     // Xóa 1 thông báo cụ thể
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteNotification(@PathVariable Integer id) {
