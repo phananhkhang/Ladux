@@ -1,99 +1,119 @@
-# Ladux
+# Ladux - Hệ Thống Thương Mại Điện Tử & Quản Lý Chuỗi Cung Ứng Laptop
 
-![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white) ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.6-6DB33F?logo=springboot&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white) ![Flyway](https://img.shields.io/badge/Flyway-CC0200?logo=flyway&logoColor=white) ![Spring Security](https://img.shields.io/badge/Spring%20Security-6DB33F?logo=springsecurity&logoColor=white) ![JWT](https://img.shields.io/badge/JWT-HS256-000000?logo=jsonwebtokens&logoColor=white) ![Maven](https://img.shields.io/badge/Maven-3.9-C71A36?logo=apachemaven&logoColor=white)
+![Java 21](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)
+![Spring Boot 4.0.6](https://img.shields.io/badge/Spring%20Boot-4.0.6-6DB33F?logo=springboot&logoColor=white)
+![PostgreSQL 17](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
+![Flyway](https://img.shields.io/badge/Flyway-41%20Migrations-CC0200?logo=flyway&logoColor=white)
+![Spring Security](https://img.shields.io/badge/Spring%20Security-6DB33F?logo=springsecurity&logoColor=white)
+![JWT HttpOnly](https://img.shields.io/badge/Auth-JWT%20Cookie%20%2B%20CSRF-000000?logo=jsonwebtokens&logoColor=white)
+![Maven 3.9](https://img.shields.io/badge/Maven-3.9-C71A36?logo=apachemaven&logoColor=white)
 
-![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-38B2AC?logo=tailwindcss&logoColor=white) ![Axios](https://img.shields.io/badge/Axios-5A29E4?logo=axios&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
+![React 18](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![TypeScript 5](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Vite 6](https://img.shields.io/badge/Vite-6.3-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3.4-38B2AC?logo=tailwindcss&logoColor=white)
+![Zustand](https://img.shields.io/badge/State-Zustand-764ABC?logo=react&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 
-Ladux là dự án web bán hàng công nghệ gồm hai phần chính:
+**Ladux** là một hệ thống thương mại điện tử chuyên biệt dành cho ngành hàng Laptop & Thiết bị công nghệ, tích hợp toàn diện từ **Storefront (Khách hàng)**, **Admin Operations (Quản trị vận hành)** đến **Supply Chain & Procurement (Quản lý chuỗi cung ứng & Kho hàng)**.
 
-- `backend/`: REST API viết bằng Spring Boot, quản lý người dùng, sản phẩm, giỏ hàng, đơn hàng, tồn kho, coupon, thanh toán, đánh giá và admin.
-- `frontend/`: giao diện React/Vite cho storefront và trang quản trị.
+---
 
-Mục tiêu của dự án là mô phỏng một hệ thống thương mại điện tử đủ đầy đủ để học, phát triển MVP, và làm nền tảng mở rộng lên môi trường thật.
+## 📋 Mục Lục
 
-## Mục Lục
+- [Giới Thiệu Tổng Quan](#-giới-thiệu-tổng-quan)
+- [Tính Năng Nổi Bật](#-tính-năng-nổi-bật)
+- [Công Nghệ & Kiến Trúc](#-công-nghệ--kiến-trúc)
+- [Cấu Trúc Thư Mục Dự Án](#-cấu-trúc-thư-mục-dự-án)
+- [Luồng Hoạt Động Hệ Thống](#-luồng-hoạt-động-hệ-thống)
+- [Hướng Dẫn Cài Đặt & Chạy Ứng Dụng](#-hướng-dẫn-cài-đặt--chạy-ứng-dụng)
+- [Cấu Hình Biến Môi Trường](#-cấu-hình-biến-môi-trường)
+- [Cơ Sở Dữ Liệu & Migrations](#-cơ-sở-dữ-liệu--migrations)
+- [Danh Sách API Chính](#-danh-sách-api-chính)
+- [Tài Liệu Chi Tiết trong `/docs`](#-tài-liệu-chi-tiết-trong-docs)
+- [Kiểm Thử, Build & Ghi Chú Vận Hành](#-kiểm-thử-build--ghi-chú-vận-hành)
 
-- [Tính năng chính](#tinh-nang-chinh)
-- [Công nghệ sử dụng](#cong-nghe-su-dung)
-- [Cấu trúc thư mục](#cau-truc-thu-muc)
-- [Luồng hoạt động tổng quan](#luong-hoat-dong-tong-quan)
-- [Cách chạy dự án](#cach-chay-du-an)
-- [Biến môi trường](#bien-moi-truong)
-- [Database và migration](#database-va-migration)
-- [API chính](#api-chinh)
-- [Tài liệu trong docs](#tai-lieu-trong-docs)
-- [Kiểm thử và build](#kiem-thu-va-build)
-- [Ghi chú vận hành](#ghi-chu-van-hanh)
+---
 
-## Tính Năng Chính
+## 🚀 Giới Thiệu Tổng Quan
 
-### Storefront
+Dự án Ladux bao gồm hai thành phần trọng yếu kết nối qua REST API:
 
-- Xem trang chủ, danh sách sản phẩm, chi tiết sản phẩm.
-- Lọc/tìm kiếm sản phẩm theo từ khóa, brand, category.
-- Đăng ký, đăng nhập bằng tài khoản thường.
-- Đăng nhập OAuth2 Google ở backend.
-- Lưu JWT trong cookie `AUTH_TOKEN`.
-- Tự lấy CSRF token cho các request ghi dữ liệu.
-- Quản lý giỏ hàng: xem, thêm, cập nhật số lượng, xóa item, xóa toàn bộ.
-- Quản lý wishlist.
-- Checkout tạo đơn hàng.
-- Xem danh sách đơn hàng và chi tiết đơn hàng.
-- Đánh giá sản phẩm sau khi đơn đã giao thành công.
-- Quản lý địa chỉ người dùng.
+- **`backend/`**: Hệ thống Spring Boot RESTful API hỗ trợ Java 21, quản lý danh mục sản phẩm, biến thể (RAM, ROM, Màu sắc, SKU), giỏ hàng, đặt hàng khóa tồn kho nguyên tử (`PESSIMISTIC_WRITE`), tích hợp thanh toán (VNPay IPN HMAC-SHA512, MoMo, COD), quy trình nhập hàng NCC (PO, Goods Receipt), sổ cái biến động kho (Stock Ledger), mã giảm giá (Coupon), xác thực OTP (Phone/Email), và phân quyền người dùng (Role-based access control).
+- **`frontend/`**: Ứng dụng Single Page Application (SPA) xây dựng trên nền React 18, TypeScript, Vite & Tailwind CSS. Cung cấp cả giao diện bán hàng (Storefront) hiện đại, tối ưu UX/UI và giao diện quản trị (Admin Dashboard) chuyên nghiệp.
 
-### Admin
+---
 
-- Đăng nhập admin bằng cùng cơ chế auth cookie.
-- Dashboard quản trị.
-- Quản lý sản phẩm, brand, category, coupon.
-- Quản lý đơn hàng, lịch sử đơn hàng, payment.
-- Quản lý user, role, review.
-- Xem một số dữ liệu phân tích/cart analytics ở frontend admin.
+## ✨ Tính Năng Nổi Bật
 
-## Công Nghệ Sử Dụng
+### 🛒 1. Khách Hàng (Storefront)
+
+- **Trang chủ & Danh mục sản phẩm**: Hiển thị Hero banner, danh mục nổi bật, tìm kiếm theo nhu cầu (*Gaming, Văn phòng, Ultrabook, Đồ họa, Doanh nhân, Sinh viên*) và thương hiệu (*Apple, Dell, Asus, Lenovo, HP, Acer, MSI, v.v.*).
+- **Bộ lọc sản phẩm thông minh (Catalog Filters)**: Lọc kết hợp đa tiêu chí cùng lúc: Thương hiệu, Dòng máy, Dung lượng RAM, Dung lượng Ổ cứng (ROM), Khoảng giá (Range Slider), Tìm kiếm từ khóa full-text (`pg_trgm`) và Sắp xếp (Mới nhất, Giá tăng/giảm, Đánh giá cao).
+- **Trang chi tiết sản phẩm**: Chọn biến thể cấu hình (RAM/ROM/Color), xem giá khuyến mãi, thông số kỹ thuật chi tiết, bộ sưu tập hình ảnh, và danh sách đánh giá của người mua.
+- **Xác thực & Bảo mật tài khoản**:
+  - Đăng ký / Đăng nhập tài khoản bằng mật khẩu mã hóa BCrypt.
+  - Đăng nhập nhanh bằng **Google OAuth2**.
+  - Xác thực qua Cookie HttpOnly `AUTH_TOKEN` kết hợp CSRF Token cho các request ghi dữ liệu.
+  - Token Versioning (`token_version`) giúp vô hiệu hóa phiên làm việc tức thì khi đổi mật khẩu hoặc đăng xuất.
+  - Xác thực số điện thoại & email qua mã OTP (`phone_verifications`, `email_verifications`).
+- **Giỏ hàng & Đơn hàng**:
+  - Quản lý giỏ hàng realtime, chọn biến thể, cập nhật số lượng.
+  - Áp dụng Mã giảm giá (Coupon) trực tiếp khi checkout.
+  - Tính phí vận chuyển tự động theo địa chỉ & đơn vị vận chuyển.
+  - Khóa tồn kho nguyên tử an toàn tránh overselling.
+  - Tích hợp các phương thức thanh toán: **VNPay** (kèm Webhook IPN kiểm tra checksum HMAC SHA-512), **MoMo**, và **COD** (Thanh toán khi nhận hàng).
+  - Theo dõi trạng thái đơn hàng & timeline lịch sử đơn (`PENDING` -> `CONFIRMED` -> `SHIPPED` -> `DELIVERED`).
+- **Đánh giá & Yêu thích**:
+  - Thêm/Xóa sản phẩm khỏi danh sách yêu thích (Wishlist).
+  - Gửi đánh giá sao & bình luận cho sản phẩm đã mua thành công.
+  - Trung tâm thông báo hệ thống (Notification Center) nhận thông báo đơn hàng & khuyến mãi.
+
+### ⚙️ 2. Quản Trị & Chuỗi Cung Ứng (Admin & Supply Chain Operations)
+
+- **Dashboard Vận Hành**: Thống kê doanh thu, số lượng đơn hàng, biểu đồ tổng quan, danh sách đơn hàng mới nhất và trạng thái hệ thống.
+- **Quản lý Danh Mục & Sản Phẩm (Catalog Management)**:
+  - Quản lý Thương hiệu (Brands), Danh mục (Categories) và Màu sắc (Colors).
+  - Quản lý Sản phẩm, Biến thể sản phẩm (Variant: SKU, RAM, ROM, Giá nhập, Giá bán, Giá giảm, Số lượng tồn kho).
+  - Upload & quản lý bộ sưu tập hình ảnh sản phẩm local/public asset.
+- **Quản lý Chuỗi Cung Ứng & Nhập Hàng (Procurement & Inventory)**:
+  - Quản lý Nhà cung cấp (Suppliers) & Liên kết Sản phẩm - Nhà cung cấp (Product-Supplier mapping).
+  - Đơn nhập hàng (Purchase Orders - PO): Tạo PO, chuyển trạng thái, nhận hàng từng phần (Partial Receiving) hoặc toàn bộ.
+  - Sổ cái biến động kho (Stock Ledger): Tự động ghi nhật ký mọi giao dịch kho (`PURCHASE_IN`, `SALE_OUT`, `ADJUSTMENT_IN/OUT`, `DAMAGE_OUT`). Hỗ trợ điều chỉnh kho thủ công an toàn (chống kho âm).
+- **Quản lý Đơn Hàng & Thanh Toán (Sales & Payments)**:
+  - Xem danh sách đơn hàng, lọc theo trạng thái, tìm kiếm mã đơn.
+  - Chuyển trạng thái đơn hàng an toàn theo State Machine.
+  - Xử lý các yêu cầu thanh toán (Payment Attempts), xác nhận thanh toán thành công hoặc thất bại.
+- **Quản lý Người Dùng & Hệ Thống**:
+  - Quản lý danh sách User, Phân quyền Role (ADMIN, USER), kiểm tra lịch sử địa chỉ khách hàng.
+  - Quản lý Mã giảm giá (Coupons): loại giảm theo %, giảm cố định, giới hạn lượt dùng, ngày hết hạn.
+  - Kiểm duyệt Đánh giá (Reviews) của khách hàng.
+
+---
+
+## 🛠️ Công Nghệ & Kiến Trúc
 
 ### Backend
-
-- Java 21.
-- Spring Boot `4.0.6`.
-- Spring Web MVC cho REST API.
-- Spring Data JPA/Hibernate cho ORM.
-- PostgreSQL làm database chính.
-- Flyway quản lý migration database.
-- Spring Security cho authentication/authorization.
-- OAuth2 Client cho Google Login.
-- JWT với thư viện `jjwt`.
-- Cookie auth qua `AUTH_TOKEN`.
-- CSRF token qua `CookieCsrfTokenRepository`.
-- Bean Validation cho request DTO.
-- Lombok giảm boilerplate entity/service.
-- Commons Codec dùng HMAC SHA-512 cho logic VNPay webhook.
-- Maven làm build tool.
+- **Core Framework**: Java 21, Spring Boot `4.0.6`.
+- **Web & Security**: Spring Web MVC, Spring Security, OAuth2 Client (Google Login), Spring Validation.
+- **Authentication**: JWT (`jjwt` 0.12.x) lưu trong Cookie `AUTH_TOKEN` HttpOnly, CSRF Token via `CookieCsrfTokenRepository`, Refresh Token Rotation, Token Versioning.
+- **Database & Persistence**: PostgreSQL 17, Spring Data JPA / Hibernate, Flyway Database Migration (41 scripts).
+- **Full-Text Search & Locking**: PostgreSQL Extension `pg_trgm` cho tìm kiếm chuỗi, ShedLock cho distributed locking, Pessimistic Locking (`PESSIMISTIC_WRITE`) cho giao dịch kho/coupon.
+- **Utils & Integration**: Lombok, Commons Codec (HMAC SHA-512 cho VNPay checksum).
 
 ### Frontend
+- **Framework & Build Tools**: React 18, TypeScript 5, Vite 6.3.
+- **Routing & State Management**: React Router DOM v7, Zustand (quản lý state toàn cục cho auth, products, cart, wishlist, orders, notifications, UI).
+- **Styling & UI Components**: Tailwind CSS, Radix UI Primitives (Dialog, Select, Popover), Lucide React Icons, Sonner Toaster.
+- **Data Fetching**: Axios API Client với Interceptors (xử lý tự động CSRF token, Auth expired events, Error handling).
 
-- React `18`.
-- TypeScript.
-- Vite.
-- React Router DOM.
-- Axios.
-- Zustand cho state management.
-- Tailwind CSS.
-- Radix UI primitives.
-- Lucide React icons.
-- Framer Motion.
-- Three.js, React Three Fiber, Drei cho phần hero/3D.
-- Sonner/toaster cho thông báo.
+### Infrastructure & DevOps
+- Dockerfile đa tầng (Multi-stage build / JAR deployment) cho backend.
+- Docker Compose thiết lập môi trường hoàn chỉnh (Backend + PostgreSQL 17 Alpine).
 
-### Hạ tầng phát triển
+---
 
-- Dockerfile cho backend app.
-- Docker Compose cho backend + PostgreSQL.
-- PostgreSQL `17-alpine` trong compose.
-- Flyway tự chạy migration khi backend khởi động.
-
-## Cấu Trúc Thư Mục
+## 📁 Cấu Trúc Thư Mục Dự Án
 
 ```text
 Ladux/
@@ -101,340 +121,293 @@ Ladux/
 │   ├── Dockerfile
 │   ├── docker-compose.yml
 │   ├── pom.xml
-│   ├── database/
-│   │   └── ladux_erd.png
 │   └── src/
 │       ├── main/
 │       │   ├── java/org/akira/ladux/
-│       │   │   ├── config/
-│       │   │   ├── controller/
-│       │   │   ├── dto/
-│       │   │   ├── exception/
-│       │   │   ├── model/
-│       │   │   ├── repository/
-│       │   │   ├── service/
-│       │   │   └── utils/
+│       │   │   ├── config/              # Security, CORS, Web, ShedLock, OpenAPI configs
+│       │   │   ├── controller/          # AuthController
+│       │   │   │   ├── admin/           # Admin REST APIs (22 controllers)
+│       │   │   │   └── user/            # Storefront REST APIs (16 controllers)
+│       │   │   ├── dto/                 # Request & Response DTOs theo module
+│       │   │   ├── exception/           # Global Exception Handler & Custom Errors
+│       │   │   ├── model/               # JPA Entities (User, Product, Order, PO, Stock, etc.)
+│       │   │   ├── repository/          # Spring Data JPA Repositories
+│       │   │   ├── service/             # Business Logic & Service Implementations
+│       │   │   └── utils/               # Helper utils (Cookie, JWT, Security, VNPay)
 │       │   └── resources/
 │       │       ├── application.properties
 │       │       ├── application-dev.properties
 │       │       ├── application-prod.properties
 │       │       └── db/
-│       │           ├── migration/
-│       │           └── devdata/
-│       └── test/
+│       │           ├── migration/       # 41 Flyway SQL Migrations
+│       │           └── devdata/         # Seed mock data cho môi trường Dev
+│       └── test/                        # Integration & Unit Tests
 ├── frontend/
 │   ├── package.json
 │   ├── vite.config.ts
+│   ├── tailwind.config.js
 │   └── src/
-│       ├── admin/
-│       ├── api/
-│       ├── components/
-│       ├── features/
-│       ├── lib/
-│       ├── pages/
-│       └── types/
-├── docs/
+│       ├── admin/                       # Admin Panel SPA
+│       │   ├── api/                     # Admin API client endpoints
+│       │   ├── components/              # AdminUI (Table, Panel, Button, Dialog) & AdminShell
+│       │   ├── pages/                   # Admin pages (Dashboard, Products, Sales, Procurement, etc.)
+│       │   └── types/                   # Admin TypeScript declarations
+│       ├── app/                         # App Router, StorefrontProvider & UI primitives
+│       ├── components/                  # Shared Storefront UI components (Header, Footer, Cards)
+│       ├── config/                      # env.ts (API URL config)
+│       ├── pages/                       # Storefront pages (Home, Catalog, ProductDetail, Cart, Checkout, etc.)
+│       ├── services/                    # Axios API services (product, cart, order, user, etc.)
+│       ├── stores/                      # Zustand state stores
+│       └── types/                       # Core TypeScript interfaces & DTO mappers
+├── docs/                                # Tài liệu thiết kế, kiến trúc & báo cáo chi tiết
+├── uploads/                             # Thư mục lưu hình ảnh sản phẩm / brand / category
 └── README.md
 ```
 
-## Luồng Hoạt Động Tổng Quan
+---
+
+## 🔄 Luồng Hoạt Động Hệ Thống
+
+### 1. Kiến trúc tổng thể
 
 ```mermaid
-flowchart LR
-    U["User/Admin"] --> FE["React Frontend"]
-    FE --> API["Axios API Client"]
-    API --> BE["Spring Boot REST API"]
-    BE --> SEC["Spring Security + JWT Cookie + CSRF"]
-    SEC --> SVC["Service Layer"]
-    SVC --> REPO["Repository Layer"]
-    REPO --> DB["PostgreSQL"]
-    DB --> REPO
-    REPO --> SVC
-    SVC --> BE
-    BE --> FE
+flowchart TD
+    Client["Browser (Storefront / Admin SPA)"]
+    APIClient["Axios Client (CSRF + Auth Cookie)"]
+    SecFilter["Spring Security Filter Chain"]
+    JwtFilter["JwtAuthenticationFilter (Cookie AUTH_TOKEN)"]
+    CsrfFilter["CsrfFilter (CookieCsrfTokenRepository)"]
+    Controllers["REST Controllers (Admin / User)"]
+    Services["Service Layer (Transactional Business Logic)"]
+    Locks["Pessimistic DB Lock / ShedLock"]
+    Repos["Spring Data JPA Repositories"]
+    DB[(PostgreSQL 17 Database)]
+
+    Client --> APIClient
+    APIClient --> SecFilter
+    SecFilter --> CsrfFilter
+    CsrfFilter --> JwtFilter
+    JwtFilter --> Controllers
+    Controllers --> Services
+    Services --> Locks
+    Locks --> Repos
+    Repos --> DB
 ```
 
-Luồng đọc sản phẩm:
+### 2. Luồng Đặt Hàng & Khóa Tồn Kho (Order & Inventory Locking Flow)
 
-```text
-Home/Shop/ProductDetail
-  -> frontend/src/api/client.ts
-  -> GET /api/v1/products
-  -> ProductController
-  -> ProductServiceImpl
-  -> ProductRepository
-  -> PostgreSQL
-  -> ProductResponse
-  -> React render UI
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Khách Hàng
+    participant FE as React Frontend
+    participant BE as OrderController
+    participant SVC as OrderServiceImpl
+    participant INV as InventoryServiceImpl
+    participant DB as PostgreSQL DB
+
+    User->>FE: Nhấn "Thanh Toán Đơn Hàng"
+    FE->>BE: POST /api/v1/orders (kèm CSRF Header + Auth Cookie)
+    BE->>SVC: createOrder(userId, dto)
+    SVC->>INV: Lock & Kiểm tra tồn kho (PESSIMISTIC_WRITE)
+    INV->>DB: SELECT FOR UPDATE stock_quantity
+    DB-->>INV: Tồn kho khả dụng
+    alt Tồn kho đủ
+        INV->>DB: Giảm stock_quantity & Ghi nhận Stock Movement (SALE_OUT)
+        SVC->>DB: Tạo Order, OrderItems & PaymentAttempt (PENDING)
+        SVC-->>FE: Trả về OrderResponse (Mã đơn + Trạng thái)
+        FE-->>User: Chuyển hướng sang VNPay / Xác nhận đơn thành công
+    else Hết hàng / Tồn kho không đủ
+        INV-->>SVC: Throw InsufficientStockException
+        SVC-->>FE: Error 400 - "Sản phẩm đã hết hàng"
+    end
 ```
 
-Luồng đăng nhập:
+---
 
-```text
-Login form
-  -> POST /api/v1/auth/login
-  -> AuthController
-  -> AuthenticationManager
-  -> MyUserDetailsService
-  -> UserRepository
-  -> JwtService generate token
-  -> AuthCookieService set AUTH_TOKEN cookie
-  -> Browser lưu cookie HttpOnly
-```
+## 🛠️ Hướng Dẫn Cài Đặt & Chạy Ứng Dụng
 
-Luồng checkout:
+### Yêu cầu hệ thống
+- **Java**: OpenJDK 21 trở lên.
+- **Maven**: 3.9+ (hoặc dùng `./mvnw` / `mvnw.cmd` trong thư mục `backend/`).
+- **Node.js**: v20.x trở lên.
+- **Package Manager**: `npm`.
+- **Database**: PostgreSQL 17 (hoặc chạy qua Docker).
+- **Docker & Docker Compose** (Tùy chọn).
 
-```text
-Checkout page
-  -> POST /api/v1/orders
-  -> JwtFilter xác thực user từ cookie
-  -> OrderController
-  -> OrderServiceImpl.createOrder
-  -> InventoryServiceImpl lock và trừ tồn kho
-  -> CouponRedemptionServiceImpl lock và redeem coupon nếu có
-  -> PaymentAttemptServiceImpl tạo payment PENDING
-  -> OrderRepository lưu order/order_items/payment/history
-  -> Trả OrderResponse
-```
+---
 
-## Cách Chạy Dự Án
+### Phương Án 1: Chạy bằng Docker Compose (Nhanh nhất)
 
-### Yêu cầu môi trường
+1. **Build file JAR cho backend**:
+   ```powershell
+   cd backend
+   mvn -q -DskipTests package
+   ```
 
-- Java 21 trở lên.
-- Maven 3.9+ hoặc dùng Maven Wrapper trong `backend/`.
-- Node.js 20+.
-- npm.
-- Docker Desktop nếu muốn chạy PostgreSQL/backend bằng Docker Compose.
-- PostgreSQL nếu muốn chạy local không qua Docker.
+2. **Khởi chạy container PostgreSQL & Backend**:
+   ```powershell
+   docker compose up --build -d
+   ```
+   *Backend REST API sẽ sẵn sàng tại:* `http://localhost:8080`
 
-### Chạy backend bằng Docker Compose
+3. **Khởi chạy Frontend**:
+   ```powershell
+   cd ../frontend
+   npm install
+   npm run dev
+   ```
+   *Frontend Storefront sẽ khả dụng tại:* `http://localhost:3000` (hoặc port do Vite cấp).
 
-Backend Dockerfile copy file `target/ladux.jar`, vì vậy cần build jar trước khi compose build.
+---
 
-```powershell
-cd backend
-mvn -q -DskipTests package
-```
+### Phương Án 2: Chạy trực tiếp trên máy cục bộ (Local Development)
 
-Thiết lập biến môi trường trong PowerShell:
-
-```powershell
-$env:DB_PASSWORD="your_db_password"
-$env:JWT_SECRET="base64_secret_min_256_bits"
-$env:GOOGLE_CLIENT_ID="your_google_client_id"
-$env:GOOGLE_CLIENT_SECRET="your_google_client_secret"
-```
-
-Sau đó chạy:
-
-```powershell
-docker compose up --build
-```
-
-Backend sẽ chạy tại:
-
-```text
-http://localhost:8080
-```
-
-Database PostgreSQL trong compose:
-
-```text
-host: localhost
-port: 5432
-database: ladux
-user: akira hoặc DB_USERNAME nếu bạn set biến môi trường
-password: DB_PASSWORD
-```
-
-### Chạy backend trực tiếp bằng Maven
-
-Bạn cần có PostgreSQL đang chạy và database `ladux` đã tồn tại.
+#### 1. Khởi động Backend Spring Boot:
+Cần đảm bảo PostgreSQL đang chạy và đã tạo cơ sở dữ liệu `ladux`.
 
 ```powershell
 cd backend
 $env:SPRING_PROFILES_ACTIVE="dev"
 $env:DB_HOST="localhost"
-$env:DB_USERNAME="akira"
-$env:DB_PASSWORD="your_db_password"
-$env:JWT_SECRET="base64_secret_min_256_bits"
-$env:GOOGLE_CLIENT_ID="your_google_client_id"
-$env:GOOGLE_CLIENT_SECRET="your_google_client_secret"
+$env:DB_USERNAME="postgres"
+$env:DB_PASSWORD="your_postgres_password"
+$env:JWT_SECRET="c3VwZXItc2VjcmV0LWtleS13aXRoLW1pbmltdW0tMjU2LWJpdHMtZm9yLWp3dC1zaWduaW5n"
+$env:GOOGLE_CLIENT_ID="dummy_google_client_id"
+$env:GOOGLE_CLIENT_SECRET="dummy_google_client_secret"
+
 mvn spring-boot:run
 ```
 
-Nếu không dùng Google Login trong lúc phát triển, vẫn nên set giá trị dummy hợp lệ cho `GOOGLE_CLIENT_ID` và `GOOGLE_CLIENT_SECRET` để Spring resolve được placeholder.
+*Khi khởi động ở profile `dev`, Flyway sẽ tự động chạy 41 file migrations và nạp dữ liệu mẫu (devdata).*
 
-### Chạy frontend
-
+#### 2. Khởi động Frontend React / Vite:
 ```powershell
 cd frontend
 npm install
-npm run dev
-```
-
-Frontend mặc định chạy tại:
-
-```text
-http://localhost:3000
-```
-
-Frontend gọi backend qua biến:
-
-```text
-VITE_API_BASE_URL
-```
-
-Nếu không set, frontend dùng mặc định:
-
-```text
-http://localhost:8080
-```
-
-Ví dụ:
-
-```powershell
-cd frontend
 $env:VITE_API_BASE_URL="http://localhost:8080"
 npm run dev
 ```
 
-## Biến Môi Trường
+---
 
-### Backend
+## 🔑 Cấu Hình Biến Môi Trường
 
-| Biến | Bắt buộc | Mô tả | Ví dụ |
-| --- | --- | --- | --- |
-| `SPRING_PROFILES_ACTIVE` | Không | Profile chạy app. Mặc định `dev`. | `dev`, `prod` |
-| `DB_HOST` | Không | Host PostgreSQL. Mặc định `localhost`. | `localhost`, `postgres` |
-| `DB_USERNAME` | Không | User PostgreSQL. Mặc định `akira`. | `akira` |
-| `DB_PASSWORD` | Có khi chạy compose | Password PostgreSQL. | `secret` |
-| `JWT_SECRET` | Có | Secret dạng Base64 cho JWT HMAC. | `base64...` |
-| `GOOGLE_CLIENT_ID` | Có | Google OAuth2 client id. | `xxx.apps.googleusercontent.com` |
-| `GOOGLE_CLIENT_SECRET` | Có | Google OAuth2 client secret. | `GOCSPX-...` |
-| `AUTH_COOKIE_NAME` | Không | Tên cookie auth. Mặc định `AUTH_TOKEN`. | `AUTH_TOKEN` |
-| `AUTH_COOKIE_SAME_SITE` | Không | SameSite cookie. Mặc định `Strict`. | `Strict` |
-| `AUTH_COOKIE_SECURE` | Không | Cookie secure. Prod nên `true`. | `true` |
-| `AUTH_COOKIE_MAX_AGE_SECONDS` | Không | Tuổi cookie. Mặc định 36000 giây. | `36000` |
-| `OAUTH2_SUCCESS_REDIRECT` | Không | URL redirect sau Google login. | `http://localhost:3000/checkout/success` |
+### Backend (`application.properties` / Môi trường)
 
-### Frontend
+| Biến Môi Trường | Bắt Bắt Buộc | Giá Trị Mặc Định | Mô Tả |
+| :--- | :---: | :--- | :--- |
+| `SPRING_PROFILES_ACTIVE` | Không | `dev` | Profile hoạt động (`dev`, `prod`). |
+| `DB_HOST` | Không | `localhost` | Địa chỉ Host PostgreSQL Database. |
+| `DB_PORT` | Không | `5432` | Cổng kết nối PostgreSQL. |
+| `DB_NAME` | Không | `ladux` | Tên cơ sở dữ liệu PostgreSQL. |
+| `DB_USERNAME` | Không | `akira` / `postgres` | Username kết nối PostgreSQL. |
+| `DB_PASSWORD` | Có | `secret` | Mật khẩu truy cập PostgreSQL. |
+| `JWT_SECRET` | Có | `-` | Chuỗi Base64 ký JWT (tối thiểu 256-bit). |
+| `GOOGLE_CLIENT_ID` | Có (nếu dùng OAuth) | `-` | Google OAuth2 Client ID. |
+| `GOOGLE_CLIENT_SECRET` | Có (nếu dùng OAuth) | `-` | Google OAuth2 Client Secret. |
+| `AUTH_COOKIE_NAME` | Không | `AUTH_TOKEN` | Tên Cookie HttpOnly lưu JWT. |
+| `AUTH_COOKIE_SAME_SITE` | Không | `Strict` | Cấu hình SameSite cookie (`Strict`/`Lax`/`None`). |
+| `AUTH_COOKIE_SECURE` | Không | `false` (dev) / `true` (prod) | Đặt `true` trên HTTPS. |
 
-| Biến | Bắt buộc | Mô tả | Ví dụ |
-| --- | --- | --- | --- |
-| `VITE_API_BASE_URL` | Không | Base URL backend, chưa gồm `/api/v1`. | `http://localhost:8080` |
+### Frontend (`frontend/.env`)
 
-## Database Và Migration
+| Biến Môi Trường | Bắt Buộc | Giá Trị Mặc Định | Mô Tả |
+| :--- | :---: | :--- | :--- |
+| `VITE_API_BASE_URL` | Không | `http://localhost:8080` | URL REST API Backend (không kèm `/api/v1`). |
 
-Flyway chạy migration từ:
+---
 
-```text
-backend/src/main/resources/db/migration
-```
+## 🗄️ Cơ Sở Dữ Liệu & Migrations
 
-Trong profile `dev`, Flyway chạy thêm mock data từ:
+Dự án sử dụng **Flyway** để quản lý 41 phiên bản migration tự động tại `backend/src/main/resources/db/migration/`.
 
-```text
-backend/src/main/resources/db/devdata
-```
-
-Các file chính:
-
-- `V1__init_schema.sql`: tạo schema ban đầu.
-- `V2__add_hot_path_indexes.sql`: thêm index cho các đường truy vấn nóng.
-- `V3__insert_mock_data.sql`: seed dữ liệu phát triển.
-
-Các nhóm bảng chính:
-
-- Identity: `users`, `roles`, `user_roles`.
-- Catalog: `products`, `brands`, `categories`, `product_images`.
-- Commerce: `carts`, `cart_items`, `orders`, `order_items`, `order_histories`.
-- Payment/discount: `payments`, `coupons`.
-- Engagement: `reviews`, `wishlists`.
-- User profile: `user_addresses`.
-
-Sơ đồ ERD hiện có:
+### Các sơ đồ bảng dữ liệu chính:
 
 ```text
-docs/ladux_erd.png
-backend/database/ladux_erd.png
+├── Identity & Access        : users, roles, user_roles, refresh_tokens, phone_verifications, email_verifications
+├── Product Catalog         : categories, brands, products, product_images, colors, product_variants, product_suppliers
+├── Sales & Commerce        : carts, cart_items, orders, order_items, order_histories, coupons
+├── Procurement & Inventory : suppliers, purchase_orders, purchase_order_items, stock_movements
+├── Engagement & Audit      : reviews, wishlists, user_addresses, notifications, shedlock
 ```
 
-## API Chính
+---
 
-Tất cả API backend có prefix:
+## 🌐 Danh Sách API Chính (`/api/v1`)
 
-```text
-/api/v1
-```
+### 🔑 Authentication & Profile
+- `POST /api/v1/auth/register` : Đăng ký tài khoản mới.
+- `POST /api/v1/auth/login` : Đăng nhập (Set HttpOnly JWT Cookie).
+- `POST /api/v1/auth/logout` : Đăng xuất (Clear Cookie & Revoke Token).
+- `GET  /api/v1/auth/csrf` : Lấy CSRF Token.
+- `GET  /api/v1/users/me` : Lấy thông tin user hiện tại.
 
-Nhóm endpoint chính:
+### 💻 Products & Catalog
+- `GET /api/v1/products` : Lấy danh sách sản phẩm (Phân trang, Lọc, Tìm kiếm full-text).
+- `GET /api/v1/products/{id}` : Lấy chi tiết sản phẩm & danh sách biến thể.
+- `GET /api/v1/categories` : Lấy danh sách danh mục.
+- `GET /api/v1/brands` : Lấy danh sách thương hiệu.
 
-| Module | Endpoint | Vai trò |
-| --- | --- | --- |
-| Auth | `/auth/register`, `/auth/login`, `/auth/logout`, `/auth/csrf` | Đăng ký, đăng nhập, logout, lấy CSRF token |
-| Products | `/products`, `/products/{id}`, `/products/slug/{slug}` | Xem/tìm kiếm sản phẩm |
-| Brands | `/brands` | Xem/quản lý brand |
-| Categories | `/categories` | Xem/quản lý category |
-| Cart | `/cart`, `/cart/items` | Quản lý giỏ hàng |
-| Wishlist | `/wishlists` | Quản lý wishlist |
-| Orders | `/orders`, `/orders/user`, `/orders/{id}` | Tạo/xem/cập nhật đơn |
-| Payments | `/payments`, `/payments/order/{orderId}` | Quản lý payment |
-| Coupons | `/coupons`, `/coupons/apply` | Quản lý/preview coupon |
-| Reviews | `/reviews`, `/reviews/product/{productId}` | Đánh giá sản phẩm |
-| User Addresses | `/user-addresses` | Quản lý địa chỉ |
-| Users | `/users`, `/users/me` | Quản lý user/profile |
+### 🛍️ Cart & Checkout & Orders
+- `GET    /api/v1/cart` : Lấy giỏ hàng của người dùng.
+- `POST   /api/v1/cart/items` : Thêm sản phẩm/biến thể vào giỏ.
+- `PUT    /api/v1/cart/items/{id}` : Cập nhật số lượng item trong giỏ.
+- `DELETE /api/v1/cart/items/{id}` : Xóa item khỏi giỏ hàng.
+- `POST   /api/v1/orders` : Khởi tạo đơn hàng & khóa tồn kho.
+- `GET    /api/v1/orders/user` : Xem danh sách đơn hàng của người dùng.
 
-## Tài Liệu Trong Docs
+### 🛡️ Admin Operations (`/api/v1/admin/*`)
+- `GET/POST/PUT/DELETE /api/v1/admin/products` : Quản lý CRUD sản phẩm.
+- `GET/POST/PUT/DELETE /api/v1/admin/product-variants` : Quản lý biến thể cấu hình.
+- `GET/POST/PUT /api/v1/admin/orders` : Xử lý đơn hàng & đổi trạng thái State Machine.
+- `GET/POST/PUT /api/v1/admin/purchase-orders` : Quản lý đơn nhập hàng (PO) & nhận hàng.
+- `GET/POST /api/v1/admin/stock-movements` : Ghi sổ cái điều chỉnh kho hàng.
 
-Nên đọc theo thứ tự:
+---
 
-1. [Tổng quan dự án](docs/00-tong-quan-du-an.md)
-2. [Cấu trúc thư mục](docs/01-cau-truc-thu-muc.md)
-3. [Kiến trúc backend](docs/02-kien-truc-backend.md)
-4. [Luồng nghiệp vụ end-to-end](docs/03-luong-nghiep-vu.md)
-5. [Cơ sở dữ liệu và module](docs/04-co-so-du-lieu-va-module.md)
-6. [Frontend và API client](docs/05-frontend-va-api.md)
-7. [Vận hành, kiểm thử và mở rộng](docs/06-van-hanh-kiem-thu-mo-rong.md)
+## 📚 Tài Liệu Chi Tiết Trong `/docs`
 
-## Kiểm Thử Và Build
+Dự án cung cấp bộ tài liệu kỹ thuật hoàn chỉnh trong thư mục [`docs/`](file:///c:/Users/ADMIN/OneDrive/Desktop/Ladux/docs):
 
-### Backend compile
+1. 📖 [00. Tổng quan dự án](docs/00-tong-quan-du-an.md)
+2. 📂 [01. Cấu trúc thư mục](docs/01-cau-truc-thu-muc.md)
+3. 🏗️ [02. Kiến trúc Backend](docs/02-kien-truc-backend.md)
+4. 🔄 [03. Luồng nghiệp vụ End-to-End](docs/03-luong-nghiep-vu.md)
+5. 🗃️ [04. Cơ sở dữ liệu & Các Module](docs/04-co-so-du-lieu-va-module.md)
+6. 🎨 [05. Frontend & API Integration](docs/05-frontend-va-api.md)
+7. 🚀 [06. Vận hành, Kiểm thử & Mở rộng](docs/06-van-hanh-kiem-thu-mo-rong.md)
+8. 🎓 [07. Bài giảng Backend chi tiết](docs/07-bai-giang-backend-chi-tiet.md)
 
+---
+
+## 🧪 Kiểm Thử, Build & Ghi Chú Vận Hành
+
+### 1. Build & Kiểm thử Backend
 ```powershell
 cd backend
-mvn -q -DskipTests compile
+
+# Biên dịch mã nguồn
+mvn clean compile
+
+# Chạy kiểm thử tự động (yêu cầu DB hoặc test profile)
+mvn test
+
+# Đóng gói ứng dụng JAR
+mvn -DskipTests package
 ```
 
-### Backend test
-
-```powershell
-cd backend
-mvn -q test
-```
-
-Lưu ý: test hiện tại là `@SpringBootTest` và boot cả application context, vì vậy cần PostgreSQL và biến môi trường phù hợp. Nếu DB local chưa đúng credential, test sẽ fail ở bước kết nối database.
-
-### Frontend typecheck/build
-
+### 2. Build & Kiểm tra kiểu Frontend
 ```powershell
 cd frontend
+
+# Kiểm tra TypeScript
 npm run typecheck
+
+# Build ứng dụng cho môi trường Production
 npm run build
 ```
 
-## Ghi Chú Vận Hành
+---
 
-Hiện tại hệ thống phù hợp với MVP hoặc quy mô nhỏ-vừa. Để tiến tới production lớn hơn cần bổ sung:
-
-- Observability: actuator, metrics, structured logs, tracing.
-- Cache cho dữ liệu đọc nhiều như product/category/brand/user roles.
-- Rate limit cho auth, cart, order, coupon.
-- Distributed lock cho scheduled job khi chạy nhiều backend instance.
-- Queue/event cho email, notification, inventory sync, payment reconciliation.
-- Idempotency cho payment webhook và order/payment command.
-- Full-text search hoặc search engine cho sản phẩm.
-- Testcontainers hoặc test profile riêng để CI chạy độc lập.
-
-Chi tiết các điểm này nằm trong [docs/06-van-hanh-kiem-thu-mo-rong.md](docs/06-van-hanh-kiem-thu-mo-rong.md).
+*Hệ thống Ladux được thiết kế tối ưu, sẵn sàng cho việc phát triển mở rộng tính năng thương mại điện tử chuyên nghiệp.*
