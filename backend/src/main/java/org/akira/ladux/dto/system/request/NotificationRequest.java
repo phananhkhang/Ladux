@@ -1,6 +1,5 @@
 package org.akira.ladux.dto.system.request;
 
-import org.akira.ladux.model.enums.NotificationTargetType;
 import org.akira.ladux.model.enums.NotificationType;
 
 import java.io.Serializable;
@@ -8,8 +7,6 @@ import java.io.Serializable;
 public record NotificationRequest(
         String title,
         String message,
-        NotificationType type,
-        NotificationTargetType targetType,
-        Integer targetId
+        NotificationType type
 ) implements Serializable {
 }

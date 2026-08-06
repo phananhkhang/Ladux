@@ -3,12 +3,12 @@ import { PageResponse } from './productService';
 
 export interface NotificationResponse {
   id: number;
+  userId?: number | null;
+  userName?: string | null;
   title: string;
   message: string;
   isRead: boolean;
   type: string;
-  targetType: string;
-  targetId: number | null;
   createdAt: string;
 }
 

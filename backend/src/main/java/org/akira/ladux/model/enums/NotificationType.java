@@ -1,5 +1,6 @@
 package org.akira.ladux.model.enums;
 
+// Kiểm tra thông báo thuộc nhóm nghiệp vụ thế nào
 public enum NotificationType {
     ORDER_STATUS,  // Cập nhật trạng thái đơn hàng
     PAYMENT,       // Thanh toán thành công / thất bại

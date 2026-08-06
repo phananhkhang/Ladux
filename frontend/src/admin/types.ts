@@ -48,7 +48,6 @@ export type StockMovementType =
   | "OTHER";
 export type StockReferenceType = "ORDER" | "PURCHASE_ORDER" | "RETURN" | "ADJUSTMENT" | "OTHER";
 export type NotificationType = "ORDER_STATUS" | "PAYMENT" | "PROMOTION" | "SYSTEM" | "STOCK_ALERT";
-export type NotificationTargetType = "ORDER" | "PRODUCT" | "VOUCHER" | "NONE";
 
 export interface UserResponse {
   id: number;
@@ -319,12 +318,12 @@ export interface StockMovementResponse {
 
 export interface NotificationResponse {
   id: number;
+  userId?: number | null;
+  userName?: string | null;
   title: string;
   message: string;
   isRead: boolean;
   type: NotificationType;
-  targetType: NotificationTargetType;
-  targetId: number | null;
   createdAt: string;
 }
 
@@ -405,8 +404,6 @@ export interface NotificationRequest {
   title: string;
   message: string;
   type: NotificationType;
-  targetType: NotificationTargetType;
-  targetId?: number | null;
 }
 
 export type AuthStatus = "checking" | "authenticated" | "unauthenticated" | "forbidden";

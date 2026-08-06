@@ -2,7 +2,6 @@ package org.akira.ladux.model;
 
 import java.time.Instant;
 
-import org.akira.ladux.model.enums.NotificationTargetType;
 import org.akira.ladux.model.enums.NotificationType;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -41,19 +40,15 @@ public class Notification {
     @Column(name = "is_read", nullable = false)
     private boolean isRead = false;
 
+    // Trạng thái ẩn/xóa phía người dùng (soft delete cho user)
+    @Builder.Default
+    @Column(name = "is_deleted_by_user", nullable = false)
+    private boolean isDeletedByUser = false;
+
     // Phân loại thông báo (ORDER, SYSTEM, PROMOTION, INVENTORY...)
     @Enumerated(EnumType.STRING)
     @Column(name = "type", length = 50, nullable = false)
     private NotificationType type;
-
-    // Tận dụng kỹ thuật Polymorphic Reference giống StockMovement!
-    // Dùng để điều hướng người dùng khi CLICK vào thông báo (VD: bấm vào mở đúng đơn hàng #101)
-    @Column(name = "target_type", length = 50)
-    @Enumerated(EnumType.STRING)
-    private NotificationTargetType targetType; // "ORDER", "PRODUCT", "PROMOTION"...
-
-    @Column(name = "target_id")
-    private Integer targetId; // ID của Order, Product hoặc Voucher tương ứng
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate

@@ -20,8 +20,7 @@ public class AdminNotificationController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> broadcastNotification(@RequestBody NotificationRequest request) {
-        notificationService.broadcastNotification(request);
-        return ResponseEntity.ok("Thông báo đã được gửi đến tất cả người dùng.");
+        return ResponseEntity.ok(notificationService.broadcastNotification(request));
     }
     // Admin gửi thong báo để 1 người dùng cụ thể
     @PostMapping("/user/{id}")

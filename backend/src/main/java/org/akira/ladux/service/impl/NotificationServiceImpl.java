@@ -3,6 +3,7 @@ package org.akira.ladux.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.system.request.NotificationRequest;
 import org.akira.ladux.dto.system.response.NotificationResponse;
+import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Notification;
 import org.akira.ladux.model.User;
@@ -27,31 +28,31 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional(readOnly = true)
     public Page<NotificationResponse> getAllNotifications(Pageable pageable) {
         Integer currentUserId = SecurityUtils.getCurrentUserId();
-        return notificationRepository.findByRecipientIdOrderByCreatedAtDesc(currentUserId, pageable).map(NotificationResponse::fromEntity);
+        return notificationRepository.findByRecipientIdAndIsDeletedByUserFalseOrderByCreatedAtDesc(currentUserId, pageable).map(NotificationResponse::fromEntity);
     }
     @Override
     @Transactional(readOnly = true)
     public Page<NotificationResponse> getAllUnReadNotifications(Pageable pageable) {
         Integer currentUserId = SecurityUtils.getCurrentUserId();
-        return notificationRepository.findByRecipientIdAndIsReadFalseOrderByCreatedAtDesc(currentUserId, pageable).map(NotificationResponse::fromEntity);
+        return notificationRepository.findByRecipientIdAndIsReadFalseAndIsDeletedByUserFalseOrderByCreatedAtDesc(currentUserId, pageable).map(NotificationResponse::fromEntity);
     }
     @Override
     @Transactional(readOnly = true)
     public Page<NotificationResponse> getAllReadNotifications(Pageable pageable) {
         Integer currentUserId = SecurityUtils.getCurrentUserId();
-        return notificationRepository.findByRecipientIdAndIsReadTrueOrderByCreatedAtDesc(currentUserId, pageable).map(NotificationResponse::fromEntity);
+        return notificationRepository.findByRecipientIdAndIsReadTrueAndIsDeletedByUserFalseOrderByCreatedAtDesc(currentUserId, pageable).map(NotificationResponse::fromEntity);
     }
     @Override
     @Transactional(readOnly = true)
     public int getUnreadNotificationCount() {
         Integer currentUserId = SecurityUtils.getCurrentUserId();
-        return notificationRepository.countByRecipientIdAndIsReadFalse(currentUserId);
+        return notificationRepository.countByRecipientIdAndIsReadFalseAndIsDeletedByUserFalse(currentUserId);
     }
     @Override
     @Transactional
     public void markAsRead(Integer notificationId) {
         Integer currentUserId = SecurityUtils.getCurrentUserId();
-        Notification notification = notificationRepository.findByIdAndRecipientIdAndIsReadFalse(notificationId, currentUserId).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông báo chưa đọc với id = " + notificationId));
+        Notification notification = notificationRepository.findByIdAndRecipientIdAndIsReadFalseAndIsDeletedByUserFalse(notificationId, currentUserId).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông báo chưa đọc với id = " + notificationId));
         notification.setRead(true);
     }
 
@@ -59,31 +60,31 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public void deleteNotification(Integer notificationId) {
         Integer currentUserId = SecurityUtils.getCurrentUserId();
-        Notification notification = notificationRepository.findByIdAndRecipientId(notificationId, currentUserId).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông báo với id = " + notificationId));
-        notificationRepository.delete(notification);
+        Notification notification = notificationRepository.findByIdAndRecipientIdAndIsDeletedByUserFalse(notificationId, currentUserId).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông báo với id = " + notificationId));
+        notification.setDeletedByUser(true);
     }
     @Override
     @Transactional
     public void deleteAllNotifications() {
         Integer currentUserId = SecurityUtils.getCurrentUserId();
-        notificationRepository.deleteByRecipientId(currentUserId);
+        notificationRepository.softDeleteAllByUserId(currentUserId);
     }
 
     // == Admin ==
     // Admin gửi thông báo đến tất cả người dùng
     @Override
+    @Transactional
     public String broadcastNotification(NotificationRequest request) {
         int count = notificationRepository.insertBroadcastNotifications(
                 request.title(),
                 request.message(),
-                request.type().name(),
-                request.targetType() != null ? request.targetType().name() : null,
-                request.targetId()
+                request.type().name()
         );
         return "Đã gửi thông báo thành công tới " + count + " người dùng.";
     }
     // Admin gửi thông báo đến 1 người dùng cụ thể
     @Override
+    @Transactional
     public String sendNotificationToUser(NotificationRequest request, Integer userId) {
         User recipient = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng với id = " + userId));
@@ -92,9 +93,8 @@ public class NotificationServiceImpl implements NotificationService {
                 .title(request.title())
                 .message(request.message())
                 .isRead(false)
+                .isDeletedByUser(false)
                 .type(request.type())
-                .targetType(request.targetType())
-                .targetId(request.targetId())
                 .createdAt(Instant.now())
                 .build();
         notificationRepository.save(notification);
@@ -106,14 +106,14 @@ public class NotificationServiceImpl implements NotificationService {
     public Page<NotificationResponse> getAllNotificationsForAdmin(Pageable pageable) {
         return notificationRepository.findAllByOrderByCreatedAtDesc(pageable).map(NotificationResponse::fromEntity);
     }
-    // Xoa thong bao cho admin
+    // Xoa thong bao cho admin (Hard delete từ DB)
     @Override
     @Transactional
     public void deleteNotificationForAdmin(Integer id) {
         Notification notification = notificationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông báo với id = " + id));
         notificationRepository.delete(notification);
     }
-    // Xoa tat ca thong bao cho admin
+    // Xoa tat ca thong bao cho admin (Hard delete tất cả từ DB)
     @Override
     @Transactional
     public void deleteAllNotificationsForAdmin() {

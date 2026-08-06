@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { adminApi } from "../api/adminApi";
 import { AdminButton, AdminTable, ConfirmDialog, fieldClassName, PageHeader, PaginationBar, Panel, StatusBadge, textareaClassName, type AdminColumn } from "../components/AdminUI";
 import { adminQueryKeys } from "../queryKeys";
-import type { ColorRequest, ColorResponse, NotificationRequest, NotificationResponse, NotificationTargetType, NotificationType } from "../types";
+import type { ColorRequest, ColorResponse, NotificationRequest, NotificationResponse, NotificationType, UserResponse } from "../types";
 import { formatBackendDateTime, getApiErrorMessage } from "../utils";
 
 export function ColorsPage() {
@@ -45,22 +45,214 @@ export function ColorsPage() {
   </>;
 }
 
-const emptyNotification: NotificationRequest = { title: "", message: "", type: "SYSTEM", targetType: "NONE", targetId: null };
+const emptyNotification: NotificationRequest = { title: "", message: "", type: "SYSTEM" };
 
 export function NotificationsPage() {
-  const [params, setParams] = useSearchParams(); const page = Math.max(0, Number(params.get("page") ?? 0)); const size = Number(params.get("size") ?? 20); const queryClient = useQueryClient();
-  const [dialogOpen, setDialogOpen] = useState(false); const [mode, setMode] = useState<"broadcast" | "user">("broadcast"); const [userId, setUserId] = useState(""); const [form, setForm] = useState<NotificationRequest>(emptyNotification); const [error, setError] = useState<string | null>(null); const [deleting, setDeleting] = useState<NotificationResponse | null>(null); const [deleteAllOpen, setDeleteAllOpen] = useState(false); const [deletePhrase, setDeletePhrase] = useState("");
-  const query = useQuery({ queryKey: adminQueryKeys.resource("notifications", { page, size }), queryFn: () => adminApi.notifications.list({ page, size, sort: "createdAt,desc" }), placeholderData: (previous) => previous });
-  const mutation = useMutation({ mutationFn: () => mode === "user" ? adminApi.notifications.sendToUser(Number(userId), form) : adminApi.notifications.broadcast(form), onSuccess: (message) => { toast.success(message || "Đã gửi thông báo"); setDialogOpen(false); queryClient.invalidateQueries({ queryKey: ["admin", "notifications"] }); }, onError: (mutationError) => setError(getApiErrorMessage(mutationError)) });
-  const deleteMutation = useMutation({ mutationFn: (id: number) => adminApi.notifications.delete(id), onSuccess: (message) => { toast.success(message || "Đã xóa thông báo"); setDeleting(null); queryClient.invalidateQueries({ queryKey: ["admin", "notifications"] }); }, onError: (mutationError) => toast.error(getApiErrorMessage(mutationError)) });
-  const deleteAllMutation = useMutation({ mutationFn: adminApi.notifications.deleteAll, onSuccess: (message) => { toast.success(message || "Đã xóa tất cả thông báo"); setDeleteAllOpen(false); setDeletePhrase(""); queryClient.invalidateQueries({ queryKey: ["admin", "notifications"] }); }, onError: (mutationError) => toast.error(getApiErrorMessage(mutationError)) });
-  const updatePage = (value: number) => { const next = new URLSearchParams(params); next.set("page", String(value)); setParams(next); };
-  const columns: AdminColumn<NotificationResponse>[] = [{ key: "title", header: "Thông báo", render: (notification) => <div className="max-w-xl"><p className="font-extrabold text-slate-900">{notification.title}</p><p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-500">{notification.message}</p></div> }, { key: "type", header: "Loại", render: (notification) => <StatusBadge value={notification.type} /> }, { key: "target", header: "Đích", render: (notification) => `${notification.targetType}${notification.targetId ? ` #${notification.targetId}` : ""}` }, { key: "created", header: "Ngày tạo", render: (notification) => formatBackendDateTime(notification.createdAt) }, { key: "delete", header: "", render: (notification) => <AdminButton tone="ghost" size="icon" aria-label="Xóa thông báo" className="text-rose-600 hover:bg-rose-50" onClick={() => setDeleting(notification)}><Trash2 className="h-4 w-4" /></AdminButton> }];
-  const submit = (event: FormEvent) => { event.preventDefault(); setError(null); if (!form.title.trim() || !form.message.trim()) return setError("Tiêu đề và nội dung là bắt buộc"); if (mode === "user" && Number(userId) <= 0) return setError("User ID là bắt buộc khi gửi cá nhân"); if (form.targetType !== "NONE" && (!form.targetId || form.targetId <= 0)) return setError("Target ID là bắt buộc"); mutation.mutate(); };
-  return <><PageHeader title="Thông báo hệ thống" description="Gửi broadcast hoặc gửi riêng tới user. API create/delete trả plain text và đã được xử lý đúng response type." actions={<><AdminButton tone="secondary" className="text-rose-600" onClick={() => setDeleteAllOpen(true)}><Trash2 className="h-4 w-4" />Xóa tất cả</AdminButton><AdminButton onClick={() => { setForm(emptyNotification); setMode("broadcast"); setUserId(""); setError(null); setDialogOpen(true); }}><Send className="h-4 w-4" />Gửi thông báo</AdminButton></>} /><Panel><AdminTable rows={query.data?.content ?? []} columns={columns} isLoading={query.isLoading} error={query.isError ? getApiErrorMessage(query.error) : null} onRetry={() => query.refetch()} /><PaginationBar page={page} totalPages={query.data?.totalPages ?? 0} totalElements={query.data?.totalElements ?? 0} size={size} onPageChange={updatePage} onSizeChange={(value) => { const next = new URLSearchParams(params); next.set("size", String(value)); next.set("page", "0"); setParams(next); }} /></Panel>
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}><DialogContent className="border-slate-200 bg-white text-slate-950 sm:max-w-2xl"><DialogHeader><DialogTitle>Gửi thông báo</DialogTitle><DialogDescription className="text-slate-500">Nội dung sẽ được gửi trực tiếp tới backend.</DialogDescription></DialogHeader><form className="space-y-4" onSubmit={submit}>{error && <div role="alert" className="rounded-xl bg-rose-50 p-3 text-sm text-rose-700">{error}</div>}<div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-1"><button type="button" onClick={() => setMode("broadcast")} className={`rounded-lg px-3 py-2 text-sm font-bold ${mode === "broadcast" ? "bg-white text-indigo-700 shadow" : "text-slate-500"}`}>Broadcast</button><button type="button" onClick={() => setMode("user")} className={`rounded-lg px-3 py-2 text-sm font-bold ${mode === "user" ? "bg-white text-indigo-700 shadow" : "text-slate-500"}`}>Một người dùng</button></div>{mode === "user" && <div><label className="mb-1.5 block text-sm font-bold text-slate-700">User ID *</label><input className={fieldClassName} type="number" min="1" value={userId} onChange={(event) => setUserId(event.target.value)} /></div>}<div><label className="mb-1.5 block text-sm font-bold text-slate-700">Tiêu đề *</label><input className={fieldClassName} value={form.title} onChange={(event) => setForm((value) => ({ ...value, title: event.target.value }))} /></div><div><label className="mb-1.5 block text-sm font-bold text-slate-700">Nội dung *</label><textarea className={textareaClassName} value={form.message} onChange={(event) => setForm((value) => ({ ...value, message: event.target.value }))} /></div><div className="grid gap-4 sm:grid-cols-2"><div><label className="mb-1.5 block text-sm font-bold text-slate-700">Loại</label><select className={fieldClassName} value={form.type} onChange={(event) => setForm((value) => ({ ...value, type: event.target.value as NotificationType }))}>{["ORDER_STATUS", "PAYMENT", "PROMOTION", "SYSTEM", "STOCK_ALERT"].map((type) => <option key={type}>{type}</option>)}</select></div><div><label className="mb-1.5 block text-sm font-bold text-slate-700">Đối tượng</label><select className={fieldClassName} value={form.targetType} onChange={(event) => setForm((value) => ({ ...value, targetType: event.target.value as NotificationTargetType, targetId: event.target.value === "NONE" ? null : value.targetId }))}>{["NONE", "ORDER", "PRODUCT", "VOUCHER"].map((type) => <option key={type}>{type}</option>)}</select></div></div>{form.targetType !== "NONE" && <div><label className="mb-1.5 block text-sm font-bold text-slate-700">Target ID *</label><input className={fieldClassName} type="number" min="1" value={form.targetId ?? ""} onChange={(event) => setForm((value) => ({ ...value, targetId: Number(event.target.value) }))} /></div>}<DialogFooter><AdminButton type="button" tone="secondary" onClick={() => setDialogOpen(false)}>Hủy</AdminButton><AdminButton type="submit" disabled={mutation.isPending}>{mutation.isPending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}Gửi thông báo</AdminButton></DialogFooter></form></DialogContent></Dialog>
+  const [params, setParams] = useSearchParams();
+  const page = Math.max(0, Number(params.get("page") ?? 0));
+  const size = Number(params.get("size") ?? 20);
+  const queryClient = useQueryClient();
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [mode, setMode] = useState<"broadcast" | "user">("broadcast");
+  const [selectedUser, setSelectedUser] = useState<UserResponse | null>(null);
+  const [userSearchQuery, setUserSearchQuery] = useState("");
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+
+  const [form, setForm] = useState<NotificationRequest>(emptyNotification);
+  const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<NotificationResponse | null>(null);
+  const [deleteAllOpen, setDeleteAllOpen] = useState(false);
+  const [deletePhrase, setDeletePhrase] = useState("");
+
+  const query = useQuery({
+    queryKey: adminQueryKeys.resource("notifications", { page, size }),
+    queryFn: () => adminApi.notifications.list({ page, size, sort: "createdAt,desc" }),
+    placeholderData: (previous) => previous,
+  });
+
+  const usersSearchQuery = useQuery({
+    queryKey: adminQueryKeys.resource("users-search", { search: userSearchQuery }),
+    queryFn: () => userSearchQuery.trim()
+      ? adminApi.users.search(userSearchQuery.trim(), userSearchQuery.trim(), { page: 0, size: 20, sort: "id,desc" })
+      : adminApi.users.list({ page: 0, size: 20, sort: "id,desc" }),
+    enabled: mode === "user" && dialogOpen,
+    staleTime: 0,
+  });
+
+  const mutation = useMutation({
+    mutationFn: () => mode === "user" ? adminApi.notifications.sendToUser(selectedUser!.id, form) : adminApi.notifications.broadcast(form),
+    onSuccess: (message) => {
+      toast.success(message || "Đã gửi thông báo");
+      setDialogOpen(false);
+      setSelectedUser(null);
+      setUserSearchQuery("");
+      queryClient.invalidateQueries({ queryKey: ["admin", "notifications"] });
+    },
+    onError: (mutationError) => setError(getApiErrorMessage(mutationError)),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => adminApi.notifications.delete(id),
+    onSuccess: (message) => {
+      toast.success(message || "Đã xóa thông báo");
+      setDeleting(null);
+      queryClient.invalidateQueries({ queryKey: ["admin", "notifications"] });
+    },
+    onError: (mutationError) => toast.error(getApiErrorMessage(mutationError)),
+  });
+
+  const deleteAllMutation = useMutation({
+    mutationFn: adminApi.notifications.deleteAll,
+    onSuccess: (message) => {
+      toast.success(message || "Đã xóa tất cả thông báo");
+      setDeleteAllOpen(false);
+      setDeletePhrase("");
+      queryClient.invalidateQueries({ queryKey: ["admin", "notifications"] });
+    },
+    onError: (mutationError) => toast.error(getApiErrorMessage(mutationError)),
+  });
+
+  const updatePage = (value: number) => {
+    const next = new URLSearchParams(params);
+    next.set("page", String(value));
+    setParams(next);
+  };
+
+  const columns: AdminColumn<NotificationResponse>[] = [
+    { key: "userId", header: "ID Người dùng", render: (notification) => <code className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">#{notification.userId ?? "—"}</code> },
+    { key: "userName", header: "Tên người dùng", render: (notification) => <span className="font-bold text-slate-900">{notification.userName || "—"}</span> },
+    { key: "title", header: "Thông báo", render: (notification) => <div className="max-w-xl"><p className="font-extrabold text-slate-900">{notification.title}</p><p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-500">{notification.message}</p></div> },
+    { key: "type", header: "Loại", render: (notification) => <StatusBadge value={notification.type} /> },
+    { key: "created", header: "Ngày tạo", render: (notification) => formatBackendDateTime(notification.createdAt) },
+    { key: "delete", header: "", render: (notification) => <AdminButton tone="ghost" size="icon" aria-label="Xóa thông báo" className="text-rose-600 hover:bg-rose-50" onClick={() => setDeleting(notification)}><Trash2 className="h-4 w-4" /></AdminButton> },
+  ];
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    setError(null);
+    if (!form.title.trim() || !form.message.trim()) return setError("Tiêu đề và nội dung là bắt buộc");
+    if (mode === "user" && (!selectedUser || selectedUser.id <= 0)) return setError("Vui lòng tìm và chọn người dùng nhận thông báo");
+    mutation.mutate();
+  };
+
+  return <>
+    <PageHeader title="Thông báo hệ thống" description="Gửi broadcast hoặc chọn người dùng qua thanh tìm kiếm tên, SĐT, Email để gửi riêng." actions={<><AdminButton tone="secondary" className="text-rose-600" onClick={() => setDeleteAllOpen(true)}><Trash2 className="h-4 w-4" />Xóa tất cả</AdminButton><AdminButton onClick={() => { setForm(emptyNotification); setMode("broadcast"); setSelectedUser(null); setUserSearchQuery(""); setError(null); setDialogOpen(true); }}><Send className="h-4 w-4" />Gửi thông báo</AdminButton></>} />
+    <Panel>
+      <AdminTable rows={query.data?.content ?? []} columns={columns} isLoading={query.isLoading} error={query.isError ? getApiErrorMessage(query.error) : null} onRetry={() => query.refetch()} />
+      <PaginationBar page={page} totalPages={query.data?.totalPages ?? 0} totalElements={query.data?.totalElements ?? 0} size={size} onPageChange={updatePage} onSizeChange={(value) => { const next = new URLSearchParams(params); next.set("size", String(value)); next.set("page", "0"); setParams(next); }} />
+    </Panel>
+
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <DialogContent className="border-slate-200 bg-white text-slate-950 sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Gửi thông báo</DialogTitle>
+          <DialogDescription className="text-slate-500">Nội dung sẽ được gửi trực tiếp tới người dùng qua API backend.</DialogDescription>
+        </DialogHeader>
+
+        <form className="space-y-4" onSubmit={submit}>
+          {error && <div role="alert" className="rounded-xl bg-rose-50 p-3 text-sm text-rose-700">{error}</div>}
+
+          <div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-1">
+            <button type="button" onClick={() => setMode("broadcast")} className={`rounded-lg px-3 py-2 text-sm font-bold ${mode === "broadcast" ? "bg-white text-indigo-700 shadow" : "text-slate-500"}`}>Broadcast toàn bộ</button>
+            <button type="button" onClick={() => setMode("user")} className={`rounded-lg px-3 py-2 text-sm font-bold ${mode === "user" ? "bg-white text-indigo-700 shadow" : "text-slate-500"}`}>Một người dùng cụ thể</button>
+          </div>
+
+          {mode === "user" && (
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-slate-700">Người nhận *</label>
+              {selectedUser ? (
+                <div className="flex items-center justify-between rounded-xl border border-indigo-200 bg-indigo-50/70 p-3">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 font-bold text-white text-xs">
+                      #{selectedUser.id}
+                    </span>
+                    <div>
+                      <p className="text-sm font-bold text-slate-900">{selectedUser.fullName || selectedUser.username}</p>
+                      <p className="text-xs text-slate-500">@{selectedUser.username} · SĐT: {selectedUser.phone || "—"} · Email: {selectedUser.email || "—"}</p>
+                    </div>
+                  </div>
+                  <button type="button" onClick={() => setSelectedUser(null)} className="text-xs font-bold text-rose-600 hover:underline">
+                    Đổi người khác
+                  </button>
+                </div>
+              ) : (
+                <div className="relative">
+                  <input
+                    className={fieldClassName}
+                    placeholder="Tìm theo tên, số điện thoại hoặc email..."
+                    value={userSearchQuery}
+                    onChange={(event) => {
+                      setUserSearchQuery(event.target.value);
+                      setIsUserDropdownOpen(true);
+                    }}
+                    onFocus={() => setIsUserDropdownOpen(true)}
+                  />
+                  {isUserDropdownOpen && (
+                    <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-y-auto rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
+                      {usersSearchQuery.isLoading ? (
+                        <div className="p-3 text-center text-xs font-semibold text-slate-500">Đang tìm kiếm người dùng...</div>
+                      ) : (usersSearchQuery.data?.content.length ?? 0) === 0 ? (
+                        <div className="p-3 text-center text-xs font-semibold text-slate-500">Không tìm thấy người dùng phù hợp</div>
+                      ) : (
+                        usersSearchQuery.data?.content.map((user) => (
+                          <div
+                            key={user.id}
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setIsUserDropdownOpen(false);
+                            }}
+                            className="flex items-center justify-between rounded-lg p-2.5 hover:bg-indigo-50 cursor-pointer transition border-b border-slate-100 last:border-0"
+                          >
+                            <div>
+                              <p className="text-sm font-bold text-slate-900">{user.fullName || user.username} <span className="text-xs text-slate-400">ID #{user.id}</span></p>
+                              <p className="text-xs text-slate-500">@{user.username} · SĐT: {user.phone || "—"} · Email: {user.email || "—"}</p>
+                            </div>
+                            <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">Chọn</span>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div>
+            <label className="mb-1.5 block text-sm font-bold text-slate-700">Tiêu đề *</label>
+            <input className={fieldClassName} value={form.title} onChange={(event) => setForm((value) => ({ ...value, title: event.target.value }))} />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-bold text-slate-700">Nội dung *</label>
+            <textarea className={textareaClassName} value={form.message} onChange={(event) => setForm((value) => ({ ...value, message: event.target.value }))} />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-bold text-slate-700">Loại</label>
+            <select className={fieldClassName} value={form.type} onChange={(event) => setForm((value) => ({ ...value, type: event.target.value as NotificationType }))}>
+              {["ORDER_STATUS", "PAYMENT", "PROMOTION", "SYSTEM", "STOCK_ALERT"].map((type) => <option key={type}>{type}</option>)}
+            </select>
+          </div>
+
+          <DialogFooter>
+            <AdminButton type="button" tone="secondary" onClick={() => setDialogOpen(false)}>Hủy</AdminButton>
+            <AdminButton type="submit" disabled={mutation.isPending}>
+              {mutation.isPending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}Gửi thông báo
+            </AdminButton>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+
     <ConfirmDialog open={Boolean(deleting)} onOpenChange={(open) => !open && setDeleting(null)} title="Xóa thông báo?" description={deleting?.title ?? ""} confirmLabel="Xóa" isPending={deleteMutation.isPending} onConfirm={() => deleting && deleteMutation.mutate(deleting.id)} />
-    <ConfirmDialog open={deleteAllOpen} onOpenChange={setDeleteAllOpen} title="Xóa tất cả thông báo?" description="Đây là thao tác phá hủy và không dùng optimistic update." confirmLabel="Xóa tất cả" confirmDisabled={deletePhrase !== "XÓA TẤT CẢ"} isPending={deleteAllMutation.isPending} onConfirm={() => deleteAllMutation.mutate()}><div><label className="mb-1.5 block text-sm font-bold text-slate-700">Nhập XÓA TẤT CẢ để xác nhận</label><input className={fieldClassName} value={deletePhrase} onChange={(event) => setDeletePhrase(event.target.value)} /></div></ConfirmDialog>
+    <ConfirmDialog open={deleteAllOpen} onOpenChange={setDeleteAllOpen} title="Xóa tất cả thông báo?" description="Đây là thao tác phá hủy và không dùng optimistic update." confirmLabel="Xóa tất cả" confirmDisabled={deletePhrase !== "XÓA TẤT CẢ"} isPending={deleteAllMutation.isPending} onConfirm={() => deleteAllMutation.mutate()}>
+      <div>
+        <label className="mb-1.5 block text-sm font-bold text-slate-700">Nhập XÓA TẤT CẢ để xác nhận</label>
+        <input className={fieldClassName} value={deletePhrase} onChange={(event) => setDeletePhrase(event.target.value)} />
+      </div>
+    </ConfirmDialog>
   </>;
 }
 

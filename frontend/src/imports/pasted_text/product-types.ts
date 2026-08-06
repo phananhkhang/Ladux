@@ -52,7 +52,6 @@ export type PurchaseOrderStatus = 'PENDING' | 'CONFIRMED' | 'PARTIALLY_RECEIVED'
 export type StockMovementType = 'PURCHASE_IN' | 'SALE_OUT' | 'RETURN_IN' | 'DAMAGE_OUT' | 'ADJUSTMENT_IN' | 'ADJUSTMENT_OUT' | 'OTHER';
 export type StockReferenceType = 'ORDER' | 'PURCHASE_ORDER' | 'RETURN' | 'ADJUSTMENT' | 'OTHER';
 export type NotificationType = 'ORDER_STATUS' | 'PAYMENT' | 'PROMOTION' | 'SYSTEM' | 'STOCK_ALERT';
-export type NotificationTargetType = 'ORDER' | 'PRODUCT' | 'VOUCHER' | 'NONE';
 
 // ===== RESPONSE DTOS =====
 export interface BrandResponse {
@@ -248,12 +247,12 @@ export interface CustomerResponse {
 
 export interface NotificationResponse {
   id: number;
+  userId?: number | null;
+  userName?: string | null;
   title: string;
   message: string;
   isRead: boolean;
   type: NotificationType;
-  targetType?: NotificationTargetType;
-  targetId?: number;
   createdAt: string;
 }
 
@@ -337,4 +336,4 @@ export interface PurchaseOrderItemRequest { productId: number; quantity: number;
 export interface PurchaseOrderCreateRequest { supplierId: number; expectedDeliveryDate?: string; note?: string; items: PurchaseOrderItemRequest[]; }
 export interface PurchaseOrderReceiveRequest { lines: { itemId: number; receivedQuantity: number; }[]; }
 export interface StockMovementRequest { productId: number; quantity: number; movementType: StockMovementType; note?: string; }
-export interface NotificationRequest { title: string; message: string; type: NotificationType; targetType: NotificationTargetType; targetId?: number; }
+export interface NotificationRequest { title: string; message: string; type: NotificationType; }

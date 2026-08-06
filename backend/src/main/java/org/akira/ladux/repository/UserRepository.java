@@ -53,7 +53,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u LEFT JOIN u.customer c WHERE " +
             "(:name IS NULL AND :phone IS NULL) OR " +
             "(:name IS NOT NULL AND (LOWER(COALESCE(c.fullName, '')) LIKE LOWER(CONCAT('%', :name, '%')) " +
-            "OR LOWER(u.username) LIKE LOWER(CONCAT('%', :name, '%')))) OR " +
+            "OR LOWER(u.username) LIKE LOWER(CONCAT('%', :name, '%')) " +
+            "OR LOWER(COALESCE(c.email, '')) LIKE LOWER(CONCAT('%', :name, '%')))) OR " +
             "(:phone IS NOT NULL AND (c.phone LIKE CONCAT('%', :phone, '%') " +
             "OR REPLACE(c.phone, '+84', '0') LIKE CONCAT('%', :phone, '%')))")
     Page<User> findByNameOrPhone(@Param("name") String name,

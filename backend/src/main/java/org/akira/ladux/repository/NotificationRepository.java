@@ -1,6 +1,5 @@
 package org.akira.ladux.repository;
 
-import io.micrometer.observation.ObservationFilter;
 import org.akira.ladux.model.Notification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,34 +11,50 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface NotificationRepository extends JpaRepository<Notification, Integer> {
-    Page<Notification> findByRecipientIdOrderByCreatedAtDesc(Integer currentUserId, Pageable pageable);
-    Page<Notification> findByRecipientIdAndIsReadFalseOrderByCreatedAtDesc(Integer currentUserId, Pageable pageable);
-    Page<Notification> findByRecipientIdAndIsReadTrueOrderByCreatedAtDesc(Integer currentUserId, Pageable pageable);
-    void deleteByRecipientId(Integer currentUserId);
+    Page<Notification> findByRecipientIdAndIsDeletedByUserFalseOrderByCreatedAtDesc(Integer currentUserId, Pageable pageable);
+    Page<Notification> findByRecipientIdAndIsReadFalseAndIsDeletedByUserFalseOrderByCreatedAtDesc(Integer currentUserId, Pageable pageable);
+    Page<Notification> findByRecipientIdAndIsReadTrueAndIsDeletedByUserFalseOrderByCreatedAtDesc(Integer currentUserId, Pageable pageable);
 
     Page<Notification> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    int countByRecipientIdAndIsReadFalse(Integer currentUserId);
+    int countByRecipientIdAndIsReadFalseAndIsDeletedByUserFalse(Integer currentUserId);
 
-    Optional<Notification> findByIdAndRecipientIdAndIsReadFalse(Integer notificationId, Integer currentUserId);
+    Optional<Notification> findByIdAndRecipientIdAndIsReadFalseAndIsDeletedByUserFalse(Integer notificationId, Integer currentUserId);
 
-    Optional<Notification> findByIdAndRecipientId(Integer notificationId, Integer currentUserId);
+    Optional<Notification> findByIdAndRecipientIdAndIsDeletedByUserFalse(Integer notificationId, Integer currentUserId);
 
     @Modifying
-    @Query("UPDATE Notification n SET n.isRead = true WHERE n.recipient.id = :currentUserId AND n.isRead = false")
+    @Query("UPDATE Notification n SET n.isRead = true WHERE n.recipient.id = :currentUserId AND n.isRead = false AND n.isDeletedByUser = false")
     void markAllAsReadByUserId(Integer currentUserId);
 
     @Modifying
+    @Query("UPDATE Notification n SET n.isDeletedByUser = true WHERE n.recipient.id = :currentUserId AND n.isDeletedByUser = false")
+    void softDeleteAllByUserId(Integer currentUserId);
+
+    @Modifying
     @Query(value = """
-    INSERT INTO notifications (recipient_id, title, message, is_read, type, target_type, target_id, created_at)
-    SELECT u.id, :title, :message, false, :type, :targetType, :targetId, NOW()
+    INSERT INTO notifications (
+        user_id,
+        title,
+        message,
+        is_read,
+        is_deleted_by_user,
+        type,
+        created_at
+    )
+    SELECT
+        u.id,
+        :title,
+        :message,
+        false,
+        false,
+        :type,
+        CURRENT_TIMESTAMP
     FROM users u
-""", nativeQuery = true)
+    """, nativeQuery = true)
     int insertBroadcastNotifications(
             @Param("title") String title,
             @Param("message") String message,
-            @Param("type") String type,
-            @Param("targetType") String targetType,
-            @Param("targetId") Integer targetId
+            @Param("type") String type
     );
 }
