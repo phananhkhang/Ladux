@@ -19,3 +19,4 @@ export * from './colorService';
 export * from './productVariantService';
 export * from './customerService';
 export * from './orderHistoryService';
+export * from './contactService';

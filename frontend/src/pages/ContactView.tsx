@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { MapPin, Phone, Mail } from "lucide-react";
+import { MapPin, Phone, Mail, Send, Loader2 } from "lucide-react";
 import { STOREFRONT_CONTACT } from "../config/storefront";
+import { contactService } from "../services/contactService";
 
 export interface ContactViewProps {
     showToast: (msg: string) => void;
@@ -10,16 +11,40 @@ export default function ContactView({ showToast }: ContactViewProps) {
     const [fullName, setFullName] = useState("");
     const [contact, setContact] = useState("");
     const [message, setMessage] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = (event: React.FormEvent) => {
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        if (!STOREFRONT_CONTACT.email) {
-            showToast("Email liên hệ chưa được cấu hình.");
+        if (!fullName.trim() || !contact.trim() || !message.trim()) {
+            showToast("Vui lòng điền đầy đủ thông tin liên hệ.");
             return;
         }
-        const subject = encodeURIComponent(`Yêu cầu hỗ trợ từ ${fullName}`);
-        const body = encodeURIComponent(`Họ tên: ${fullName}\nLiên hệ: ${contact}\n\n${message}`);
-        window.location.href = `mailto:${STOREFRONT_CONTACT.email}?subject=${subject}&body=${body}`;
+
+        try {
+            setIsSubmitting(true);
+            const res = await contactService.sendContactMessage({
+                fullName: fullName.trim(),
+                contact: contact.trim(),
+                message: message.trim(),
+            });
+            showToast(res.message || "Yêu cầu của bạn đã được gửi thành công!");
+            setFullName("");
+            setContact("");
+            setMessage("");
+        } catch (error: any) {
+            const errResponse = error?.response?.data?.message;
+            if (errResponse) {
+                showToast(errResponse);
+            } else {
+                // Fallback to mailto if email server is offline
+                showToast("Đang mở trình duyệt email để gửi thư...");
+                const subject = encodeURIComponent(`Yêu cầu hỗ trợ từ ${fullName}`);
+                const body = encodeURIComponent(`Họ tên: ${fullName}\nLiên hệ: ${contact}\n\n${message}`);
+                window.location.href = `mailto:${STOREFRONT_CONTACT.email}?subject=${subject}&body=${body}`;
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -37,10 +62,11 @@ export default function ContactView({ showToast }: ContactViewProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                 <form
                     onSubmit={handleSubmit}
-                    className="p-6 bg-neutral-950 border border-neutral-900 rounded-xl space-y-4"
+                    className="p-6 bg-neutral-950 border border-neutral-900 rounded-2xl space-y-4 shadow-xl"
                 >
-                    <h3 className="font-bold text-sm text-white uppercase mb-4">
-                        Gửi Tin Nhắn Cho Chúng Tôi
+                    <h3 className="font-bold text-sm text-white uppercase mb-4 flex items-center gap-2">
+                        <Send className="w-4 h-4 text-[#00FF41]" />
+                        <span>Gửi Tin Nhắn Cho Chúng Tôi</span>
                     </h3>
                     <div>
                         <label className="block text-neutral-400 text-xs mb-1">Họ & Tên</label>
@@ -48,7 +74,8 @@ export default function ContactView({ showToast }: ContactViewProps) {
                             required
                             value={fullName}
                             onChange={(event) => setFullName(event.target.value)}
-                            className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded text-xs text-white"
+                            placeholder="Nhập họ tên của bạn..."
+                            className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-xs text-white focus:outline-none focus:border-[#00FF41] transition font-medium"
                         />
                     </div>
                     <div>
@@ -57,7 +84,8 @@ export default function ContactView({ showToast }: ContactViewProps) {
                             required
                             value={contact}
                             onChange={(event) => setContact(event.target.value)}
-                            className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded text-xs text-white font-mono"
+                            placeholder="Nhập email hoặc số điện thoại..."
+                            className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-[#00FF41] transition font-medium"
                         />
                     </div>
                     <div>
@@ -67,14 +95,26 @@ export default function ContactView({ showToast }: ContactViewProps) {
                             required
                             value={message}
                             onChange={(event) => setMessage(event.target.value)}
-                            className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded text-xs text-white"
+                            placeholder="Cần hỗ trợ về dòng sản phẩm nào?..."
+                            className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-xl text-xs text-white focus:outline-none focus:border-[#00FF41] transition font-medium resize-none"
                         ></textarea>
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-[#00FF41] text-black py-3 rounded text-xs font-extrabold uppercase"
+                        disabled={isSubmitting}
+                        className="w-full bg-[#00FF41] hover:bg-[#00cc34] text-black py-3 rounded-xl text-xs font-extrabold uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#00FF41]/20"
                     >
-                        Gửi Yêu Cầu
+                        {isSubmitting ? (
+                            <>
+                                <Loader2 className="w-4 h-4 animate-spin text-black" />
+                                <span>Đang gửi yêu cầu...</span>
+                            </>
+                        ) : (
+                            <>
+                                <Send className="w-4 h-4 text-black stroke-[2.5]" />
+                                <span>Gửi Yêu Cầu</span>
+                            </>
+                        )}
                     </button>
                 </form>
 
