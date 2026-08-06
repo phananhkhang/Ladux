@@ -22,6 +22,9 @@ public interface PaymentService {
 
     PaymentCallbackResponse updatePayment(int id, PaymentCallbackRequest request);
 
+    /** Admin thực hiện hoàn tiền cho đơn hàng đã trả lại (RETURNED) */
+    org.akira.ladux.dto.order.response.OrderResponse processRefund(int orderId, java.math.BigDecimal refundAmount, String reason, org.akira.ladux.model.User admin);
+
 
     // ==================== USER ====================
 

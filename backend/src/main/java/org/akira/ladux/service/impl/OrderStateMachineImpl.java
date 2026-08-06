@@ -37,6 +37,7 @@ import java.util.UUID;
 public class OrderStateMachineImpl implements OrderStateMachine {
     private final OrderRepository orderRepository;
     private final OrderLifecycleService orderLifecycleService;
+    private final org.akira.ladux.service.PaymentService paymentService;
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
@@ -60,6 +61,14 @@ public class OrderStateMachineImpl implements OrderStateMachine {
         if (target == OrderStatus.CANCELLED) {
             orderLifecycleService.cancelOrder(order, "Order cancelled by user");
             return OrderResponse.fromEntity(order);
+        }
+
+        if (target == OrderStatus.RETURNED) {
+            return orderLifecycleService.processReturnOrder(orderId, "Chuyển trạng thái sang RETURNED qua Admin API", order.getUser());
+        }
+
+        if (target == OrderStatus.REFUNDED) {
+            return paymentService.processRefund(orderId, order.getFinalAmount(), "Xác nhận hoàn tiền qua Admin API", order.getUser());
         }
         // Tao ma trackingNumber khi chuyen sang SHIPPED (tu dong neu khong duoc truyen hoac rong).
         if (target == OrderStatus.SHIPPED) {

@@ -105,6 +105,14 @@ export const orderService = {
   },
 
   /**
+   * Yêu cầu trả hàng cho đơn đã giao thành công (DELIVERED)
+   * POST /api/v1/orders/{orderId}/request-return
+   */
+  requestReturn: (orderId: number, reason?: string): Promise<OrderResponse> => {
+    return apiClient.post(`/orders/${orderId}/request-return`, { reason });
+  },
+
+  /**
    * [Admin] Lấy tất cả các sản phẩm trong đơn hàng (Có phân trang)
    * GET /api/v1/admin/order-items
    */

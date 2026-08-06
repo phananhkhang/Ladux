@@ -2,6 +2,9 @@ package org.akira.ladux.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
+
 import org.akira.ladux.dto.order.request.OrderRequest;
 import org.akira.ladux.dto.order.response.OrderResponse;
 import org.akira.ladux.dto.system.response.PaymentCallbackResponse;
@@ -55,5 +58,16 @@ public class OrderController {
     ) {
         String clientIp = org.akira.ladux.utils.ClientIpUtils.getClientIp(httpRequest);
         return new ResponseEntity<>(service.retryPayment(principal.getId(), orderId, clientIp), HttpStatus.CREATED);
+    }
+
+    // Gửi yêu cầu trả hàng
+    @PostMapping("/{orderId}/request-return")
+    public ResponseEntity<OrderResponse> requestReturn(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable int orderId,
+            @RequestBody(required = false) Map<String, String> body
+    ) {
+        String reason = (body != null) ? body.get("reason") : null;
+        return ResponseEntity.ok(service.requestReturn(principal.getId(), orderId, reason));
     }
 }

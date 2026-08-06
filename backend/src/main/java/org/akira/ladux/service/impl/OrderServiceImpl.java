@@ -298,4 +298,34 @@ public class OrderServiceImpl implements OrderService {
         }
         orderLifecycleService.cancelOrder(order, "Order được hủy bởi người dùng");
     }
+
+    @Override
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "orders", allEntries = true),
+            @CacheEvict(value = "orderHistories", allEntries = true)
+    })
+    public OrderResponse requestReturn(int userId, int orderId, String reason) {
+        Order order = repo.findWithItemsByIdForUpdate(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng id = " + orderId));
+
+        if (!order.getUser().getId().equals(userId)) {
+            throw new BusinessRuleException("Bạn không có quyền yêu cầu trả đơn hàng này!");
+        }
+
+        if (order.getStatus() != OrderStatus.DELIVERED) {
+            throw new BusinessRuleException("Chỉ có thể yêu cầu trả hàng khi đơn hàng đã ở trạng thái ĐÃ GIAO HÀNG (DELIVERED)");
+        }
+
+        order.setStatus(OrderStatus.RETURN_REQUESTED);
+        String desc = "Khách hàng yêu cầu trả hàng" + (reason != null && !reason.isBlank() ? ". Lý do: " + reason : "");
+        order.getHistories().add(OrderHistory.builder()
+                .order(order)
+                .user(order.getUser())
+                .status(OrderStatus.RETURN_REQUESTED)
+                .description(desc)
+                .build());
+
+        return OrderResponse.fromEntity(repo.save(order));
+    }
 }

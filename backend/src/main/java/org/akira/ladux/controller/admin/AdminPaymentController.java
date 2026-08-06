@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 public class AdminPaymentController {
 
     private final PaymentService service;
+    private final org.akira.ladux.repository.UserRepository userRepository;
+
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<PaymentCallbackResponse>> getAllPayments(Pageable pageable) {
@@ -52,4 +54,23 @@ public class AdminPaymentController {
         return ResponseEntity.ok(service.updatePayment(id, request));
     }
 
+    @PostMapping("/order/{orderId}/refund")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<org.akira.ladux.dto.order.response.OrderResponse> processRefund(
+            @PathVariable int orderId,
+            @RequestBody(required = false) java.util.Map<String, Object> body,
+            @org.springframework.security.core.annotation.AuthenticationPrincipal org.akira.ladux.model.UserPrincipal principal
+    ) {
+        java.math.BigDecimal amount = (body != null && body.get("amount") != null)
+                ? new java.math.BigDecimal(body.get("amount").toString())
+                : null;
+        String reason = (body != null && body.get("reason") != null)
+                ? body.get("reason").toString()
+                : "Hoàn tiền bởi Admin";
+
+        org.akira.ladux.model.User admin = userRepository.findById(principal.getId())
+                .orElseThrow(() -> new org.akira.ladux.exception.ResourceNotFoundException("Admin user not found"));
+
+        return ResponseEntity.ok(service.processRefund(orderId, amount, reason, admin));
+    }
 }

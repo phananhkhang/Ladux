@@ -28,4 +28,6 @@ public interface OrderService {
     void expirePendingOrders();
 
     void cancelOrder(Integer orderId);
+
+    OrderResponse requestReturn(int userId, int orderId, String reason);
 }

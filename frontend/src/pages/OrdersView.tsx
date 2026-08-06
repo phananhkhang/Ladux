@@ -91,11 +91,15 @@ export default function OrdersView({
         isLoadingHistories,
         retryPayment,
         cancelOrder,
+        requestReturn,
         error,
     } = useOrderStore();
 
     const [activeId, setActiveId] = useState<string>(selectedOrderId || "");
     const [isCancelling, setIsCancelling] = useState<boolean>(false);
+    const [showReturnModal, setShowReturnModal] = useState<boolean>(false);
+    const [returnReason, setReturnReason] = useState<string>("");
+    const [isSubmittingReturn, setIsSubmittingReturn] = useState<boolean>(false);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
 
@@ -109,6 +113,20 @@ export default function OrdersView({
             showToast(err?.response?.data?.message || err?.message || "Không thể hủy đơn hàng!");
         } finally {
             setIsCancelling(false);
+        }
+    };
+
+    const handleRequestReturn = async (orderId: number) => {
+        setIsSubmittingReturn(true);
+        try {
+            await requestReturn(orderId, returnReason);
+            showToast("Đã gửi yêu cầu trả hàng thành công! Vui lòng chờ bộ phận CSKH xử lý.");
+            setShowReturnModal(false);
+            setReturnReason("");
+        } catch (err: any) {
+            showToast(err?.response?.data?.message || err?.message || "Gửi yêu cầu trả hàng thất bại!");
+        } finally {
+            setIsSubmittingReturn(false);
         }
     };
 
@@ -593,8 +611,8 @@ export default function OrdersView({
                                     )}
                                 </div>
 
-                                {/* ── Section 6: Action Buttons ── */}
-                                <div className="px-6 sm:px-8 py-5 flex flex-wrap gap-3">
+                                 {/* ── Section 6: Action Buttons ── */}
+                                <div className="px-6 sm:px-8 py-5 flex flex-wrap items-center gap-3">
                                     {currentOrder.status === "PENDING" && currentOrder.paymentMethod === "VNPAY" && (
                                         <button
                                             onClick={async () => {
@@ -615,6 +633,24 @@ export default function OrdersView({
                                             Thanh toán lại VNPay
                                         </button>
                                     )}
+
+                                    {currentOrder.status === "DELIVERED" && (
+                                        <button
+                                            onClick={() => setShowReturnModal(true)}
+                                            className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/40 hover:bg-amber-500 hover:text-black text-amber-400 px-5 py-2.5 rounded-xl text-xs font-extrabold uppercase transition shadow-md shadow-amber-500/10"
+                                        >
+                                            <RotateCcw className="w-3.5 h-3.5" />
+                                            Yêu cầu trả hàng
+                                        </button>
+                                    )}
+
+                                    {currentOrder.status === "RETURN_REQUESTED" && (
+                                        <div className="flex items-center gap-2 bg-orange-500/10 border border-orange-500/30 text-orange-400 px-4 py-2.5 rounded-xl text-xs font-semibold">
+                                            <Clock className="w-3.5 h-3.5 animate-pulse" />
+                                            Đang chờ cửa hàng xem xét yêu cầu trả hàng
+                                        </div>
+                                    )}
+
                                     <button
                                         onClick={() => showToast("Đang tải hóa đơn VAT điện tử (PDF)...")}
                                         className="flex items-center gap-2 border border-neutral-800 hover:border-neutral-600 text-neutral-300 hover:text-white px-5 py-2.5 rounded-xl text-xs font-semibold transition"
@@ -625,6 +661,59 @@ export default function OrdersView({
                                 </div>
                             </div>
                         )}
+                    </div>
+                </div>
+            )}
+
+            {/* Modal Yêu Cầu Trả Hàng */}
+            {showReturnModal && currentOrder && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
+                        <div className="flex items-center gap-3 text-amber-400">
+                            <RotateCcw className="w-6 h-6" />
+                            <h3 className="text-lg font-bold text-white">Yêu Cầu Trả Hàng / Hoàn Tiền</h3>
+                        </div>
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                            Bạn đang yêu cầu trả hàng cho đơn hàng <span className="font-mono text-white font-bold">#{currentOrder.id}</span>. Bộ phận CSKH sẽ xem xét và quyết định hoàn tiền.
+                        </p>
+                        <div>
+                            <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                                Lý do trả hàng (không bắt buộc):
+                            </label>
+                            <textarea
+                                value={returnReason}
+                                onChange={(e) => setReturnReason(e.target.value)}
+                                placeholder="Nhập lý do trả hàng (ví dụ: sản phẩm không vừa ý, lỗi nhà sản xuất...)"
+                                rows={3}
+                                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-xs text-white placeholder-neutral-600 focus:outline-none focus:border-amber-500 transition resize-none"
+                            />
+                        </div>
+                        <div className="flex items-center justify-end gap-3 pt-2">
+                            <button
+                                onClick={() => {
+                                    setShowReturnModal(false);
+                                    setReturnReason("");
+                                }}
+                                disabled={isSubmittingReturn}
+                                className="px-4 py-2 text-xs font-semibold text-neutral-400 hover:text-white transition"
+                            >
+                                Hủy bỏ
+                            </button>
+                            <button
+                                onClick={() => handleRequestReturn(Number(currentOrder.id))}
+                                disabled={isSubmittingReturn}
+                                className="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-black px-5 py-2.5 rounded-xl text-xs font-bold uppercase transition disabled:opacity-50"
+                            >
+                                {isSubmittingReturn ? (
+                                    <>
+                                        <div className="w-3.5 h-3.5 border border-black border-t-transparent rounded-full animate-spin" />
+                                        Đang gửi...
+                                    </>
+                                ) : (
+                                    "Xác nhận gửi yêu cầu"
+                                )}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

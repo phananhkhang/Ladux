@@ -165,6 +165,7 @@ export const adminApi = {
     detail: (id: number) => get<PaymentResponse>(`/admin/payments/${id}`),
     byStatus: (status: PaymentStatus, params?: PageParams) => get<PageResponse<PaymentResponse>>(`/admin/payments/status/${status}`, { params }),
     update: (id: number, data: PaymentUpdateRequest) => put<PaymentResponse>(`/admin/payments/${id}`, data),
+    refund: (orderId: number, data?: { amount?: number; reason?: string }) => post<OrderResponse>(`/admin/payments/order/${orderId}/refund`, data),
   },
 
   customers: {
