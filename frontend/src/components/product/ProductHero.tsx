@@ -1,72 +1,144 @@
-import React from "react";
-import { Zap, ChevronRight } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface ProductHeroProps {
-    onShopNowClick: () => void;
-    onAiConsultClick: () => void;
+    onShopNowClick?: () => void;
+    onAiConsultClick?: () => void;
 }
 
-export default function ProductHero({ onShopNowClick, onAiConsultClick }: ProductHeroProps) {
+export default function ProductHero({ onShopNowClick }: ProductHeroProps) {
+    const API_BASE = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1").replace("/api/v1", "");
+
+    const slides = [
+        {
+            id: 1,
+            url: `${API_BASE}/uploads/banners/banner_slide1.png`,
+            fallback: "/uploads/banners/banner_slide1.png",
+            alt: "Ladux Store Banner Slide 1",
+        },
+        {
+            id: 2,
+            url: `${API_BASE}/uploads/banners/banner_slide2.png`,
+            fallback: "/uploads/banners/banner_slide2.png",
+            alt: "Ladux Store Banner Slide 2",
+        },
+    ];
+
+    const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const [isHovered, setIsHovered] = useState<boolean>(false);
+    const touchStartX = useRef<number | null>(null);
+
+    const prevSlide = (e?: React.MouseEvent) => {
+        e?.stopPropagation();
+        setCurrentIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+    };
+
+    const nextSlide = (e?: React.MouseEvent) => {
+        e?.stopPropagation();
+        setCurrentIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+    };
+
+    // Tự động chuyển slide sau 5 giây nếu không di chuột vào
+    useEffect(() => {
+        if (isHovered) return;
+        const timer = setInterval(() => {
+            setCurrentIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+        }, 5000);
+        return () => clearInterval(timer);
+    }, [isHovered, slides.length]);
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        touchStartX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = (e: React.TouchEvent) => {
+        if (touchStartX.current === null) return;
+        const touchEndX = e.changedTouches[0].clientX;
+        const diff = touchStartX.current - touchEndX;
+
+        if (Math.abs(diff) > 40) {
+            if (diff > 0) {
+                nextSlide();
+            } else {
+                prevSlide();
+            }
+        }
+        touchStartX.current = null;
+    };
+
     return (
-        <section className="relative overflow-hidden pt-8 pb-12 lg:pt-12 lg:pb-16 border-b border-white/[0.08] bg-black">
-            <div className="pointer-events-none absolute -right-32 top-0 h-[34rem] w-[34rem] rounded-full bg-[#00FF41]/[0.05] blur-3xl" />
-            <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                <div className="lg:col-span-6 space-y-6 lg:space-y-5 ml-25 mb-15">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-[#00FF41]/40 bg-[#00FF41]/10 px-4 py-1.5 backdrop-blur-md">
-                        <Zap className="w-3.5 h-3.5 text-[#00FF41] fill-[#00FF41]" />
-                        <span className="text-[11px] font-bold font-mono tracking-wider uppercase text-[#00FF41]">
-                            LADUX PREMIUM STORE — CHÍNH HÃNG NEW SEAL 100%
-                        </span>
-                    </div>
+        <section className="relative overflow-hidden py-4 lg:py-5 border-b border-white/[0.08] bg-black">
+            {/* Ambient Background Glow */}
+            <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[22rem] w-[42rem] rounded-full bg-[#00FF41]/[0.04] blur-3xl" />
 
-                    <div className="space-y-2">
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
-                            Laptop{" "}
-                            <span className="text-[#00FF41] font-script italic font-normal text-5xl sm:text-6xl lg:text-7xl">
-                                perfect
-                            </span>{" "}
-                            for
-                        </h1>
-                        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-none">
-                            anyone.
-                        </h2>
-                        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-neutral-500 leading-none pt-1">
-                            Laptop <span className="text-[#00FF41]">premium</span>
-                        </h2>
-                    </div>
-
-                    <p className="text-neutral-400 text-sm sm:text-base max-w-lg leading-relaxed pt-1">
-                        Khám phá danh mục laptop đang bán với cấu hình, mức giá và tình trạng kho được cập nhật trực tiếp từ hệ thống.
-                    </p>
-
-                    <div className="flex flex-wrap items-center gap-4 pt-2">
-                        <button
-                            onClick={onShopNowClick}
-                            className="bg-[#00FF41] hover:bg-[#00cc34] text-black font-extrabold px-7 py-3.5 rounded-full text-sm flex items-center gap-2 transition-transform hover:scale-105 shadow-lg shadow-[#00FF41]/20"
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-6xl mx-auto">
+                    <div
+                        onClick={onShopNowClick}
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                        onTouchStart={handleTouchStart}
+                        onTouchEnd={handleTouchEnd}
+                        className="relative group w-full h-[320px] sm:h-[380px] md:h-[440px] lg:h-[495px] rounded-2xl lg:rounded-3xl overflow-hidden border border-white/10 bg-neutral-950 shadow-[0_15px_40px_rgba(0,0,0,0.8),0_0_20px_rgba(0,255,65,0.08)] select-none"
+                    >
+                        {/* Slide Images Container */}
+                        <div
+                            className="flex w-full h-full transition-transform duration-700 ease-out"
+                            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
                         >
-                            <span>Mua ngay</span>
-                            <ChevronRight className="w-4 h-4 stroke-[3]" />
+                            {slides.map((slide) => (
+                                <div key={slide.id} className="w-full h-full shrink-0">
+                                    <img
+                                        src={slide.url}
+                                        alt={slide.alt}
+                                        className="w-full h-full block object-fill"
+                                        onError={(e) => {
+                                            (e.currentTarget as HTMLImageElement).src = slide.fallback;
+                                        }}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Left Navigation Arrow */}
+                        <button
+                            type="button"
+                            onClick={prevSlide}
+                            aria-label="Previous Slide"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-white/20 bg-black/50 text-white flex items-center justify-center backdrop-blur-md transition-all duration-300 opacity-80 hover:opacity-100 hover:bg-[#00FF41] hover:text-black hover:border-[#00FF41] hover:scale-110 shadow-lg cursor-pointer"
+                        >
+                            <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
                         </button>
 
+                        {/* Right Navigation Arrow */}
                         <button
-                            onClick={onAiConsultClick}
-                            className="border-2 border-white/80 hover:border-white text-white font-bold px-7 py-3.5 rounded-full text-sm transition-colors flex items-center gap-2"
+                            type="button"
+                            onClick={nextSlide}
+                            aria-label="Next Slide"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-white/20 bg-black/50 text-white flex items-center justify-center backdrop-blur-md transition-all duration-300 opacity-80 hover:opacity-100 hover:bg-[#00FF41] hover:text-black hover:border-[#00FF41] hover:scale-110 shadow-lg cursor-pointer"
                         >
-                            <span>Tư vấn AI</span>
+                            <ChevronRight className="w-6 h-6 stroke-[2.5]" />
                         </button>
-                    </div>
-                </div>
 
-                <div className="lg:col-span-6 relative flex justify-center items-center w-full h-[440px] sm:h-[480px] lg:h-[520px]">
-                    <div className="relative w-full h-full overflow-hidden flex items-center justify-center">
-                        <iframe
-                            src="https://my.spline.design/genkubgreetingrobot-7YsTVizd0MDAetdqeMaVhJKY/"
-                            frameBorder="0"
-                            width="100%"
-                            height="100%"
-                            className="w-full h-[calc(100%+50px)] -mb-[50px]"
-                            title="Spline 3D Genkub Greeting Robot Animation"
-                        />
+                        {/* Pagination Dots */}
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2.5">
+                            {slides.map((_, idx) => (
+                                <button
+                                    key={idx}
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setCurrentIndex(idx);
+                                    }}
+                                    aria-label={`Go to slide ${idx + 1}`}
+                                    className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                                        currentIndex === idx
+                                            ? "w-8 bg-[#00FF41] shadow-[0_0_12px_#00FF41]"
+                                            : "w-2.5 bg-white/40 hover:bg-white/80"
+                                    }`}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

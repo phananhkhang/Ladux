@@ -60,51 +60,6 @@ export default function ProductStoreView({
                 onAiConsultClick={() => showToast("Đang mở tư vấn AI cho siêu phẩm Laptop...")}
             />
 
-            {/* Danh mục nổi bật lấy trực tiếp từ backend */}
-            <section className="py-12 bg-neutral-950/20 border-b border-white/[0.04]">
-                <div className="container mx-auto px-6">
-                    <div className="text-center mb-8">
-                        <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                            Danh mục nổi bật
-                        </h2>
-                        <div className="w-12 h-1 bg-[#00FF41] mx-auto mt-3 rounded-full" />
-                    </div>
-
-                    {categories.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-                            {categories.slice(0, 3).map((category) => {
-                                const imageUrl = resolvePublicAssetUrl(category.imageUrl);
-                                const productCount = productsList.filter(
-                                    (product) => product.categoryId === category.id || (product.category && category.name && product.category.toLowerCase() === category.name.toLowerCase())
-                                ).length;
-                                return (
-                                    <button
-                                        key={category.id}
-                                        type="button"
-                                        onClick={() => openCategory(category.id)}
-                                        className="overflow-hidden rounded-2xl border border-white/[0.06] bg-neutral-900/40 text-left shadow-[0_8px_30px_rgb(0,0,0,0.3)] transition hover:border-[#00FF41]/50"
-                                    >
-                                        <div className="flex h-40 items-center justify-center bg-white/95">
-                                            {imageUrl ? (
-                                                <img src={imageUrl} alt={category.name} className="h-full w-full object-cover" />
-                                            ) : (
-                                                <span className="text-2xl font-black uppercase text-neutral-900">{category.name}</span>
-                                            )}
-                                        </div>
-                                        <div className="p-5">
-                                            <h3 className="font-black text-white">{category.name}</h3>
-                                            <p className="mt-1 text-xs text-neutral-400">{productCount} sản phẩm đang bán</p>
-                                        </div>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    ) : (
-                        <p className="text-center text-sm text-neutral-500">Chưa có danh mục sản phẩm.</p>
-                    )}
-                </div>
-            </section>
-
             {/* Needs Showcase Section (Lựa chọn nhu cầu) */}
             <section className="py-12 bg-neutral-900/10 border-b border-white/[0.04]">
                 <div className="container mx-auto px-6">
