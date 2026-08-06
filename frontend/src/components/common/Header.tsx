@@ -3,7 +3,7 @@ import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
     Search,
     Heart,
-    ShoppingBag,
+    ShoppingCart,
     Bell,
     Lock,
     User,
@@ -279,12 +279,12 @@ export default function Header({
                     {/* Cart Badge */}
                     <Link
                         to={ROUTES.cart}
-                        className="relative p-2.5 text-neutral-400 hover:text-white transition rounded-xl hover:bg-white/[0.06]"
+                        className="relative p-2.5 text-neutral-300 hover:text-[#00FF41] transition-all duration-200 rounded-xl hover:bg-white/[0.08] flex items-center justify-center group cursor-pointer"
                         aria-label="Giỏ hàng"
                     >
-                        <ShoppingBag className="w-5 h-5" />
+                        <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform" />
                         {cartCount > 0 && (
-                            <span className="absolute top-1 right-1 w-4 h-4 bg-[#00FF41] text-black font-bold text-[9px] rounded-full flex items-center justify-center">
+                            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#00FF41] text-black font-extrabold text-[10px] rounded-full flex items-center justify-center shadow-[0_0_10px_#00FF41] animate-pulse">
                                 {cartCount}
                             </span>
                         )}

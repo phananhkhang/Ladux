@@ -1,10 +1,18 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, Search, X } from "lucide-react";
 import { useProductStore, useWishlistStore } from "../stores";
 import ProductCard from "../components/product/ProductCard";
 import { LaptopProduct, mapProductResponseToLaptopProduct } from "../types";
 import { productPath, ROUTES } from "../app/routePaths";
+
+const SORT_OPTIONS = [
+    { value: "featured", label: "Nổi bật nhất" },
+    { value: "price-asc", label: "Giá: Thấp đến Cao" },
+    { value: "price-desc", label: "Giá: Cao đến Thấp" },
+    { value: "newest", label: "Mới nhất" },
+    { value: "rating", label: "Đánh giá cao nhất" },
+];
 
 export interface AllProductsViewProps {
     allProducts?: LaptopProduct[];
@@ -54,6 +62,19 @@ export default function AllProductsView({
     const [sortBy, setSortBy] = useState<string>("newest");
     const [currentPage, setCurrentPage] = useState<number>(1);
     const itemsPerPage = 8;
+
+    const [isSortDropdownOpen, setIsSortDropdownOpen] = useState<boolean>(false);
+    const sortDropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
+                setIsSortDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     // Trigger store fetch if products/brands/categories are not loaded yet
     useEffect(() => {
@@ -228,26 +249,47 @@ export default function AllProductsView({
                     {/* Top Right Sort */}
                     <div className="flex items-center gap-3">
                         <span className="text-xs text-neutral-400 font-medium hidden sm:inline">Sắp xếp:</span>
-                        <select
-                            value={sortBy}
-                            onChange={(e) => {
-                                setSortBy(e.target.value);
-                                setCurrentPage(1);
-                            }}
-                            className="bg-[#181a1b] border border-white/10 rounded-full px-5 py-2 text-xs font-bold text-white focus:outline-none focus:border-[#00FF41] cursor-pointer hover:border-white/20 transition-all appearance-none pr-8 relative"
-                            style={{
-                                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
-                                backgroundRepeat: "no-repeat",
-                                backgroundPosition: "right 1rem center",
-                                backgroundSize: "1em"
-                            }}
-                        >
-                            <option value="featured" className="bg-[#121214] text-white">Nổi bật nhất</option>
-                            <option value="price-asc" className="bg-[#121214] text-white">Giá: Thấp đến Cao</option>
-                            <option value="price-desc" className="bg-[#121214] text-white">Giá: Cao đến Thấp</option>
-                            <option value="newest" className="bg-[#121214] text-white">Mới nhất</option>
-                            <option value="rating" className="bg-[#121214] text-white">Đánh giá cao nhất</option>
-                        </select>
+                        <div className="relative" ref={sortDropdownRef}>
+                            <button
+                                type="button"
+                                onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+                                className="flex items-center gap-2.5 bg-[#141618] border border-white/15 hover:border-[#00FF41]/60 rounded-full px-5 py-2 text-xs font-bold text-white transition-all cursor-pointer shadow-md shadow-black/40"
+                            >
+                                <span>{SORT_OPTIONS.find((o) => o.value === sortBy)?.label || "Nổi bật nhất"}</span>
+                                <ChevronRight
+                                    className={`w-3.5 h-3.5 text-[#00FF41] transition-transform duration-300 ${
+                                        isSortDropdownOpen ? "-rotate-90" : "rotate-90"
+                                    }`}
+                                />
+                            </button>
+
+                            {isSortDropdownOpen && (
+                                <div className="absolute right-0 top-[calc(100%+8px)] w-52 rounded-2xl border border-white/20 bg-neutral-950/98 backdrop-blur-2xl p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.95),0_0_20px_rgba(0,255,65,0.15)] z-50 animate-in fade-in zoom-in-95 duration-150">
+                                    {SORT_OPTIONS.map((option) => {
+                                        const isSelected = sortBy === option.value;
+                                        return (
+                                            <button
+                                                key={option.value}
+                                                type="button"
+                                                onClick={() => {
+                                                    setSortBy(option.value);
+                                                    setCurrentPage(1);
+                                                    setIsSortDropdownOpen(false);
+                                                }}
+                                                className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all flex items-center justify-between cursor-pointer ${
+                                                    isSelected
+                                                        ? "bg-[#00FF41] text-black font-extrabold shadow-md shadow-[#00FF41]/20"
+                                                        : "text-neutral-300 hover:bg-[#00FF41]/10 hover:text-[#00FF41]"
+                                                }`}
+                                            >
+                                                <span>{option.label}</span>
+                                                {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-black shrink-0" />}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 

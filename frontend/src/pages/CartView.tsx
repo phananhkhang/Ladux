@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag, Trash2, ChevronRight, ShieldCheck, Truck } from "lucide-react";
+import { ShoppingCart, Trash2, ChevronRight, ShieldCheck, Truck } from "lucide-react";
 import { LaptopProduct, formatVND, mapProductResponseToLaptopProduct } from "../types";
 import { useCartStore } from "../stores";
 import { productPath, ROUTES } from "../app/routePaths";
@@ -48,8 +48,8 @@ export default function CartView({
             ) : cartItemsList.length === 0 ? (
                 /* Empty Cart State */
                 <div className="py-20 text-center space-y-6 max-w-md mx-auto">
-                    <div className="w-24 h-24 rounded-full bg-neutral-950 border border-neutral-800 flex items-center justify-center mx-auto text-neutral-600">
-                        <ShoppingBag className="w-10 h-10 stroke-[1.5]" />
+                    <div className="w-24 h-24 rounded-full bg-neutral-950 border border-neutral-800 flex items-center justify-center mx-auto text-[#00FF41]/70 shadow-[0_0_20px_rgba(0,255,65,0.15)]">
+                        <ShoppingCart className="w-10 h-10 stroke-[1.5]" />
                     </div>
                     <div className="space-y-2">
                         <h2 className="text-xl font-bold text-white">Giỏ hàng của bạn đang trống</h2>

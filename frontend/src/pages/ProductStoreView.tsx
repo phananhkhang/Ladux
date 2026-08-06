@@ -226,41 +226,56 @@ export default function ProductStoreView({
 
             {/* ── Brands Showcase Section ── */}
             {brands.length > 0 && (
-                <section className="py-10 border-b border-white/[0.08] bg-black">
+                <section className="py-12 border-b border-white/[0.08] bg-black">
                     <div className="container mx-auto px-6 sm:px-10 lg:px-16">
-                        <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-2">
-                                <Sparkles className="w-4 h-4 text-[#00FF55]" />
-                                <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#00FF55]">
+                        {/* Title & Subtitle Centered */}
+                        <div className="text-center mb-8 space-y-2">
+                            <div className="inline-flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-[#00FF55] animate-pulse" />
+                                <h2 className="text-sm sm:text-base font-mono font-bold uppercase tracking-widest text-[#00FF55]">
                                     THƯƠNG HIỆU ĐỐI TÁC HÀNG ĐẦU
-                                </span>
+                                </h2>
                             </div>
+                            <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#00FF55] to-transparent mx-auto rounded-full shadow-[0_0_8px_#00FF55]" />
+                            <p className="text-xs text-neutral-400 font-medium">
+                                Hợp tác cùng những thương hiệu công nghệ hàng đầu thế giới, mang đến trải nghiệm vượt trội cho bạn.
+                            </p>
                         </div>
 
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
-                            {brands.map((brand) => {
-                                const logoUrl = resolvePublicAssetUrl(brand.logoUrl);
-                                return (
-                                    <button
-                                        key={brand.id}
-                                        type="button"
-                                        onClick={() => openBrand(brand.id)}
-                                        className="flex items-center justify-center bg-white/95 rounded-2xl p-4 h-16 sm:h-20 border border-white/10 shadow-lg hover:shadow-[0_0_20px_rgba(0,255,85,0.2)] hover:scale-[1.03] hover:border-[#00FF55] transition-all duration-300 cursor-pointer group"
-                                    >
-                                        {logoUrl ? (
-                                            <img
-                                                src={logoUrl}
-                                                alt={brand.name}
-                                                className="max-h-8 sm:max-h-11 max-w-full object-contain filter group-hover:contrast-125 transition-all"
-                                            />
-                                        ) : (
-                                            <span className="text-sm font-black uppercase tracking-wide text-neutral-900">
-                                                {brand.name}
-                                            </span>
-                                        )}
-                                    </button>
-                                );
-                            })}
+                        {/* Outer Border Box Container Wrapping 12 Brand Cards */}
+                        <div className="relative rounded-2xl sm:rounded-3xl border border-white/10 bg-[#0d0e10]/90 backdrop-blur-xl p-4 sm:p-6 shadow-[0_15px_40px_rgba(0,0,0,0.8)] overflow-hidden">
+                            {/* Subtle Top Border Glow Line */}
+                            <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-[#00FF55]/60 to-transparent" />
+                            <div className="absolute top-0 left-10 w-24 h-[1px] bg-[#00FF55]/30 blur-[1px]" />
+                            <div className="absolute top-0 right-10 w-24 h-[1px] bg-[#00FF55]/30 blur-[1px]" />
+
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 relative z-10">
+                                {brands.map((brand) => {
+                                    const logoUrl = resolvePublicAssetUrl(brand.logoUrl);
+                                    return (
+                                        <button
+                                            key={brand.id}
+                                            type="button"
+                                            onClick={() => openBrand(brand.id)}
+                                            className="flex items-center justify-center bg-[#131518] hover:bg-[#1a1d21] rounded-xl sm:rounded-2xl p-4 h-20 sm:h-24 border border-white/[0.08] hover:border-[#00FF55]/60 shadow-lg hover:shadow-[0_0_20px_rgba(0,255,85,0.2)] hover:scale-[1.03] transition-all duration-300 cursor-pointer group relative overflow-hidden"
+                                        >
+                                            {/* Inner Top Edge Glow on Hover */}
+                                            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#00FF55]/0 group-hover:via-[#00FF55]/80 to-transparent transition-all duration-300" />
+                                            {logoUrl ? (
+                                                <img
+                                                    src={logoUrl}
+                                                    alt={brand.name}
+                                                    className="max-h-8 sm:max-h-12 max-w-full object-contain filter group-hover:contrast-125 transition-all duration-300"
+                                                />
+                                            ) : (
+                                                <span className="text-sm font-black uppercase tracking-wide text-white group-hover:text-[#00FF55] transition-colors">
+                                                    {brand.name}
+                                                </span>
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
                 </section>

@@ -24,6 +24,20 @@ export default function ProductHero({ onShopNowClick }: ProductHeroProps) {
             alt: "Ladux Store Banner Slide 2",
             badge: "SIÊU PHẨM LAPTOP ULTRABOOK CAO CẤP",
         },
+        {
+            id: 3,
+            url: `${API_BASE}/uploads/banners/banner_slide3.png`,
+            fallback: "/uploads/banners/banner_slide3.png",
+            alt: "Ladux Store Banner Slide 3",
+            badge: "ƯU ĐÃI KHUYẾN MÃI ĐẶC BIỆT LADUX",
+        },
+        {
+            id: 4,
+            url: `${API_BASE}/uploads/banners/banner_slide4.png`,
+            fallback: "/uploads/banners/banner_slide4.png",
+            alt: "Ladux Store Banner Slide 4",
+            badge: "BẢO HÀNH CHÍNH HÃNG 1 ĐỔI 1 TRONG 30 NGÀY",
+        },
     ];
 
     const [currentIndex, setCurrentIndex] = useState<number>(0);

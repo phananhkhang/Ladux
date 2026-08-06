@@ -96,9 +96,9 @@ export default function ContactView({ showToast }: ContactViewProps) {
                     <div className="flex items-start gap-4 p-4 bg-neutral-950 border border-neutral-900 rounded-xl">
                         <Mail className="w-5 h-5 text-[#00FF41] shrink-0" />
                         <div>
-                            <h4 className="font-bold text-white mb-1">Email Liên Hệ & B2B</h4>
+                            <h4 className="font-bold text-white mb-1">Email Liên Hệ</h4>
                             <p className="text-neutral-400 font-mono">
-                                {[STOREFRONT_CONTACT.email, STOREFRONT_CONTACT.b2bEmail].filter(Boolean).join(" / ") || "Chưa cập nhật"}
+                                {STOREFRONT_CONTACT.email || "Chưa cập nhật"}
                             </p>
                         </div>
                     </div>
