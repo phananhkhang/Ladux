@@ -39,35 +39,47 @@
 
 Dự án Ladux bao gồm hai thành phần trọng yếu kết nối qua REST API:
 
-- **`backend/`**: Hệ thống Spring Boot RESTful API hỗ trợ Java 21, quản lý danh mục sản phẩm, biến thể (RAM, ROM, Màu sắc, SKU), giỏ hàng, đặt hàng khóa tồn kho nguyên tử (`PESSIMISTIC_WRITE`), tích hợp thanh toán (VNPay IPN HMAC-SHA512, MoMo, COD), quy trình nhập hàng NCC (PO, Goods Receipt), sổ cái biến động kho (Stock Ledger), mã giảm giá (Coupon), xác thực OTP (Phone/Email), và phân quyền người dùng (Role-based access control).
-- **`frontend/`**: Ứng dụng Single Page Application (SPA) xây dựng trên nền React 18, TypeScript, Vite & Tailwind CSS. Cung cấp cả giao diện bán hàng (Storefront) hiện đại, tối ưu UX/UI và giao diện quản trị (Admin Dashboard) chuyên nghiệp.
+- **`backend/`**: Hệ thống Spring Boot RESTful API hỗ trợ Java 21, quản lý danh mục sản phẩm, biến thể (RAM, ROM, Màu sắc, SKU), giỏ hàng, đặt hàng khóa tồn kho nguyên tử (`PESSIMISTIC_WRITE`), tích hợp thanh toán (VNPay Sandbox IPN HMAC-SHA512 với `merchantTxnRef`, MoMo, COD), quy trình nhập hàng NCC (PO, Goods Receipt), sổ cái biến động kho (Stock Ledger), mã giảm giá (Coupon), xác thực OTP (Phone/Email), và phân quyền người dùng (Role-based access control).
+- **`frontend/`**: Ứng dụng Single Page Application (SPA) xây dựng trên nền React 18, TypeScript, Vite & Tailwind CSS. Cung cấp cả giao diện bán hàng Cyber Luxury Storefront (Header cố định nhận diện hướng cuộn trang, Dropdown kính mờ Popover, Card sản phẩm 3D Aura, Khung thương hiệu 12 đối tác, Font Orbitron/Rajdhani) và giao diện quản trị Admin Dashboard chuyên nghiệp.
 
 ---
 
 ## ✨ Tính Năng Nổi Bật
 
-### 🛒 1. Khách Hàng (Storefront)
+### 🛒 1. Khách Hàng (Storefront Cyber Design)
 
-- **Trang chủ & Danh mục sản phẩm**: Hiển thị Hero banner, danh mục nổi bật, tìm kiếm theo nhu cầu (*Gaming, Văn phòng, Ultrabook, Đồ họa, Doanh nhân, Sinh viên*) và thương hiệu (*Apple, Dell, Asus, Lenovo, HP, Acer, MSI, v.v.*).
-- **Bộ lọc sản phẩm thông minh (Catalog Filters)**: Lọc kết hợp đa tiêu chí cùng lúc: Thương hiệu, Dòng máy, Dung lượng RAM, Dung lượng Ổ cứng (ROM), Khoảng giá (Range Slider), Tìm kiếm từ khóa full-text (`pg_trgm`) và Sắp xếp (Mới nhất, Giá tăng/giảm, Đánh giá cao).
-- **Trang chi tiết sản phẩm**: Chọn biến thể cấu hình (RAM/ROM/Color), xem giá khuyến mãi, thông số kỹ thuật chi tiết, bộ sưu tập hình ảnh, và danh sách đánh giá của người mua.
+- **Trang chủ & Banner Carousel**: Banner slide 4 hình ảnh quảng cáo tự động chuyển 5s (Autoplay), hiệu ứng vuốt chạm cảm ứng (touch swipe), nút điều hướng kính mờ và 4 thẻ cam kết dịch vụ (*Chính hãng 100%, Giao hỏa tốc 2h, Trả góp 0%, 1 đổi 1 30 ngày*).
+- **6-Card Category Showcase**: Giao diện chọn laptop theo nhu cầu 6 ô (*Laptop Gaming, Laptop Văn Phòng, Ultrabook Mỏng Nhẹ, Laptop Đồ Họa, Laptop Doanh Nhân, Laptop Sinh Viên*) kèm hiệu ứng mờ biên trái độc đáo (`mask-image`).
+- **Thương hiệu đối tác hàng đầu**: Khung bao đen kính mờ (`bg-[#0d0e10]/90 backdrop-blur-xl`) chứa 12 thương hiệu đối tác (*Apple, Lenovo, Dell, HP, Asus, Acer, MSI, Razer, Samsung, LG, Microsoft, Huawei*) với đường viền xanh neon `#00FF41`.
+- **Thanh Header Cố Định & Nhận Diện Hướng Cuộn**:
+  - Header chính cố định ở đỉnh màn hình (`fixed top-0 left-0 right-0 z-50`).
+  - Thanh Header phụ tự động trượt rút lên trên và mờ ẩn khi cuộn xuống (`scroll DOWN`), tự động trượt lộ ra lại khi cuộn lên (`scroll UP`).
+  - Menu chọn danh mục Popover kính mờ thay thế `<select>` mặc định.
+  - Phông chữ logo thương hiệu **LADUX** dùng Google Fonts **Orbitron & Rajdhani** mạnh mẽ kèm quầng sáng xanh neon.
+  - Biểu tượng giỏ hàng công nghệ **`ShoppingCart`** kèm huy hiệu số lượng nhịp thở Cyber.
+- **Bộ lọc sản phẩm thông minh (Catalog Filters)**: Lọc kết hợp đa tiêu chí cùng lúc: Thương hiệu, Dòng máy, Dung lượng RAM, Dung lượng Ổ cứng (ROM), Khoảng giá, Tìm kiếm full-text (`pg_trgm`) và Sắp xếp Popover (Mới nhất, Giá tăng/giảm, Đánh giá cao). Đồng bộ nút "Đặt lại" bộ lọc thông minh.
+- **Card Sản Phẩm Cyber 3D Aura (`ProductCard.tsx`)**:
+  - Khung ảnh sản phẩm có quầng sáng xanh neon `radial ambient glow` phía sau laptop.
+  - Hộp thông số kỹ thuật 2 cột (*Màn hình, CPU, RAM, ROM, GPU*).
+  - Phân cấp giá Sale màu xanh neon `#00FF41` kích thước lớn gạch chân `đ` kèm badge đánh giá sao.
+  - Bộ đôi nút *`ⓘ Chi tiết`* và *`🛒 Thêm giỏ`* chuẩn phong cách Cyber Gaming.
 - **Xác thực & Bảo mật tài khoản**:
   - Đăng ký / Đăng nhập tài khoản bằng mật khẩu mã hóa BCrypt.
   - Đăng nhập nhanh bằng **Google OAuth2**.
   - Xác thực qua Cookie HttpOnly `AUTH_TOKEN` kết hợp CSRF Token cho các request ghi dữ liệu.
   - Token Versioning (`token_version`) giúp vô hiệu hóa phiên làm việc tức thì khi đổi mật khẩu hoặc đăng xuất.
   - Xác thực số điện thoại & email qua mã OTP (`phone_verifications`, `email_verifications`).
-- **Giỏ hàng & Đơn hàng**:
+- **Giỏ hàng & Thanh Toán VNPay Sandbox Flow**:
   - Quản lý giỏ hàng realtime, chọn biến thể, cập nhật số lượng.
   - Áp dụng Mã giảm giá (Coupon) trực tiếp khi checkout.
   - Tính phí vận chuyển tự động theo địa chỉ & đơn vị vận chuyển.
-  - Khóa tồn kho nguyên tử an toàn tránh overselling.
-  - Tích hợp các phương thức thanh toán: **VNPay** (kèm Webhook IPN kiểm tra checksum HMAC SHA-512), **MoMo**, và **COD** (Thanh toán khi nhận hàng).
+  - Khóa tồn kho nguyên tử an toàn tránh overselling (`PESSIMISTIC_WRITE`).
+  - Tích hợp thanh toán **VNPay Sandbox** (Tạo URL thanh toán kèm HMAC-SHA512 checksum & `merchantTxnRef`, kiểm tra kết quả trả về tại `VNPayReturnView`), **MoMo**, và **COD** (Thanh toán khi nhận hàng).
   - Theo dõi trạng thái đơn hàng & timeline lịch sử đơn (`PENDING` -> `CONFIRMED` -> `SHIPPED` -> `DELIVERED`).
-- **Đánh giá & Yêu thích**:
-  - Thêm/Xóa sản phẩm khỏi danh sách yêu thích (Wishlist).
-  - Gửi đánh giá sao & bình luận cho sản phẩm đã mua thành công.
-  - Trung tâm thông báo hệ thống (Notification Center) nhận thông báo đơn hàng & khuyến mãi.
+- **Thông tin liên hệ thực tế**:
+  - Showroom Chính: `49/40/46 Trịnh Đình Trọng, Tân Phú, TP.HCM`
+  - Hotline Hỗ Trợ: `0352 060 306`
+  - Email Liên Hệ: `laduxshop@gmail.com`
 
 ### ⚙️ 2. Quản Trị & Chuỗi Cung Ứng (Admin & Supply Chain Operations)
 
