@@ -9,6 +9,7 @@ import { productPath, ROUTES } from "../app/routePaths";
 export interface AllProductsViewProps {
     allProducts?: LaptopProduct[];
     selectedCategory?: string;
+    setSelectedCategory?: (category: string) => void;
     searchQuery?: string;
     setSearchQuery?: (query: string) => void;
     toggleWishlist?: (laptopId: number) => Promise<void>;
@@ -23,6 +24,7 @@ export interface AllProductsViewProps {
 export default function AllProductsView({
     allProducts,
     selectedCategory,
+    setSelectedCategory,
     searchQuery = "",
     setSearchQuery,
     toggleWishlist,
@@ -259,11 +261,12 @@ export default function AllProductsView({
                                 <h3 className="text-xs font-mono font-bold tracking-widest text-neutral-400 uppercase">
                                     LỌC TỪ KHÓA
                                 </h3>
-                                {(sidebarSearch || searchQuery || selectedRam !== "All" || selectedRom !== "All" || Number.isFinite(maxPrice) || filters.brandId !== null || filters.categoryId !== null) && (
+                                {(sidebarSearch || searchQuery || (selectedCategory && selectedCategory !== "All") || selectedRam !== "All" || selectedRom !== "All" || Number.isFinite(maxPrice) || filters.brandId !== null || filters.categoryId !== null) && (
                                     <button
                                         onClick={() => {
                                             setSidebarSearch("");
                                             if (setSearchQuery) setSearchQuery("");
+                                            if (setSelectedCategory) setSelectedCategory("All");
                                             setSelectedRam("All");
                                             setSelectedRom("All");
                                             setMaxPrice(Number.POSITIVE_INFINITY);
@@ -273,7 +276,7 @@ export default function AllProductsView({
                                         }}
                                         className="text-[11px] font-bold text-[#00FF41] hover:underline flex items-center gap-1 cursor-pointer"
                                     >
-                                        <X className="w-3 h-3" />
+                                        <X className="w-3.5 h-3.5" />
                                         <span>Đặt lại</span>
                                     </button>
                                 )}
@@ -346,31 +349,43 @@ export default function AllProductsView({
                             <div className="space-y-1.5 flex flex-col items-start">
                                 <button
                                     onClick={() => {
+                                        if (setSelectedCategory) setSelectedCategory("All");
                                         setCategoryFilter(null);
                                         setCurrentPage(1);
                                     }}
-                                    className={`text-xs font-bold transition-all text-left ${filters.categoryId === null
+                                    className={`text-xs font-bold transition-all text-left ${
+                                        filters.categoryId === null && (!selectedCategory || selectedCategory === "All")
                                             ? "bg-[#00FF41] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00FF41]/20"
                                             : "text-neutral-400 hover:text-white py-1.5 px-4"
-                                        }`}
+                                    }`}
                                 >
                                     Tất cả dòng máy
                                 </button>
                                 {categories.map((c) => {
-                                    const isActive = filters.categoryId === c.id;
+                                    const isActive =
+                                        filters.categoryId === c.id ||
+                                        (selectedCategory && selectedCategory.toLowerCase() === c.name.toLowerCase());
                                     return (
                                         <button
                                             key={c.id}
                                             onClick={() => {
-                                                setCategoryFilter(c.id);
+                                                if (isActive) {
+                                                    if (setSelectedCategory) setSelectedCategory("All");
+                                                    setCategoryFilter(null);
+                                                } else {
+                                                    if (setSelectedCategory) setSelectedCategory(c.name);
+                                                    setCategoryFilter(c.id);
+                                                }
                                                 setCurrentPage(1);
                                             }}
-                                            className={`text-xs font-bold transition-all text-left ${isActive
+                                            className={`text-xs font-bold transition-all text-left flex items-center justify-between gap-2 cursor-pointer ${
+                                                isActive
                                                     ? "bg-[#00FF41] text-black rounded-full py-1.5 px-4 shadow-md shadow-[#00FF41]/20"
                                                     : "text-neutral-400 hover:text-white py-1.5 px-4"
-                                                }`}
+                                            }`}
                                         >
-                                            {c.name}
+                                            <span>{c.name}</span>
+                                            {isActive && <X className="w-3 h-3 text-black shrink-0" />}
                                         </button>
                                     );
                                 })}

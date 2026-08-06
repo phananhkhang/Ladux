@@ -68,6 +68,18 @@ export default function Header({
     const deleteAllNotifications = useNotificationStore((state) => state.deleteAllNotifications);
 
     const [notifTab, setNotifTab] = React.useState<"all" | "unread" | "read">("all");
+    const [isCatDropdownOpen, setIsCatDropdownOpen] = React.useState<boolean>(false);
+    const catDropdownRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (catDropdownRef.current && !catDropdownRef.current.contains(event.target as Node)) {
+                setIsCatDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const isLoggedIn = authIsLoggedIn || propsIsLoggedIn;
     const displayName = user?.fullName || user?.username || propsUserName || "Thành viên LADUX";
@@ -109,19 +121,19 @@ export default function Header({
                 <div className="z-10 flex items-center shrink-0">
                     <Link
                         to={ROUTES.home}
-                        className="flex items-center ml-2 sm:ml-4 lg:ml-10 gap-2.5 group shrink-0 cursor-pointer"
+                        className="flex items-center gap-2.5 group shrink-0 cursor-pointer"
                     >
                         <img
                             src={laduxLogoImg}
                             alt="LADUX Logo"
-                            className="h-9 sm:h-10 w-auto object-contain rounded-[10px] group-hover:scale-105 transition-transform"
+                            className="h-9 sm:h-10 w-9 sm:w-10 object-cover rounded-full border border-white/10"
                         />
-                        <span className="hidden sm:block text-xl font-black tracking-widest text-[#00FF41]">LADUX</span>
+                        <span className="hidden sm:block text-xl sm:text-2xl font-black font-logo tracking-[0.2em] text-[#00FF41] drop-shadow-[0_0_12px_rgba(0,255,65,0.4)]">LADUX</span>
                     </Link>
                 </div>
 
-                {/* ── Dynamic Flex Search Bar (max-w-[900px]) ── */}
-                <div className="flex-1 max-w-[900px] hidden sm:flex items-stretch h-11 rounded-[1px] overflow-hidden border border-white/[0.12] bg-white/[0.04] focus-within:border-[#00FF41]/60 focus-within:ring-1 focus-within:ring-[#00FF41]/20 transition-all z-10 mx-2 md:mx-4 lg:mx-8">
+                {/* ── Dynamic Flex Search Bar (max-w-[850px] centered) ── */}
+                <div className="flex-1 max-w-[850px] hidden sm:flex items-stretch h-11 relative rounded-none border border-white/[0.12] bg-white/[0.04] focus-within:border-[#00FF41]/60 focus-within:ring-1 focus-within:ring-[#00FF41]/20 transition-all z-20 mx-4 md:mx-8 lg:mx-12">
                     {/* Text Input */}
                     <input
                         type="text"
@@ -138,44 +150,87 @@ export default function Header({
                                 handleNavigate(ROUTES.products);
                             }
                         }}
-                        className="flex-1 bg-transparent px-4 text-sm text-white placeholder:text-neutral-500 focus:outline-none min-w-0"
+                        className="flex-1 bg-transparent px-4 text-sm text-white placeholder:text-neutral-500 focus:outline-none min-w-0 rounded-none"
                     />
 
                     {/* Divider */}
                     <div className="w-px bg-white/[0.1] self-stretch" />
 
-                    {/* Category Dropdown */}
-                    <div className="relative flex items-center shrink-0">
-                        <select
-                            value={selectedCategory}
-                            onChange={(e) => {
-                                setSelectedCategory(e.target.value);
-                                if (location.pathname !== ROUTES.products) {
-                                    handleNavigate(ROUTES.products);
-                                }
-                            }}
-                            className="appearance-none bg-transparent pl-3 sm:pl-4 pr-7 sm:pr-8 h-full text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-neutral-300 focus:outline-none cursor-pointer hover:text-white transition-colors"
+                    {/* Custom Category Dropdown */}
+                    <div className="relative flex items-center shrink-0 h-full" ref={catDropdownRef}>
+                        <button
+                            type="button"
+                            onClick={() => setIsCatDropdownOpen(!isCatDropdownOpen)}
+                            className="flex items-center gap-2 px-3 sm:px-4 h-full text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-300 hover:text-[#00FF41] transition-colors cursor-pointer"
                         >
-                            <option value="All" className="bg-[#0d0f10] text-white">
-                                Chọn danh mục
-                            </option>
-                            {categories.map((category) => (
-                                <option
-                                    key={category.id}
-                                    value={category.name}
-                                    className="bg-[#0d0f10] text-white"
+                            <span className="truncate max-w-[130px]">
+                                {selectedCategory && selectedCategory !== "All" ? selectedCategory : "CHỌN DANH MỤC"}
+                            </span>
+                            <ChevronRight
+                                className={`w-3.5 h-3.5 text-neutral-400 transition-transform duration-300 ${
+                                    isCatDropdownOpen ? "-rotate-90 text-[#00FF41]" : "rotate-90"
+                                }`}
+                            />
+                        </button>
+
+                        {/* Custom Dropdown Popover */}
+                        {isCatDropdownOpen && (
+                            <div className="absolute right-0 top-[calc(100%+8px)] w-56 rounded-2xl border border-white/20 bg-neutral-950/98 backdrop-blur-2xl p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.95),0_0_20px_rgba(0,255,65,0.15)] z-50 animate-in fade-in zoom-in-95 duration-150">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setSelectedCategory("All");
+                                        setIsCatDropdownOpen(false);
+                                        if (location.pathname !== ROUTES.products) {
+                                            handleNavigate(ROUTES.products);
+                                        }
+                                    }}
+                                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-between cursor-pointer ${
+                                        !selectedCategory || selectedCategory === "All"
+                                            ? "bg-[#00FF41] text-black shadow-md shadow-[#00FF41]/20"
+                                            : "text-neutral-300 hover:bg-white/10 hover:text-white"
+                                    }`}
                                 >
-                                    {category.name}
-                                </option>
-                            ))}
-                        </select>
-                        <ChevronRight className="absolute right-2 w-3.5 h-3.5 text-neutral-400 rotate-90 pointer-events-none" />
+                                    <span>TẤT CẢ DANH MỤC</span>
+                                    {(!selectedCategory || selectedCategory === "All") && (
+                                        <div className="h-1.5 w-1.5 rounded-full bg-black" />
+                                    )}
+                                </button>
+                                <div className="h-px bg-white/10 my-1" />
+                                <div className="max-h-60 overflow-y-auto space-y-0.5 scrollbar-thin">
+                                    {categories.map((category) => {
+                                        const isSelected = selectedCategory === category.name;
+                                        return (
+                                            <button
+                                                key={category.id}
+                                                type="button"
+                                                onClick={() => {
+                                                    setSelectedCategory(category.name);
+                                                    setIsCatDropdownOpen(false);
+                                                    if (location.pathname !== ROUTES.products) {
+                                                        handleNavigate(ROUTES.products);
+                                                    }
+                                                }}
+                                                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-between cursor-pointer ${
+                                                    isSelected
+                                                        ? "bg-[#00FF41] text-black shadow-md shadow-[#00FF41]/20"
+                                                        : "text-neutral-300 hover:bg-[#00FF41]/10 hover:text-[#00FF41]"
+                                                }`}
+                                            >
+                                                <span>{category.name.toUpperCase()}</span>
+                                                {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-black" />}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Search Button */}
                     <button
                         onClick={() => handleNavigate(ROUTES.products)}
-                        className="flex items-center justify-center w-11 sm:w-12 bg-[#00FF41] hover:bg-[#00cc34] active:bg-[#00b32d] transition-colors shrink-0"
+                        className="flex items-center justify-center w-11 sm:w-12 bg-[#00FF41] hover:bg-[#00cc34] active:bg-[#00b32d] transition-colors shrink-0 rounded-none cursor-pointer"
                         aria-label="Tìm kiếm"
                     >
                         <Search className="w-5 h-5 text-black stroke-[2.5]" />

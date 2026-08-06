@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@1,600;1,700&family=Caveat:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Orbitron:wght@800;900&family=Rajdhani:wght@800;900&display=swap');
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -6,6 +6,10 @@ body {
 
 code, pre, .font-mono {
   font-family: 'JetBrains Mono', monospace;
+}
+
+.font-logo {
+  font-family: 'Orbitron', 'Rajdhani', sans-serif;
 }
 
 .font-script {
