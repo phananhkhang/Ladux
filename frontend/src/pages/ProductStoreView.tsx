@@ -135,7 +135,7 @@ export default function ProductStoreView({
                 {/* Background Ambient Glow */}
                 <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[30rem] w-[60rem] rounded-full bg-[#00FF55]/[0.03] blur-3xl" />
 
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="container mx-auto px-6 sm:px-10 lg:px-16">
                     {/* Header */}
                     <div className="text-center mb-10 space-y-3 relative z-10">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#00FF55]/40 bg-[#00FF55]/10 text-xs font-mono font-bold uppercase tracking-wider text-[#00FF55] shadow-[0_0_15px_rgba(0,255,85,0.15)]">
@@ -227,7 +227,7 @@ export default function ProductStoreView({
             {/* ── Brands Showcase Section ── */}
             {brands.length > 0 && (
                 <section className="py-10 border-b border-white/[0.08] bg-black">
-                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="container mx-auto px-6 sm:px-10 lg:px-16">
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-2">
                                 <Sparkles className="w-4 h-4 text-[#00FF55]" />
@@ -267,7 +267,7 @@ export default function ProductStoreView({
             )}
 
             {/* ── Main Catalog Showcase Section ── */}
-            <section id="catalog-section" className="py-14 container mx-auto px-4 sm:px-6 lg:px-8">
+            <section id="catalog-section" className="py-14 container mx-auto px-6 sm:px-10 lg:px-16">
                 {isLoading ? (
                     <div className="text-center py-20 bg-neutral-950/60 rounded-3xl border border-white/[0.08] backdrop-blur-xl">
                         <div className="inline-block w-8 h-8 border-2 border-[#00FF55] border-t-transparent rounded-full animate-spin mb-3"></div>

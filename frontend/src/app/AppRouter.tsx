@@ -70,9 +70,11 @@ function StoreLayout() {
                 userAvatar={displayAvatar}
                 userName={userName}
             />
-            <Suspense fallback={<RouteLoading />}>
-                <Outlet />
-            </Suspense>
+            <div className="pt-[122px]">
+                <Suspense fallback={<RouteLoading />}>
+                    <Outlet />
+                </Suspense>
+            </div>
             <Footer />
         </div>
     );

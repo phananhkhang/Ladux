@@ -95,7 +95,7 @@ export default function ProductHero({ onShopNowClick }: ProductHeroProps) {
             <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[22rem] w-[45rem] rounded-full bg-[#00FF55]/[0.05] blur-3xl" />
             <div className="pointer-events-none absolute right-10 top-10 h-72 w-72 rounded-full bg-cyan-500/[0.03] blur-3xl" />
 
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-3.5 sm:space-y-4">
+            <div className="container mx-auto px-6 sm:px-10 lg:px-16 space-y-3.5 sm:space-y-4">
                 {/* ── Main Banner Carousel Container ── */}
                 <div className="max-w-6xl mx-auto">
                     <div

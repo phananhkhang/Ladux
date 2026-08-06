@@ -81,6 +81,37 @@ export default function Header({
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    const [isScrolled, setIsScrolled] = React.useState<boolean>(false);
+    const [isSubHeaderVisible, setIsSubHeaderVisible] = React.useState<boolean>(true);
+    const lastScrollY = React.useRef<number>(0);
+
+    React.useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+
+            if (currentScrollY > 30) {
+                setIsScrolled(true);
+            } else {
+                setIsScrolled(false);
+            }
+
+            if (currentScrollY < 30) {
+                setIsSubHeaderVisible(true);
+            } else if (currentScrollY < lastScrollY.current) {
+                // Scrolling UP -> Reveal sub-header!
+                setIsSubHeaderVisible(true);
+            } else if (currentScrollY > lastScrollY.current && currentScrollY > 60) {
+                // Scrolling DOWN -> Hide sub-header!
+                setIsSubHeaderVisible(false);
+            }
+
+            lastScrollY.current = currentScrollY;
+        };
+
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     const isLoggedIn = authIsLoggedIn || propsIsLoggedIn;
     const displayName = user?.fullName || user?.username || propsUserName || "Thành viên LADUX";
     const userPhone = user?.phone || user?.email || "";
@@ -115,8 +146,14 @@ export default function Header({
     };
 
     return (
-        <header className="sticky top-0 z-50 border-b border-white/10 bg-[#080a0b]/80 text-white backdrop-blur-xl">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-[72px] flex items-center justify-between gap-3 md:gap-6">
+        <header
+            className={`fixed top-0 left-0 right-0 z-50 border-b text-white transition-all duration-500 ${
+                isScrolled
+                    ? "border-white/15 bg-[#080a0b]/95 backdrop-blur-2xl shadow-[0_15px_40px_rgba(0,0,0,0.95)]"
+                    : "border-white/10 bg-[#080a0b]/80 backdrop-blur-xl"
+            }`}
+        >
+            <div className="container mx-auto px-6 sm:px-10 lg:px-16 h-[72px] flex items-center justify-between gap-3 md:gap-6">
                 {/* ── Logo ── */}
                 <div className="z-10 flex items-center shrink-0">
                     <Link
@@ -538,7 +575,13 @@ export default function Header({
             </div>
 
             {/* ── Sub-header (Header phụ) ── */}
-            <div className="border-t border-white/[0.06] bg-black/35 py-3">
+            <div
+                className={`border-t border-white/[0.06] bg-black/40 backdrop-blur-md overflow-hidden transition-all duration-500 ease-in-out ${
+                    !isSubHeaderVisible
+                        ? "max-h-0 opacity-0 -translate-y-4 pointer-events-none py-0 border-t-0"
+                        : "max-h-24 opacity-100 translate-y-0 py-3"
+                }`}
+            >
                 <div className="container mx-auto px-5 sm:px-6 flex flex-col md:flex-row md:items-center justify-between gap-4 text-[16px] text-neutral-300 font-medium">
                     {/* Left side links */}
                     <div className="flex flex-wrap items-center gap-x-10 gap-y-3 ml-10">
