@@ -158,12 +158,16 @@ export function mapProductResponseToLaptopProduct(
             return currentPrice < lowestPrice ? variant : lowest;
         }, undefined);
 
-    // Map images: backend trả { imageUrl } relative → cần prefix API_BASE nếu là relative path
-    const imageUrls = (product.images || []).flatMap((img) => {
-        if (!img?.imageUrl) return [];
-        if (img.imageUrl.startsWith("http")) return img.imageUrl;
-        return `${API_BASE}${img.imageUrl.startsWith("/") ? "" : "/"}${img.imageUrl}`;
-    });
+    // Map images: backend trả { imageUrl } relative → cần prefix API_BASE nếu là relative path + khử trùng trùng lặp URL
+    const imageUrls = Array.from(
+        new Set(
+            (product.images || []).flatMap((img) => {
+                if (!img?.imageUrl) return [];
+                if (img.imageUrl.startsWith("http")) return img.imageUrl;
+                return `${API_BASE}${img.imageUrl.startsWith("/") ? "" : "/"}${img.imageUrl}`;
+            })
+        )
+    );
 
     // Kiểm tra isNew: sản phẩm tạo trong 30 ngày gần đây
     const createdDate = product.createdAt ? new Date(product.createdAt) : null;

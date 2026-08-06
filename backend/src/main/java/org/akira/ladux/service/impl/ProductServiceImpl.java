@@ -262,15 +262,20 @@ public class ProductServiceImpl implements ProductService {
             return;
         }
         product.getImages().clear();
-        imageUrls.stream()
+        List<String> distinctUrls = imageUrls.stream()
                 .filter(Objects::nonNull)
                 .map(String::trim)
                 .filter(imageUrl -> !imageUrl.isBlank())
-                .distinct() // Loại bỏ trùng lặp
-                .forEach(imageUrl -> product.getImages().add(ProductImage.builder()
-                .product(product)
-                .imageUrl(imageUrl)
-                .build()));
+                .distinct()
+                .toList();
+
+        for (int i = 0; i < distinctUrls.size(); i++) {
+            product.getImages().add(ProductImage.builder()
+                    .product(product)
+                    .imageUrl(distinctUrls.get(i))
+                    .isPrimary(i == 0) // Ảnh đầu tiên luôn là ảnh chính (isPrimary = true)
+                    .build());
+        }
     }
 
     private void upsertProductVariants(Product product, List<ProductVariantRequest> variantRequests) {

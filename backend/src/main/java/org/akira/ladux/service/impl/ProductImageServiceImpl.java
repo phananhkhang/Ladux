@@ -63,14 +63,19 @@ public class ProductImageServiceImpl implements ProductImageService {
                 .filter(imageUrl -> !imageUrl.isBlank())
                 .collect(Collectors.toCollection(LinkedHashSet::new)); // dùng linkedHashSet để giữ nguyên thứ tự và loại bỏ trùng lặp
 
-        List<ProductImage> productImages = uniqueUrls.stream()
+        boolean currentEmpty = existingUrls.isEmpty();
+        List<String> newUrls = uniqueUrls.stream()
                 .filter(imageUrl -> !existingUrls.contains(imageUrl))
-                .map(imageUrl -> ProductImage.builder()
-                        .product(product)
-                        .imageUrl(imageUrl)
-                        .isPrimary(false)
-                        .build())
                 .toList();
+
+        List<ProductImage> productImages = new ArrayList<>();
+        for (int i = 0; i < newUrls.size(); i++) {
+            productImages.add(ProductImage.builder()
+                    .product(product)
+                    .imageUrl(newUrls.get(i))
+                    .isPrimary(currentEmpty && i == 0)
+                    .build());
+        }
         if (productImages.isEmpty()) {
             return List.of(); // Trả về list rỗng nhưng ko có saveAll nên yên tâm không mất dữ liệu ảnh đâu!
         }
