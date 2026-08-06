@@ -59,6 +59,9 @@ public class Payment {
     @Column(name = "transaction_no")
     private String transactionNo;
 
+    @Column(name = "merchant_txn_ref")
+    private String merchantTxnRef;
+
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal amount;
 

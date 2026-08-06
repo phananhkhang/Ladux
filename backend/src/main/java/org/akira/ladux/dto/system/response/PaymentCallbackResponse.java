@@ -11,9 +11,11 @@ public record PaymentCallbackResponse(
         Integer id,
         Integer orderId,
         PaymentProvider provider,
+        String merchantTxnRef,
         String transactionNo,
         BigDecimal amount,
         PaymentStatus status,
+        String paymentUrl,
         Instant createdAt
 ) implements Serializable {
     public static PaymentCallbackResponse fromEntity(Payment payment) {
@@ -24,9 +26,11 @@ public record PaymentCallbackResponse(
                 payment.getId(),
                 payment.getOrder() == null ? null : payment.getOrder().getId(),
                 payment.getProvider(),
+                payment.getMerchantTxnRef(),
                 payment.getTransactionNo(),
                 payment.getAmount(),
                 payment.getStatus(),
+                payment.getPaymentUrl(),
                 payment.getCreatedAt()
         );
     }

@@ -2,9 +2,11 @@ package org.akira.ladux.utils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 public class VNPayUtils {
+
     public static String hmacSHA512(final String key, final String data) {
         try {
             if (key == null || data == null) return null;
@@ -18,7 +20,12 @@ public class VNPayUtils {
             }
             return sb.toString();
         } catch (Exception ex) {
-            return "";
+            throw new IllegalStateException("Không thể tạo chữ ký VNPay", ex);
         }
+    }
+
+    public static String encode(String value) {
+        if (value == null) return "";
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 }

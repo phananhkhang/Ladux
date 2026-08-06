@@ -50,8 +50,10 @@ public class OrderController {
     @PostMapping("/{orderId}/payments/retry")
     public ResponseEntity<PaymentCallbackResponse> retryPayment(
             @AuthenticationPrincipal UserPrincipal principal,
-            @PathVariable int orderId
+            @PathVariable int orderId,
+            jakarta.servlet.http.HttpServletRequest httpRequest
     ) {
-        return new ResponseEntity<>(service.retryPayment(principal.getId(), orderId), HttpStatus.CREATED);
+        String clientIp = org.akira.ladux.utils.ClientIpUtils.getClientIp(httpRequest);
+        return new ResponseEntity<>(service.retryPayment(principal.getId(), orderId, clientIp), HttpStatus.CREATED);
     }
 }

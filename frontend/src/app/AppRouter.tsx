@@ -20,6 +20,7 @@ const LoginView = lazy(() => import("../pages/LoginView"));
 const RegisterView = lazy(() => import("../pages/RegisterView"));
 const AboutView = lazy(() => import("../pages/AboutView"));
 const ContactView = lazy(() => import("../pages/ContactView"));
+const VNPayReturnView = lazy(() => import("../pages/VNPayReturnView"));
 
 function RouteLoading() {
     return (
@@ -327,6 +328,7 @@ export default function AppRouter() {
                 <Route path={ROUTES.addresses} element={<RequireAuth><AccountRoute view="addresses" /></RequireAuth>} />
                 <Route path={ROUTES.about} element={<AboutView />} />
                 <Route path={ROUTES.contact} element={<ContactRoute />} />
+                <Route path={ROUTES.vnpayReturn} element={<VNPayReturnView />} />
                 <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
             </Route>
         </Routes>

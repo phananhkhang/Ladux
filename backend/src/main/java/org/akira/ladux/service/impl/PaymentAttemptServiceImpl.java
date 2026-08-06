@@ -32,17 +32,22 @@ public class PaymentAttemptServiceImpl implements PaymentAttemptService {
 
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
+    private final org.akira.ladux.service.VNPayPaymentUrlService vnPayPaymentUrlService;
 
     @Override
     public void initializePayment(Order order, PaymentProvider provider, BigDecimal amount) {
         // COD không có hạn thanh toán — khách trả khi nhận hàng.
         order.setPaymentExpiresAt(paymentExpiresAt(provider));
-        order.getPayments().add(Payment.builder()
+        Payment payment = Payment.builder()
                 .order(order)
                 .provider(provider)
                 .amount(amount)
                 .status(PaymentStatus.PENDING)
-                .build());
+                .build();
+        if (provider == PaymentProvider.VNPAY) {
+            payment.setMerchantTxnRef("LDX" + System.currentTimeMillis() + java.util.UUID.randomUUID().toString().substring(0, 4));
+        }
+        order.getPayments().add(payment);
     }
 
     @Override
@@ -51,7 +56,7 @@ public class PaymentAttemptServiceImpl implements PaymentAttemptService {
             @CacheEvict(value = "payments", allEntries = true),
             @CacheEvict(value = "orders", allEntries = true)
     })
-    public PaymentCallbackResponse retryPayment(int userId, int orderId) {
+    public PaymentCallbackResponse retryPayment(int userId, int orderId, String clientIp) {
         Order order = orderRepository.findByIdForUpdate(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + orderId));
 
@@ -76,7 +81,20 @@ public class PaymentAttemptServiceImpl implements PaymentAttemptService {
                 .status(PaymentStatus.PENDING)
                 .provider(lastPayment.getProvider())
                 .build();
-        return PaymentCallbackResponse.fromEntity(paymentRepository.save(retry));
+
+        retry = paymentRepository.save(retry);
+
+        if (retry.getProvider() == PaymentProvider.VNPAY) {
+            retry.setMerchantTxnRef(generateMerchantTxnRef(order, retry));
+            retry.setPaymentUrl(vnPayPaymentUrlService.createPaymentUrl(retry, clientIp));
+            retry = paymentRepository.save(retry);
+        }
+
+        return PaymentCallbackResponse.fromEntity(retry);
+    }
+
+    private String generateMerchantTxnRef(Order order, Payment payment) {
+        return "LDX" + order.getId() + payment.getId() + System.currentTimeMillis();
     }
 
     private Instant paymentExpiresAt(PaymentProvider provider) {

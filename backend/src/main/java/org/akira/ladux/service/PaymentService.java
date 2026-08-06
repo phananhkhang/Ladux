@@ -35,5 +35,8 @@ public interface PaymentService {
     Page<PaymentCallbackResponse> getMyPaymentsByStatus(int userId, PaymentStatus status, Pageable pageable);
 
     /** User tạo payment mới */
-    PaymentCallbackResponse createPayment(int userId, PaymentCreateRequest request);
+    PaymentCallbackResponse createPayment(int userId, PaymentCreateRequest request, String clientIp);
+
+    /** User tra cứu payment theo merchantTxnRef của chính mình */
+    PaymentCallbackResponse getMyPaymentByMerchantTxnRef(int userId, String merchantTxnRef);
 }

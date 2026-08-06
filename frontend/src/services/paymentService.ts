@@ -8,11 +8,12 @@ export interface PaymentCallbackResponse {
   id: number;
   orderId: number | null;
   provider: PaymentProvider;
+  merchantTxnRef: string | null;
   transactionNo: string | null;
   amount: number;
   status: PaymentStatus;
+  paymentUrl: string | null;
   createdAt: string;
-  paymentUrl?: string;
 }
 
 export interface PaymentCreateRequest {
@@ -51,5 +52,13 @@ export const paymentService = {
    */
   createPayment: (data: PaymentCreateRequest): Promise<PaymentCallbackResponse> => {
     return apiClient.post('/payments', data);
+  },
+
+  /**
+   * Tra cứu trạng thái thanh toán bằng merchantTxnRef (dành cho return URL)
+   * GET /api/v1/payments/my/txn-ref/{merchantTxnRef}
+   */
+  getMyPaymentByTxnRef: (txnRef: string): Promise<PaymentCallbackResponse> => {
+    return apiClient.get(`/payments/my/txn-ref/${encodeURIComponent(txnRef)}`);
   },
 };

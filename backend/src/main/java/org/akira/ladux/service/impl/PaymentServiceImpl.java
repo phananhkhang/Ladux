@@ -21,13 +21,15 @@ import org.akira.ladux.model.OrderHistory;
 import org.akira.ladux.model.Payment;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.enums.OrderStatus;
+import org.akira.ladux.model.enums.PaymentProvider;
 import org.akira.ladux.model.enums.PaymentStatus;
 import org.akira.ladux.repository.OrderRepository;
 import org.akira.ladux.repository.PaymentRepository;
 import org.akira.ladux.service.OrderLifecycleService;
 import org.akira.ladux.service.PaymentService;
+import org.akira.ladux.service.VNPayPaymentUrlService;
 import org.akira.ladux.utils.VNPayUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.akira.ladux.config.VNPayProperties;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -52,16 +54,9 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository repo;
     private final OrderRepository orderRepository;
     private final OrderLifecycleService orderLifecycleService;
+    private final VNPayPaymentUrlService vnPayPaymentUrlService;
+    private final VNPayProperties vnPayProperties;
     private final RestTemplate restTemplate = new RestTemplate();
-
-    @Value("${vnpay.tmn-code:DEMO}")
-    private String vnpTmnCode;
-
-    @Value("${vnpay.hash-secret:SECRET}")
-    private String vnpHashSecret;
-
-    @Value("${vnpay.refund-url:https://sandbox.vnpayment.vn/merchant_webapi/api/transaction}")
-    private String vnpRefundUrl;
 
 
 
@@ -134,7 +129,7 @@ public class PaymentServiceImpl implements PaymentService {
             @CacheEvict(value = "payments", allEntries = true),
             @CacheEvict(value = "orders", allEntries = true)
     })
-    public PaymentCallbackResponse createPayment(int userId, PaymentCreateRequest request) {
+    public PaymentCallbackResponse createPayment(int userId, PaymentCreateRequest request, String clientIp) {
         Order order = orderRepository.findByIdForUpdate(request.orderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay order voi id = " + request.orderId()));
         if (!order.getUser().getId().equals(userId)) {
@@ -156,19 +151,50 @@ public class PaymentServiceImpl implements PaymentService {
                 if (request.provider() != null && request.provider() != lastPayment.getProvider()) {
                     lastPayment.setProvider(request.provider());
                 }
+                if (lastPayment.getProvider() == PaymentProvider.VNPAY) {
+                    if (lastPayment.getMerchantTxnRef() == null || lastPayment.getMerchantTxnRef().isBlank()) {
+                        lastPayment.setMerchantTxnRef(generateMerchantTxnRef(order, lastPayment));
+                    }
+                    String paymentUrl = vnPayPaymentUrlService.createPaymentUrl(lastPayment, clientIp);
+                    lastPayment.setPaymentUrl(paymentUrl);
+                    lastPayment = repo.save(lastPayment);
+                }
                 return PaymentCallbackResponse.fromEntity(lastPayment);
             }
             // Con lai: lastPayment FAILED -> cho phep tao attempt moi ben duoi.
         }
 
+        PaymentProvider provider = request.provider() != null ? request.provider() : PaymentProvider.VNPAY;
+
         Payment payment = Payment.builder()
                 .order(order)
-                .provider(request.provider())
+                .provider(provider)
                 .amount(order.getFinalAmount())
                 .status(PaymentStatus.PENDING)
                 .build();
-        Payment savedPayment = repo.save(payment);
-        return PaymentCallbackResponse.fromEntity(savedPayment);
+
+        payment = repo.save(payment);
+
+        if (provider == PaymentProvider.VNPAY) {
+            payment.setMerchantTxnRef(generateMerchantTxnRef(order, payment));
+            payment.setPaymentUrl(vnPayPaymentUrlService.createPaymentUrl(payment, clientIp));
+            payment = repo.save(payment);
+        }
+
+        return PaymentCallbackResponse.fromEntity(payment);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PaymentCallbackResponse getMyPaymentByMerchantTxnRef(int userId, String merchantTxnRef) {
+        Payment payment = repo.findByMerchantTxnRef(merchantTxnRef)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay giao dich thanh toan"));
+
+        if (payment.getOrder() == null || !payment.getOrder().getUser().getId().equals(userId)) {
+            throw new BusinessRuleException("Ban khong co quyen xem giao dich thanh toan nay");
+        }
+
+        return PaymentCallbackResponse.fromEntity(payment);
     }
 
     @Override
@@ -318,7 +344,7 @@ public class PaymentServiceImpl implements PaymentService {
                     vnp_RequestId,
                     vnp_Version,
                     vnp_Command,
-                    vnpTmnCode,
+                    vnPayProperties.getTmnCode(),
                     vnp_TransactionType,
                     vnp_TxnRef,
                     vnp_Amount,
@@ -331,14 +357,14 @@ public class PaymentServiceImpl implements PaymentService {
             );
 
             // 3. Ký HMAC-SHA512
-            String vnp_SecureHash = VNPayUtils.hmacSHA512(vnpHashSecret, rawData);
+            String vnp_SecureHash = VNPayUtils.hmacSHA512(vnPayProperties.getHashSecret(), rawData);
 
             // 4. Đóng gói Body JSON gửi đi
             Map<String, String> requestParams = new HashMap<>();
             requestParams.put("vnp_RequestId", vnp_RequestId);
             requestParams.put("vnp_Version", vnp_Version);
             requestParams.put("vnp_Command", vnp_Command);
-            requestParams.put("vnp_TmnCode", vnpTmnCode);
+            requestParams.put("vnp_TmnCode", vnPayProperties.getTmnCode());
             requestParams.put("vnp_TransactionType", vnp_TransactionType);
             requestParams.put("vnp_TxnRef", vnp_TxnRef);
             requestParams.put("vnp_Amount", vnp_Amount);
@@ -358,7 +384,7 @@ public class PaymentServiceImpl implements PaymentService {
             log.info("Sending VNPay Refund request for order #{}: {}", payment.getOrder().getId(), requestParams);
 
             // Gọi API
-            Map<String, Object> response = restTemplate.postForObject(vnpRefundUrl, entity, Map.class);
+            Map<String, Object> response = restTemplate.postForObject(vnPayProperties.getRefundUrl(), entity, Map.class);
 
             // 6. Kiểm tra mã phản hồi (vnp_ResponseCode = "00" là thành công)
             if (response != null) {
@@ -373,5 +399,12 @@ public class PaymentServiceImpl implements PaymentService {
             log.error("Loi khi goi API Hoan tien VNPay cho payment id = {}", payment.getId(), ex);
         }
         return false;
+    }
+
+    private String generateMerchantTxnRef(Order order, Payment payment) {
+        return "LDX"
+                + order.getId()
+                + payment.getId()
+                + System.currentTimeMillis();
     }
 }

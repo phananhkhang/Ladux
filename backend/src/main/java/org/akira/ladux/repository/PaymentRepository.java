@@ -53,5 +53,20 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
     Page<Payment> findByOrder_User_IdAndStatus(Integer userId, PaymentStatus status, Pageable pageable);
 
     Optional<Payment> findFirstByOrderIdAndStatusOrderByCreatedAtDesc(int orderId, PaymentStatus paymentStatus);
+
+    @EntityGraph(attributePaths = {"order"})
+    Optional<Payment> findByMerchantTxnRef(String merchantTxnRef);
+
+    @EntityGraph(attributePaths = {"order"})
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+    select p
+    from Payment p
+    where p.merchantTxnRef = :merchantTxnRef
+""")
+    Optional<Payment> findByMerchantTxnRefForUpdate(
+            @Param("merchantTxnRef")
+            String merchantTxnRef
+    );
 }
 

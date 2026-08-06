@@ -28,8 +28,7 @@ public class PaymentWebhookController {
      * VNPay IPN (Instant Payment Notification).
      * Ho tro ca GET va POST vi Gateway co the gui theo mot trong hai phuong thuc tuy cau hinh.
      */
-    @GetMapping("/vnpay-webhook")
-    @PostMapping("/vnpay-webhook")
+    @RequestMapping(value = "/vnpay-webhook", method = {org.springframework.web.bind.annotation.RequestMethod.GET, org.springframework.web.bind.annotation.RequestMethod.POST})
     public ResponseEntity<String> handleVNPayWebhook(@RequestParam Map<String, String> params) {
         PaymentWebhookResult result = paymentWebhookService.processVNPayWebhook(params);
         return toVNPayResponse(result);
@@ -50,13 +49,6 @@ public class PaymentWebhookController {
                 result.message()
         );
 
-        HttpStatus httpStatus = switch (result.outcome()) {
-            case PROCESSED, IDEMPOTENT -> HttpStatus.OK;
-            case INVALID_SIGNATURE -> HttpStatus.FORBIDDEN;
-            case AMOUNT_MISMATCH -> HttpStatus.BAD_REQUEST;
-            case ORDER_NOT_FOUND -> HttpStatus.NOT_FOUND;
-        };
-
-        return ResponseEntity.status(httpStatus).body(body);
+        return ResponseEntity.ok(body);
     }
 }

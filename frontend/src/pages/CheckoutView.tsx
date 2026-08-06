@@ -141,11 +141,16 @@ export default function CheckoutView({
                         provider: "VNPAY",
                     });
                     if (payRes.paymentUrl) {
+                        await clearCart();
                         window.location.href = payRes.paymentUrl;
                         return;
                     }
-                } catch (payErr) {
+                    throw new Error("Backend không trả về URL thanh toán VNPay");
+                } catch (payErr: any) {
                     console.error("Lỗi khởi tạo thanh toán VNPay:", payErr);
+                    const errorMsg = payErr?.response?.data?.message || payErr?.message || "Không thể tạo URL thanh toán VNPay!";
+                    showToast(errorMsg);
+                    return;
                 }
             }
 

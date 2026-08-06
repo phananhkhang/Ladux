@@ -1,7 +1,6 @@
 package org.akira.ladux.event;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.akira.ladux.model.Order;
 
 @Getter

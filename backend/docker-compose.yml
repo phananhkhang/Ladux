@@ -13,6 +13,11 @@ services:
       - JWT_SECRET=${JWT_SECRET:-5/ne3ZpC3uVErWJwKCirEZmBt2VxC4GFzNh2olODU4Y=}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID in your environment}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET in your environment}
+      - VNPAY_TMN_CODE=${VNPAY_TMN_CODE}
+      - VNPAY_HASH_SECRET=${VNPAY_HASH_SECRET}
+      - VNPAY_PAY_URL=${VNPAY_PAY_URL}
+      - VNPAY_RETURN_URL=${VNPAY_RETURN_URL}
+      - VNPAY_REFUND_URL=${VNPAY_REFUND_URL}
       # Serve seed product images from host ../uploads (bind-mounted below)
       - UPLOAD_ROOT=/app/uploads
     depends_on:

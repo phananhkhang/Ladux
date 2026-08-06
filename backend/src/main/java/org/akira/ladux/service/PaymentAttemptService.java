@@ -9,6 +9,6 @@ import java.math.BigDecimal;
 public interface PaymentAttemptService {
     void initializePayment(Order order, PaymentProvider provider, BigDecimal amount);
 
-    PaymentCallbackResponse retryPayment(int userId, int orderId);
+    PaymentCallbackResponse retryPayment(int userId, int orderId, String clientIp);
 }
 

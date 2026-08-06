@@ -23,7 +23,7 @@ public interface OrderService {
 
     OrderResponse updateOrderStatus(int orderId, OrderStatusUpdateRequest request);
 
-    PaymentCallbackResponse retryPayment(int userid, int orderId);
+    PaymentCallbackResponse retryPayment(int userId, int orderId, String clientIp);
 
     void expirePendingOrders();
 

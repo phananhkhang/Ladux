@@ -12,6 +12,7 @@ export const ROUTES = {
     register: "/register",
     about: "/about",
     contact: "/contact",
+    vnpayReturn: "/payment/vnpay/return",
 } as const;
 
 export function productPath(productId: number | string): string {

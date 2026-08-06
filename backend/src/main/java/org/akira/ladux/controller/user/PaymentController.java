@@ -1,5 +1,6 @@
 package org.akira.ladux.controller.user;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.system.request.PaymentCreateRequest;
@@ -47,7 +48,30 @@ public class PaymentController {
     @PostMapping
     public ResponseEntity<PaymentCallbackResponse> createPayment(
             @AuthenticationPrincipal UserPrincipal principal,
-            @Valid @RequestBody PaymentCreateRequest request) {
-        return new ResponseEntity<>(service.createPayment(principal.getId(), request), HttpStatus.CREATED);
+            @Valid @RequestBody PaymentCreateRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        String clientIp = org.akira.ladux.utils.ClientIpUtils.getClientIp(httpRequest);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(service.createPayment(
+                        principal.getId(),
+                        request,
+                        clientIp
+                ));
+    }
+
+    @GetMapping("/my/txn-ref/{merchantTxnRef}")
+    public ResponseEntity<PaymentCallbackResponse> getMyPaymentByMerchantTxnRef(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable String merchantTxnRef
+    ) {
+        return ResponseEntity.ok(
+                service.getMyPaymentByMerchantTxnRef(
+                        principal.getId(),
+                        merchantTxnRef
+                )
+        );
     }
 }

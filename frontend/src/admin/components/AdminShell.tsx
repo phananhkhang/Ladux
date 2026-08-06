@@ -138,12 +138,23 @@ function SidebarContent({
 export default function AdminShell() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem("ladux_admin_dark_mode") === "true";
+    } catch {
+      return false;
+    }
+  });
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAdminAuth();
 
   useEffect(() => {
+    try {
+      localStorage.setItem("ladux_admin_dark_mode", String(darkMode));
+    } catch {
+      // Ignore storage error
+    }
     document.documentElement.classList.toggle("admin-theme-dark", darkMode);
     return () => document.documentElement.classList.remove("admin-theme-dark");
   }, [darkMode]);

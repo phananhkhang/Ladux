@@ -178,7 +178,7 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal subTotal = lineDrafts.stream()
                 .map(LineDraft::lineTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .setScale(2, RoundingMode.HALF_UP);
+                .setScale(0, RoundingMode.HALF_UP);
 
         CouponRedemptionResult redemption = couponRedemptionService.redeem(request.couponCode(), subTotal);
         Coupon coupon = redemption.coupon();
@@ -189,9 +189,9 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal finalAmount = subTotal.subtract(discountAmount)
                 .add(shippingFee)
                 .max(BigDecimal.ZERO)
-                .setScale(2, RoundingMode.HALF_UP);
+                .setScale(0, RoundingMode.HALF_UP);
         if (finalAmount.compareTo(BigDecimal.ZERO) <= 0) {
-            finalAmount = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+            finalAmount = BigDecimal.ZERO;
         }
         ShippingAddress shippingAddress = ShippingAddress.builder()
                 .receiverName(request.shippingAddress().receiverName())
@@ -286,8 +286,8 @@ public class OrderServiceImpl implements OrderService {
             @CacheEvict(value = "orders", allEntries = true),
             @CacheEvict(value = "payments", allEntries = true)
     })
-    public PaymentCallbackResponse retryPayment(int userId, int orderId) {
-        return paymentAttemptService.retryPayment(userId, orderId);
+    public PaymentCallbackResponse retryPayment(int userId, int orderId, String clientIp) {
+        return paymentAttemptService.retryPayment(userId, orderId, clientIp);
     }
     @Override
     @Transactional
