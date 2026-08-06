@@ -141,8 +141,11 @@ public class GoogleOAuth2UserServiceImpl implements GoogleOAuth2UserService {
             customer.setFullName(normalizedName);
         }
         String normalizedPicture = normalizeOptional(pictureUrl);
-        if (customer.getAvatarUrl() == null && normalizedPicture != null) {
-            customer.setAvatarUrl(normalizedPicture);
+        if (normalizedPicture != null) {
+            String currentAvatar = customer.getAvatarUrl();
+            if (currentAvatar == null || !currentAvatar.contains("/uploads/")) {
+                customer.setAvatarUrl(normalizedPicture);
+            }
         }
     }
 

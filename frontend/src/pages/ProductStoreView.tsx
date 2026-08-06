@@ -74,7 +74,9 @@ export default function ProductStoreView({
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
                             {categories.slice(0, 3).map((category) => {
                                 const imageUrl = resolvePublicAssetUrl(category.imageUrl);
-                                const productCount = productsList.filter((product) => product.categoryId === category.id).length;
+                                const productCount = productsList.filter(
+                                    (product) => product.categoryId === category.id || (product.category && category.name && product.category.toLowerCase() === category.name.toLowerCase())
+                                ).length;
                                 return (
                                     <button
                                         key={category.id}
@@ -113,19 +115,19 @@ export default function ProductStoreView({
                         <div className="w-12 h-1 bg-[#00FF41] mx-auto mt-3 rounded-full" />
                     </div>
 
-                    <div className="flex items-start justify-start md:justify-center gap-6 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                    <div className="flex items-start justify-start md:justify-center gap-6 overflow-x-auto py-4 px-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                         {categories.map((category) => (
                             <button
                                 key={category.id}
                                 type="button"
                                 onClick={() => openCategory(category.id)}
-                                className="flex flex-col items-center text-center shrink-0 w-28 cursor-pointer group"
+                                className="flex flex-col items-center text-center shrink-0 w-28 cursor-pointer group py-1"
                             >
-                                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-white border border-white/10 flex items-center justify-center p-2 shadow-lg group-hover:shadow-[#00FF41]/20 group-hover:scale-105 group-hover:border-[#00FF41] transition-all duration-300">
+                                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-white border-2 border-white/10 flex items-center justify-center p-1 shadow-lg group-hover:shadow-[0_0_20px_rgba(0,255,65,0.35)] group-hover:scale-105 group-hover:border-[#00FF41] transition-all duration-300">
                                     <img
                                         src={resolvePublicAssetUrl(category.imageUrl) || undefined}
                                         alt={category.name}
-                                        className={`${category.imageUrl ? "max-h-full max-w-full object-contain" : "hidden"} rounded-full filter group-hover:brightness-105 transition-all`}
+                                        className={`${category.imageUrl ? "w-full h-full object-contain scale-110 p-0.5" : "hidden"} filter group-hover:brightness-105 transition-all duration-300`}
                                     />
                                     {!category.imageUrl && <span className="px-2 text-center text-xs font-black text-neutral-900">{category.name}</span>}
                                 </div>

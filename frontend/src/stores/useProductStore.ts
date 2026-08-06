@@ -142,14 +142,14 @@ export const useProductStore = create<ProductState>((set, get) => ({
 
   setCategoryFilter: (categoryId: number | null) => {
     set((state) => ({
-      filters: { ...state.filters, categoryId, brandId: null, page: 0 },
+      filters: { ...state.filters, categoryId, page: 0 },
     }));
     get().fetchProducts();
   },
 
   setBrandFilter: (brandId: number | null) => {
     set((state) => ({
-      filters: { ...state.filters, brandId, categoryId: null, page: 0 },
+      filters: { ...state.filters, brandId, page: 0 },
     }));
     get().fetchProducts();
   },

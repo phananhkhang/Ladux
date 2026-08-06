@@ -44,7 +44,7 @@ export function PageHeader({ title, description, actions }: { title: string; des
 }
 
 export function Panel({ children, className }: { children: ReactNode; className?: string }) {
-  return <section className={cn("rounded-2xl border border-slate-200/80 bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]", className)}>{children}</section>;
+  return <section className={cn("overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]", className)}>{children}</section>;
 }
 
 export function StatusBadge({ value }: { value: string | boolean | null | undefined }) {

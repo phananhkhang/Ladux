@@ -94,19 +94,24 @@ export default function AllProductsView({
         // 1. Brand Filter
         if (filters.brandId !== null) {
             const foundBrand = brands.find((b) => b.id === filters.brandId);
-            if (foundBrand) {
-                list = list.filter((p) => (p.brand || "").toLowerCase() === foundBrand.name.toLowerCase());
-            }
+            list = list.filter((p) => {
+                if (p.brandId != null && p.brandId === filters.brandId) return true;
+                if (foundBrand && (p.brand || "").toLowerCase() === foundBrand.name.toLowerCase()) return true;
+                return false;
+            });
         }
 
         // 2. Category Filter
         if (selectedCategory && selectedCategory !== "All") {
-            list = list.filter((p) => (p.category || "").toLowerCase() === selectedCategory.toLowerCase());
+            const catLower = selectedCategory.toLowerCase();
+            list = list.filter((p) => (p.category || "").toLowerCase() === catLower);
         } else if (filters.categoryId !== null) {
             const foundCat = categories.find((c) => c.id === filters.categoryId);
-            if (foundCat) {
-                list = list.filter((p) => (p.category || "").toLowerCase() === foundCat.name.toLowerCase());
-            }
+            list = list.filter((p) => {
+                if (p.categoryId != null && p.categoryId === filters.categoryId) return true;
+                if (foundCat && (p.category || "").toLowerCase() === foundCat.name.toLowerCase()) return true;
+                return false;
+            });
         }
 
         // 3. Header Search Query filter (from Header search bar)
