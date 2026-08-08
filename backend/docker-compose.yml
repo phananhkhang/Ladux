@@ -20,7 +20,7 @@ services:
       - VNPAY_REFUND_URL=${VNPAY_REFUND_URL}
       # Serve seed product images from host ../uploads (bind-mounted below)
       - UPLOAD_ROOT=/app/uploads
-      - GOOGLE_GENAI_API_KEY=${GOOGLE_GENAI_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
     depends_on:
       postgres:
         condition: service_healthy

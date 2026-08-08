@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { X, Send, CheckCheck, ChevronRight, Laptop, ShoppingBag, Tag, Headphones } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import botAvatarImg from "../../assets/avatar_chatbot.png";
 import { useStorefront } from "../../app/StorefrontProvider";
 import { productPath } from "../../app/routePaths";
 import { LaptopProduct } from "../../types";
+import { chatbotService } from "../../services";
 
 interface Message {
     id: string;
@@ -24,7 +25,7 @@ const PRESET_PILLS = [
 export default function AIChatbot() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { allDisplayProducts, isLoggedIn, userName } = useStorefront();
+    const { allDisplayProducts } = useStorefront();
 
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([
@@ -39,6 +40,7 @@ export default function AIChatbot() {
     const [isTyping, setIsTyping] = useState(false);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const conversationIdRef = useRef(`chat-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 
     function getFormattedTime() {
         const now = new Date();
@@ -70,7 +72,7 @@ export default function AIChatbot() {
         }
     }, [messages, isOpen, isTyping]);
 
-    const handleSendMessage = (textToSend?: string) => {
+    const handleSendMessage = async (textToSend?: string) => {
         const query = (textToSend || inputValue).trim();
         if (!query) return;
 
@@ -85,66 +87,41 @@ export default function AIChatbot() {
         if (!textToSend) setInputValue("");
         setIsTyping(true);
 
-        setTimeout(() => {
-            const botResponse = generateAIResponse(query, allDisplayProducts, userName, isLoggedIn);
-            setMessages((prev) => [...prev, botResponse]);
+        try {
+            const text = await chatbotService.chat(query, conversationIdRef.current);
+            const suggestedProducts = getSuggestedProducts(query, allDisplayProducts);
+            setMessages((prev) => [
+                ...prev,
+                {
+                    id: `bot-${Date.now()}`,
+                    sender: "bot",
+                    text,
+                    products: suggestedProducts,
+                    timestamp: getFormattedTime(),
+                },
+            ]);
+        } catch (error) {
+            console.error("Không thể gọi chatbot:", error);
+            setMessages((prev) => [
+                ...prev,
+                {
+                    id: `bot-${Date.now()}`,
+                    sender: "bot",
+                    text: "Xin lỗi, chatbot đang tạm thời không phản hồi. Bạn vui lòng thử lại sau nhé!",
+                    timestamp: getFormattedTime(),
+                },
+            ]);
+        } finally {
             setIsTyping(false);
-        }, 700);
+        }
     };
 
-    function generateAIResponse(
-        query: string,
-        catalog: LaptopProduct[],
-        userName?: string,
-        isLoggedIn?: boolean
-    ): Message {
+    function getSuggestedProducts(query: string, catalog: LaptopProduct[]): LaptopProduct[] {
         const lower = query.toLowerCase();
-        const timestamp = getFormattedTime();
 
         if (lower.includes("25 triệu") || lower.includes("đồ họa") || lower.includes("tư vấn laptop") || lower.includes("gaming")) {
             const suitableProducts = catalog.filter((p) => p.price >= 18000000 && p.price <= 32000000).slice(0, 3);
-            return {
-                id: `bot-${Date.now()}`,
-                sender: "bot",
-                text: `Dạ được ạ! 🥳\nLADUX có nhiều mẫu laptop đồ họa phù hợp trong tầm giá 25 triệu. Bạn có cần ưu tiên về cấu hình hay thương hiệu nào không ạ?`,
-                products: suitableProducts.length > 0 ? suitableProducts : catalog.slice(0, 2),
-                timestamp,
-            };
-        }
-
-        if (lower.includes("đơn hàng") || lower.includes("kiểm tra")) {
-            if (isLoggedIn) {
-                return {
-                    id: `bot-${Date.now()}`,
-                    sender: "bot",
-                    text: `Dạ chào ${userName || "bạn"}, bạn có thể xem chi tiết trạng thái đơn hàng trong mục **Tài khoản > Lịch sử đơn hàng** hoặc gửi Mã đơn hàng tại đây để mình tra cứu nhé! 📦`,
-                    timestamp,
-                };
-            }
-            return {
-                id: `bot-${Date.now()}`,
-                sender: "bot",
-                text: "Dạ, vui lòng đăng nhập tài khoản LADUX của bạn để kiểm tra danh sách đơn hàng đã đặt, hoặc gửi mã đơn hàng tại đây nhé! 😊",
-                timestamp,
-            };
-        }
-
-        if (lower.includes("khuyến mãi") || lower.includes("ưu đãi") || lower.includes("giảm giá")) {
-            return {
-                id: `bot-${Date.now()}`,
-                sender: "bot",
-                text: `🔥 **Chương trình Ưu đãi HOT nhất hôm nay:**\n- Giảm trực tiếp lên tới 15% cho Laptop Gaming & Đồ họa.\n- Tặng Balo LADUX Premium + Chuột không dây.\n- Miễn phí giao hàng hỏa tốc toàn quốc & Trả góp 0% qua VNPay!`,
-                timestamp,
-            };
-        }
-
-        if (lower.includes("liên hệ") || lower.includes("hỗ trợ") || lower.includes("hotline")) {
-            return {
-                id: `bot-${Date.now()}`,
-                sender: "bot",
-                text: `📞 **Thông tin hỗ trợ LADUX:**\n- Hotline: 1900 8888 (8:00 - 21:30)\n- Email CSKH: support@ladux.vn\n- Showroom: 123 Đường Công Nghệ, Q. Cầu Giấy, Hà Nội`,
-                timestamp,
-            };
+            return suitableProducts.length > 0 ? suitableProducts : catalog.slice(0, 2);
         }
 
         const matched = catalog.filter((p) => {
@@ -153,22 +130,7 @@ export default function AIChatbot() {
             return lower.split(" ").some((word) => word.length > 2 && (pName.includes(word) || pBrand.includes(word)));
         });
 
-        if (matched.length > 0) {
-            return {
-                id: `bot-${Date.now()}`,
-                sender: "bot",
-                text: `Dạ, dựa trên yêu cầu của bạn, LADUX xin gợi ý một số mẫu laptop phù hợp bên dưới ạ:`,
-                products: matched.slice(0, 3),
-                timestamp,
-            };
-        }
-
-        return {
-            id: `bot-${Date.now()}`,
-            sender: "bot",
-            text: `Cảm ơn câu hỏi của bạn! LADUX AI Assistant có thể giúp bạn tư vấn chọn cấu hình laptop, kiểm tra đơn hàng, khuyến mãi hoặc bảo hành. Bạn hãy thử chọn các gợi ý bên dưới hoặc gửi tin nhắn nhé! ⚡`,
-            timestamp,
-        };
+        return matched.slice(0, 3);
     }
 
     return (
@@ -190,12 +152,12 @@ export default function AIChatbot() {
 
             {/* EXPANDED CHATBOT WINDOW */}
             {isOpen && (
-                <div className="flex h-[580px] w-[340px] sm:w-[350px] max-w-[95vw] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                <div className="flex h-[580px] w-[340px] max-w-[calc(100vw-24px)] flex-col overflow-hidden rounded-[22px] border border-[#1d2a21] bg-[#070b09] shadow-[0_18px_50px_rgba(0,0,0,0.7),0_0_24px_rgba(0,255,65,0.08)] animate-in fade-in zoom-in-95 duration-200 sm:w-[350px]">
 
                     {/* CHAT HEADER */}
-                    <div className="flex items-center justify-between bg-[#48cae4] px-4 py-3 text-white shadow-sm">
+                    <div className="flex items-center justify-between border-b border-[#18261c] bg-[#0b110e] px-4 py-3 text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
                         <div className="flex items-center gap-3">
-                            <div className="relative h-11 w-11 flex-shrink-0 rounded-full overflow-hidden border-2 border-white/80 shadow-sm bg-[#0a1217]">
+                            <div className="relative h-11 w-11 flex-shrink-0 overflow-hidden rounded-full border-2 border-[#00d83d] bg-[#0a100d] shadow-[0_0_14px_rgba(0,255,65,0.18)]">
                                 <img
                                     src={botAvatarImg}
                                     alt="Avatar"
@@ -203,11 +165,11 @@ export default function AIChatbot() {
                                 />
                             </div>
                             <div className="flex flex-col">
-                                <h3 className="text-base font-bold tracking-wide text-white leading-snug">
+                                <h3 className="text-base font-bold leading-snug tracking-wide text-[#effff2]">
                                     Hỗ trợ trực tuyến
                                 </h3>
-                                <div className="flex items-center gap-1.5 text-xs text-white/90 font-medium">
-                                    <span className="h-2.5 w-2.5 rounded-full bg-[#00ff66] shadow-sm" />
+                                <div className="flex items-center gap-1.5 text-xs font-medium text-[#9eb5a3]">
+                                    <span className="h-2.5 w-2.5 rounded-full bg-[#00f05a] shadow-[0_0_8px_rgba(0,240,90,0.6)]" />
                                     <span>Online</span>
                                 </div>
                             </div>
@@ -215,7 +177,7 @@ export default function AIChatbot() {
 
                         <button
                             onClick={() => setIsOpen(false)}
-                            className="flex h-8 w-8 items-center justify-center rounded-full text-white/80 hover:bg-white/20 hover:text-white transition-colors"
+                            className="flex h-8 w-8 items-center justify-center rounded-full text-[#79907f] transition-colors hover:bg-[#14341e] hover:text-[#effff2]"
                             title="Đóng Chatbot"
                         >
                             <X className="h-5 w-5" />
@@ -223,19 +185,19 @@ export default function AIChatbot() {
                     </div>
 
                     {/* CHAT MESSAGES BODY */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-slate-50 custom-scrollbar w-full max-w-full">
+                    <div className="flex-1 w-full max-w-full space-y-3.5 overflow-y-auto bg-[#080c0a] p-3 custom-scrollbar">
                         {messages.map((msg) => (
                             <div key={msg.id} className="space-y-2 w-full max-w-full overflow-hidden">
                                 {msg.sender === "bot" ? (
-                                    <div className="flex justify-start w-full max-w-[90%]">
-                                        <div className="rounded-2xl rounded-tl-none bg-[#f1f3f5] border border-slate-200/60 p-3.5 text-sm text-slate-800 leading-relaxed shadow-sm w-full overflow-hidden">
+                                    <div className="flex w-full max-w-[94%] justify-start">
+                                        <div className="w-full overflow-hidden rounded-[17px] rounded-tl-[5px] border border-[#27322b] bg-[#101413] p-3 text-[13px] leading-[1.55] text-[#dce9df] shadow-[0_6px_18px_rgba(0,0,0,0.22)]">
                                             <p className="whitespace-pre-line break-words overflow-wrap-anywhere">
                                                 {msg.text}
                                             </p>
 
                                             {/* Product Suggestions Cards */}
                                             {msg.products && msg.products.length > 0 && (
-                                                <div className="mt-3 space-y-2 pt-2 border-t border-slate-200/80 w-full max-w-full overflow-hidden">
+                                                <div className="mt-3 w-full max-w-full space-y-2 overflow-hidden border-t border-[#26372b] pt-2">
                                                     {msg.products.map((prod) => (
                                                         <div
                                                             key={prod.id}
@@ -244,42 +206,42 @@ export default function AIChatbot() {
                                                                 setIsOpen(false);
                                                                 navigate(productPath(prod.id));
                                                             }}
-                                                            className="group flex items-center gap-2.5 rounded-xl border border-slate-200 bg-white p-2 hover:border-[#48cae4] hover:shadow-sm cursor-pointer transition-all w-full max-w-full overflow-hidden"
+                                                            className="group flex w-full max-w-full cursor-pointer items-center gap-2.5 overflow-hidden rounded-xl border border-[#1d3023] bg-[#0b110e] p-2 transition-all hover:border-[#00bb3c] hover:bg-[#0e1b12]"
                                                         >
                                                             <img
                                                                 src={prod.images?.[0] || ""}
                                                                 alt={prod.name}
-                                                                className="h-11 w-11 flex-shrink-0 rounded-lg object-contain bg-slate-100 p-1"
+                                                                className="h-11 w-11 flex-shrink-0 rounded-lg bg-[#111a14] p-1 object-contain"
                                                             />
                                                             <div className="flex-1 min-w-0 overflow-hidden">
-                                                                <h4 className="text-xs font-semibold text-slate-800 truncate max-w-full group-hover:text-[#48cae4] transition-colors">
+                                                                <h4 className="max-w-full truncate text-xs font-semibold text-[#dff5e3] transition-colors group-hover:text-[#57fa84]">
                                                                     {prod.name}
                                                                 </h4>
-                                                                <p className="text-xs font-bold text-[#0ea5e9] mt-0.5">
+                                                                    <p className="mt-0.5 text-xs font-bold text-[#55ee7b]">
                                                                     {prod.price.toLocaleString("vi-VN")} đ
                                                                 </p>
                                                             </div>
-                                                            <ChevronRight className="h-4 w-4 flex-shrink-0 text-slate-400 group-hover:text-[#48cae4] transition-colors" />
+                                                            <ChevronRight className="h-4 w-4 flex-shrink-0 text-[#55745d] transition-colors group-hover:text-[#55ee7b]" />
                                                         </div>
                                                     ))}
                                                 </div>
                                             )}
 
-                                            <span className="block mt-1.5 text-[10px] text-slate-400 text-right">
+                                            <span className="mt-1.5 block text-right text-[10px] text-[#6f8975]">
                                                 {msg.timestamp}
                                             </span>
                                         </div>
                                     </div>
                                 ) : (
                                     /* User Message */
-                                    <div className="flex justify-end w-full">
-                                        <div className="max-w-[85%] rounded-2xl rounded-tr-none bg-[#48cae4] p-3 text-sm text-white shadow-sm font-medium">
+                                    <div className="flex w-full justify-end">
+                                        <div className="max-w-[85%] rounded-[17px] rounded-tr-[5px] border border-[#08772d] bg-[#063f16] p-3 text-[13px] font-medium leading-[1.55] text-[#effff2] shadow-[0_6px_18px_rgba(0,0,0,0.2)]">
                                             <p className="whitespace-pre-line leading-relaxed break-words overflow-wrap-anywhere">
                                                 {msg.text}
                                             </p>
-                                            <div className="mt-1 flex items-center justify-end gap-1 text-[10px] text-white/80">
+                                            <div className="mt-1 flex items-center justify-end gap-1 text-[10px] text-[#78a984]">
                                                 <span>{msg.timestamp}</span>
-                                                <CheckCheck className="h-3.5 w-3.5 text-white" />
+                                                <CheckCheck className="h-3.5 w-3.5 text-[#62ea80]" />
                                             </div>
                                         </div>
                                     </div>
@@ -295,9 +257,9 @@ export default function AIChatbot() {
                                     <button
                                         key={idx}
                                         onClick={() => handleSendMessage(pill.query)}
-                                        className="flex items-center gap-2 rounded-xl border border-[#48cae4]/30 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition-all hover:border-[#48cae4] hover:bg-[#48cae4]/10 active:scale-95 text-left w-full truncate shadow-xs"
+                                        className="flex w-full min-h-9 items-center gap-2 truncate rounded-full border border-[#164b28] bg-[#0b120e] px-3 py-2 text-left text-[11px] font-medium text-[#e2f5e5] shadow-[0_3px_10px_rgba(0,0,0,0.18)] transition-all hover:border-[#00c33f] hover:bg-[#102719] active:scale-95"
                                     >
-                                        <IconComponent className="h-4 w-4 text-[#48cae4] flex-shrink-0" />
+                                        <IconComponent className="h-4 w-4 flex-shrink-0 text-[#00e34d]" />
                                         <span className="truncate">{pill.label}</span>
                                     </button>
                                 );
@@ -306,8 +268,8 @@ export default function AIChatbot() {
 
                         {/* Typing indicator */}
                         {isTyping && (
-                            <div className="flex items-center gap-2 text-xs text-slate-500 pl-2">
-                                <span className="h-2 w-2 animate-ping rounded-full bg-[#48cae4]" />
+                            <div className="flex items-center gap-2 pl-2 text-xs text-[#718a77]">
+                                <span className="h-2 w-2 animate-ping rounded-full bg-[#00e34d]" />
                                 <span>Đang soạn phản hồi...</span>
                             </div>
                         )}
@@ -316,7 +278,7 @@ export default function AIChatbot() {
                     </div>
 
                     {/* INPUT FOOTER AREA */}
-                    <div className="border-t border-slate-100 bg-white p-3 w-full">
+                    <div className="w-full border-t border-[#17231b] bg-[#080d0a] p-3">
                         <form
                             onSubmit={(e) => {
                                 e.preventDefault();
@@ -329,15 +291,15 @@ export default function AIChatbot() {
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 placeholder="Nhập câu hỏi của bạn..."
-                                className="flex-1 min-w-0 rounded-xl border border-[#48cae4]/40 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:border-[#48cae4] focus:outline-none focus:ring-2 focus:ring-[#48cae4]/30 transition-all"
+                                className="min-w-0 flex-1 rounded-full border border-[#2a342e] bg-[#111614] px-4 py-2.5 text-[13px] text-[#e3f5e6] placeholder-[#69776d] transition-all focus:border-[#00b83c] focus:outline-none focus:ring-2 focus:ring-[#00b83c]/20"
                             />
                             <button
                                 type="submit"
                                 disabled={!inputValue.trim()}
-                                className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#48cae4] text-white hover:bg-[#3db8d1] disabled:opacity-40 disabled:hover:bg-[#48cae4] transition-all shadow-sm active:scale-95"
+                                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-[#00a938] bg-[#075b1d] text-white shadow-[0_0_12px_rgba(0,200,60,0.18)] transition-all hover:bg-[#087a27] active:scale-95 disabled:opacity-40 disabled:hover:bg-[#075b1d]"
                                 title="Gửi tin nhắn"
                             >
-                                <Send className="h-5 w-5 ml-0.5 text-white" />
+                                <Send className="ml-0.5 h-4 w-4 text-[#eaffed]" />
                             </button>
                         </form>
                     </div>

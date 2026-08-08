@@ -1,4 +1,5 @@
 export { default as apiClient } from './apiClient';
+export { chatbotService } from './chatbotService';
 export * from './authService';
 export * from './userService';
 export * from './productService';
