@@ -147,11 +147,10 @@ export default function Header({
 
     return (
         <header
-            className={`fixed top-0 left-0 right-0 z-50 border-b text-white transition-all duration-500 ${
-                isScrolled
-                    ? "border-white/15 bg-[#080a0b]/95 backdrop-blur-2xl shadow-[0_15px_40px_rgba(0,0,0,0.95)]"
-                    : "border-white/10 bg-[#080a0b]/80 backdrop-blur-xl"
-            }`}
+            className={`fixed top-0 left-0 right-0 z-50 border-b text-white transition-all duration-500 ${isScrolled
+                ? "border-white/15 bg-[#080a0b]/95 backdrop-blur-2xl shadow-[0_15px_40px_rgba(0,0,0,0.95)]"
+                : "border-white/10 bg-[#080a0b]/80 backdrop-blur-xl"
+                }`}
         >
             <div className="container mx-auto px-6 sm:px-10 lg:px-16 h-[72px] flex items-center justify-between gap-3 md:gap-6">
                 {/* ── Logo ── */}
@@ -170,7 +169,7 @@ export default function Header({
                 </div>
 
                 {/* ── Dynamic Flex Search Bar (max-w-[850px] centered) ── */}
-                <div className="flex-1 max-w-[850px] hidden sm:flex items-stretch h-11 relative rounded-none border border-white/[0.12] bg-white/[0.04] focus-within:border-[#00FF41]/60 focus-within:ring-1 focus-within:ring-[#00FF41]/20 transition-all z-20 mx-4 md:mx-8 lg:mx-12">
+                <div className="flex-1 max-w-[850px] hidden sm:flex items-stretch h-11 relative rounded-none border border-white/[0.12] bg-white/[0.04] focus-within:border-[#00FF41]/60 focus-within:ring-1 focus-within:ring-[#00FF41]/20 transition-all z-20 mx-4 md:mx-8 lg:mx-12 translate-x-[30px]">
                     {/* Text Input */}
                     <input
                         type="text"
@@ -204,9 +203,8 @@ export default function Header({
                                 {selectedCategory && selectedCategory !== "All" ? selectedCategory : "CHỌN DANH MỤC"}
                             </span>
                             <ChevronRight
-                                className={`w-3.5 h-3.5 text-neutral-400 transition-transform duration-300 ${
-                                    isCatDropdownOpen ? "-rotate-90 text-[#00FF41]" : "rotate-90"
-                                }`}
+                                className={`w-3.5 h-3.5 text-neutral-400 transition-transform duration-300 ${isCatDropdownOpen ? "-rotate-90 text-[#00FF41]" : "rotate-90"
+                                    }`}
                             />
                         </button>
 
@@ -222,11 +220,10 @@ export default function Header({
                                             handleNavigate(ROUTES.products);
                                         }
                                     }}
-                                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-between cursor-pointer ${
-                                        !selectedCategory || selectedCategory === "All"
-                                            ? "bg-[#00FF41] text-black shadow-md shadow-[#00FF41]/20"
-                                            : "text-neutral-300 hover:bg-white/10 hover:text-white"
-                                    }`}
+                                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-between cursor-pointer ${!selectedCategory || selectedCategory === "All"
+                                        ? "bg-[#00FF41] text-black shadow-md shadow-[#00FF41]/20"
+                                        : "text-neutral-300 hover:bg-white/10 hover:text-white"
+                                        }`}
                                 >
                                     <span>TẤT CẢ DANH MỤC</span>
                                     {(!selectedCategory || selectedCategory === "All") && (
@@ -248,11 +245,10 @@ export default function Header({
                                                         handleNavigate(ROUTES.products);
                                                     }
                                                 }}
-                                                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-between cursor-pointer ${
-                                                    isSelected
-                                                        ? "bg-[#00FF41] text-black shadow-md shadow-[#00FF41]/20"
-                                                        : "text-neutral-300 hover:bg-[#00FF41]/10 hover:text-[#00FF41]"
-                                                }`}
+                                                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-between cursor-pointer ${isSelected
+                                                    ? "bg-[#00FF41] text-black shadow-md shadow-[#00FF41]/20"
+                                                    : "text-neutral-300 hover:bg-[#00FF41]/10 hover:text-[#00FF41]"
+                                                    }`}
                                             >
                                                 <span>{category.name.toUpperCase()}</span>
                                                 {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-black" />}
@@ -314,116 +310,112 @@ export default function Header({
                             <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover/notif:opacity-100 group-hover/notif:visible transition-all duration-200 z-50 pointer-events-none group-hover/notif:pointer-events-auto">
                                 <div className="w-80 sm:w-96 rounded-2xl border border-neutral-800 bg-neutral-950/95 backdrop-blur-xl p-4 shadow-2xl">
                                     <div className="flex items-center justify-between border-b border-neutral-800 pb-3 mb-3">
-                                    <div className="flex items-center gap-2">
-                                        <Bell className="w-4 h-4 text-[#00FF41]" />
-                                        <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">Thông báo</span>
+                                        <div className="flex items-center gap-2">
+                                            <Bell className="w-4 h-4 text-[#00FF41]" />
+                                            <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">Thông báo</span>
+                                        </div>
+                                        {unreadCount > 0 && (
+                                            <button
+                                                type="button"
+                                                onClick={() => markAllAsRead()}
+                                                className="text-[10px] font-mono text-[#00FF41] hover:underline"
+                                            >
+                                                Đánh dấu đã đọc
+                                            </button>
+                                        )}
                                     </div>
-                                    {unreadCount > 0 && (
+
+                                    {/* ── Tabs: Tất cả | Chưa đọc | Đã đọc ── */}
+                                    <div className="grid grid-cols-3 gap-1 bg-neutral-900/90 p-1 rounded-xl mb-3 text-[10px] font-mono font-bold">
                                         <button
                                             type="button"
-                                            onClick={() => markAllAsRead()}
-                                            className="text-[10px] font-mono text-[#00FF41] hover:underline"
+                                            onClick={() => setNotifTab("all")}
+                                            className={`py-1 rounded-lg transition ${notifTab === "all" ? "bg-[#00FF41] text-black shadow" : "text-neutral-400 hover:text-white"
+                                                }`}
                                         >
-                                            Đánh dấu đã đọc
+                                            Tất cả
                                         </button>
-                                    )}
-                                </div>
-
-                                {/* ── Tabs: Tất cả | Chưa đọc | Đã đọc ── */}
-                                <div className="grid grid-cols-3 gap-1 bg-neutral-900/90 p-1 rounded-xl mb-3 text-[10px] font-mono font-bold">
-                                    <button
-                                        type="button"
-                                        onClick={() => setNotifTab("all")}
-                                        className={`py-1 rounded-lg transition ${
-                                            notifTab === "all" ? "bg-[#00FF41] text-black shadow" : "text-neutral-400 hover:text-white"
-                                        }`}
-                                    >
-                                        Tất cả
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setNotifTab("unread")}
-                                        className={`py-1 rounded-lg transition ${
-                                            notifTab === "unread" ? "bg-[#00FF41] text-black shadow" : "text-neutral-400 hover:text-white"
-                                        }`}
-                                    >
-                                        Chưa đọc
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setNotifTab("read")}
-                                        className={`py-1 rounded-lg transition ${
-                                            notifTab === "read" ? "bg-[#00FF41] text-black shadow" : "text-neutral-400 hover:text-white"
-                                        }`}
-                                    >
-                                        Đã đọc
-                                    </button>
-                                </div>
-
-                                {/* ── Notification Items List ── */}
-                                {notifications.length === 0 ? (
-                                    <div className="py-8 text-center text-xs font-mono text-neutral-500">
-                                        Không có thông báo nào ({notifTab === "all" ? "Tất cả" : notifTab === "unread" ? "Chưa đọc" : "Đã đọc"})
+                                        <button
+                                            type="button"
+                                            onClick={() => setNotifTab("unread")}
+                                            className={`py-1 rounded-lg transition ${notifTab === "unread" ? "bg-[#00FF41] text-black shadow" : "text-neutral-400 hover:text-white"
+                                                }`}
+                                        >
+                                            Chưa đọc
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setNotifTab("read")}
+                                            className={`py-1 rounded-lg transition ${notifTab === "read" ? "bg-[#00FF41] text-black shadow" : "text-neutral-400 hover:text-white"
+                                                }`}
+                                        >
+                                            Đã đọc
+                                        </button>
                                     </div>
-                                ) : (
-                                    <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
-                                        {notifications.map((n) => (
-                                            <div
-                                                key={n.id}
-                                                onClick={() => !n.isRead && markAsRead(n.id)}
-                                                className={`group/item relative p-3 rounded-xl border text-xs transition cursor-pointer flex items-start justify-between gap-3 ${
-                                                    n.isRead
+
+                                    {/* ── Notification Items List ── */}
+                                    {notifications.length === 0 ? (
+                                        <div className="py-8 text-center text-xs font-mono text-neutral-500">
+                                            Không có thông báo nào ({notifTab === "all" ? "Tất cả" : notifTab === "unread" ? "Chưa đọc" : "Đã đọc"})
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                                            {notifications.map((n) => (
+                                                <div
+                                                    key={n.id}
+                                                    onClick={() => !n.isRead && markAsRead(n.id)}
+                                                    className={`group/item relative p-3 rounded-xl border text-xs transition cursor-pointer flex items-start justify-between gap-3 ${n.isRead
                                                         ? "bg-neutral-900/40 border-neutral-800/60 text-neutral-400"
                                                         : "bg-neutral-900 border-emerald-500/30 text-white font-medium"
-                                                }`}
-                                            >
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        {!n.isRead && <span className="w-2 h-2 rounded-full bg-[#00FF41] shrink-0" />}
-                                                        <span className="font-bold text-white truncate">{n.title}</span>
-                                                    </div>
-                                                    <p className="text-[11px] text-neutral-300 line-clamp-2 leading-relaxed">{n.message}</p>
-                                                </div>
-
-                                                {/* Dấu X ở bên phải để xóa thông báo cụ thể */}
-                                                <button
-                                                    type="button"
-                                                    title="Xóa thông báo"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        deleteNotification(n.id);
-                                                    }}
-                                                    className="p-1 text-neutral-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition shrink-0"
+                                                        }`}
                                                 >
-                                                    <X className="w-3.5 h-3.5" />
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            {!n.isRead && <span className="w-2 h-2 rounded-full bg-[#00FF41] shrink-0" />}
+                                                            <span className="font-bold text-white truncate">{n.title}</span>
+                                                        </div>
+                                                        <p className="text-[11px] text-neutral-300 line-clamp-2 leading-relaxed">{n.message}</p>
+                                                    </div>
 
-                                {/* ── Bottom Section: Label xóa tất cả ── */}
-                                {notifications.length > 0 && (
-                                    <div className="mt-3 pt-2.5 border-t border-neutral-800 flex items-center justify-between text-[11px] font-mono">
-                                        <span className="text-neutral-500">Tổng: {notifications.length}</span>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                if (window.confirm("Bạn có chắc muốn xóa tất cả thông báo không?")) {
-                                                    deleteAllNotifications();
-                                                }
-                                            }}
-                                            className="text-red-400 hover:text-red-300 font-bold hover:underline flex items-center gap-1 cursor-pointer"
-                                        >
-                                            <Trash2 className="w-3 h-3" />
-                                            Xóa tất cả thông báo
-                                        </button>
-                                    </div>
-                                )}
+                                                    {/* Dấu X ở bên phải để xóa thông báo cụ thể */}
+                                                    <button
+                                                        type="button"
+                                                        title="Xóa thông báo"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            deleteNotification(n.id);
+                                                        }}
+                                                        className="p-1 text-neutral-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition shrink-0"
+                                                    >
+                                                        <X className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* ── Bottom Section: Label xóa tất cả ── */}
+                                    {notifications.length > 0 && (
+                                        <div className="mt-3 pt-2.5 border-t border-neutral-800 flex items-center justify-between text-[11px] font-mono">
+                                            <span className="text-neutral-500">Tổng: {notifications.length}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    if (window.confirm("Bạn có chắc muốn xóa tất cả thông báo không?")) {
+                                                        deleteAllNotifications();
+                                                    }
+                                                }}
+                                                className="text-red-400 hover:text-red-300 font-bold hover:underline flex items-center gap-1 cursor-pointer"
+                                            >
+                                                <Trash2 className="w-3 h-3" />
+                                                Xóa tất cả thông báo
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </div>
 
                     {/* Wishlist Badge */}
                     <Link
@@ -482,7 +474,7 @@ export default function Header({
                                         <div className="px-1 py-0.5">
                                             <div className="font-extrabold text-sm text-white truncate">{displayName}</div>
                                             <div className="text-[11px] font-mono text-[#00FF41] font-semibold flex items-center gap-1 mt-0.5">
-                                                 <span>{user?.level || "BROWSER"} MEMBER</span>
+                                                <span>{user?.level || "BROWSER"} MEMBER</span>
                                                 <span>·</span>
                                                 <span>{userPhone}</span>
                                             </div>
@@ -576,11 +568,10 @@ export default function Header({
 
             {/* ── Sub-header (Header phụ) ── */}
             <div
-                className={`border-t border-white/[0.06] bg-black/40 backdrop-blur-md overflow-hidden transition-all duration-500 ease-in-out ${
-                    !isSubHeaderVisible
-                        ? "max-h-0 opacity-0 -translate-y-4 pointer-events-none py-0 border-t-0"
-                        : "max-h-24 opacity-100 translate-y-0 py-3"
-                }`}
+                className={`border-t border-white/[0.06] bg-black/40 backdrop-blur-md overflow-hidden transition-all duration-500 ease-in-out ${!isSubHeaderVisible
+                    ? "max-h-0 opacity-0 -translate-y-4 pointer-events-none py-0 border-t-0"
+                    : "max-h-24 opacity-100 translate-y-0 py-3"
+                    }`}
             >
                 <div className="container mx-auto px-5 sm:px-6 flex flex-col md:flex-row md:items-center justify-between gap-4 text-[16px] text-neutral-300 font-medium">
                     {/* Left side links */}

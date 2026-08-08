@@ -177,11 +177,10 @@ export default function ProductHero({ onShopNowClick }: ProductHeroProps) {
                                         setCurrentIndex(idx);
                                     }}
                                     aria-label={`Go to slide ${idx + 1}`}
-                                    className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                                        currentIndex === idx
-                                            ? "w-8 bg-[#00FF55] shadow-[0_0_12px_#00FF55]"
-                                            : "w-2.5 bg-white/40 hover:bg-white/80"
-                                    }`}
+                                    className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${currentIndex === idx
+                                        ? "w-8 bg-[#00FF55] shadow-[0_0_12px_#00FF55]"
+                                        : "w-2.5 bg-white/40 hover:bg-white/80"
+                                        }`}
                                 />
                             ))}
                         </div>

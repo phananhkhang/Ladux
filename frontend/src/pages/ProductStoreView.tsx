@@ -257,7 +257,7 @@ export default function ProductStoreView({
                                             key={brand.id}
                                             type="button"
                                             onClick={() => openBrand(brand.id)}
-                                            className="flex items-center justify-center bg-[#131518] hover:bg-[#1a1d21] rounded-xl sm:rounded-2xl p-4 h-20 sm:h-24 border border-white/[0.08] hover:border-[#00FF55]/60 shadow-lg hover:shadow-[0_0_20px_rgba(0,255,85,0.2)] hover:scale-[1.03] transition-all duration-300 cursor-pointer group relative overflow-hidden"
+                                            className="flex items-center justify-center bg-[#FFFFFF] hover:bg-neutral-100 rounded-xl sm:rounded-2xl p-4 h-20 sm:h-24 border border-white/20 hover:border-[#00FF55]/60 shadow-lg hover:shadow-[0_0_20px_rgba(0,255,85,0.2)] hover:scale-[1.03] transition-all duration-300 cursor-pointer group relative overflow-hidden"
                                         >
                                             {/* Inner Top Edge Glow on Hover */}
                                             <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#00FF55]/0 group-hover:via-[#00FF55]/80 to-transparent transition-all duration-300" />
@@ -268,7 +268,7 @@ export default function ProductStoreView({
                                                     className="max-h-8 sm:max-h-12 max-w-full object-contain filter group-hover:contrast-125 transition-all duration-300"
                                                 />
                                             ) : (
-                                                <span className="text-sm font-black uppercase tracking-wide text-white group-hover:text-[#00FF55] transition-colors">
+                                                <span className="text-sm font-black uppercase tracking-wide text-neutral-900 group-hover:text-[#00FF55] transition-colors">
                                                     {brand.name}
                                                 </span>
                                             )}
@@ -344,13 +344,24 @@ export default function ProductStoreView({
                                     product.brand.toLowerCase() === brand.name.toLowerCase()
                             );
                             if (brandProducts.length === 0) return null;
+                            const logoUrl = resolvePublicAssetUrl(brand.logoUrl);
                             return (
                                 <div key={brand.id} className="space-y-6">
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/[0.1] pb-4 gap-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-cyan-500/40 bg-cyan-500/10 text-cyan-400 font-mono font-bold text-xs">
-                                                {brand.name.substring(0, 1)}
-                                            </div>
+                                            {logoUrl ? (
+                                                <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border border-white/20 bg-[#FFFFFF] p-1.5 overflow-hidden shadow-sm">
+                                                    <img
+                                                        src={logoUrl}
+                                                        alt={brand.name}
+                                                        className="max-h-full max-w-full object-contain filter drop-shadow"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border border-cyan-500/40 bg-cyan-500/10 text-cyan-400 font-mono font-bold text-sm sm:text-base">
+                                                    {brand.name.substring(0, 1)}
+                                                </div>
+                                            )}
                                             <h3 className="text-lg sm:text-xl font-black uppercase tracking-wider text-white">
                                                 LAPTOP {brand.name} ({brandProducts.length})
                                             </h3>

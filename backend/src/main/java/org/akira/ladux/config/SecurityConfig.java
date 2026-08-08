@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.akira.ladux.controller.admin.AdminColorController;
 import org.akira.ladux.exception.ErrorResponse;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -94,6 +95,7 @@ public class SecurityConfig {
                                 "/api/v1/categories", "/api/v1/categories/**",
                                 "/api/v1/reviews", "/api/v1/reviews/**")
                         .permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/gemini/**").permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/health/**", "/actuator/info").permitAll()
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
