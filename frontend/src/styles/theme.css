@@ -280,47 +280,93 @@
   height: 0;
 }
 
-/* Custom Neon Green Scrollbar for Storefront (Tổng quan đơn hàng, etc.) */
-.custom-scrollbar,
-.store-scrollbar {
+/* Global Custom Scrollbars (Vertical & Horizontal) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080d11;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  transition: all 0.2s ease-in-out;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00FF41;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.7);
+}
+
+::-webkit-scrollbar-corner {
+  background: #080d11;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Firefox scrollbar support */
+* {
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 255, 65, 0.4) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.25) #080d11;
+}
+
+/* Custom Neon Green Scrollbar for Storefront & Chatbot */
+.custom-scrollbar,
+.store-scrollbar,
+.chat-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 255, 65, 0.5) transparent;
+  overflow-x: hidden !important;
 }
 
 .custom-scrollbar::-webkit-scrollbar,
-.store-scrollbar::-webkit-scrollbar {
+.store-scrollbar::-webkit-scrollbar,
+.chat-scrollbar::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track,
-.store-scrollbar::-webkit-scrollbar-track {
+.store-scrollbar::-webkit-scrollbar-track,
+.chat-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb,
-.store-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 65, 0.3);
+.store-scrollbar::-webkit-scrollbar-thumb,
+.chat-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 65, 0.4);
   border-radius: 9999px;
   transition: all 0.25s ease-in-out;
 }
 
 .custom-scrollbar:hover::-webkit-scrollbar-thumb,
-.store-scrollbar:hover::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 65, 0.65);
+.store-scrollbar:hover::-webkit-scrollbar-thumb,
+.chat-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 65, 0.75);
   box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover,
-.store-scrollbar::-webkit-scrollbar-thumb:hover {
+.store-scrollbar::-webkit-scrollbar-thumb:hover,
+.chat-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #00FF41;
-  box-shadow: 0 0 12px rgba(0, 255, 65, 0.8);
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.9);
 }
 
 .custom-scrollbar::-webkit-scrollbar-button,
-.store-scrollbar::-webkit-scrollbar-button {
+.store-scrollbar::-webkit-scrollbar-button,
+.chat-scrollbar::-webkit-scrollbar-button {
   display: none;
   width: 0;
   height: 0;
 }
+
 

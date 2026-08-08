@@ -12,7 +12,8 @@ public class ChatBotConfig {
     @Bean
     public VectorStore vectorStore(JdbcTemplate jdbcTemplate, EmbeddingModel embeddingModel) {
         return PgVectorStore.builder(jdbcTemplate, embeddingModel)
-                .dimensions(768)
+                .dimensions(3072)
+                .indexType(PgVectorStore.PgIndexType.NONE)
                 .initializeSchema(true)
                 .build();
     }

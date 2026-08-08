@@ -95,6 +95,7 @@ public class SecurityConfig {
                                 "/api/v1/categories", "/api/v1/categories/**",
                                 "/api/v1/reviews", "/api/v1/reviews/**")
                         .permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/chatbot/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/gemini/**").permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/health/**", "/actuator/info").permitAll()

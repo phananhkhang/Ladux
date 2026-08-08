@@ -3,6 +3,7 @@ import { Check } from "lucide-react";
 import { Link, Navigate, Outlet, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 import Footer from "../components/common/Footer";
 import Header from "../components/common/Header";
+import AIChatbot from "../components/common/AIChatbot";
 import laduxLogoImg from "../assets/ladux-logo.png";
 import { authService } from "../services";
 import { productPath, ROUTES } from "./routePaths";
@@ -76,6 +77,7 @@ function StoreLayout() {
                 </Suspense>
             </div>
             <Footer />
+            <AIChatbot />
         </div>
     );
 }

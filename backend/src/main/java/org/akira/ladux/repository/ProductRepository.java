@@ -41,6 +41,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("select distinct p from Product p where p.id in :ids")
     List<Product> findSummariesByIdIn(@Param("ids") List<Integer> ids);
 
+    @EntityGraph(attributePaths = {"brand", "category", "variants", "variants.color"})
+    @Query("select distinct p from Product p")
+    List<Product> findAllForEmbedding();
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Product p where p.id = :id")
     Optional<Product> findByIdForUpdate(@Param("id") Integer id);
