@@ -1,100 +1,111 @@
 package org.akira.ladux.config;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.akira.ladux.controller.admin.AdminColorController;
 import org.akira.ladux.exception.ErrorResponse;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.security.web.csrf.InvalidCsrfTokenException;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 
-// Cau hinh bao mat toan he thong — stateless, JWT cookie, CSRF, CORS, OAuth2 Google.
-// Phan quyen URL: public (auth, catalog GET, webhook VNPay, Swagger, actuator health/info),
-// ADMIN (actuator con lai), con lai yeu cau dang nhap.
-// Luong OAuth2: User -> Google Login -> OAuth2SuccessHandler -> JWT + Set-Cookie -> JwtFilter -> Controller.
+/**
+ * REST API dung Bearer JWT va hoan toan stateless. OAuth2 dung mot filter chain
+ * rieng de Spring luu authorization request tam thoi giua redirect va callback;
+ * session nay khong duoc dung de xac thuc bat ky REST request nao.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
-    // Request mang Bearer token duoc mien CSRF (token-based auth khong can CSRF).
-    private static final RequestMatcher BEARER_AUTH_REQUEST = request -> {
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        return authHeader != null && authHeader.regionMatches(true, 0, "Bearer ", 0, 7);
-    };
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder()
+            .addModule(new JavaTimeModule())
+            .build();
 
     private final JwtFilter jwtFilter;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
 
-    // Cấu hình AuthenticationManager để quản lý xác thực người dùng.
+    public SecurityConfig(
+            JwtFilter jwtFilter,
+            OAuth2SuccessHandler oAuth2SuccessHandler,
+            OAuth2FailureHandler oAuth2FailureHandler
+    ) {
+        this.jwtFilter = jwtFilter;
+        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
+        this.oAuth2FailureHandler = oAuth2FailureHandler;
+    }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
-    // Cấu hình SecurityFilterChain để thiết lập các quy tắc bảo mật cho ứng dụng.
+
+    /** OAuth2 Authorization Code flow: chi session tam thoi cho state/authorization request. */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // withHttpOnlyFalse(): Cookie CSRF không set flag HttpOnly → JavaScript phía frontend có thể đọc được cookie XSRF-TOKEN để gửi header.
-        CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-        csrfTokenRepository.setCookiePath("/");
+    @Order(1)
+    public SecurityFilterChain oauth2SecurityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .securityMatcher("/oauth2/**", "/login/oauth2/**")
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuth2SuccessHandler)
+                        .failureHandler(oAuth2FailureHandler)
+                )
+                .build();
+    }
 
-        // Tắt việc Spring tự động đưa CSRF token vào request attribute (cách cũ). Cách mới chỉ dựa vào cookie + header X-XSRF-TOKEN.
-        CsrfTokenRequestAttributeHandler csrfRequestHandler = new CsrfTokenRequestAttributeHandler();
-        csrfRequestHandler.setCsrfRequestAttributeName(null);
-
+    /** REST/resources chain: khong doc, tao hay luu SecurityContext trong HTTP session. */
+    @Bean
+    @Order(2)
+    public SecurityFilterChain restSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(csrfTokenRepository)
-                        .csrfTokenRequestHandler(csrfRequestHandler)
-                        .ignoringRequestMatchers(
-                                "/api/v1/**",
-                                "/oauth2/**", "/login/oauth2/**"
-                        )
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Không dùng session, mỗi request cần phải đem theo token để xác thực
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/v1/payments/vnpay-webhook").permitAll()
-                        .requestMatchers("/error", "/api/v1/auth/**", "/oauth2/**", "/login/oauth2/**").permitAll()
+                        .requestMatchers("/error", "/api/v1/auth/**").permitAll()
                         .requestMatchers(
                                 "/api/v1/admin/auth/login", "/api/v1/admin/auth/login/",
                                 "/api/v1/admin/auth/refresh", "/api/v1/admin/auth/refresh/",
                                 "/api/v1/admin/auth/logout", "/api/v1/admin/auth/logout/"
                         ).permitAll()
+                        .requestMatchers("/api/v1/payments/vnpay-webhook").permitAll()
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/api/v1/products", "/api/v1/products/**",
                                 "/api/v1/brands", "/api/v1/brands/**",
                                 "/api/v1/categories", "/api/v1/categories/**",
-                                "/api/v1/reviews", "/api/v1/reviews/**")
-                        .permitAll()
+                                "/api/v1/reviews", "/api/v1/reviews/**"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/chatbot/**").permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/health/**", "/actuator/info").permitAll()
@@ -102,34 +113,15 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .oauth2Login(oauth2 -> oauth2
-                        .successHandler(oAuth2SuccessHandler)
-                        .failureHandler(oAuth2FailureHandler)
-                )
-                .exceptionHandling(exceptions -> exceptions.accessDeniedHandler((request, response, ex) -> {
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    String message = ex instanceof InvalidCsrfTokenException
-                            ? "CSRF token khong hop le. Hay goi GET /api/v1/auth/csrf, bat Postman gui cookies, "
-                            + "roi gui header X-XSRF-TOKEN (gia tri trung voi cookie XSRF-TOKEN)."
-                            : "Ban khong co quyen thuc hien thao tac nay";
-                    ErrorResponse body = ErrorResponse.builder()
-                            .timestamp(LocalDateTime.now())
-                            .status(HttpServletResponse.SC_FORBIDDEN)
-                            .error("Forbidden")
-                            .message(message)
-                            .build();
-                    new ObjectMapper().writeValue(response.getOutputStream(), body);
-                }));
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(this::writeUnauthorized)
+                        .accessDeniedHandler(this::writeForbidden)
+                );
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
-    /**
-     * Cấu hình nguồn cấu hình CORS (Cross-Origin Resource Sharing)
-     * @return CorsConfigurationSource
-     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -137,14 +129,55 @@ public class SecurityConfig {
                 "http://localhost:*",
                 "http://127.0.0.1:*",
                 "https://ladux.vn",
-                "http://*.ladux.vn"
+                "https://*.ladux.vn"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control", "Cookie", "X-XSRF-TOKEN"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private void writeUnauthorized(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AuthenticationException exception
+    ) throws IOException {
+        writeSecurityError(
+                response,
+                HttpServletResponse.SC_UNAUTHORIZED,
+                "Unauthorized",
+                "Ban chua dang nhap hoac access token khong hop le"
+        );
+    }
+
+    private void writeForbidden(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AccessDeniedException exception
+    ) throws IOException {
+        writeSecurityError(
+                response,
+                HttpServletResponse.SC_FORBIDDEN,
+                "Forbidden",
+                "Ban khong co quyen thuc hien thao tac nay"
+        );
+    }
+
+    private void writeSecurityError(HttpServletResponse response, int status, String error, String message)
+            throws IOException {
+        response.setStatus(status);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        OBJECT_MAPPER.writeValue(
+                response.getOutputStream(),
+                ErrorResponse.builder()
+                        .timestamp(LocalDateTime.now())
+                        .status(status)
+                        .error(error)
+                        .message(message)
+                        .build()
+        );
     }
 }

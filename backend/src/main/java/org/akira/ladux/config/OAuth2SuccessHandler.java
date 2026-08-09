@@ -5,9 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.akira.ladux.model.RefreshToken;
 import org.akira.ladux.model.User;
-import org.akira.ladux.service.AuthCookieService;
 import org.akira.ladux.service.GoogleOAuth2UserService;
-import org.akira.ladux.service.JwtService;
+import org.akira.ladux.service.RefreshTokenCookieService;
 import org.akira.ladux.service.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -23,8 +22,7 @@ import java.io.IOException;
 public class OAuth2SuccessHandler
         extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JwtService jwtService;
-    private final AuthCookieService authCookieService;
+    private final RefreshTokenCookieService refreshTokenCookieService;
     private final RefreshTokenService refreshTokenService;
     private final GoogleOAuth2UserService googleOAuth2UserService;
     private final OAuth2FailureHandler oAuth2FailureHandler;
@@ -33,14 +31,12 @@ public class OAuth2SuccessHandler
     private String successRedirectUrl;
 
     public OAuth2SuccessHandler(
-            JwtService jwtService,
-            AuthCookieService authCookieService,
+            RefreshTokenCookieService refreshTokenCookieService,
             RefreshTokenService refreshTokenService,
             GoogleOAuth2UserService googleOAuth2UserService,
             OAuth2FailureHandler oAuth2FailureHandler
     ) {
-        this.jwtService = jwtService;
-        this.authCookieService = authCookieService;
+        this.refreshTokenCookieService = refreshTokenCookieService;
         this.refreshTokenService = refreshTokenService;
         this.googleOAuth2UserService = googleOAuth2UserService;
         this.oAuth2FailureHandler = oAuth2FailureHandler;
@@ -74,23 +70,19 @@ public class OAuth2SuccessHandler
                     picture
             );
 
-            String accessToken = jwtService.generateAccessToken(user);
             RefreshToken refreshToken = refreshTokenService.create(user);
 
             response.addHeader(
                     HttpHeaders.SET_COOKIE,
-                    authCookieService.createAccessCookie(accessToken).toString()
-            );
-
-            response.addHeader(
-                    HttpHeaders.SET_COOKIE,
-                    authCookieService.createRefreshCookie(refreshToken.getToken()).toString()
+                    refreshTokenCookieService.createRefreshCookie(refreshToken.getToken()).toString()
             );
 
             clearAuthenticationAttributes(request);
+            invalidateOAuthSession(request);
             getRedirectStrategy().sendRedirect(request, response, successRedirectUrl);
         } catch (RuntimeException exception) {
             clearAuthenticationAttributes(request);
+            invalidateOAuthSession(request);
             oAuth2FailureHandler.onAuthenticationFailure(
                     request,
                     response,
@@ -99,6 +91,12 @@ public class OAuth2SuccessHandler
                             exception
                     )
             );
+        }
+    }
+
+    private void invalidateOAuthSession(HttpServletRequest request) {
+        if (request.getSession(false) != null) {
+            request.getSession(false).invalidate();
         }
     }
 }

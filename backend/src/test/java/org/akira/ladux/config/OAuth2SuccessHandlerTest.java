@@ -3,9 +3,8 @@ package org.akira.ladux.config;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.model.RefreshToken;
 import org.akira.ladux.model.User;
-import org.akira.ladux.service.AuthCookieService;
 import org.akira.ladux.service.GoogleOAuth2UserService;
-import org.akira.ladux.service.JwtService;
+import org.akira.ladux.service.RefreshTokenCookieService;
 import org.akira.ladux.service.RefreshTokenService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,16 +31,14 @@ import static org.mockito.Mockito.when;
 
 class OAuth2SuccessHandlerTest {
 
-    private JwtService jwtService;
-    private AuthCookieService authCookieService;
+    private RefreshTokenCookieService refreshTokenCookieService;
     private RefreshTokenService refreshTokenService;
     private GoogleOAuth2UserService googleOAuth2UserService;
     private OAuth2SuccessHandler successHandler;
 
     @BeforeEach
     void setUp() {
-        jwtService = mock(JwtService.class);
-        authCookieService = mock(AuthCookieService.class);
+        refreshTokenCookieService = mock(RefreshTokenCookieService.class);
         refreshTokenService = mock(RefreshTokenService.class);
         googleOAuth2UserService = mock(GoogleOAuth2UserService.class);
 
@@ -53,8 +50,7 @@ class OAuth2SuccessHandlerTest {
         );
 
         successHandler = new OAuth2SuccessHandler(
-                jwtService,
-                authCookieService,
+                refreshTokenCookieService,
                 refreshTokenService,
                 googleOAuth2UserService,
                 failureHandler
@@ -67,7 +63,7 @@ class OAuth2SuccessHandlerTest {
     }
 
     @Test
-    void onAuthenticationSuccess_setsHttpOnlyCookiesAndRedirectsToFrontend() throws Exception {
+    void onAuthenticationSuccess_setsOnlyRefreshCookieAndRedirectsToFrontend() throws Exception {
         User user = User.builder()
                 .id(7)
                 .username("alice")
@@ -85,12 +81,12 @@ class OAuth2SuccessHandlerTest {
                 "Alice",
                 "https://example.com/alice.png"
         )).thenReturn(user);
-        when(jwtService.generateAccessToken(user)).thenReturn("access-token");
         when(refreshTokenService.create(user)).thenReturn(refreshToken);
-        when(authCookieService.createAccessCookie("access-token"))
-                .thenReturn(ResponseCookie.from("AUTH_TOKEN", "access-token").httpOnly(true).build());
-        when(authCookieService.createRefreshCookie("refresh-token"))
-                .thenReturn(ResponseCookie.from("REFRESH_TOKEN", "refresh-token").httpOnly(true).build());
+        when(refreshTokenCookieService.createRefreshCookie("refresh-token"))
+                .thenReturn(ResponseCookie.from("REFRESH_TOKEN", "refresh-token")
+                        .httpOnly(true)
+                        .secure(true)
+                        .build());
 
         MockHttpServletResponse response = invokeHandler(oAuth2Authentication());
 
@@ -99,7 +95,7 @@ class OAuth2SuccessHandlerTest {
                 "http://localhost:5173/auth/oauth2/success",
                 response.getRedirectedUrl()
         );
-        assertEquals(2, response.getHeaders(HttpHeaders.SET_COOKIE).size());
+        assertEquals(1, response.getHeaders(HttpHeaders.SET_COOKIE).size());
         assertTrue(response.getHeaders(HttpHeaders.SET_COOKIE).stream()
                 .allMatch(cookie -> cookie.contains("HttpOnly")));
     }
@@ -117,7 +113,7 @@ class OAuth2SuccessHandlerTest {
                 "http://localhost:5173/login?oauth2Error=true&reason=google_login_failed",
                 response.getRedirectedUrl()
         );
-        verify(jwtService, never()).generateAccessToken(any(User.class));
+        verify(refreshTokenService, never()).create(any(User.class));
     }
 
     private MockHttpServletResponse invokeHandler(OAuth2User principal) throws Exception {

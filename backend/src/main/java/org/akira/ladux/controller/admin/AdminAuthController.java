@@ -9,8 +9,8 @@ import org.akira.ladux.model.RefreshToken;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.enums.RoleName;
 import org.akira.ladux.repository.UserRepository;
-import org.akira.ladux.service.AuthCookieService;
 import org.akira.ladux.service.JwtService;
+import org.akira.ladux.service.RefreshTokenCookieService;
 import org.akira.ladux.service.RefreshTokenService;
 import org.akira.ladux.service.UserService;
 import org.akira.ladux.utils.SecurityUtils;
@@ -42,7 +42,7 @@ public class AdminAuthController {
     private final UserService userService;
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
-    private final AuthCookieService authCookieService;
+    private final RefreshTokenCookieService refreshTokenCookieService;
     private final RefreshTokenService refreshTokenService;
     private final UserRepository userRepository;
 
@@ -67,37 +67,40 @@ public class AdminAuthController {
         RefreshToken refreshToken = refreshTokenService.create(user);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, authCookieService.createAdminAccessCookie(accessToken).toString())
-                .header(HttpHeaders.SET_COOKIE, authCookieService.createAdminRefreshCookie(refreshToken.getToken()).toString())
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookieService.createAdminRefreshCookie(refreshToken.getToken()).toString())
                 .body(Map.of(
                         "message", "Admin login successful",
                         "userId", String.valueOf(user.getId()),
-                        "username", user.getUsername()
+                        "username", user.getUsername(),
+                        "accessToken", accessToken,
+                        "tokenType", "Bearer"
                 ));
     }
 
     @PostMapping({"/refresh", "/refresh/"})
     public ResponseEntity<Map<String, String>> refresh(HttpServletRequest request) {
-        String rawRefresh = readCookie(request, authCookieService.adminRefreshCookieName());
+        String rawRefresh = readCookie(request, refreshTokenCookieService.adminRefreshCookieName());
         RefreshToken rotated = refreshTokenService.verifyAndRotate(rawRefresh);
         User user = rotated.getUser();
         requireAdmin(user);
 
         String newAccessToken = jwtService.generateAccessToken(user);
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, authCookieService.createAdminAccessCookie(newAccessToken).toString())
-                .header(HttpHeaders.SET_COOKIE, authCookieService.createAdminRefreshCookie(rotated.getToken()).toString())
-                .body(Map.of("message", "Admin token refreshed successfully"));
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookieService.createAdminRefreshCookie(rotated.getToken()).toString())
+                .body(Map.of(
+                        "message", "Admin token refreshed successfully",
+                        "accessToken", newAccessToken,
+                        "tokenType", "Bearer"
+                ));
     }
 
     @PostMapping({"/logout", "/logout/"})
     public ResponseEntity<Void> logout(HttpServletRequest request) {
-        String rawRefresh = readCookie(request, authCookieService.adminRefreshCookieName());
+        String rawRefresh = readCookie(request, refreshTokenCookieService.adminRefreshCookieName());
         refreshTokenService.revokeSessionAndBump(rawRefresh);
 
         return ResponseEntity.noContent()
-                .header(HttpHeaders.SET_COOKIE, authCookieService.clearAdminAccessCookie().toString())
-                .header(HttpHeaders.SET_COOKIE, authCookieService.clearAdminRefreshCookie().toString())
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookieService.clearAdminRefreshCookie().toString())
                 .build();
     }
 

@@ -60,16 +60,14 @@ export interface LoginResponse {
   message: string;
   userId: string;
   username: string;
+  accessToken: string;
+  tokenType: 'Bearer';
 }
 
 export interface RefreshResponse {
   message: string;
-}
-
-export interface CsrfResponse {
-  headerName: string;
-  parameterName: string;
-  token: string;
+  accessToken: string;
+  tokenType: 'Bearer';
 }
 
 export const authService = {
@@ -95,7 +93,7 @@ export const authService = {
   },
 
   /**
-   * Đăng nhập (AccessToken & RefreshToken được thiết lập tự động qua HTTP-Only Cookie)
+   * Đăng nhập: access token trả trong body, refresh token nằm trong HttpOnly cookie.
    * POST /api/v1/auth/login
    */
   login: (data: LoginRequest): Promise<LoginResponse> => {
@@ -111,18 +109,10 @@ export const authService = {
   },
 
   /**
-   * Đăng xuất hệ thống (Revoke session và xóa Cookie)
+   * Đăng xuất hệ thống (revoke session và xóa refresh-token cookie)
    * POST /api/v1/auth/logout
    */
   logout: (): Promise<void> => {
     return apiClient.post('/auth/logout');
-  },
-
-  /**
-   * Lấy CSRF token cho các request bảo mật
-   * GET /api/v1/auth/csrf
-   */
-  getCsrf: (): Promise<CsrfResponse> => {
-    return apiClient.get('/auth/csrf');
   },
 };

@@ -3,6 +3,7 @@ package org.akira.ladux.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 import org.akira.ladux.model.RefreshToken;
 import org.akira.ladux.model.User;
+import org.akira.ladux.exception.UnauthenticatedException;
 import org.akira.ladux.repository.RefreshTokenRepository;
 import org.akira.ladux.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,5 +75,10 @@ class RefreshTokenServiceTest {
 
         assertTrue(current.isRevoked());
         assertEquals(64, rotated.getToken().length());
+    }
+
+    @Test
+    void verifyAndRotateRejectsMissingTokenAsUnauthenticated() {
+        assertThrows(UnauthenticatedException.class, () -> service.verifyAndRotate(null));
     }
 }

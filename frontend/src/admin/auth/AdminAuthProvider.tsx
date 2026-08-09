@@ -4,6 +4,7 @@ import { adminApi } from "../api/adminApi";
 import { adminQueryKeys } from "../queryKeys";
 import type { AuthStatus, UserResponse } from "../types";
 import { getApiErrorMessage, isAdminRole } from "../utils";
+import { setAdminAccessToken } from "../../services/authTokens";
 
 interface AdminAuthContextValue {
   user: UserResponse | null;
@@ -32,7 +33,8 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }) => {
-      await adminApi.auth.login(credentials);
+      const response = await adminApi.auth.login(credentials);
+      setAdminAccessToken(response.accessToken);
       const user = await adminApi.auth.currentUser();
       if (!isAdminRole(user.roles)) {
         await adminApi.auth.logout().catch(() => undefined);
@@ -45,7 +47,10 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   const logoutMutation = useMutation({
     mutationFn: adminApi.auth.logout,
-    onSettled: () => queryClient.clear(),
+    onSettled: () => {
+      setAdminAccessToken(null);
+      queryClient.clear();
+    },
   });
 
   const user = currentUserQuery.data ?? null;

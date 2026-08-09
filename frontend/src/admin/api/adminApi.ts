@@ -70,9 +70,9 @@ function remove<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
 export const adminApi = {
   auth: {
     login: (data: { username: string; password: string }) =>
-      post<{ message: string; userId: string; username: string }>("/admin/auth/login", data),
+      post<{ message: string; userId: string; username: string; accessToken: string; tokenType: "Bearer" }>("/admin/auth/login", data),
     currentUser: () => get<UserResponse>("/admin/auth/me"),
-    refresh: () => post<{ message: string }>("/admin/auth/refresh"),
+    refresh: () => post<{ message: string; accessToken: string; tokenType: "Bearer" }>("/admin/auth/refresh"),
     logout: () => post<void>("/admin/auth/logout"),
   },
 

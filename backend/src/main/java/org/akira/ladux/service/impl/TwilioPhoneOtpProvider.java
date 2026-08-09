@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
-@Profile("twilio")
+@Profile("prod")
 public class TwilioPhoneOtpProvider implements PhoneOtpProvider {
 
     @Value("${twilio.account-sid}")

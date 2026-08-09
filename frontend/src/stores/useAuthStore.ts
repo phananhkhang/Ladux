@@ -9,6 +9,7 @@ import {
   UserUpdatePasswordRequest,
   PersonalInformationUpdateRequest,
 } from '@/services';
+import { setStorefrontAccessToken } from '@/services/authTokens';
 
 interface AuthState {
   user: UserResponse | null;
@@ -40,10 +41,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   error: null,
 
   setAccessToken: (token) => {
+    setStorefrontAccessToken(token);
     set({ accessToken: token, isLoggedIn: !!token });
   },
 
   clearSession: () => {
+    setStorefrontAccessToken(null);
     set({ accessToken: null, user: null, isLoggedIn: false, isLoading: false, error: null });
   },
 
@@ -52,8 +55,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   login: async (credentials) => {
     set({ isLoading: true, error: null });
     try {
-      await authService.login(credentials);
-      // Lấy profile user ngay sau khi login thành công (cookie HttpOnly đã được set tự động)
+      const response = await authService.login(credentials);
+      get().setAccessToken(response.accessToken);
       await get().fetchCurrentUser();
     } catch (err: any) {
       const message = err?.response?.data?.message || err?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin!';
@@ -92,6 +95,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   fetchCurrentUser: async () => {
     set({ isLoading: true, error: null });
     try {
+      if (!get().accessToken) {
+        const response = await authService.refresh();
+        get().setAccessToken(response.accessToken);
+      }
       const userData = await userService.getCurrentUser();
       set({ user: userData, isLoggedIn: true });
     } catch (error) {

@@ -1,8 +1,13 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { env } from "../config/env";
+import { getStorefrontAccessToken, setStorefrontAccessToken } from "./authTokens";
 
 interface RetryableRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
+}
+
+interface AccessTokenResponse {
+  accessToken: string;
 }
 
 const apiClient = axios.create({
@@ -13,23 +18,27 @@ const apiClient = axios.create({
   },
 });
 
-let refreshPromise: Promise<void> | null = null;
+let refreshPromise: Promise<string> | null = null;
 
 function redirectAfterSessionExpired(): void {
+  setStorefrontAccessToken(null);
   window.dispatchEvent(new CustomEvent("ladux:auth-expired"));
   if (window.location.pathname !== "/login") {
     window.location.assign("/login");
   }
 }
 
-function refreshSession(): Promise<void> {
+function refreshSession(): Promise<string> {
   if (!refreshPromise) {
     refreshPromise = axios
-      .post(`${env.apiBaseUrl}/auth/refresh`, undefined, {
+      .post<AccessTokenResponse>(`${env.apiBaseUrl}/auth/refresh`, undefined, {
         withCredentials: true,
         headers: { Accept: "application/json" },
       })
-      .then(() => undefined)
+      .then((response) => {
+        setStorefrontAccessToken(response.data.accessToken);
+        return response.data.accessToken;
+      })
       .finally(() => {
         refreshPromise = null;
       });
@@ -37,6 +46,16 @@ function refreshSession(): Promise<void> {
 
   return refreshPromise;
 }
+
+apiClient.interceptors.request.use((config) => {
+  const accessToken = getStorefrontAccessToken();
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  } else {
+    delete config.headers.Authorization;
+  }
+  return config;
+});
 
 apiClient.interceptors.response.use(
   (response) => response.data,

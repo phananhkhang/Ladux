@@ -66,7 +66,7 @@ Dự án Ladux bao gồm hai thành phần trọng yếu kết nối qua REST AP
 - **Xác thực & Bảo mật tài khoản**:
   - Đăng ký / Đăng nhập tài khoản bằng mật khẩu mã hóa BCrypt.
   - Đăng nhập nhanh bằng **Google OAuth2**.
-  - Xác thực qua Cookie HttpOnly `AUTH_TOKEN` kết hợp CSRF Token cho các request ghi dữ liệu.
+  - REST API stateless: access token được frontend giữ trong bộ nhớ và gửi qua `Authorization: Bearer`; refresh token nằm trong cookie `HttpOnly + Secure + SameSite`.
   - Token Versioning (`token_version`) giúp vô hiệu hóa phiên làm việc tức thì khi đổi mật khẩu hoặc đăng xuất.
   - Xác thực số điện thoại & email qua mã OTP (`phone_verifications`, `email_verifications`).
 - **Giỏ hàng & Thanh Toán VNPay Sandbox Flow**:
@@ -108,7 +108,7 @@ Dự án Ladux bao gồm hai thành phần trọng yếu kết nối qua REST AP
 ### Backend
 - **Core Framework**: Java 21, Spring Boot `4.0.6`.
 - **Web & Security**: Spring Web MVC, Spring Security, OAuth2 Client (Google Login), Spring Validation.
-- **Authentication**: JWT (`jjwt` 0.12.x) lưu trong Cookie `AUTH_TOKEN` HttpOnly, CSRF Token via `CookieCsrfTokenRepository`, Refresh Token Rotation, Token Versioning.
+- **Authentication**: Bearer JWT (`jjwt` 0.13.x), REST stateless/CSRF disabled, refresh-token cookie HttpOnly, Refresh Token Rotation, Token Versioning.
 - **Database & Persistence**: PostgreSQL 17, Spring Data JPA / Hibernate, Flyway Database Migration (41 scripts).
 - **Full-Text Search & Locking**: PostgreSQL Extension `pg_trgm` cho tìm kiếm chuỗi, ShedLock cho distributed locking, Pessimistic Locking (`PESSIMISTIC_WRITE`) cho giao dịch kho/coupon.
 - **Utils & Integration**: Lombok, Commons Codec (HMAC SHA-512 cho VNPay checksum).
@@ -185,10 +185,9 @@ Ladux/
 ```mermaid
 flowchart TD
     Client["Browser (Storefront / Admin SPA)"]
-    APIClient["Axios Client (CSRF + Auth Cookie)"]
+    APIClient["Axios Client (Bearer access token + refresh cookie)"]
     SecFilter["Spring Security Filter Chain"]
-    JwtFilter["JwtAuthenticationFilter (Cookie AUTH_TOKEN)"]
-    CsrfFilter["CsrfFilter (CookieCsrfTokenRepository)"]
+    JwtFilter["JwtFilter (Authorization: Bearer)"]
     Controllers["REST Controllers (Admin / User)"]
     Services["Service Layer (Transactional Business Logic)"]
     Locks["Pessimistic DB Lock / ShedLock"]
@@ -197,8 +196,7 @@ flowchart TD
 
     Client --> APIClient
     APIClient --> SecFilter
-    SecFilter --> CsrfFilter
-    CsrfFilter --> JwtFilter
+    SecFilter --> JwtFilter
     JwtFilter --> Controllers
     Controllers --> Services
     Services --> Locks
@@ -318,9 +316,12 @@ npm run dev
 | `JWT_SECRET` | Có | `-` | Chuỗi Base64 ký JWT (tối thiểu 256-bit). |
 | `GOOGLE_CLIENT_ID` | Có (nếu dùng OAuth) | `-` | Google OAuth2 Client ID. |
 | `GOOGLE_CLIENT_SECRET` | Có (nếu dùng OAuth) | `-` | Google OAuth2 Client Secret. |
-| `AUTH_COOKIE_NAME` | Không | `AUTH_TOKEN` | Tên Cookie HttpOnly lưu JWT. |
+| `AUTH_COOKIE_REFRESH_NAME` | Không | `REFRESH_TOKEN` | Tên cookie HttpOnly lưu refresh token storefront. |
+| `ADMIN_AUTH_COOKIE_REFRESH_NAME` | Không | `ADMIN_REFRESH_TOKEN` | Tên cookie HttpOnly lưu refresh token admin. |
+| `AUTH_COOKIE_REFRESH_PATH` | Không | `/api/v1/auth` | Giới hạn cookie storefront cho nhóm endpoint refresh/logout. |
+| `ADMIN_AUTH_COOKIE_REFRESH_PATH` | Không | `/api/v1/admin/auth` | Giới hạn cookie admin cho nhóm endpoint refresh/logout. |
 | `AUTH_COOKIE_SAME_SITE` | Không | `Strict` | Cấu hình SameSite cookie (`Strict`/`Lax`/`None`). |
-| `AUTH_COOKIE_SECURE` | Không | `false` (dev) / `true` (prod) | Đặt `true` trên HTTPS. |
+| `AUTH_COOKIE_SECURE` | Không | `true` | Bắt buộc cookie refresh chỉ được gửi qua secure context. |
 
 ### Frontend (`frontend/.env`)
 
@@ -350,9 +351,9 @@ Dự án sử dụng **Flyway** để quản lý 41 phiên bản migration tự 
 
 ### 🔑 Authentication & Profile
 - `POST /api/v1/auth/register` : Đăng ký tài khoản mới.
-- `POST /api/v1/auth/login` : Đăng nhập (Set HttpOnly JWT Cookie).
-- `POST /api/v1/auth/logout` : Đăng xuất (Clear Cookie & Revoke Token).
-- `GET  /api/v1/auth/csrf` : Lấy CSRF Token.
+- `POST /api/v1/auth/login` : Đăng nhập (trả access token, set refresh-token cookie).
+- `POST /api/v1/auth/refresh` : Xoay refresh token và trả access token mới.
+- `POST /api/v1/auth/logout` : Thu hồi phiên và xóa refresh-token cookie.
 - `GET  /api/v1/users/me` : Lấy thông tin user hiện tại.
 
 ### 💻 Products & Catalog

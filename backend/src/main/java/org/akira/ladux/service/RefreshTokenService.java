@@ -8,7 +8,7 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Optional;
 
-import org.akira.ladux.exception.BusinessRuleException;
+import org.akira.ladux.exception.UnauthenticatedException;
 import org.akira.ladux.model.RefreshToken;
 import org.akira.ladux.model.User;
 import org.akira.ladux.repository.RefreshTokenRepository;
@@ -70,12 +70,12 @@ public class RefreshTokenService {
     @Transactional
     public RefreshToken verifyAndRotate(String rawToken) {
         if (rawToken == null || rawToken.isBlank()) {
-            throw new BusinessRuleException("Thieu refresh token");
+            throw new UnauthenticatedException("Thieu refresh token");
         }
         RefreshToken current = findStoredToken(rawToken)
-                .orElseThrow(() -> new BusinessRuleException("Refresh token khong hop le"));
+                .orElseThrow(() -> new UnauthenticatedException("Refresh token khong hop le"));
         if (!current.isUsable()) {
-            throw new BusinessRuleException("Refresh token da het han hoac da bi thu hoi");
+            throw new UnauthenticatedException("Refresh token da het han hoac da bi thu hoi");
         }
         current.setRevoked(true);
         return create(current.getUser());

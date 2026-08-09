@@ -9,8 +9,8 @@ import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.model.RefreshToken;
 import org.akira.ladux.model.User;
 import org.akira.ladux.repository.UserRepository;
-import org.akira.ladux.service.AuthCookieService;
 import org.akira.ladux.service.JwtService;
+import org.akira.ladux.service.RefreshTokenCookieService;
 import org.akira.ladux.service.RefreshTokenService;
 import org.akira.ladux.service.UserService;
 import org.springframework.http.HttpHeaders;
@@ -18,8 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,8 +28,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-// API xac thuc — dang ky, dang nhap, refresh token, logout, CSRF.
-// Hai token: access JWT 15 phut (cookie AUTH_TOKEN), refresh opaque 7 ngay (cookie REFRESH_TOKEN, path /api/v1/auth).
+// API xac thuc — dang ky, dang nhap, refresh token, logout.
+// Access JWT tra trong response body; refresh token opaque nam trong HttpOnly cookie.
 // Logout: revoke refresh token + tang tokenVersion -> access token cu chet tuc thi.
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -41,7 +39,7 @@ public class AuthController {
     private final UserService userService;
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
-    private final AuthCookieService authCookieService;
+    private final RefreshTokenCookieService refreshTokenCookieService;
     private final RefreshTokenService refreshTokenService;
     private final UserRepository userRepository;
 
@@ -68,53 +66,43 @@ public class AuthController {
         String accessToken = jwtService.generateAccessToken(user);
         RefreshToken refreshToken = refreshTokenService.create(user);
 
-        // Body KHÔNG TRẢ accessToken nữa!
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, authCookieService.createAccessCookie(accessToken).toString())
-                .header(HttpHeaders.SET_COOKIE, authCookieService.createRefreshCookie(refreshToken.getToken()).toString())
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookieService.createRefreshCookie(refreshToken.getToken()).toString())
                 .body(Map.of(
                         "message", "Login successful",
                         "userId", String.valueOf(user.getId()),
-                        "username", user.getUsername()
+                        "username", user.getUsername(),
+                        "accessToken", accessToken,
+                        "tokenType", "Bearer"
                 ));
     }
 
     @PostMapping({"/refresh", "/refresh/"})
     public ResponseEntity<Map<String, String>> refresh(HttpServletRequest request) {
-        String rawRefresh = readCookie(request, authCookieService.refreshCookieName());
+        String rawRefresh = readCookie(request, refreshTokenCookieService.refreshCookieName());
 
         RefreshToken rotated = refreshTokenService.verifyAndRotate(rawRefresh);
         User user = rotated.getUser();
 
         String newAccessToken = jwtService.generateAccessToken(user);
 
-        // 🟢 BẢO MẬT: Đặt access token mới vào Cookie, Body chỉ báo OK
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, authCookieService.createAccessCookie(newAccessToken).toString())
-                .header(HttpHeaders.SET_COOKIE, authCookieService.createRefreshCookie(rotated.getToken()).toString())
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookieService.createRefreshCookie(rotated.getToken()).toString())
                 .body(Map.of(
-                        "message", "Token refreshed successfully"
+                        "message", "Token refreshed successfully",
+                        "accessToken", newAccessToken,
+                        "tokenType", "Bearer"
                 ));
     }
 
     @PostMapping({"/logout", "/logout/"})
     public ResponseEntity<Void> logout(HttpServletRequest request) {
-        String rawRefresh = readCookie(request, authCookieService.refreshCookieName());
+        String rawRefresh = readCookie(request, refreshTokenCookieService.refreshCookieName());
         refreshTokenService.revokeSessionAndBump(rawRefresh);
 
         return ResponseEntity.noContent()
-                .header(HttpHeaders.SET_COOKIE, authCookieService.clearAccessCookie().toString())
-                .header(HttpHeaders.SET_COOKIE, authCookieService.clearRefreshCookie().toString())
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookieService.clearRefreshCookie().toString())
                 .build();
-    }
-
-    @GetMapping("/csrf") // lay CSRF token de frontend gui kem header X-XSRF-TOKEN
-    public ResponseEntity<Map<String, String>> csrf(CsrfToken csrfToken) {
-        return ResponseEntity.ok(Map.of(
-                "headerName", csrfToken.getHeaderName(),
-                "parameterName", csrfToken.getParameterName(),
-                "token", csrfToken.getToken()
-        ));
     }
 
     private boolean isBcryptHash(String password) {
