@@ -312,7 +312,7 @@ npm run dev
 | `DB_PORT` | Không | `5432` | Cổng kết nối PostgreSQL. |
 | `DB_NAME` | Không | `ladux` | Tên cơ sở dữ liệu PostgreSQL. |
 | `DB_USERNAME` | Không | `akira` / `postgres` | Username kết nối PostgreSQL. |
-| `DB_PASSWORD` | Có | `secret` | Mật khẩu truy cập PostgreSQL. |
+| `DB_PASSWORD` | Có | `-` | Mật khẩu truy cập PostgreSQL; production không có giá trị mặc định. |
 | `JWT_SECRET` | Có | `-` | Chuỗi Base64 ký JWT (tối thiểu 256-bit). |
 | `GOOGLE_CLIENT_ID` | Có (nếu dùng OAuth) | `-` | Google OAuth2 Client ID. |
 | `GOOGLE_CLIENT_SECRET` | Có (nếu dùng OAuth) | `-` | Google OAuth2 Client Secret. |

@@ -40,7 +40,7 @@ flowchart TB
             Val_Format["1. Validation & Chuẩn hóa<br/>(Normalized Email / E.164 Phone)"]:::service
             Check_Cooldown{"2. Kiểm tra Cooldown 60s<br/>& Trùng lặp tài khoản khác?"}:::service
             Inval_Old["3. Vô hiệu hóa phiên cũ<br/>(Chuyển status -> INVALIDATED)"]:::service
-            Gen_OTP["4. Sinh OTP & Mã hóa<br/>(BCrypt for Email / Fixed/Twilio for Phone)"]:::service
+            Gen_OTP["4. Sinh OTP & Mã hóa<br/>(BCrypt for Email / Fixed hoặc Disabled cho Phone)"]:::service
         end
 
         subgraph VERIFY_PHASE["Phase 2: Xác minh OTP"]
@@ -61,7 +61,7 @@ flowchart TB
 
     subgraph EXTERNAL["📩 OTP PROVIDERS (Hạ tầng gửi tin)"]
         Email_Sender["Gmail MailSender<br/>(Spring JavaMailSender)"]:::provider
-        Phone_Provider["Phone OTP Provider<br/>(Dev Fixed Code / Twilio SMS API)"]:::provider
+        Phone_Provider["Phone OTP Provider<br/>(Dev Fixed Code / Disabled Production)"]:::provider
     end
 
     subgraph STORAGE["🗄️ DATABASE (MySQL Repositories)"]
@@ -116,8 +116,8 @@ flowchart TB
 | Tiêu chí | Luồng Xác thực Email | Luồng Xác thực Phone |
 | :--- | :--- | :--- |
 | **Mục đích hỗ trợ** | `EMAIL_UPDATE`, `PASSWORD_CHANGE` | `PHONE_UPDATE`, `PASSWORD_CHANGE` |
-| **Đơn vị phát sinh OTP** | Backend tự sinh ngẫu nhiên 6 chữ số (`SecureEmailOtpGenerator`) | Tùy thuộc Provider (`DevPhoneOtpProvider` cố định hoặc `TwilioPhoneOtpProvider` qua Twilio Service) |
-| **Lưu trữ bảo mật OTP** | Mã hóa bằng **BCrypt** (`otpHash`), không lưu text thô | Provider lưu/xác minh qua `providerVerificationId` (Twilio Verification SID) |
+| **Đơn vị phát sinh OTP** | Backend tự sinh ngẫu nhiên 6 chữ số (`SecureEmailOtpGenerator`) | Dev dùng mã cố định; production hiện tắt phone OTP |
+| **Lưu trữ bảo mật OTP** | Mã hóa bằng **BCrypt** (`otpHash`), không lưu text thô | Production không tạo phiên OTP vì chưa bật SMS provider |
 | **Thời gian hết hạn (TTL)** | 300 giây (5 phút) | 300 giây (5 phút) |
 | **Thời gian chờ gửi lại (Cooldown)**| 60 giây | 60 giây |
 | **Số lần thử tối đa** | 5 lần sai -> Phiên chuyển thành `INVALIDATED` | 5 lần sai -> Phiên chuyển thành `INVALIDATED` |
@@ -170,7 +170,7 @@ Cách thức gửi OTP thật qua SMS / Email và cấu hình thời gian hết 
 2. **Phone OTP**:
    - `service/PhoneOtpProvider.java`
    - `service/impl/DevPhoneOtpProvider.java` (Môi trường Dev với fixed code `123456`)
-   - `service/impl/TwilioPhoneOtpProvider.java` (Môi trường Production tích hợp SMS Twilio)
+   - `service/impl/DisabledPhoneOtpProvider.java` (Production tắt phone OTP khi chưa dùng SMS provider)
    - `config/DevOtpProperties.java`
 
 ### Bước 5: Tầng Frontend (Client Services & React Components)
@@ -306,9 +306,9 @@ sequenceDiagram
    - Truy vấn xác minh OTP sử dụng `LockModeType.PESSIMISTIC_WRITE` nhằm ngăn chặn các tấn công gửi đồng thời nhiều request xác thực song song để qua mặt bộ đếm `failedAttempts`.
 4. **Giấu thông tin nhạy cảm (Data Masking)**:
    - Tất cả các response gửi OTP đều ẩn thông tin: `abcde@gmail.com` -> `a***e@gmail.com`, `+84987654321` -> `+84***4321`.
-5. **Cơ chế Phân tách Môi trường OTP Phone (Profile Dev / Twilio)**:
-   - **Môi trường Dev (`DevPhoneOtpProvider`)**: Tự động nhận diện mã cố định `123456`, giúp lập trình viên Frontend / QA test nhanh mà không tốn chi phí SMS.
-   - **Môi trường Prod (`TwilioPhoneOtpProvider`)**: Kích hoạt qua Profile `@Profile("twilio")`, kết nối trực tiếp đến Twilio Verify API.
+5. **Cơ chế Phân tách Môi trường OTP Phone (Profile Dev / Disabled Prod)**:
+    - **Môi trường Dev (`DevPhoneOtpProvider`)**: Tự động nhận diện mã cố định `123456`, giúp lập trình viên Frontend / QA test nhanh mà không tốn chi phí SMS.
+    - **Môi trường Prod (`DisabledPhoneOtpProvider`)**: Không gửi/xác minh phone OTP và trả lỗi rõ ràng cho tới khi tích hợp một SMS provider được quyết định.
 
 ---
 

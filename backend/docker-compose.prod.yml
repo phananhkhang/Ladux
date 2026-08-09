@@ -1,10 +1,12 @@
-# Production compose: use `docker compose -f docker-compose.prod.yml up -d`.
+# Production compose (run from repository root):
+# `docker compose --env-file .env.production -f backend/docker-compose.prod.yml up -d --build`.
+# `--env-file` is required because Compose interpolates ${VAR:?required} before service-level env_file is applied.
 # Only the backend is bound to loopback for a reverse proxy; PostgreSQL and Redis stay private.
 services:
   app:
     build: .
     env_file:
-      - .env.production
+      - ../.env.production
     ports:
       - "127.0.0.1:8080:8080"
     environment:
@@ -15,9 +17,6 @@ services:
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET required}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:?GOOGLE_CLIENT_ID required}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:?GOOGLE_CLIENT_SECRET required}
-      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:?TWILIO_ACCOUNT_SID required}
-      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:?TWILIO_AUTH_TOKEN required}
-      TWILIO_VERIFY_SERVICE_SID: ${TWILIO_VERIFY_SERVICE_SID:?TWILIO_VERIFY_SERVICE_SID required}
       MAIL_USERNAME: ${MAIL_USERNAME:?MAIL_USERNAME required}
       MAIL_PASSWORD: ${MAIL_PASSWORD:?MAIL_PASSWORD required}
       VNPAY_TMN_CODE: ${VNPAY_TMN_CODE:?VNPAY_TMN_CODE required}

@@ -1,6 +1,5 @@
 package org.akira.ladux.service.impl;
 
-import com.twilio.type.PhoneNumber;
 import org.akira.ladux.dto.inventory.request.SupplierRequest;
 import org.akira.ladux.dto.inventory.response.SupplierResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;

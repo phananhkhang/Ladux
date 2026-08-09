@@ -13,7 +13,7 @@ public class SomePhoneOtpProviderImpl
     public ProviderOtpResponse sendOtp(
             String phoneNumber
     ) {
-        // Gọi API Twilio/Vonage/nhà cung cấp SMS ở đây.
+        // Gọi API nhà cung cấp SMS ở đây nếu sau này bật phone OTP.
 
         return new ProviderOtpResponse(
                 "provider-generated-id",

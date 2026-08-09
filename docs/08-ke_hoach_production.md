@@ -55,7 +55,7 @@ Nguyên tắc:
 
 ## 1.1 Tách Dev OTP khỏi Production
 
-> Quyết định hiện tại: chấp nhận `DevPhoneOtpProvider` ở profile `dev` và `test`; profile `prod` chỉ dùng Twilio.
+> Quyết định hiện tại: chấp nhận `DevPhoneOtpProvider` ở profile `dev` và `test`; production tắt phone OTP vì chưa dùng SMS provider.
 
 ### Vấn đề
 
@@ -80,7 +80,7 @@ Production:
 ```java
 @Service
 @Profile("prod")
-public class TwilioPhoneOtpProvider implements PhoneOtpProvider {
+public class DisabledPhoneOtpProvider implements PhoneOtpProvider {
 }
 ```
 
@@ -92,10 +92,10 @@ Hoặc dùng:
 
 ### Done khi
 
-- [ ] `DevPhoneOtpProvider` chỉ tồn tại ở profile dev.
-- [ ] Production startup không thể inject Dev OTP provider.
-- [ ] Production thiếu Twilio credential thì fail startup.
-- [ ] Không còn fixed OTP trong production.
+- [x] `DevPhoneOtpProvider` chỉ tồn tại ở profile dev/test.
+- [x] Production startup không thể inject Dev OTP provider.
+- [x] Production dùng provider disabled khi chưa cấu hình SMS provider.
+- [x] Không còn fixed OTP provider trong production.
 - [ ] Có test kiểm tra đúng provider theo profile.
 
 ---
@@ -223,13 +223,22 @@ Không dùng:
 JWT_SECRET=${JWT_SECRET:-default-secret}
 ```
 
+Trước khi deploy, chạy preflight từ repository root:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File backend/scripts/validate-production-env.ps1
+docker compose --env-file .env.production -f backend/docker-compose.prod.yml up -d --build
+```
+
+Preflight sẽ dừng deploy nếu thiếu biến, còn placeholder, production profile không phải `prod`, hoặc credential production bị dùng lại từ `backend/.env`.
+
 ### Done khi
 
-- [ ] Production luôn chạy profile `prod`.
-- [ ] Thiếu secret thì app fail startup.
-- [ ] Không có production secret hardcode.
-- [ ] `.env` nằm trong `.gitignore`.
-- [ ] Production env được quản lý riêng.
+- [x] Production luôn chạy profile `prod` trong `backend/docker-compose.prod.yml`.
+- [x] Thiếu secret thì Compose fail trước khi tạo container; các secret bắt buộc còn lại làm app fail startup.
+- [x] Không có production secret hardcode trong source/config tracked.
+- [x] `.env` và `.env.production` nằm trong `.gitignore`.
+- [x] Production env được quản lý riêng qua `.env.production` và mẫu `.env.production.example`.
 
 ---
 
@@ -246,8 +255,6 @@ VNPAY_TMN_CODE
 VNPAY_HASH_SECRET
 DEEPSEEK_API_KEY
 GOOGLE_GENAI_API_KEY
-TWILIO_ACCOUNT_SID
-TWILIO_AUTH_TOKEN
 ```
 
 Giai đoạn VPS nhỏ có thể dùng:
@@ -269,9 +276,9 @@ Cloud Secret Manager
 
 ### Done khi
 
-- [ ] Không secret nào commit lên Git.
-- [ ] Rotate secret nếu từng bị public.
-- [ ] Production secret khác development secret.
+- [x] Không secret nào commit lên Git; đã rà soát tracked files và lịch sử Git.
+- [ ] Rotate secret nếu từng bị public (chỉ cần thực hiện nếu các credential local đã từng bị chia sẻ/public).
+- [ ] Production secret khác development secret (audit hiện phát hiện một số biến còn trùng; phải thay/rotate trước go-live).
 
 ---
 
