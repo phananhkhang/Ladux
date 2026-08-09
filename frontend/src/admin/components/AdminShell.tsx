@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  Bell, Boxes, ChartNoAxesCombined, ChevronLeft, ChevronRight, CircleDollarSign,
+  Bell, Boxes, ChartNoAxesCombined, ChevronLeft, ChevronRight, CircleDollarSign, Database,
   ClipboardList, ContactRound, CreditCard, History, LogOut, Menu, Moon, Package,
   Palette, PanelLeftClose, PanelLeftOpen, Search, ShoppingBag, Star, Sun, Tags,
   TicketPercent, Truck, UserRound, UsersRound, Warehouse, X,
@@ -54,7 +54,13 @@ const navigation: NavigationGroup[] = [
       { label: "Biến động kho", path: "/admin/stock-movements", icon: Warehouse },
     ]
   },
-  { label: "Hệ thống", items: [{ label: "Thông báo", path: "/admin/notifications", icon: Bell }] },
+  {
+    label: "Hệ thống",
+    items: [
+      { label: "Thông báo", path: "/admin/notifications", icon: Bell },
+      { label: "Chỉ mục RAG", path: "/admin/chatbot-index", icon: Database },
+    ],
+  },
 ];
 
 function SidebarContent({
@@ -195,18 +201,12 @@ export default function AdminShell() {
             <div className="hidden h-9 w-px bg-slate-200 sm:block" />
             <div className="hidden text-right sm:block"><p className="max-w-36 truncate text-sm font-bold text-slate-900">{user?.fullName || user?.username}</p><p className="text-[11px] font-semibold uppercase tracking-wider text-indigo-600">Administrator</p></div>
             {(() => {
-              const defaultAdminAvatar = resolveImageUrl("/uploads/avatar/default_avatar_admin.jpg", env.backendOrigin) ?? "/uploads/avatar/default_avatar_admin.jpg";
-              const adminAvatarUrl = resolveImageUrl(user?.avatar, env.backendOrigin) || defaultAdminAvatar;
+              const adminAvatarUrl = resolveImageUrl(user?.avatar, env.backendOrigin);
+              const adminInitial = (user?.fullName || user?.username || "A").trim().charAt(0).toUpperCase();
               return (
                 <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-indigo-200/80 bg-indigo-50 ring-2 ring-indigo-500/20 shadow-sm">
-                  <img
-                    src={adminAvatarUrl}
-                    alt="Avatar admin"
-                    className="h-full w-full object-cover"
-                    onError={(event) => {
-                      (event.currentTarget as HTMLImageElement).src = defaultAdminAvatar;
-                    }}
-                  />
+                  <span aria-hidden="true" className="font-black text-indigo-700">{adminInitial}</span>
+                  {adminAvatarUrl && <img src={adminAvatarUrl} alt="Avatar admin" className="h-full w-full object-cover" onError={(event) => { event.currentTarget.remove(); }} />}
                 </div>
               );
             })()}

@@ -242,4 +242,9 @@ export const adminApi = {
     delete: (id: number) => remove<string>(`/admin/notifications/${id}`, { responseType: "text" }),
     deleteAll: () => remove<string>("/admin/notifications/delete-all", { responseType: "text" }),
   },
+
+  chatbot: {
+    indexProduct: (productId: number) => post<void>(`/admin/chatbot/index-product/${productId}`),
+    indexAllProducts: () => post<number>("/admin/chatbot/index-all"),
+  },
 };

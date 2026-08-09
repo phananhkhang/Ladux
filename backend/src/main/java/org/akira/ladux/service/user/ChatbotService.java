@@ -7,30 +7,50 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
+import java.util.Objects;
 
 @Service
 public class ChatbotService {
     private final ChatClient chatClient;
+    private final VectorStore vectorStore;
     private final ProductRepository productRepository;
     private final ChatMemory chatMemory = MessageWindowChatMemory.builder().build();
 
     public ChatbotService(
             ChatClient.Builder builder,
+            VectorStore vectorStore,
             ProductRepository productRepository
     ) {
         this.chatClient = builder
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
                 .build();
+        this.vectorStore = vectorStore;
         this.productRepository = productRepository;
     }
 
     public String chat(String query, String conversationId) {
-        String context = buildContext(findRelevantProducts(query));
+        List<Document> documents = vectorStore.similaritySearch(
+                SearchRequest.builder().query(query).topK(5).build()
+        );
+
+        List<Integer> ids = documents.stream()
+                .map(document -> document.getMetadata().get("productId"))
+                .filter(Objects::nonNull)
+                .map(value -> Integer.parseInt(value.toString()))
+                .distinct()
+                .toList();
+
+        List<Product> products = ids.isEmpty()
+                ? List.of()
+                : productRepository.findSummariesByIdIn(ids);
+
+        String context = buildContext(products);
 
         return chatClient
                 .prompt()
@@ -50,36 +70,6 @@ public class ChatbotService {
                 .advisors(advisor -> advisor.param(ChatMemory.CONVERSATION_ID, conversationId))
                 .call()
                 .content();
-    }
-
-    private List<Product> findRelevantProducts(String query) {
-        List<Product> products = productRepository.findByIsActiveTrue();
-        List<String> keywords = Arrays.stream(query.toLowerCase(Locale.ROOT).split("\\s+"))
-                .filter(keyword -> keyword.length() > 2)
-                .toList();
-
-        if (keywords.isEmpty()) {
-            return products.stream().limit(8).toList();
-        }
-
-        List<Product> matches = products.stream()
-                .filter(product -> keywords.stream().anyMatch(keyword -> productText(product).contains(keyword)))
-                .limit(8)
-                .toList();
-
-        return matches.isEmpty() ? products.stream().limit(8).toList() : matches;
-    }
-
-    private String productText(Product product) {
-        return String.join(" ",
-                        product.getName(),
-                        product.getBrand().getName(),
-                        product.getCategory().getName(),
-                        product.getCpu(),
-                        product.getGpu(),
-                        product.getDescription())
-                .toLowerCase(Locale.ROOT)
-                .replace("null", "");
     }
 
     private String buildContext(List<Product> products) {

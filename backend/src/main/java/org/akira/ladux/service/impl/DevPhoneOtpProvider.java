@@ -5,12 +5,14 @@ import org.akira.ladux.config.DevOtpProperties;
 import org.akira.ladux.dto.internal.otp.ProviderOtpResponse;
 import org.akira.ladux.service.PhoneOtpProvider;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
 @Primary
+@Profile("dev")
 @RequiredArgsConstructor
 public class DevPhoneOtpProvider implements PhoneOtpProvider {
 

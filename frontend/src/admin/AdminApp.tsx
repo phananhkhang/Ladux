@@ -14,6 +14,7 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import { OrderDetailPage, OrdersPage, PaymentDetailPage, PaymentsPage } from "./pages/SalesPages";
 import { ProductSuppliersPage, PurchaseOrderDetailPage, PurchaseOrderNewPage, PurchaseOrdersPage, StockMovementsPage } from "./pages/ProcurementPages";
 import { ColorsPage, ForbiddenPage, NotFoundPage, NotificationsPage } from "./pages/SystemPages";
+import RagIndexPage from "./pages/RagIndexPage";
 import { CustomerDetailPage, SupplierDetailPage, UserDetailPage } from "./pages/RecordDetailPages";
 
 function ProtectedRoute({ children }: { children: ReactElement }) {
@@ -65,6 +66,7 @@ function AdminRoutes() {
         <Route path="purchase-orders/:purchaseOrderId" element={<PurchaseOrderDetailPage />} />
         <Route path="stock-movements" element={<StockMovementsPage />} />
         <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="chatbot-index" element={<RagIndexPage />} />
         <Route path="404" element={<NotFoundPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
