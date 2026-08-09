@@ -217,7 +217,7 @@ export default function AIChatbot() {
                                                                 <h4 className="max-w-full truncate text-xs font-semibold text-[#dff5e3] transition-colors group-hover:text-[#57fa84]">
                                                                     {prod.name}
                                                                 </h4>
-                                                                    <p className="mt-0.5 text-xs font-bold text-[#55ee7b]">
+                                                                <p className="mt-0.5 text-xs font-bold text-[#55ee7b]">
                                                                     {prod.price.toLocaleString("vi-VN")} đ
                                                                 </p>
                                                             </div>
@@ -299,7 +299,7 @@ export default function AIChatbot() {
                                 className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-[#00a938] bg-[#075b1d] text-white shadow-[0_0_12px_rgba(0,200,60,0.18)] transition-all hover:bg-[#087a27] active:scale-95 disabled:opacity-40 disabled:hover:bg-[#075b1d]"
                                 title="Gửi tin nhắn"
                             >
-                                <Send className="ml-0.5 h-4 w-4 text-[#eaffed]" />
+                                <Send className="h-4 w-4 text-[#eaffed]" />
                             </button>
                         </form>
                     </div>
@@ -313,9 +313,19 @@ export default function AIChatbot() {
                     target="_blank"
                     rel="noopener noreferrer"
                     title="Hỗ trợ qua Zalo"
-                    className="flex h-12 w-12 sm:h-14 sm:w-14 flex-shrink-0 items-center justify-center rounded-full bg-[#0084ff] text-white shadow-lg transition-transform hover:scale-110 hover:bg-[#0073e6] active:scale-95"
+                    className="flex h-12 w-12 sm:h-14 sm:w-14 flex-shrink-0 items-center justify-center rounded-full bg-[#0068ff] text-white shadow-[0_4px_14px_rgba(0,104,255,0.4)] transition-all duration-200 hover:scale-110 hover:bg-[#0052cc] active:scale-95 transform-gpu select-none"
                 >
-                    <span className="text-[13px] font-black leading-none sm:text-sm">Zalo</span>
+                    <svg
+                        className="w-7 h-7 sm:w-8 sm:h-8 pointer-events-none select-none transform-gpu"
+                        viewBox="0 0 118 60"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M14 15H38L20 41H38V47H14V41L32 21H14V15Z M53 23C46.5 23 41 28.5 41 35C41 41.5 46.5 47 53 47C56.2 47 59.1 45.7 61 43.6V47H66V23H61V26.4C59.1 24.3 56.2 23 53 23ZM54 28.5C57.6 28.5 60.5 31.4 60.5 35C60.5 38.6 57.6 41.5 54 41.5C50.4 41.5 47.5 38.6 47.5 35C47.5 31.4 50.4 28.5 54 28.5Z M70 15H75.5V47H70V15Z M91 23C84.4 23 79 28.4 79 35C79 41.6 84.4 47 91 47C97.6 47 103 41.6 103 35C103 28.4 97.6 23 91 23ZM91 28.5C94.6 28.5 97.5 31.4 97.5 35C97.5 38.6 94.6 41.5 91 41.5C87.4 41.5 84.5 38.6 84.5 35C84.5 31.4 87.4 28.5 91 28.5Z"
+                            fill="#FFFFFF"
+                        />
+                    </svg>
                 </a>
             )}
 
@@ -326,9 +336,9 @@ export default function AIChatbot() {
                     target="_blank"
                     rel="noopener noreferrer"
                     title="Hỗ trợ qua Telegram"
-                    className="flex h-12 w-12 sm:h-14 sm:w-14 flex-shrink-0 items-center justify-center rounded-full bg-[#2AABEE] shadow-lg transition-transform hover:scale-110 hover:bg-[#229edc] active:scale-95"
+                    className="flex h-12 w-12 sm:h-14 sm:w-14 flex-shrink-0 items-center justify-center rounded-full bg-[#2AABEE] shadow-[0_4px_14px_rgba(42,171,238,0.4)] transition-all duration-200 hover:scale-110 hover:bg-[#229edc] active:scale-95 transform-gpu select-none"
                 >
-                    <svg className="pointer-events-none h-7 w-7 sm:h-8 sm:w-8" viewBox="0 20 200 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg className="pointer-events-none select-none h-7 w-7 sm:h-8 sm:w-8 transform-gpu" viewBox="0 20 200 220" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M98 175c-3.887 0-3.227-1.464-4.568-5.17l-11.56-38.016 88.665-52.616c4.077-2.705.882-4.215-3.568-1.576l-109.52 69.176-35.313-11.036c-7.68-2.4-7.808-7.68 1.6-11.36l138.08-53.2c6.4-2.4 12 1.44 9.6 11.2l-23.52 110.88c-1.76 8.32-6.72 10.4-13.6 6.56l-38.88-28.64-18.72 18.08c-2.08 2.08-3.84 3.84-7.84 3.84z" fill="#ffffff" />
                     </svg>
                 </a>
