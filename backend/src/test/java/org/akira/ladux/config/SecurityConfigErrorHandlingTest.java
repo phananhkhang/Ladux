@@ -1,8 +1,11 @@
 package org.akira.ladux.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -18,7 +21,9 @@ class SecurityConfigErrorHandlingTest {
             mock(JwtFilter.class),
             mock(EndpointRateLimitFilter.class),
             mock(OAuth2SuccessHandler.class),
-            mock(OAuth2FailureHandler.class)
+            mock(OAuth2FailureHandler.class),
+            "https://ladux.vn,https://admin.ladux.vn",
+            false
     );
 
     @Test
@@ -61,5 +66,27 @@ class SecurityConfigErrorHandlingTest {
 
         assertTrue(cors.getAllowedHeaders().contains("Authorization"));
         assertEquals(Boolean.TRUE, cors.getAllowCredentials());
+    }
+
+    @Test
+    void corsAllowsOnlyConfiguredProductionOrigins() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        CorsConfiguration cors = config.corsConfigurationSource().getCorsConfiguration(request);
+
+        assertEquals(List.of("https://ladux.vn", "https://admin.ladux.vn"), cors.getAllowedOrigins());
+    }
+
+    @Test
+    void productionCorsRejectsLocalhostAndWildcards() {
+        SecurityConfig productionConfig = new SecurityConfig(
+                mock(JwtFilter.class),
+                mock(EndpointRateLimitFilter.class),
+                mock(OAuth2SuccessHandler.class),
+                mock(OAuth2FailureHandler.class),
+                "https://ladux.vn,http://localhost:5173",
+                true
+        );
+
+        assertThrows(IllegalStateException.class, productionConfig::corsConfigurationSource);
     }
 }

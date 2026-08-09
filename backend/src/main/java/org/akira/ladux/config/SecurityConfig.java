@@ -2,7 +2,9 @@ package org.akira.ladux.config;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.akira.ladux.exception.ErrorResponse;
 import org.springframework.context.annotation.Bean;
@@ -50,17 +52,26 @@ public class SecurityConfig {
     private final EndpointRateLimitFilter endpointRateLimitFilter;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
+    private final String allowedOrigins;
+    private final boolean productionOriginsOnly;
 
     public SecurityConfig(
             JwtFilter jwtFilter,
             EndpointRateLimitFilter endpointRateLimitFilter,
             OAuth2SuccessHandler oAuth2SuccessHandler,
-            OAuth2FailureHandler oAuth2FailureHandler
+            OAuth2FailureHandler oAuth2FailureHandler,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${app.cors.allowed-origins:http://localhost:5173,http://127.0.0.1:5173}"
+            ) String allowedOrigins,
+            @org.springframework.beans.factory.annotation.Value("${app.cors.production-only:false}")
+            boolean productionOriginsOnly
     ) {
         this.jwtFilter = jwtFilter;
         this.endpointRateLimitFilter = endpointRateLimitFilter;
         this.oAuth2SuccessHandler = oAuth2SuccessHandler;
         this.oAuth2FailureHandler = oAuth2FailureHandler;
+        this.allowedOrigins = allowedOrigins;
+        this.productionOriginsOnly = productionOriginsOnly;
     }
 
     @Bean
@@ -129,12 +140,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of(
-                "http://localhost:*",
-                "http://127.0.0.1:*",
-                "https://ladux.vn",
-                "https://*.ladux.vn"
-        ));
+        List<String> origins = Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(origin -> !origin.isEmpty())
+                .collect(Collectors.toList());
+        validateOrigins(origins);
+        configuration.setAllowedOrigins(origins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control"));
         configuration.setAllowCredentials(true);
@@ -142,6 +153,19 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private void validateOrigins(List<String> origins) {
+        if (!productionOriginsOnly) {
+            return;
+        }
+        if (origins.isEmpty() || origins.stream().anyMatch(origin -> origin.contains("*")
+                || origin.contains("localhost")
+                || origin.startsWith("http://"))) {
+            throw new IllegalStateException(
+                    "Production CORS origins must be explicit HTTPS origins and must not include localhost or wildcards"
+            );
+        }
     }
 
     private void writeUnauthorized(

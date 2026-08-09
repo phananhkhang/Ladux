@@ -55,6 +55,8 @@ Nguyên tắc:
 
 ## 1.1 Tách Dev OTP khỏi Production
 
+> Quyết định hiện tại: chấp nhận `DevPhoneOtpProvider` ở profile `dev` và `test`; profile `prod` chỉ dùng Twilio.
+
 ### Vấn đề
 
 `DevPhoneOtpProvider` đang được dùng cho môi trường development và có fixed OTP.
@@ -98,55 +100,21 @@ Hoặc dùng:
 
 ---
 
-## 1.2 Sửa CSRF
+## 1.2 CSRF cho REST Bearer API
 
-### Vấn đề
+### Quyết định kiến trúc
 
-Không được bỏ qua CSRF cho toàn bộ:
-
-```text
-/api/v1/**
-```
-
-khi authentication storefront sử dụng cookie.
-
-### Thiết kế mong muốn
-
-```text
-Cookie Auth API
-      |
-      v
-CSRF protection
-
-Bearer Token API
-      |
-      v
-Có thể exempt CSRF
-
-VNPay Webhook
-      |
-      v
-Exempt CSRF
-+ Verify HMAC Signature
-```
-
-### Cần làm
-
-- Bật CSRF cho API sử dụng cookie authentication.
-- Chỉ exempt endpoint thực sự cần thiết.
-- Frontend đọc `XSRF-TOKEN`.
-- Frontend gửi lại:
-
-```text
-X-XSRF-TOKEN: <token>
-```
+REST API xác thực bằng `Authorization: Bearer <accessToken>` và hoàn toàn stateless;
+access token không nằm trong cookie. Vì vậy CSRF được tắt cho toàn bộ REST API.
+Refresh token dùng `HttpOnly + Secure + SameSite=Strict` cookie, giới hạn path vào endpoint refresh;
+OAuth2 chỉ dùng session tạm trong authorization-code flow.
 
 ### Done khi
 
-- [ ] POST/PUT/PATCH/DELETE bằng cookie thiếu CSRF token bị reject.
-- [ ] Request có CSRF token đúng hoạt động bình thường.
+- [x] REST API không dùng cookie access-token và CSRF được tắt hoàn toàn.
+- [x] Refresh token cookie có `HttpOnly`, `Secure`, `SameSite` và path giới hạn.
 - [ ] VNPay webhook vẫn hoạt động.
-- [ ] Bearer token flow không bị phá.
+- [x] Bearer token flow không bị phá.
 - [ ] Có integration test cho CSRF.
 
 ---
@@ -183,10 +151,10 @@ APP_CORS_ALLOWED_ORIGINS=https://ladux.vn,https://admin.ladux.vn
 
 ### Done khi
 
-- [ ] Production không allow localhost.
-- [ ] Production không allow HTTP wildcard.
-- [ ] Chỉ frontend thật có thể gửi credential cross-origin.
-- [ ] CORS được cấu hình từ environment.
+- [x] Production không allow localhost (origin được cấp qua biến môi trường production).
+- [x] Production không allow HTTP wildcard.
+- [x] Chỉ frontend thật có thể gửi credential cross-origin.
+- [x] CORS được cấu hình từ environment.
 
 ---
 
@@ -208,15 +176,17 @@ Các endpoint nên được bảo vệ:
 
 Các con số này là baseline, có thể chỉnh sau khi quan sát traffic thực tế.
 
+> Coupon không có rate limit theo quyết định hiện tại.
+
 ### Done khi
 
-- [ ] Login có rate limit.
-- [ ] OTP có rate limit.
-- [ ] Chatbot có rate limit.
-- [ ] Order/payment có rate limit.
-- [ ] Trả HTTP `429 Too Many Requests`.
-- [ ] Có `Retry-After` nếu phù hợp.
-- [ ] Rate limit hoạt động khi chạy nhiều instance.
+- [x] Login có rate limit.
+- [x] OTP có rate limit.
+- [x] Chatbot có rate limit.
+- [x] Order/payment có rate limit.
+- [x] Trả HTTP `429 Too Many Requests`.
+- [x] Có `Retry-After` nếu phù hợp.
+- [x] Rate limit hoạt động khi chạy nhiều instance.
 
 ---
 
@@ -1270,14 +1240,14 @@ Thứ tự scale hợp lý:
 
 ## P0 — Blocker bắt buộc
 
-- [ ] Fix `DevPhoneOtpProvider`.
-- [ ] Fix CSRF.
-- [ ] Tách CORS dev/prod.
-- [ ] Rate limit chatbot/OTP/order/payment.
-- [ ] Production profile bắt buộc.
-- [ ] Xóa secret fallback.
-- [ ] Không expose PostgreSQL.
-- [ ] Không expose Redis.
+- [x] Fix `DevPhoneOtpProvider` (theo ngoại lệ dev/test đã chấp nhận).
+- [x] Fix CSRF (REST Bearer stateless, tắt CSRF theo quyết định kiến trúc).
+- [x] Tách CORS dev/prod.
+- [x] Rate limit chatbot/OTP/order/payment.
+- [x] Production profile bắt buộc.
+- [x] Xóa secret fallback.
+- [x] Không expose PostgreSQL.
+- [x] Không expose Redis.
 
 ## P1 — Go-live Foundation
 

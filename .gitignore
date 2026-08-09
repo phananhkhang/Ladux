@@ -1,6 +1,7 @@
 .env
 .env.*
 *.env
+!backend/.env.production.example
 !frontend/.env.example
 credentials.json
 *.pem
