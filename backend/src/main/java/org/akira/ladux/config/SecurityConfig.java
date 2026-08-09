@@ -47,15 +47,18 @@ public class SecurityConfig {
             .build();
 
     private final JwtFilter jwtFilter;
+    private final EndpointRateLimitFilter endpointRateLimitFilter;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
 
     public SecurityConfig(
             JwtFilter jwtFilter,
+            EndpointRateLimitFilter endpointRateLimitFilter,
             OAuth2SuccessHandler oAuth2SuccessHandler,
             OAuth2FailureHandler oAuth2FailureHandler
     ) {
         this.jwtFilter = jwtFilter;
+        this.endpointRateLimitFilter = endpointRateLimitFilter;
         this.oAuth2SuccessHandler = oAuth2SuccessHandler;
         this.oAuth2FailureHandler = oAuth2FailureHandler;
     }
@@ -119,6 +122,7 @@ public class SecurityConfig {
                 );
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(endpointRateLimitFilter, JwtFilter.class);
         return http.build();
     }
 

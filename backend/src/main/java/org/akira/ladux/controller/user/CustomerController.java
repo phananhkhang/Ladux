@@ -8,6 +8,7 @@ import org.akira.ladux.dto.user.request.*;
 import org.akira.ladux.dto.user.response.CustomerResponse;
 import org.akira.ladux.dto.user.response.UserResponse;
 import org.akira.ladux.service.CustomerService;
+import org.akira.ladux.service.DistributedRateLimitService;
 import org.akira.ladux.service.EmailVerificationService;
 import org.akira.ladux.service.PhoneVerificationService;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ public class CustomerController {
     private final PhoneVerificationService phoneVerificationService;
     private final CustomerService customerService;
     private final EmailVerificationService emailVerificationService;
+    private final DistributedRateLimitService rateLimitService;
 
     /**
      * Gửi OTP đến số điện thoại người dùng nhập.
@@ -30,6 +32,7 @@ public class CustomerController {
     public ResponseEntity<OtpSendResponse> sendPhoneOtp(
             @Valid @RequestBody PhoneRegisterRequest request
     ) {
+        rateLimitService.checkOtpDestination("phone", request.phone());
         return ResponseEntity.ok(
                 phoneVerificationService.sendPhoneOtp(request)
         );
@@ -66,6 +69,7 @@ public class CustomerController {
             @Valid
             @RequestBody EmailRegisterRequest request
     ) {
+        rateLimitService.checkOtpDestination("email", request.email());
         return ResponseEntity.ok(emailVerificationService.sendEmailUpdateOtp(request)
         );
     }

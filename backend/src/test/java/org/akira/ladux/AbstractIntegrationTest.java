@@ -26,7 +26,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 @ActiveProfiles("test")
 public abstract class AbstractIntegrationTest {
 
-    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17-alpine");
+    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("pgvector/pgvector:pg17");
 
     @SuppressWarnings("resource")
     static final GenericContainer<?> REDIS = new GenericContainer<>("redis:alpine").withExposedPorts(6379);

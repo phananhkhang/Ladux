@@ -16,6 +16,7 @@ class SecurityConfigErrorHandlingTest {
 
     private final SecurityConfig config = new SecurityConfig(
             mock(JwtFilter.class),
+            mock(EndpointRateLimitFilter.class),
             mock(OAuth2SuccessHandler.class),
             mock(OAuth2FailureHandler.class)
     );

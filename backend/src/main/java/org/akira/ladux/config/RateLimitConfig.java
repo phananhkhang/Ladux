@@ -5,6 +5,7 @@ import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 
 import io.github.bucket4j.distributed.ExpirationAfterWriteStrategy;
 import io.github.bucket4j.redis.lettuce.cas.LettuceBasedProxyManager;
@@ -45,5 +46,16 @@ public class RateLimitConfig {
                 .withExpirationStrategy(
                         ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(Duration.ofMinutes(10)))
                 .build();
+    }
+
+    /** Rate-limit filter is inserted into Spring Security after JwtFilter, not auto-registered as a servlet filter. */
+    @Bean
+    public FilterRegistrationBean<EndpointRateLimitFilter> endpointRateLimitFilterRegistration(
+            EndpointRateLimitFilter endpointRateLimitFilter
+    ) {
+        FilterRegistrationBean<EndpointRateLimitFilter> registration =
+                new FilterRegistrationBean<>(endpointRateLimitFilter);
+        registration.setEnabled(false);
+        return registration;
     }
 }

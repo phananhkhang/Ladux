@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Service
 @Primary
-@Profile("dev")
+@Profile({"dev", "test"})
 @RequiredArgsConstructor
 public class DevPhoneOtpProvider implements PhoneOtpProvider {
 

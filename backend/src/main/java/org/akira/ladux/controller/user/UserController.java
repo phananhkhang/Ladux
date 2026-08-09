@@ -10,6 +10,7 @@ import org.akira.ladux.dto.user.request.UserUpdatePassword;
 import org.akira.ladux.dto.system.response.PasswordVerificationResponse;
 import org.akira.ladux.dto.user.response.UserResponse;
 import org.akira.ladux.service.EmailVerificationService;
+import org.akira.ladux.service.DistributedRateLimitService;
 import org.akira.ladux.service.PhoneVerificationService;
 import org.akira.ladux.service.UserService;
 import org.akira.ladux.utils.SecurityUtils;
@@ -25,6 +26,7 @@ public class UserController {
     private final UserService service;
     private final PhoneVerificationService phoneVerificationService;
     private final EmailVerificationService emailVerificationService;
+    private final DistributedRateLimitService rateLimitService;
 
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getCurrentUser() {
@@ -40,6 +42,7 @@ public class UserController {
 
     @PostMapping("/me/password/phone/otp")
     public ResponseEntity<OtpSendResponse> sendPasswordChangePhoneOtp() {
+        rateLimitService.checkOtpUser("password-phone", SecurityUtils.getCurrentUserId());
         return ResponseEntity.ok(phoneVerificationService.sendPasswordChangeOtp());
     }
 
@@ -59,6 +62,7 @@ public class UserController {
     }
     @PostMapping("/me/password/email/otp")
     public ResponseEntity<EmailOtpSendResponse> sendPasswordEmailOtp() {
+        rateLimitService.checkOtpUser("password-email", SecurityUtils.getCurrentUserId());
         return ResponseEntity.ok(
                 emailVerificationService
                         .sendPasswordChangeOtp()
