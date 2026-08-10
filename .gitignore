@@ -40,3 +40,4 @@ repomix-output.xml
 
 .ua
 .agents
+.env.production.example

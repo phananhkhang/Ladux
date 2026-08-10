@@ -1,14 +1,16 @@
 # Production compose (run from repository root):
 # `docker compose --env-file .env.production -f backend/docker-compose.prod.yml up -d --build`.
 # `--env-file` is required because Compose interpolates ${VAR:?required} before service-level env_file is applied.
-# Only the backend is bound to loopback for a reverse proxy; PostgreSQL and Redis stay private.
+# Caddy is the only service published to the host. App, PostgreSQL and Redis
+# communicate through Docker-only networks.
 services:
   app:
     build: .
+    restart: unless-stopped
+    expose:
+      - "8080"
     env_file:
       - ../.env.production
-    ports:
-      - "127.0.0.1:8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: prod
       DB_HOST: postgres
@@ -39,11 +41,12 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - s-network
+      - proxy-network
+      - data-network
     volumes:
       - ../uploads:/app/uploads
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/actuator/health/liveness"]
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:8080/actuator/health/liveness" ]
       interval: 15s
       timeout: 5s
       retries: 5
@@ -51,6 +54,7 @@ services:
 
   postgres:
     image: pgvector/pgvector:pg17
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USERNAME:?DB_USERNAME required}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD required}
@@ -58,24 +62,43 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
       interval: 5s
       timeout: 5s
       retries: 12
       start_period: 90s
     networks:
-      - s-network
+      - data-network
+  caddy:
+    image: caddy:2
+    container_name: ladux-caddy
+    environment:
+      CADDY_EMAIL: ${CADDY_EMAIL:?CADDY_EMAIL required}
+      LADUX_API_DOMAIN: ${LADUX_API_DOMAIN:?LADUX_API_DOMAIN required}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    networks:
+      - proxy-network
+    restart: unless-stopped
 
   redis:
     image: redis:alpine
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 5s
       retries: 10
       start_period: 10s
     networks:
-      - s-network
+      - data-network
     volumes:
       - redis-data:/data
     command: redis-server --appendonly yes
@@ -83,7 +106,12 @@ services:
 volumes:
   postgres-data:
   redis-data:
+  caddy_data:
+  caddy_config:
 
 networks:
-  s-network:
+  proxy-network:
     driver: bridge
+  data-network:
+    driver: bridge
+    internal: true
