@@ -1,526 +1,260 @@
-# Luồng Nghiệp Vụ End-To-End
+# Luồng Nghiệp Vụ Chi Tiết (End-To-End Business Flows)
 
-Tài liệu này mô tả các luồng hoạt động chính của toàn bộ dự án, từ frontend tới backend và database.
+Tài liệu này mô tả chi tiết từng luồng nghiệp vụ quan trọng trong hệ thống Ladux từ phía Client, qua các bộ lọc bảo mật, tầng Service xử lý đến Database và dịch vụ bên ngoài.
 
-## 1. Luồng Khởi Động Ứng Dụng
+---
 
-### Backend
+## 1. Luồng Khởi Động & Khởi Tạo Ứng Dụng
 
+### 1.1 Khởi Động Backend
 ```text
 LaduxApplication.main
-  -> Spring Boot start
-  -> Load application.properties
-  -> Chọn profile dev/prod
-  -> Kết nối PostgreSQL
-  -> Flyway chạy migration
-  -> Hibernate validate schema
-  -> Khởi tạo SecurityConfig/JwtFilter/services/repositories
-  -> Bật scheduler
-  -> App listen port 8080
+  -> Khởi tạo Spring Boot context (Java 21 / Spring Boot 4.0.6)
+  -> Nạp application.properties & profile (dev / prod)
+  -> Kết nối PostgreSQL 17 & Redis 7.x
+  -> Flyway chạy và kiểm tra 42 migration scripts (V1 -> V43)
+  -> Hibernate kích hoạt với ddl-auto=validate (không tự sửa cấu trúc DB)
+  -> Cấu hình SecurityFilterChains (OAuth2 chain & REST Bearer JWT chain)
+  -> Khởi tạo Bucket4j ProxyManager trên Redis & ShedLock LockProvider trên PostgreSQL
+  -> Kích hoạt Spring Scheduler (@EnableScheduling)
+  -> Backend lắng nghe tại cổng :8080
 ```
 
-### Frontend
-
+### 1.2 Khởi Động Frontend
 ```text
 main.tsx
-  -> Render App
-  -> BrowserRouter active
-  -> useAuthStore.hydrate()
-  -> gọi /api/v1/users/me nếu có cookie
-  -> load cart/wishlist nếu đăng nhập
-  -> render route hiện tại
+  -> Khởi tạo ứng dụng React 18 & React Router DOM v7
+  -> Khởi chạy Zustand Stores
+  -> apiClient interceptor sẵn sàng bắt Authorization Bearer header
+  -> Tự động gọi refresh phiên nếu có Refresh Token cookie hợp lệ
 ```
 
-## 2. Luồng Public Catalog
+---
 
-### Danh sách sản phẩm
+## 2. Luồng Khám Phá Catalog & Tìm Kiếm Mờ (Fuzzy Search)
 
 ```mermaid
 sequenceDiagram
-    participant UI as Shop/Home
-    participant API as frontend api/client.ts
-    participant C as ProductController
-    participant S as ProductServiceImpl
-    participant R as ProductRepository
-    participant DB as PostgreSQL
+    participant UI as Client (Shop / Home)
+    participant API as frontend services/productService.ts
+    participant Ctrl as ProductController
+    participant Svc as ProductServiceImpl
+    participant Redis as Redis Cache
+    participant Repo as ProductRepository
+    participant DB as PostgreSQL (pg_trgm)
 
-    UI->>API: Products.list(params)
-    API->>C: GET /api/v1/products
-    C->>S: searchProducts(search, brandId, categoryId, pageable)
-    S->>R: search(...)
-    R->>DB: SELECT products with filters
-    DB-->>R: Page<Product>
-    R-->>S: Page<Product>
-    S-->>C: Page<ProductResponse>
-    C-->>API: JSON
-    API-->>UI: render grid
+    UI->>API: getProducts(search, brandId, categoryId, ram, rom, priceRange, pageable)
+    API->>Ctrl: GET /api/v1/products?...
+    Ctrl->>Svc: searchProducts(...)
+    Svc->>Redis: Kiểm tra Cache (@Cacheable)
+    alt Có dữ liệu Cache
+        Redis-->>Svc: Trả về cached Page<ProductResponse>
+    else Cache Miss
+        Svc->>Repo: search(search, brandId, ...)
+        Repo->>DB: SELECT ... WHERE LOWER(name) % :search OR LOWER(name) LIKE ... (GIN index pg_trgm)
+        DB-->>Repo: Page<Product>
+        Repo-->>Svc: Page<Product>
+        Svc->>Redis: Lưu kết quả vào Cache
+    end
+    Svc-->>Ctrl: Page<ProductResponse>
+    Ctrl-->>API: 200 OK (JSON)
+    API-->>UI: Hiển thị danh sách sản phẩm & biến thể
 ```
 
-### Chi tiết sản phẩm
+---
 
-```text
-ProductDetail page
-  -> Products.bySlug(slug)
-  -> GET /api/v1/products/slug/{slug}
-  -> ProductController.getProductBySlug
-  -> ProductServiceImpl.getProductBySlug
-  -> ProductRepository.findBySlug với EntityGraph brand/category/images
-  -> ProductResponse.fromEntity
-  -> Frontend hiển thị ảnh, giá, specs, stock, review
-```
+## 3. Luồng Xác Thực, Đăng Nhập & Dual-Token Lifecycle
 
-## 3. Luồng Đăng Ký
+### 3.1 Đăng Ký Tài Khoản
+1. Client gửi thông tin: `POST /api/v1/auth/register` (Username, Email, Password, Phone).
+2. `EndpointRateLimitFilter` kiểm tra giới hạn đăng ký theo IP (5 requests/phút).
+3. Backend kiểm tra tính duy nhất của `username` và `email`.
+4. Mật khẩu được mã hóa bằng `BCryptPasswordEncoder`.
+5. Tạo bản ghi `User`, gắn vai trò mặc định `ROLE_CUSTOMER`, khởi tạo `token_version = 0`.
+6. Khởi tạo một giỏ hàng rỗng (`Cart`) gắn liền với `User`.
 
-```text
-Register page
-  -> Auth.register
-  -> POST /api/v1/auth/register
-  -> AuthController.register
-  -> UserServiceImpl.savedUser
-  -> RoleRepository.findByName(CUSTOMER)
-  -> BCryptPasswordEncoder.encode(password)
-  -> UserRepository.save(user)
-  -> UserResponse
-  -> Frontend tự login lại bằng email/username
-```
-
-Điểm quan trọng:
-
-- User mới được gán role `CUSTOMER`.
-- Password được hash bằng BCrypt.
-- `email` và `username` có unique constraint trong DB.
-
-## 4. Luồng Đăng Nhập
-
+### 3.2 Đăng Nhập & Cấp Phát Token
 ```mermaid
 sequenceDiagram
-    participant UI as Login Page
-    participant API as Auth API
-    participant AC as AuthController
-    participant AM as AuthenticationManager
-    participant UD as MyUserDetailsService
-    participant UR as UserRepository
+    participant Client as Frontend
+    participant Rate as EndpointRateLimitFilter
+    participant Auth as AuthController
+    participant Mgr as AuthenticationManager
     participant JWT as JwtService
-    participant CK as AuthCookieService
+    participant Cookie as RefreshTokenCookieService
 
-    UI->>API: Auth.login(username/password)
-    API->>AC: POST /api/v1/auth/login
-    AC->>AM: authenticate
-    AM->>UD: loadUserByUsername
-    UD->>UR: findByUsernameOrEmail
-    UR-->>UD: User + roles
-    UD-->>AM: UserPrincipal
-    AM-->>AC: OK
-    AC->>JWT: generateToken
-    JWT-->>AC: JWT
-    AC->>CK: createAuthCookie
-    CK-->>AC: AUTH_TOKEN cookie
-    AC-->>API: 200 + Set-Cookie
+    Client->>Rate: POST /api/v1/auth/login { username, password }
+    Rate->>Rate: Check Rate Limit IP (5 req/min)
+    Rate->>Auth: Pass
+    Auth->>Mgr: authenticate(username, password)
+    Mgr-->>Auth: Authentication OK
+    Auth->>JWT: generateAccessToken(userPrincipal) -> Access Token (15m - 24h)
+    Auth->>Cookie: generateRefreshToken(user) -> Opaque Token (7 ngày)
+    Cookie-->>Auth: Set-Cookie: REFRESH_TOKEN (HttpOnly, Secure, SameSite)
+    Auth-->>Client: 200 OK { accessToken: "ey...", user: {...} }
+    Client->>Client: Lưu accessToken vào in-memory store (authTokens.ts)
 ```
 
-Sau login, frontend gọi:
+### 3.3 Tự Động Xoay Vòng Refresh Token (Token Rotation)
+1. Khi Access Token hết hạn, request gửi đến backend nhận lỗi `401 Unauthorized`.
+2. `apiClient.ts` interceptor tự động bắt lỗi `401` và gọi `POST /api/v1/auth/refresh`.
+3. Browser tự động đính kèm cookie `REFRESH_TOKEN`.
+4. Backend kiểm tra tính hợp lệ của Refresh Token và so khớp `token_version` với User:
+   - Nếu hợp lệ: Hủy Refresh Token cũ, cấp Refresh Token mới (Set-Cookie) và trả về Access Token mới trong response body.
+   - Nếu không hợp lệ hoặc `token_version` đã bị tăng: Trả về `401`, frontend chuyển hướng về trang `/login` và xóa state.
 
-```text
-Auth.me()
-  -> GET /api/v1/users/me
-  -> lấy thông tin user hiện tại
-  -> refresh cart
-  -> refresh wishlist
-```
+---
 
-## 5. Luồng Request Cần Đăng Nhập
+## 4. Luồng Quản Lý Giỏ Hàng (Cart Operations)
 
-```text
-Frontend gọi API protected
-  -> Browser tự gửi AUTH_TOKEN cookie
-  -> JwtFilter kiểm tra cookie
-  -> JwtService extract username
-  -> MyUserDetailsService load user/roles
-  -> JwtService kiểm tra token còn hạn
-  -> SecurityContext set Authentication
-  -> Controller nhận @AuthenticationPrincipal UserPrincipal
-```
+Mọi thao tác thay đổi giỏ hàng đều sử dụng khóa bi quan (`findByUserIdForUpdate`) để tránh lỗi race condition khi người dùng click liên tục:
 
-Ví dụ:
+- **Thêm sản phẩm vào giỏ (`POST /api/v1/cart/items`)**:
+  1. Khóa giỏ hàng của user hiện tại.
+  2. Kiểm tra tồn kho của `ProductVariant`.
+  3. Nếu biến thể đã tồn tại trong giỏ: Tăng `quantity`.
+  4. Nếu chưa: Thêm dòng `CartItem` mới.
+  5. Lưu giỏ hàng và xóa cache liên quan.
+- **Cập nhật số lượng (`PUT /api/v1/cart/items/{variantId}`)**: Khóa giỏ, cập nhật số lượng mới (yêu cầu `quantity > 0`).
+- **Xóa sản phẩm (`DELETE /api/v1/cart/items/{variantId}`)**: Khóa giỏ, loại bỏ `CartItem`.
 
-```text
-GET /api/v1/cart
-  -> CartController.getCartByUserId
-  -> principal.getId()
-```
+---
 
-## 6. Luồng CSRF
+## 5. Luồng Đặt Hàng Khóa Tồn Kho Nguyên Tử (Atomic Checkout Flow)
 
-Frontend dùng cookie auth nên backend bật CSRF.
-
-Với request unsafe method:
-
-- POST
-- PUT
-- PATCH
-- DELETE
-
-Frontend interceptor làm:
-
-```text
-Nếu chưa có XSRF-TOKEN cookie
-  -> GET /api/v1/auth/csrf
-  -> backend set/gửi token
-Đọc XSRF-TOKEN từ document.cookie
-Gửi header X-XSRF-TOKEN
-```
-
-## 7. Luồng Cart
-
-### Xem giỏ hàng
-
-```text
-CartDrawer / Checkout
-  -> Cart.get()
-  -> GET /api/v1/cart
-  -> CartController.getCartByUserId
-  -> CartServiceImpl.getCartByUserId
-  -> CartRepository.findByUserId
-  -> EntityGraph load items/product/brand/category
-  -> CartResponse tính totalPrice
-```
-
-### Thêm item vào giỏ
-
-```text
-ProductCard/ProductDetail
-  -> useCartStore.add(productId, quantity)
-  -> Cart.add
-  -> POST /api/v1/cart/items
-  -> CartController.addItemToCart
-  -> CartServiceImpl.addItemToCart
-  -> UserRepository.findByIdForUpdate
-  -> CartRepository.findByUserIdForUpdate
-  -> ProductRepository.findById
-  -> Nếu item đã có: tăng quantity
-  -> Nếu chưa có: tạo CartItem
-  -> repo.save(cart)
-  -> frontend refresh cart
-```
-
-### Cập nhật/xóa item
-
-```text
-PUT /api/v1/cart/items/{productId}
-  -> lock user/cart
-  -> tìm item trong cart
-  -> set quantity
-
-DELETE /api/v1/cart/items/{productId}
-  -> lock user/cart
-  -> remove item
-```
-
-## 8. Luồng Wishlist
-
-```text
-Wishlist toggle
-  -> Nếu chưa yêu thích:
-     POST /api/v1/wishlists
-     -> kiểm tra user/product tồn tại
-     -> existsByUserIdAndProductId
-     -> save Wishlist
-
-  -> Nếu đã yêu thích:
-     DELETE /api/v1/wishlists/{productId}
-     -> findByUserIdAndProductId
-     -> delete
-```
-
-Wishlist có unique constraint `(user_id, product_id)` để tránh trùng dữ liệu.
-
-## 9. Luồng Checkout Và Tạo Đơn
-
-Đây là luồng quan trọng nhất của backend.
+Đây là luồng nghiệp vụ quan trọng nhất của toàn bộ hệ thống backend:
 
 ```mermaid
 sequenceDiagram
     participant UI as Checkout Page
+    participant Rate as EndpointRateLimitFilter
     participant OC as OrderController
     participant OS as OrderServiceImpl
-    participant INV as InventoryService
-    participant CO as CouponRedemptionService
-    participant PAY as PaymentAttemptService
+    participant Cart as CartRepository
+    participant Inv as InventoryServiceImpl
+    participant Cpn as CouponRedemptionServiceImpl
+    participant Pay as PaymentAttemptServiceImpl
+    participant Ledger as StockMovementServiceImpl
     participant DB as PostgreSQL
 
-    UI->>OC: POST /api/v1/orders
+    UI->>Rate: POST /api/v1/orders (OrderRequest)
+    Rate->>Rate: Check Rate Limit (User / IP: 5 req/min)
+    Rate->>OC: Pass
     OC->>OS: createOrder(userId, OrderRequest)
-    OS->>DB: load user
-    OS->>INV: reserveStockAndPriceLines(items)
-    INV->>DB: lock products and decrement stock
-    OS->>CO: redeem(couponCode, subTotal)
-    CO->>DB: lock coupon and increment usedCount
-    OS->>PAY: initializePayment(order, provider, amount)
-    PAY->>OS: payment pending attached
-    OS->>DB: save order + items + history + payment
+    
+    rect rgb(240, 248, 255)
+    Note over OS,DB: SINGLE TRANSACTION BOUNDARY (@Transactional)
+    OS->>Cart: findByUserIdForUpdate(userId) -> Khóa giỏ hàng
+    OS->>Inv: reserveStockAndPriceLines(items)
+    Inv->>DB: UPDATE product_variants SET stock = stock - qty WHERE id = id AND stock >= qty
+    Note right of DB: Trừ kho nguyên tử. Nếu stock < qty -> Exception Rollback
+    Inv-->>OS: List<LineDraft> (chốt priceAtPurchase)
+    OS->>Cpn: redeem(couponCode, subTotal) -> Khóa coupon & tăng usedCount
+    OS->>Pay: initializePayment(order, provider, finalAmount) -> Tạo Payment PENDING
+    OS->>DB: Lưu Order (PENDING), OrderItems, OrderHistory
+    OS->>Ledger: recordLedgerEntry(variant, -qty, SALE_OUT, ORDER, orderId)
+    Note right of Ledger: Ghi sổ cái biến động kho bất biến
+    OS->>Cart: cart.getItems().clear() -> Dọn sạch giỏ
+    end
+    
     OS-->>OC: OrderResponse
+    OC-->>UI: 200 OK { id, status: "PENDING", finalAmount, ... }
 ```
 
-Chi tiết:
+---
 
-```text
-OrderServiceImpl.createOrder
-  -> kiểm tra user tồn tại
-  -> kiểm tra user active
-  -> reserve stock từng product
-  -> tính subTotal
-  -> redeem coupon nếu có
-  -> tính finalAmount
-  -> tạo Order status PENDING
-  -> tạo OrderItem cho từng dòng
-  -> tạo OrderHistory "Order created"
-  -> tạo Payment PENDING
-  -> set paymentExpiresAt nếu provider không phải COD
-  -> save order
+## 6. Luồng Xử Lý Thanh Toán & Webhook (Payment & IPN Flow)
+
+### 6.1 Khởi Tạo Giao Dịch VNPay Sandbox
+1. Sau khi tạo đơn, client gọi endpoint lấy URL thanh toán: `POST /api/v1/payments/create-payment-url`.
+2. Backend sinh chuỗi `merchantTxnRef` duy nhất, chuẩn hóa tham số và tính toán chữ ký số **HMAC-SHA512** bằng bí mật `vnp_HashSecret`.
+3. Client được chuyển hướng sang cổng thanh toán VNPay Sandbox.
+
+### 6.2 Xử Lý Webhook (VNPay IPN)
+```mermaid
+sequenceDiagram
+    participant VNPay as VNPay Gateway
+    participant WebhookCtrl as PaymentWebhookController
+    participant WebhookSvc as PaymentWebhookServiceImpl
+    participant LifeSvc as OrderLifecycleService
+    participant DB as PostgreSQL
+
+    VNPay->>WebhookCtrl: GET /api/v1/payments/vnpay-webhook?vnp_Amount=...&vnp_SecureHash=...
+    WebhookCtrl->>WebhookSvc: processVNPayWebhook(params)
+    
+    WebhookSvc->>WebhookSvc: 1. Kiểm tra chữ ký HMAC-SHA512 (vnp_SecureHash)
+    Note over WebhookSvc: Chữ ký không hợp lệ -> Trả về 400 Invalid Signature
+
+    WebhookSvc->>DB: 2. Khóa bản ghi Payment theo merchantTxnRef (FOR UPDATE)
+    
+    alt Payment đã SUCCESS trước đó (Idempotent Check)
+        WebhookSvc-->>WebhookCtrl: Trả về HTTP 200 (Đã xử lý trước đó)
+    else Payment đang PENDING
+        WebhookSvc->>WebhookSvc: 3. So khớp số tiền (vnp_Amount == payment.amount * 100)
+        alt Sai lệch số tiền
+            WebhookSvc-->>WebhookCtrl: Báo lỗi Amount Mismatch
+        else Số tiền chính xác & vnp_ResponseCode == "00"
+            WebhookSvc->>DB: Cập nhật Payment STATUS = SUCCESS, lưu transactionNo
+            WebhookSvc->>LifeSvc: confirmAfterSuccessfulPayment(order)
+            LifeSvc->>DB: Chuyển Order STATUS = CONFIRMED, ghi OrderHistory
+            WebhookSvc-->>WebhookCtrl: HTTP 200 {"RspCode":"00","Message":"Confirm Success"}
+        else Thanh toán thất bại (vnp_ResponseCode != "00")
+            WebhookSvc->>DB: Cập nhật Payment STATUS = FAILED
+            WebhookSvc-->>WebhookCtrl: HTTP 200 {"RspCode":"00","Message":"Recorded Failure"}
+        end
+    end
+    WebhookCtrl-->>VNPay: Phản hồi kết quả IPN
 ```
 
-Điểm cần nhớ:
+---
 
-- Giá được chốt tại thời điểm mua bằng `priceAtPurchase`.
-- Stock bị trừ ngay khi tạo order pending.
-- Nếu order bị hủy hoặc payment fail, stock được trả lại.
-- Coupon `usedCount` tăng khi tạo order và giảm lại nếu order bị hủy.
+## 7. Cỗ Máy Trạng Thái Đơn Hàng (Order State Machine)
 
-## 10. Luồng Payment
+Vòng đời đơn hàng được kiểm soát nghiêm ngặt qua `OrderStateMachineImpl`:
 
-### Tạo payment attempt
-
-```text
-POST /api/v1/payments
-  -> PaymentController.createPayment
-  -> PaymentServiceImpl.createPayment
-  -> lock order
-  -> kiểm tra order thuộc user
-  -> kiểm tra order còn nhận payment
-  -> chỉ tạo attempt mới nếu attempt trước FAILED
-  -> tạo Payment PENDING
+```mermaid
+stateDiagram-v2
+    [*] --> PENDING: Khách tạo đơn hàng
+    PENDING --> CONFIRMED: Thanh toán thành công (VNPay / Admin duyệt)
+    PENDING --> CANCELLED: Khách hủy / Timeout quá hạn thanh toán
+    CONFIRMED --> SHIPPED: Admin giao hàng (Tự động sinh trackingNumber)
+    CONFIRMED --> CANCELLED: Admin hủy đơn (Trước khi xuất kho)
+    SHIPPED --> DELIVERED: Giao hàng thành công
+    DELIVERED --> RETURN_REQUESTED: Khách yêu cầu đổi trả
+    RETURN_REQUESTED --> RETURNED: Admin duyệt trả hàng (Nhập lại kho)
+    RETURN_REQUESTED --> DELIVERED: Admin từ chối yêu cầu trả hàng
+    RETURNED --> REFUNDED: Hoàn tiền cho khách hàng
+    CANCELLED --> [*]
+    REFUNDED --> [*]
 ```
 
-### Retry payment từ order
+### 7.1 Luồng Tự Động Hủy Đơn Quá Hạn (Automated Expiration)
+- Cron job chạy định kỳ mỗi 60 giây (`@Scheduled(fixedDelay = 60000)`).
+- Được khóa phân tán bởi **ShedLock** (`@SchedulerLock(name = "expirePendingOrdersLock")`).
+- Tìm tất cả các đơn `PENDING` có `paymentExpiresAt <= NOW()`.
+- Với mỗi đơn: Gọi `OrderLifecycleService.cancelOrder`:
+  1. Chuyển trạng thái sang `CANCELLED`.
+  2. Hoàn lại số lượng tồn kho vào `ProductVariant`.
+  3. Giảm `used_count` của Coupon liên quan.
+  4. Ghi sổ cái biến động kho `StockMovement` với loại `RETURN_IN` (nếu cần).
+  5. Ghi log `OrderHistory` ("Payment window expired").
 
-```text
-POST /api/v1/orders/{orderId}/payments/retry
-  -> OrderController.retryPayment
-  -> PaymentAttemptServiceImpl.retryPayment
-  -> lock order
-  -> kiểm tra user sở hữu order
-  -> lấy last payment
-  -> last payment phải FAILED
-  -> tạo payment PENDING mới
-```
+---
 
-### Admin update payment
+## 8. Luồng Quản Lý Chuỗi Cung Ứng & Sổ Cái Kho (Supply Chain & Inventory)
 
-```text
-PUT /api/v1/payments/{id}
-  -> PaymentController.updatePayment
-  -> PaymentServiceImpl.updatePayment
-  -> lock payment
-  -> lock order kèm items
-  -> nếu SUCCESS: OrderLifecycleService.confirmAfterSuccessfulPayment
-  -> nếu FAILED: OrderLifecycleService.cancelOrder
-```
+### 8.1 Đơn Nhập Hàng (Purchase Order - PO)
+1. Admin tạo đơn nhập hàng: `POST /api/v1/admin/purchase-orders` (Chọn Nhà cung cấp, danh sách biến thể, số lượng dự kiến, giá nhập).
+2. Đơn PO được tạo với trạng thái `DRAFT` hoặc `ORDERED`.
+3. Khi hàng về kho: Admin thực hiện nhận hàng (`RECEIVING` / `COMPLETED`).
+4. Hệ thống tự động:
+   - Tăng `stock_quantity` của `ProductVariant`.
+   - Ghi bản ghi vào `StockMovement` với loại `PURCHASE_IN`, tham chiếu tới mã `PO`.
 
-## 11. Luồng Payment Webhook
-
-```text
-VNPay callback/webhook
-  -> GET /api/v1/payments/vnpay-webhook
-  -> PaymentWebhookController
-  -> PaymentServiceImpl.verifyAndProcessWebhook
-  -> remove vnp_SecureHash khỏi params
-  -> sort params
-  -> HMAC SHA-512 bằng secret key
-  -> so sánh secure hash
-  -> nếu valid:
-       vnp_ResponseCode == "00" -> order CONFIRMED
-       khác "00" -> order CANCELLED
-```
-
-Ghi chú production:
-
-- Webhook cần được public trong security config.
-- Nên update cả `Payment.status`, không chỉ `Order.status`.
-- Nên kiểm tra amount, transaction number, provider và idempotency.
-- Khi cancel nên đi qua `OrderLifecycleService.cancelOrder` để trả tồn kho/coupon.
-
-## 12. Luồng Hủy Đơn Và Hoàn Tồn Kho
-
-`OrderLifecycleService.cancelOrder` xử lý một điểm duy nhất cho việc hủy đơn:
-
-```text
-cancelOrder(order, description)
-  -> nếu order đã CANCELLED: return
-  -> nếu DELIVERED/SHIPPED: không cho hủy
-  -> releaseReservedInventory
-       -> lock từng product
-       -> cộng lại stock
-  -> rollbackCouponUsage
-       -> lock coupon
-       -> usedCount - 1 nếu > 0
-  -> set status CANCELLED
-  -> clear paymentExpiresAt
-  -> thêm OrderHistory
-```
-
-## 13. Luồng Scheduled Job Hủy Đơn Quá Hạn
-
-```text
-Mỗi 60 giây
-  -> OrderStateMachineImpl.expirePendingOrders
-  -> OrderRepository.findExpiredOrdersForUpdate(PENDING, now)
-  -> Với từng order:
-       OrderLifecycleService.cancelOrder(order, "Payment window expired")
-```
-
-Order được xem là quá hạn nếu:
-
-```text
-status = PENDING
-paymentExpiresAt != null
-paymentExpiresAt <= now
-```
-
-COD có `paymentExpiresAt = null`, nên không bị job này hủy.
-
-## 14. Luồng Admin Order
-
-```text
-Admin Orders page
-  -> GET /api/v1/orders
-  -> @PreAuthorize ADMIN
-  -> OrderController.getAllOrders
-  -> OrderServiceImpl.getAllOrders
-  -> OrderRepository.findAll(pageable)
-  -> OrderResponse.summaryFromEntity
-```
-
-Update trạng thái:
-
-```text
-PATCH /api/v1/orders/{orderId}/status
-  -> ADMIN only
-  -> OrderStateMachineImpl.updateOrderStatus
-  -> lock order
-  -> validate transition
-  -> nếu CANCELLED: cancelOrder
-  -> nếu SHIPPED: bắt buộc trackingNumber
-  -> thêm history
-```
-
-State transition hợp lệ:
-
-```text
-PENDING -> CONFIRMED
-CONFIRMED -> SHIPPED
-SHIPPED -> DELIVERED
-PENDING/CONFIRMED -> CANCELLED
-```
-
-Không cho chuyển trạng thái nếu order đã:
-
-```text
-CANCELLED
-DELIVERED
-```
-
-## 15. Luồng Review
-
-```text
-POST /api/v1/reviews
-  -> ReviewController.createReview
-  -> ReviewServiceImpl.createReview
-  -> kiểm tra user tồn tại
-  -> kiểm tra product tồn tại
-  -> kiểm tra user chưa review product này
-  -> kiểm tra có order DELIVERED chứa product
-  -> save Review
-```
-
-Rule:
-
-- Chỉ review sau khi đơn đã giao thành công.
-- Một user chỉ review một lần cho một sản phẩm.
-
-## 16. Luồng User Address
-
-```text
-GET /api/v1/user-addresses/user
-  -> lấy địa chỉ của user hiện tại
-
-POST /api/v1/user-addresses
-  -> tạo địa chỉ mới
-  -> nếu isDefault = true:
-       lock user/address list
-       clear default cũ
-       save địa chỉ mới default
-
-PUT /api/v1/user-addresses/{addressId}
-  -> chỉ sửa địa chỉ thuộc user hiện tại
-
-DELETE /api/v1/user-addresses/{addressId}
-  -> chỉ xóa địa chỉ thuộc user hiện tại
-```
-
-## 17. Luồng Admin Catalog
-
-```text
-Admin Products
-  -> GET /api/v1/products
-  -> POST /api/v1/products
-  -> PUT /api/v1/products/{id}
-  -> DELETE /api/v1/products/{id}
-```
-
-Tạo/sửa product:
-
-```text
-ProductServiceImpl
-  -> validate brand/category
-  -> validate discountPrice <= basePrice
-  -> generate slug từ name
-  -> replace product images nếu request có imageUrls
-  -> save product
-```
-
-Brand/category tương tự:
-
-```text
-Controller
-  -> Service
-  -> validate dữ liệu
-  -> generate slug
-  -> Repository
-```
-
-## 18. Luồng Logout
-
-```text
-Frontend Auth.logout
-  -> POST /api/v1/auth/logout
-  -> AuthController.logout
-  -> Set-Cookie AUTH_TOKEN maxAge=0
-  -> frontend xóa user state
-  -> reset cart/wishlist state
-```
-
-## 19. Tóm Tắt Luồng Toàn Bộ
-
-```text
-User vào web
-  -> đọc catalog public
-  -> đăng ký/đăng nhập
-  -> cookie AUTH_TOKEN được lưu
-  -> thêm sản phẩm vào cart/wishlist
-  -> checkout
-  -> backend trừ tồn kho, redeem coupon, tạo order/payment
-  -> user/admin/payment gateway cập nhật payment/order
-  -> order confirmed/shipped/delivered/cancelled
-  -> nếu cancelled: trả stock/coupon
-  -> nếu delivered: user có thể review
-```
+### 8.2 Sổ Cái Biến Động Kho (Stock Ledger Audit)
+Mọi thay đổi tồn kho đều tạo một bản ghi `StockMovement` bất biến:
+- `PURCHASE_IN`: Nhập hàng từ nhà cung cấp theo PO.
+- `SALE_OUT`: Xuất hàng bán theo đơn đặt hàng của khách.
+- `RETURN_IN`: Nhập lại kho do đơn hàng bị hủy hoặc khách trả hàng thành công.
+- `DAMAGE_OUT`: Xuất kho xử lý hàng hỏng/lỗi.
+- `ADJUSTMENT_IN` / `ADJUSTMENT_OUT`: Điều chỉnh kho sau kiểm kê thực tế.
