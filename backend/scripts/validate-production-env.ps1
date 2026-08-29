@@ -50,6 +50,9 @@ $requiredProductionKeys = @(
     'GOOGLE_CLIENT_SECRET',
     'MAIL_USERNAME',
     'MAIL_PASSWORD',
+    'CAPTCHA_SECRET',
+    'CAPTCHA_EXPECTED_HOSTNAME',
+    'MFA_ENCRYPTION_KEY',
     'VNPAY_TMN_CODE',
     'VNPAY_HASH_SECRET',
     'VNPAY_PAY_URL',
@@ -68,6 +71,8 @@ $secretKeys = @(
     'JWT_SECRET',
     'GOOGLE_CLIENT_SECRET',
     'MAIL_PASSWORD',
+    'CAPTCHA_SECRET',
+    'MFA_ENCRYPTION_KEY',
     'VNPAY_HASH_SECRET',
     'DEEPSEEK_API_KEY',
     'GOOGLE_GENAI_API_KEY'
@@ -86,6 +91,17 @@ foreach ($key in $requiredProductionKeys) {
         $errors.Add("Missing or empty production variable: $key")
     } elseif (Test-Placeholder ([string]$production[$key])) {
         $errors.Add("Placeholder production variable: $key")
+    }
+}
+
+if ($production.ContainsKey('MFA_ENCRYPTION_KEY') -and -not [string]::IsNullOrWhiteSpace([string]$production['MFA_ENCRYPTION_KEY'])) {
+    try {
+        $mfaKeyBytes = [Convert]::FromBase64String([string]$production['MFA_ENCRYPTION_KEY'])
+        if ($mfaKeyBytes.Length -notin 16, 24, 32) {
+            $errors.Add('MFA_ENCRYPTION_KEY must decode to 16, 24, or 32 bytes')
+        }
+    } catch {
+        $errors.Add('MFA_ENCRYPTION_KEY must be valid Base64')
     }
 }
 

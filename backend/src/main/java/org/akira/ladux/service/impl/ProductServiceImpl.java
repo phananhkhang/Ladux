@@ -60,7 +60,6 @@ public class ProductServiceImpl implements ProductService {
         return ProductResponse.fromEntity(p);
     }
 
-
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "products", key = "'v4:brand:' + #brandId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")

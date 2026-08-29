@@ -2,22 +2,27 @@ package org.akira.ladux.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.akira.ladux.controller.admin.AdminAuthController;
 import org.akira.ladux.dto.user.request.LoginRequest;
-import org.akira.ladux.model.RefreshToken;
+import org.akira.ladux.dto.user.request.MfaVerifyRequest;
+import org.akira.ladux.dto.user.response.UserResponse;
 import org.akira.ladux.model.Role;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.enums.RoleName;
-import org.akira.ladux.repository.UserRepository;
+import org.akira.ladux.service.AuthenticationTokenService;
 import org.akira.ladux.service.JwtService;
+import org.akira.ladux.service.LocalLoginService;
+import org.akira.ladux.service.LoginSuccessService;
+import org.akira.ladux.service.MfaVerificationService;
 import org.akira.ladux.service.RefreshTokenCookieService;
 import org.akira.ladux.service.RefreshTokenService;
 import org.akira.ladux.service.UserService;
@@ -25,71 +30,101 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 class AuthControllerStatelessTest {
 
     @Test
-    void storefrontLoginReturnsAccessTokenAndSetsOnlyRefreshCookie() {
+    void storefrontLoginReturnsAccessTokenAndRefreshCookieAfterPasswordFlowCompletes() {
         User user = user(RoleName.CUSTOMER);
-        UserRepository userRepository = mock(UserRepository.class);
-        JwtService jwtService = mock(JwtService.class);
-        RefreshTokenService refreshTokenService = mock(RefreshTokenService.class);
+        LocalLoginService loginService = mock(LocalLoginService.class);
+        LoginSuccessService successService = mock(LoginSuccessService.class);
         RefreshTokenCookieService cookieService = mock(RefreshTokenCookieService.class);
-        when(userRepository.findByUsername("customer"))
-                .thenReturn(Optional.empty(), Optional.of(user));
-        when(jwtService.generateAccessToken(user)).thenReturn("storefront-access");
-        when(refreshTokenService.create(user)).thenReturn(refreshToken(user, "storefront-refresh"));
+        when(loginService.verifyPassword(new LoginRequest("customer", "password"), false, null))
+                .thenReturn(new LocalLoginService.PasswordLoginResult(user, null));
+        // Servlet requests are equality-sensitive, so use a broad fixture below instead of matching this invocation.
+        when(loginService.verifyPassword(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.eq(false),
+                org.mockito.ArgumentMatchers.any())).thenReturn(new LocalLoginService.PasswordLoginResult(user, null));
+        when(successService.complete(org.mockito.ArgumentMatchers.eq(user), org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.eq(false)))
+                .thenReturn(completed("storefront-access", "storefront-refresh", "DEVICE_TOKEN=device"));
         when(cookieService.createRefreshCookie("storefront-refresh"))
                 .thenReturn(refreshCookie("REFRESH_TOKEN", "storefront-refresh", "/api/v1/auth"));
 
         AuthController controller = new AuthController(
-                mock(UserService.class),
-                mock(AuthenticationManager.class),
-                jwtService,
-                cookieService,
-                refreshTokenService,
-                userRepository
+                mock(UserService.class), loginService, mock(MfaVerificationService.class), successService, mock(JwtService.class), cookieService,
+                mock(RefreshTokenService.class)
         );
 
-        ResponseEntity<Map<String, String>> response = controller.login(new LoginRequest("customer", "password"));
+        ResponseEntity<Map<String, Object>> response = controller.login(
+                new LoginRequest("customer", "password"), new MockHttpServletRequest()
+        );
 
         assertEquals("storefront-access", response.getBody().get("accessToken"));
         assertEquals("Bearer", response.getBody().get("tokenType"));
-        assertEquals(1, response.getHeaders().get(HttpHeaders.SET_COOKIE).size());
+        assertEquals(2, response.getHeaders().get(HttpHeaders.SET_COOKIE).size());
         assertTrue(response.getHeaders().getFirst(HttpHeaders.SET_COOKIE).startsWith("REFRESH_TOKEN="));
-        assertFalse(response.getHeaders().getFirst(HttpHeaders.SET_COOKIE).contains("AUTH_TOKEN="));
     }
 
     @Test
-    void adminLoginReturnsAccessTokenAndSetsOnlyAdminRefreshCookie() {
+    void adminPasswordSuccessReturnsOnlyMfaChallenge() {
         User user = user(RoleName.ADMIN);
-        UserRepository userRepository = mock(UserRepository.class);
-        JwtService jwtService = mock(JwtService.class);
-        RefreshTokenService refreshTokenService = mock(RefreshTokenService.class);
+        LocalLoginService loginService = mock(LocalLoginService.class);
+        LoginSuccessService successService = mock(LoginSuccessService.class);
+        when(loginService.verifyPassword(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.eq(true),
+                org.mockito.ArgumentMatchers.any())).thenReturn(new LocalLoginService.PasswordLoginResult(user, "challenge-1"));
+
+        AdminAuthController controller = adminController(loginService, mock(MfaVerificationService.class), successService,
+                mock(RefreshTokenCookieService.class));
+
+        ResponseEntity<Map<String, Object>> response = controller.login(
+                new LoginRequest("admin", "password"), new MockHttpServletRequest()
+        );
+
+        assertEquals(Boolean.TRUE, response.getBody().get("mfaRequired"));
+        assertEquals("challenge-1", response.getBody().get("challengeId"));
+        assertNull(response.getBody().get("accessToken"));
+        verifyNoInteractions(successService);
+    }
+
+    @Test
+    void verifiedAdminMfaIssuesTokensAndCookies() {
+        User user = user(RoleName.ADMIN);
+        MfaVerificationService verificationService = mock(MfaVerificationService.class);
+        LoginSuccessService successService = mock(LoginSuccessService.class);
         RefreshTokenCookieService cookieService = mock(RefreshTokenCookieService.class);
-        when(userRepository.findByUsername("admin"))
-                .thenReturn(Optional.empty(), Optional.of(user));
-        when(jwtService.generateAccessToken(user)).thenReturn("admin-access");
-        when(refreshTokenService.create(user)).thenReturn(refreshToken(user, "admin-refresh"));
+        when(verificationService.verify(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.eq(true),
+                org.mockito.ArgumentMatchers.any()))
+                .thenReturn(new MfaVerificationService.VerifiedMfaLogin(user, true));
+        when(successService.complete(org.mockito.ArgumentMatchers.eq(user), org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.eq(true)))
+                .thenReturn(completed("admin-access", "admin-refresh", null));
         when(cookieService.createAdminRefreshCookie("admin-refresh"))
                 .thenReturn(refreshCookie("ADMIN_REFRESH_TOKEN", "admin-refresh", "/api/v1/admin/auth"));
 
-        AdminAuthController controller = new AdminAuthController(
-                mock(UserService.class),
-                mock(AuthenticationManager.class),
-                jwtService,
-                cookieService,
-                refreshTokenService,
-                userRepository
+        AdminAuthController controller = adminController(mock(LocalLoginService.class), verificationService, successService, cookieService);
+        ResponseEntity<Map<String, Object>> response = controller.verifyMfa(
+                new MfaVerifyRequest("challenge", "123456"), new MockHttpServletRequest()
         );
 
-        ResponseEntity<Map<String, String>> response = controller.login(new LoginRequest("admin", "password"));
-
         assertEquals("admin-access", response.getBody().get("accessToken"));
-        assertEquals(1, response.getHeaders().get(HttpHeaders.SET_COOKIE).size());
-        assertTrue(response.getHeaders().getFirst(HttpHeaders.SET_COOKIE).startsWith("ADMIN_REFRESH_TOKEN="));
-        assertFalse(response.getHeaders().getFirst(HttpHeaders.SET_COOKIE).contains("ADMIN_AUTH_TOKEN="));
+        assertFalse(response.getHeaders().getFirst(HttpHeaders.SET_COOKIE).contains("AUTH_TOKEN="));
+    }
+
+    private AdminAuthController adminController(
+            LocalLoginService loginService,
+            MfaVerificationService verificationService,
+            LoginSuccessService successService,
+            RefreshTokenCookieService cookieService
+    ) {
+        return new AdminAuthController(
+                mock(UserService.class), loginService, verificationService, successService, mock(JwtService.class), cookieService,
+                mock(RefreshTokenService.class)
+        );
+    }
+
+    private LoginSuccessService.CompletedLogin completed(String access, String refresh, String deviceCookie) {
+        return new LoginSuccessService.CompletedLogin(
+                new AuthenticationTokenService.IssuedAuthenticationTokens(access, refresh), deviceCookie
+        );
     }
 
     private User user(RoleName roleName) {
@@ -101,16 +136,7 @@ class AuthControllerStatelessTest {
                 .build();
     }
 
-    private RefreshToken refreshToken(User user, String token) {
-        return RefreshToken.builder().token(token).user(user).build();
-    }
-
     private ResponseCookie refreshCookie(String name, String value, String path) {
-        return ResponseCookie.from(name, value)
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("Strict")
-                .path(path)
-                .build();
+        return ResponseCookie.from(name, value).httpOnly(true).secure(true).sameSite("Strict").path(path).build();
     }
 }

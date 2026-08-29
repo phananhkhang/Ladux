@@ -54,6 +54,7 @@ export interface RegisterRequest {
 export interface LoginRequest {
   username: string;
   password: string;
+  captchaToken?: string;
 }
 
 export interface LoginResponse {
@@ -62,6 +63,17 @@ export interface LoginResponse {
   username: string;
   accessToken: string;
   tokenType: 'Bearer';
+}
+
+export interface MfaRequiredLoginResponse {
+  mfaRequired: true;
+  challengeId: string;
+}
+
+export function isMfaRequiredLogin(
+  response: LoginResponse | MfaRequiredLoginResponse,
+): response is MfaRequiredLoginResponse {
+  return "mfaRequired" in response && response.mfaRequired === true;
 }
 
 export interface RefreshResponse {
@@ -96,7 +108,7 @@ export const authService = {
    * Đăng nhập: access token trả trong body, refresh token nằm trong HttpOnly cookie.
    * POST /api/v1/auth/login
    */
-  login: (data: LoginRequest): Promise<LoginResponse> => {
+  login: (data: LoginRequest): Promise<LoginResponse | MfaRequiredLoginResponse> => {
     return apiClient.post('/auth/login', data);
   },
 

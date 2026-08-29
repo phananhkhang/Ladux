@@ -14,7 +14,10 @@ import java.math.BigDecimal;
 public class PricingServiceImpl implements PricingService {
     @Override
     public BigDecimal sellingPrice(ProductVariant productVariant) {
-        return productVariant.getDiscountPrice() != null ? productVariant.getDiscountPrice() : productVariant.getPrice();
+        if (productVariant.getDiscountPrice() != null) {
+            return productVariant.getDiscountPrice();
+        }
+        else return productVariant.getPrice();
     }
 }
 

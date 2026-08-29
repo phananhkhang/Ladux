@@ -8,6 +8,8 @@ import {
   UserResponse,
   UserUpdatePasswordRequest,
   PersonalInformationUpdateRequest,
+  getCaptchaToken,
+  isMfaRequiredLogin,
 } from '@/services';
 import { setStorefrontAccessToken } from '@/services/authTokens';
 
@@ -55,7 +57,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   login: async (credentials) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await authService.login(credentials);
+      const captchaToken = await getCaptchaToken('login');
+      const response = await authService.login({ ...credentials, captchaToken });
+      if (isMfaRequiredLogin(response)) {
+        throw new Error('Tài khoản này yêu cầu MFA. Vui lòng dùng cổng đăng nhập quản trị.');
+      }
       get().setAccessToken(response.accessToken);
       await get().fetchCurrentUser();
     } catch (err: any) {

@@ -9,10 +9,14 @@ import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Order;
 import org.akira.ladux.model.OrderHistory;
+import org.akira.ladux.model.User;
 import org.akira.ladux.model.enums.OrderStatus;
 import org.akira.ladux.repository.OrderRepository;
+import org.akira.ladux.repository.UserRepository;
 import org.akira.ladux.service.OrderLifecycleService;
 import org.akira.ladux.service.OrderStateMachine;
+import org.akira.ladux.service.PaymentService;
+import org.akira.ladux.utils.SecurityUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationEventPublisher;
@@ -37,8 +41,9 @@ import java.util.UUID;
 public class OrderStateMachineImpl implements OrderStateMachine {
     private final OrderRepository orderRepository;
     private final OrderLifecycleService orderLifecycleService;
-    private final org.akira.ladux.service.PaymentService paymentService;
+    private final PaymentService paymentService;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -50,6 +55,9 @@ public class OrderStateMachineImpl implements OrderStateMachine {
         // Khóa bi quan order + items để tránh hai admin cùng đổi trạng thái song song.
         Order order = orderRepository.findWithItemsByIdForUpdate(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng"));
+        Integer adminId = SecurityUtils.getCurrentUserId();
+        User admin = userRepository.findById(adminId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy admin"));
 
         OrderStatus current = order.getStatus();
         OrderStatus target = request.status();
@@ -64,11 +72,11 @@ public class OrderStateMachineImpl implements OrderStateMachine {
         }
 
         if (target == OrderStatus.RETURNED) {
-            return orderLifecycleService.processReturnOrder(orderId, "Chuyển trạng thái sang RETURNED qua Admin API", order.getUser());
+            return orderLifecycleService.processReturnOrder(orderId, "Chuyển trạng thái sang RETURNED qua Admin API", admin);
         }
 
         if (target == OrderStatus.REFUNDED) {
-            return paymentService.processRefund(orderId, order.getFinalAmount(), "Xác nhận hoàn tiền qua Admin API", order.getUser());
+            return paymentService.processRefund(orderId, order.getFinalAmount(), "Xác nhận hoàn tiền qua Admin API", admin);
         }
         // Tao ma trackingNumber khi chuyen sang SHIPPED (tu dong neu khong duoc truyen hoac rong).
         if (target == OrderStatus.SHIPPED) {

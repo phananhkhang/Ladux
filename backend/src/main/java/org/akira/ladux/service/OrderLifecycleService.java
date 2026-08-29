@@ -127,7 +127,6 @@ public class OrderLifecycleService {
     public OrderResponse processReturnOrder(int orderId, String reason, User admin) {
         Order order = orderRepository.findWithItemsByIdForUpdate(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng id = " + orderId));
-
         // B1: Chỉ cho phép trả hàng khi đơn đã DELIVERED hoặc khách đã gửi RETURN_REQUESTED
         if (order.getStatus() != OrderStatus.DELIVERED && order.getStatus() != OrderStatus.RETURN_REQUESTED) {
             throw new BusinessRuleException("Chỉ đơn hàng đã giao thành công hoặc có yêu cầu trả mới được nhận lại hàng");

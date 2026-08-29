@@ -34,7 +34,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("select u from User u where u.id = :id")
     Optional<User> findByIdForUpdate(@Param("id") Integer id);
 
-    @EntityGraph(attributePaths = {"roles"})
+    @EntityGraph(attributePaths = {"roles", "customer"})
     Optional<User> findByUsername(String username);
 
     boolean existsByUsername(String username);

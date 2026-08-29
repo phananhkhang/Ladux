@@ -49,9 +49,26 @@ class EndpointRateLimitFilterTest {
         assertEquals("12", response.getHeader("Retry-After"));
     }
 
+    @Test
+    void adminMfaVerificationIsLimitedOnlyByIpInTheFilter() throws Exception {
+        DistributedRateLimitService rateLimitService = mock(DistributedRateLimitService.class);
+        EndpointRateLimitFilter filter = filter(rateLimitService);
+        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/api/v1/admin/auth/mfa/verify");
+        request.addHeader("X-Forwarded-For", "203.0.113.11");
+
+        filter.doFilter(request, new MockHttpServletResponse(), new MockFilterChain());
+
+        verify(rateLimitService).check(
+                "mfa-ip", "203.0.113.11", 5, 1,
+                "Bạn xác thực MFA quá nhiều, hãy thử lại sau"
+        );
+    }
+
     private EndpointRateLimitFilter filter(DistributedRateLimitService service) {
         return new EndpointRateLimitFilter(
                 service,
+                5, 1,
+                5, 1,
                 5, 1,
                 5, 1,
                 3, 1,

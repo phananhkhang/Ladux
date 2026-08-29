@@ -9,5 +9,4 @@ public class OrderDeliveredEvent {
     public OrderDeliveredEvent(Order order) {
         this.order = order;
     }
-
 }

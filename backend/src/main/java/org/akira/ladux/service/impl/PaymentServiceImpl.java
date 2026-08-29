@@ -296,8 +296,8 @@ public class PaymentServiceImpl implements PaymentService {
             refundSuccess = callVNPayRefundApi(payment, actualRefundAmount, admin.getUsername());
             if (!refundSuccess) {
                 log.warn("[REFUND] VNPay WebAPI returned non-00 or sandbox demo mode. Falling back to system refund for order #{}", orderId);
-                refundSuccess = true; // Cho phép hoàn tiền hệ thống trên Sandbox/Dev không bị kẹt
-            }
+                refundSuccess = false; // Cho phép hoàn tiền hệ thống trên Sandbox/Dev không bị kẹt
+            } else refundSuccess = true;
         } else {
             // Hoàn tiền thủ công cho khách qua Chuyển khoản / Tiền mặt
             refundSuccess = true;

@@ -5,6 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.HexFormat;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -87,7 +88,8 @@ public class DistributedRateLimitService {
         if (subject == null || subject.isBlank()) {
             return "anonymous";
         }
-        return subject.trim().toLowerCase().substring(0, Math.min(subject.trim().length(), 200));
+        String normalized = subject.trim().toLowerCase(Locale.ROOT);
+        return normalized.substring(0, Math.min(normalized.length(), 200));
     }
 
     private String hash(String subject) {
