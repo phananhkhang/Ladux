@@ -139,12 +139,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDenied() {
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+        String message = (ex != null && ex.getMessage() != null && !ex.getMessage().isBlank()
+                && !"Access Denied".equalsIgnoreCase(ex.getMessage().trim()))
+                ? ex.getMessage()
+                : "Ban khong co quyen thuc hien thao tac nay";
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.FORBIDDEN.value())
                 .error(HttpStatus.FORBIDDEN.getReasonPhrase())
-                .message("Ban khong co quyen thuc hien thao tac nay")
+                .message(message)
                 .build();
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }

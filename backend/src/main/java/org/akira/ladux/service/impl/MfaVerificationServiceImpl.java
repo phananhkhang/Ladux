@@ -11,7 +11,6 @@ import org.akira.ladux.service.MfaService;
 import org.akira.ladux.service.MfaVerificationService;
 import org.akira.ladux.service.SecurityEventService;
 import org.akira.ladux.utils.ClientIpUtils;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,30 +35,32 @@ public class MfaVerificationServiceImpl implements MfaVerificationService {
         String ipAddress = ClientIpUtils.getClientIp(servletRequest);
         String userAgent = servletRequest == null ? null : servletRequest.getHeader("User-Agent");
         MfaChallengeService.MfaChallenge challenge = mfaChallengeService.findActive(request.challengeId())
-                .orElseThrow(this::denied);
+                .orElseThrow(() -> new BusinessRuleException("Phien xac thuc MFA khong hop le hoac da het han"));
         if (challenge.adminSession() != adminSession) {
-            throw denied();
+            throw new BusinessRuleException("Phien xac thuc MFA khong hop le");
         }
-        User user = userRepository.findById(challenge.userId()).orElseThrow(this::denied);
+        User user = userRepository.findById(challenge.userId())
+                .orElseThrow(() -> new BusinessRuleException("Nguoi dung khong ton tai"));
         loginRateLimitService.checkMfaAccountAndChallenge(user.getUsername(), request.challengeId());
 
         boolean valid;
+        String failureReason = null;
         try {
             valid = mfaService.verifyTotp(user, request.code());
+            if (!valid) {
+                failureReason = "Ma xac thuc MFA khong chinh xac";
+            }
         } catch (BusinessRuleException exception) {
             valid = false;
+            failureReason = exception.getMessage();
         }
         MfaChallengeService.MfaChallengeAttempt attempt = mfaChallengeService.complete(request.challengeId(), valid);
         if (!valid || attempt != MfaChallengeService.MfaChallengeAttempt.SUCCESS) {
             securityEventService.record(user, SecurityEventType.MFA_FAILED, ipAddress, userAgent, false);
-            throw denied();
+            throw new BusinessRuleException(failureReason != null ? failureReason : "Ma xac thuc MFA khong chinh xac hoac da het han");
         }
 
         securityEventService.record(user, SecurityEventType.MFA_SUCCESS, ipAddress, userAgent, true);
         return new VerifiedMfaLogin(user, challenge.adminSession());
-    }
-
-    private AccessDeniedException denied() {
-        return new AccessDeniedException("MFA challenge hoac ma xac thuc khong hop le");
     }
 }

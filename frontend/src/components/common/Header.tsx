@@ -610,13 +610,6 @@ export default function Header({
                         >
                             Về chúng tôi
                         </NavLink>
-
-                        <a
-                            href="#"
-                            className="transition-colors pb-1 hover:text-[#00FF41] border-b-2 border-transparent hover:border-[#00FF41]/50 text-neutral-300 text-[16px]"
-                        >
-                            Tư vấn
-                        </a>
                         <NavLink
                             to={ROUTES.contact}
                             className={({ isActive }) =>

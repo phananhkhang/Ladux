@@ -13,10 +13,12 @@ import org.akira.ladux.dto.user.request.MfaVerifyRequest;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.enums.SecurityEventType;
 import org.akira.ladux.repository.UserRepository;
+import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.service.impl.MfaVerificationServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.security.access.AccessDeniedException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MfaVerificationServiceImplTest {
 
@@ -37,9 +39,10 @@ class MfaVerificationServiceImplTest {
                 challengeService, mock(LoginRateLimitService.class), users, mfaService, events
         );
 
-        assertThrows(AccessDeniedException.class, () -> service.verify(
+        BusinessRuleException ex = assertThrows(BusinessRuleException.class, () -> service.verify(
                 new MfaVerifyRequest("challenge", "123456"), true, new MockHttpServletRequest()
         ));
+        assertEquals("Ma xac thuc MFA khong chinh xac", ex.getMessage());
 
         verify(events).record(eq(user), eq(SecurityEventType.MFA_FAILED), any(), any(), eq(false));
     }
