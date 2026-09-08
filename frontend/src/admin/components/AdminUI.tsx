@@ -9,7 +9,7 @@ export function AdminButton({
   className,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
-  tone?: "primary" | "secondary" | "danger" | "ghost";
+  tone?: "primary" | "secondary" | "danger" | "ghost" | "warning";
   size?: "sm" | "md" | "icon";
 }) {
   return (
@@ -23,6 +23,7 @@ export function AdminButton({
         tone === "secondary" && "border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
         tone === "danger" && "bg-rose-600 text-white hover:bg-rose-700",
         tone === "ghost" && "text-slate-600 hover:bg-slate-100 hover:text-slate-950",
+        tone === "warning" && "border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 hover:border-amber-400 shadow-sm",
         className,
       )}
       {...props}

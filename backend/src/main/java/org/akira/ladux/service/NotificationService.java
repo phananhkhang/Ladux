@@ -30,4 +30,8 @@ public interface NotificationService {
     void deleteNotificationForAdmin(Integer id);
 
     void deleteAllNotificationsForAdmin();
+
+    void markAsReadForAdmin(Integer id);
+
+    int getUnreadNotificationCountForAdmin();
 }

@@ -26,14 +26,17 @@ import org.akira.ladux.model.enums.PaymentProvider;
 import org.akira.ladux.model.enums.PurchaseOrderStatus;
 import org.akira.ladux.model.enums.StockMovementType;
 import org.akira.ladux.model.enums.StockReferenceType;
+import org.akira.ladux.model.ProductSupplier;
 import org.akira.ladux.repository.BrandRepository;
 import org.akira.ladux.repository.CartRepository;
 import org.akira.ladux.repository.CategoryRepository;
 import org.akira.ladux.repository.ColorRepository;
 import org.akira.ladux.repository.OrderRepository;
 import org.akira.ladux.repository.ProductRepository;
+import org.akira.ladux.repository.ProductSupplierRepository;
 import org.akira.ladux.repository.ProductVariantRepository;
 import org.akira.ladux.repository.StockMovementRepository;
+import org.akira.ladux.repository.SupplierRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -65,6 +68,8 @@ class StockMovementFlowTest extends AbstractIntegrationTest {
     @Autowired ColorRepository colorRepository;
     @Autowired OrderRepository orderRepository;
     @Autowired StockMovementRepository stockMovementRepository;
+    @Autowired SupplierRepository supplierRepository;
+    @Autowired ProductSupplierRepository productSupplierRepository;
 
     @PersistenceContext
     EntityManager em;
@@ -81,6 +86,12 @@ class StockMovementFlowTest extends AbstractIntegrationTest {
                 .name("SM Product " + unique)
                 .slug("sm-product-" + unique)
                 .isActive(true)
+                .build());
+        productSupplierRepository.save(ProductSupplier.builder()
+                .product(product)
+                .supplier(supplierRepository.findById(SUPPLIER_ID).orElseThrow())
+                .costPrice(new BigDecimal(price))
+                .leadTimeDays(3)
                 .build());
         return productVariantRepository.save(ProductVariant.builder()
                 .product(product)

@@ -4,8 +4,24 @@ WORKDIR /build
 RUN apk add --no-cache maven
 
 COPY pom.xml .
+
+# Tách riêng tầng tải dependencies để Docker cache lại, có cấu hình retry khi mạng rớt
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn -B dependency:go-offline \
+    -Dmaven.wagon.http.retryHandler.count=5 \
+    -Dmaven.wagon.http.retryHandler.requestSentKeepAliveRuntime=true \
+    -Dmaven.wagon.http.connectionTimeout=120000 \
+    -Dmaven.wagon.http.readTimeout=120000 || true
+
 COPY src ./src
-RUN mvn -q -DskipTests package
+
+# Build JAR sử dụng cache .m2 và tự động retry nếu tải bổ sung plugin bị đứt kết nối
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn -B clean package -DskipTests \
+    -Dmaven.wagon.http.retryHandler.count=5 \
+    -Dmaven.wagon.http.retryHandler.requestSentKeepAliveRuntime=true \
+    -Dmaven.wagon.http.connectionTimeout=120000 \
+    -Dmaven.wagon.http.readTimeout=120000
 
 FROM eclipse-temurin:21-jre-alpine
 

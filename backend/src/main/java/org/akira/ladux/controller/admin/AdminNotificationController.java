@@ -49,4 +49,17 @@ public class AdminNotificationController {
         notificationService.deleteAllNotificationsForAdmin();
         return ResponseEntity.ok("Tất cả thông báo đã được xóa!");
     }
+
+    @PatchMapping("/{id}/read")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> markAsRead(@PathVariable Integer id) {
+        notificationService.markAsReadForAdmin(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/unread-count")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Integer> getUnreadNotificationCount() {
+        return ResponseEntity.ok(notificationService.getUnreadNotificationCountForAdmin());
+    }
 }

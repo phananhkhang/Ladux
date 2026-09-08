@@ -42,7 +42,8 @@ class OrderResponseSerializationTest {
                 Instant.parse("2026-08-04T00:00:00Z"),
                 null,
                 List.of(),
-                PaymentProvider.COD
+                PaymentProvider.COD,
+                null
         );
         PageImpl<OrderResponse> page = new PageImpl<>(List.of(order), PageRequest.of(0, 20), 1);
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();

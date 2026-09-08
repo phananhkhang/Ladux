@@ -1,6 +1,6 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Edit3, LoaderCircle, Search } from "lucide-react";
+import { ArrowLeft, Check, Edit3, LoaderCircle, RotateCcw, Search, X } from "lucide-react";
 import { Link, useLocation, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../app/components/ui/dialog";
@@ -18,23 +18,136 @@ function oneItemPage<T>(item: T | null, page: number, size: number): PageRespons
   return { content, totalElements: content.length, totalPages: content.length ? 1 : 0, size, number: page, numberOfElements: content.length, first: true, last: true, empty: content.length === 0 };
 }
 
+function ReturnReviewDialog({
+  order,
+  open,
+  onOpenChange,
+}: {
+  order: OrderResponse | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const queryClient = useQueryClient();
+  const [error, setError] = useState<string | null>(null);
+
+  const acceptMutation = useMutation({
+    mutationFn: () => adminApi.orders.updateStatus(order!.id, { status: "RETURNED" }),
+    onSuccess: () => {
+      toast.success(`Đã chấp nhận yêu cầu trả hàng đơn #${order?.id}. Hàng đã được nhập lại vào kho.`);
+      queryClient.invalidateQueries({ queryKey: ["admin", "orders"] });
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.dashboard });
+      onOpenChange(false);
+    },
+    onError: (mutationError) => setError(getApiErrorMessage(mutationError)),
+  });
+
+  const rejectMutation = useMutation({
+    mutationFn: () => adminApi.orders.updateStatus(order!.id, { status: "DELIVERED" }),
+    onSuccess: () => {
+      toast.success(`Đã từ chối yêu cầu trả hàng đơn #${order?.id}. Đơn chuyển về DELIVERED.`);
+      queryClient.invalidateQueries({ queryKey: ["admin", "orders"] });
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.dashboard });
+      onOpenChange(false);
+    },
+    onError: (mutationError) => setError(getApiErrorMessage(mutationError)),
+  });
+
+  if (!order) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="border-slate-200 bg-white text-slate-950 sm:max-w-lg">
+        <DialogHeader>
+          <div className="flex items-center gap-2 text-amber-600">
+            <RotateCcw className="h-5 w-5" />
+            <DialogTitle>Xử lý yêu cầu trả hàng #{order.id}</DialogTitle>
+          </div>
+          <DialogDescription className="text-slate-500">
+            Khách hàng (User #{order.userId}) đã gửi yêu cầu trả hàng cho đơn này.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          {error && <div role="alert" className="rounded-xl bg-rose-50 p-3 text-sm text-rose-700">{error}</div>}
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5 space-y-2">
+            <div className="flex justify-between text-xs">
+              <span className="text-slate-500">Tổng giá trị đơn:</span>
+              <span className="font-bold text-slate-900">{formatCurrency(order.finalAmount)}</span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-slate-500">Ngày tạo đơn:</span>
+              <span className="font-semibold text-slate-700">{formatBackendDateTime(order.createdAt)}</span>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-amber-200 bg-amber-50/80 p-3.5">
+            <p className="text-xs font-bold uppercase tracking-wider text-amber-800 mb-1">
+              Nội dung / Lý do trả hàng từ khách hàng:
+            </p>
+            <p className="text-sm font-medium text-amber-950 whitespace-pre-wrap">
+              {order.returnReason || "Khách hàng không cung cấp lý do chi tiết."}
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-indigo-100 bg-indigo-50/60 p-3 text-xs text-indigo-900 leading-relaxed">
+            • <strong>Chấp nhận (Có)</strong>: Đơn chuyển sang <code>RETURNED</code>, hệ thống tự động hoàn kho các sản phẩm trong đơn.<br />
+            • <strong>Từ chối (Không)</strong>: Đơn quay lại trạng thái <code>DELIVERED</code>.
+          </div>
+        </div>
+
+        <DialogFooter className="gap-2 sm:gap-0">
+          <AdminButton
+            type="button"
+            tone="secondary"
+            onClick={() => onOpenChange(false)}
+            disabled={acceptMutation.isPending || rejectMutation.isPending}
+          >
+            Đóng
+          </AdminButton>
+          <AdminButton
+            type="button"
+            tone="danger"
+            onClick={() => { setError(null); rejectMutation.mutate(); }}
+            disabled={acceptMutation.isPending || rejectMutation.isPending}
+          >
+            {rejectMutation.isPending && <LoaderCircle className="h-4 w-4 animate-spin" />}
+            <X className="h-4 w-4" /> Từ chối (Không)
+          </AdminButton>
+          <AdminButton
+            type="button"
+            tone="primary"
+            onClick={() => { setError(null); acceptMutation.mutate(); }}
+            disabled={acceptMutation.isPending || rejectMutation.isPending}
+          >
+            {acceptMutation.isPending && <LoaderCircle className="h-4 w-4 animate-spin" />}
+            <Check className="h-4 w-4" /> Chấp nhận (Có)
+          </AdminButton>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function OrderStatusDialog({ order, open, onOpenChange }: { order: OrderResponse | null; open: boolean; onOpenChange: (open: boolean) => void }) {
   const queryClient = useQueryClient();
   const [target, setTarget] = useState<OrderStatus | "">("");
   const [error, setError] = useState<string | null>(null);
   const transitions = order ? orderTransitions[order.status] : [];
+  const isDelivered = order?.status === "DELIVERED";
   const mutation = useMutation({
     mutationFn: () => adminApi.orders.updateStatus(order!.id, { status: target as OrderStatus }),
     onSuccess: () => { toast.success("Đã cập nhật trạng thái đơn hàng"); queryClient.invalidateQueries({ queryKey: ["admin", "orders"] }); queryClient.invalidateQueries({ queryKey: adminQueryKeys.dashboard }); onOpenChange(false); },
     onError: (mutationError) => setError(getApiErrorMessage(mutationError)),
   });
-  const submit = (event: FormEvent) => { event.preventDefault(); setError(null); if (!target) return setError("Vui lòng chọn trạng thái mới"); mutation.mutate(); };
-  return <Dialog open={open} onOpenChange={onOpenChange}><DialogContent className="border-slate-200 bg-white text-slate-950"><DialogHeader><DialogTitle>Cập nhật đơn #{order?.id}</DialogTitle><DialogDescription className="text-slate-500">Trạng thái hiện tại: {order?.status}. Backend sẽ xử lý luồng nghiệp vụ tương ứng.</DialogDescription></DialogHeader><form className="space-y-4" onSubmit={submit}>{error && <div role="alert" className="rounded-xl bg-rose-50 p-3 text-sm text-rose-700">{error}</div>}<div><label className="mb-1.5 block text-sm font-bold text-slate-700">Trạng thái mới</label><select className={fieldClassName} value={target} onChange={(event) => setTarget(event.target.value as OrderStatus)}><option value="">Chọn trạng thái</option>{transitions.map((status) => <option key={status} value={status}>{status}</option>)}</select></div>{target === "RETURNED" && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm font-semibold text-amber-800">Chấp nhận trả hàng: Hệ thống sẽ tự động nhập lại kho cho sản phẩm trong đơn.</div>}{target === "REFUNDED" && <div className="rounded-xl border border-teal-200 bg-teal-50 p-3 text-sm font-semibold text-teal-800">Hoàn tiền: Hệ thống sẽ thực hiện hoàn tiền qua VNPay Gateway hoặc ghi nhận hoàn tiền thủ công.</div>}{target === "CANCELLED" && <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-semibold text-rose-700">Hủy đơn có thể hoàn kho và coupon. Hãy kiểm tra kỹ trước khi xác nhận.</div>}<DialogFooter><AdminButton type="button" tone="secondary" onClick={() => onOpenChange(false)}>Đóng</AdminButton><AdminButton type="submit" tone={target === "CANCELLED" ? "danger" : "primary"} disabled={mutation.isPending || !target}>{mutation.isPending && <LoaderCircle className="h-4 w-4 animate-spin" />}Cập nhật</AdminButton></DialogFooter></form></DialogContent></Dialog>;
+  const submit = (event: FormEvent) => { event.preventDefault(); setError(null); if (isDelivered) return setError("Đơn hàng DELIVERED không thể đổi trạng thái"); if (!target) return setError("Vui lòng chọn trạng thái mới"); mutation.mutate(); };
+  return <Dialog open={open} onOpenChange={onOpenChange}><DialogContent className="border-slate-200 bg-white text-slate-950"><DialogHeader><DialogTitle>Cập nhật đơn #{order?.id}</DialogTitle><DialogDescription className="text-slate-500">Trạng thái hiện tại: {order?.status}. Backend sẽ xử lý luồng nghiệp vụ tương ứng.</DialogDescription></DialogHeader><form className="space-y-4" onSubmit={submit}>{error && <div role="alert" className="rounded-xl bg-rose-50 p-3 text-sm text-rose-700">{error}</div>}{isDelivered ? <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-700">Đơn hàng đã được giao thành công (DELIVERED). Trạng thái này đã hoàn tất và không thể thay đổi thủ công. Chỉ khách hàng mới có thể gửi yêu cầu trả hàng.</div> : <div><label className="mb-1.5 block text-sm font-bold text-slate-700">Trạng thái mới</label><select className={fieldClassName} value={target} onChange={(event) => setTarget(event.target.value as OrderStatus)}><option value="">Chọn trạng thái</option>{transitions.map((status) => <option key={status} value={status}>{status}</option>)}</select></div>}{target === "RETURNED" && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm font-semibold text-amber-800">Chấp nhận trả hàng: Hệ thống sẽ tự động nhập lại kho cho sản phẩm trong đơn.</div>}{target === "REFUNDED" && <div className="rounded-xl border border-teal-200 bg-teal-50 p-3 text-sm font-semibold text-teal-800">Hoàn tiền: Hệ thống sẽ thực hiện hoàn tiền qua VNPay Gateway hoặc ghi nhận hoàn tiền thủ công.</div>}{target === "CANCELLED" && <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-semibold text-rose-700">Hủy đơn có thể hoàn kho và coupon. Hãy kiểm tra kỹ trước khi xác nhận.</div>}<DialogFooter><AdminButton type="button" tone="secondary" onClick={() => onOpenChange(false)}>Đóng</AdminButton><AdminButton type="submit" tone={target === "CANCELLED" ? "danger" : "primary"} disabled={isDelivered || mutation.isPending || !target}>{mutation.isPending && <LoaderCircle className="h-4 w-4 animate-spin" />}Cập nhật</AdminButton></DialogFooter></form></DialogContent></Dialog>;
 }
 
 export function OrdersPage() {
   const [params, setParams] = useSearchParams();
   const [statusOrder, setStatusOrder] = useState<OrderResponse | null>(null);
+  const [returnOrder, setReturnOrder] = useState<OrderResponse | null>(null);
   const [searchDraft, setSearchDraft] = useState(params.get("search") ?? "");
   const page = Math.max(0, Number(params.get("page") ?? 0));
   const size = [10, 20, 50, 100].includes(Number(params.get("size"))) ? Number(params.get("size")) : 20;
@@ -62,16 +175,35 @@ export function OrdersPage() {
     { key: "shipping", header: "Vận chuyển", render: (order) => <div><p>{order.carrier || "—"}</p><p className="mt-1 text-xs text-slate-400">{order.trackingNumber || "Chưa có tracking"}</p></div> },
     { key: "payment", header: "Thanh toán", render: (order) => order.paymentProvider ?? "—" },
     { key: "status", header: "Trạng thái", render: (order) => <StatusBadge value={order.status} /> },
-    { key: "actions", header: "Thao tác", render: (order) => <AdminButton tone="secondary" size="sm" disabled={orderTransitions[order.status].length === 0} onClick={() => setStatusOrder(order)}><Edit3 className="h-3.5 w-3.5" />Cập nhật</AdminButton> },
+    { key: "actions", header: "Thao tác", render: (order) => (
+      order.status === "RETURN_REQUESTED" ? (
+        <AdminButton tone="warning" size="sm" onClick={() => setReturnOrder(order)}>
+          <RotateCcw className="h-3.5 w-3.5" />Xử lý trả hàng
+        </AdminButton>
+      ) : (
+        <AdminButton
+          tone="secondary"
+          size="sm"
+          disabled={orderTransitions[order.status].length === 0}
+          title={order.status === "DELIVERED" ? "Đơn hàng đã giao thành công (DELIVERED) - không thể chỉnh sửa trạng thái trực tiếp" : undefined}
+          onClick={() => setStatusOrder(order)}
+        >
+          <Edit3 className="h-3.5 w-3.5" />Cập nhật
+        </AdminButton>
+      )
+    ) },
   ];
-  return <><PageHeader title="Đơn hàng" description="Theo dõi đơn bán hàng và chuyển trạng thái theo state machine an toàn." /><Panel><div className="flex flex-col gap-3 border-b border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between"><form className="relative flex-1 sm:max-w-sm" onSubmit={(event) => { event.preventDefault(); updateParam("search", searchDraft.trim()); }}><Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" /><input className={`${fieldClassName} pl-10`} inputMode="numeric" placeholder="Tìm theo mã đơn..." value={searchDraft} onChange={(event) => setSearchDraft(event.target.value)} /></form><select aria-label="Lọc trạng thái đơn" className={`${fieldClassName} sm:w-60`} value={status} onChange={(event) => updateParam("status", event.target.value)}><option value="">Tất cả trạng thái</option>{orderStatuses.map((item) => <option key={item} value={item}>{item}</option>)}</select></div><AdminTable rows={query.data?.content ?? []} columns={columns} isLoading={query.isLoading} error={query.isError ? getApiErrorMessage(query.error) : null} onRetry={() => query.refetch()} /><PaginationBar page={page} totalPages={query.data?.totalPages ?? 0} totalElements={query.data?.totalElements ?? 0} size={size} onPageChange={(value) => updateParam("page", String(value))} onSizeChange={(value) => updateParam("size", String(value))} /></Panel><OrderStatusDialog key={statusOrder?.id ?? "closed"} order={statusOrder} open={Boolean(statusOrder)} onOpenChange={(open) => !open && setStatusOrder(null)} /></>;
+  return <><PageHeader title="Đơn hàng" description="Theo dõi đơn bán hàng và chuyển trạng thái theo state machine an toàn." /><Panel><div className="flex flex-col gap-3 border-b border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between"><form className="relative flex-1 sm:max-w-sm" onSubmit={(event) => { event.preventDefault(); updateParam("search", searchDraft.trim()); }}><Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" /><input className={`${fieldClassName} pl-10`} inputMode="numeric" placeholder="Tìm theo mã đơn..." value={searchDraft} onChange={(event) => setSearchDraft(event.target.value)} /></form><select aria-label="Lọc trạng thái đơn" className={`${fieldClassName} sm:w-60`} value={status} onChange={(event) => updateParam("status", event.target.value)}><option value="">Tất cả trạng thái</option>{orderStatuses.map((item) => <option key={item} value={item}>{item}</option>)}</select></div><AdminTable rows={query.data?.content ?? []} columns={columns} isLoading={query.isLoading} error={query.isError ? getApiErrorMessage(query.error) : null} onRetry={() => query.refetch()} /><PaginationBar page={page} totalPages={query.data?.totalPages ?? 0} totalElements={query.data?.totalElements ?? 0} size={size} onPageChange={(value) => updateParam("page", String(value))} onSizeChange={(value) => updateParam("size", String(value))} /></Panel><OrderStatusDialog key={statusOrder?.id ?? "closed"} order={statusOrder} open={Boolean(statusOrder)} onOpenChange={(open) => !open && setStatusOrder(null)} /><ReturnReviewDialog order={returnOrder} open={Boolean(returnOrder)} onOpenChange={(open) => !open && setReturnOrder(null)} /></>;
 }
 
 export function OrderDetailPage() {
   const { orderId } = useParams<{ orderId: string }>();
   const id = Number(orderId);
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const isReviewRequested = searchParams.get("review") === "true";
   const [statusOrder, setStatusOrder] = useState<OrderResponse | null>(null);
+  const [returnReviewOrder, setReturnReviewOrder] = useState<OrderResponse | null>(null);
   const initialOrder = (location.state as { order?: OrderResponse } | null)?.order;
   const orderQuery = useQuery({ queryKey: adminQueryKeys.detail("orders", id), queryFn: () => adminApi.orders.detail(id), enabled: id > 0, initialData: initialOrder });
   const results = useQueries({ queries: [
@@ -79,14 +211,47 @@ export function OrderDetailPage() {
     { queryKey: adminQueryKeys.resource("order-histories", { orderId: id }), queryFn: () => adminApi.orderHistories.byOrder(id, { page: 0, size: 100 }), enabled: id > 0 },
     { queryKey: adminQueryKeys.resource("payments", { orderId: id }), queryFn: () => adminApi.payments.byOrder(id, { page: 0, size: 100 }), enabled: id > 0 },
   ] });
-  if (orderQuery.isLoading || results.some((result) => result.isLoading)) return <LoadingScreen label="Đang tải dữ liệu đơn hàng..." />;
+
   const order = orderQuery.data ?? null;
+
+  useEffect(() => {
+    if (order && order.status === "RETURN_REQUESTED" && isReviewRequested) {
+      setReturnReviewOrder(order);
+    }
+  }, [order, isReviewRequested]);
+
+  if (orderQuery.isLoading || results.some((result) => result.isLoading)) return <LoadingScreen label="Đang tải dữ liệu đơn hàng..." />;
   const items = (results[0].data?.content ?? []) as OrderItemResponse[];
   const histories = [...((results[1].data?.content ?? []) as OrderHistoryResponse[])].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   const payments = (results[2].data?.content ?? []) as PaymentResponse[];
-  return <><PageHeader title={`Đơn hàng #${id}`} description="Chi tiết đơn, sản phẩm, lịch sử và thanh toán được tải trực tiếp từ backend." actions={<><Link to="/admin/orders"><AdminButton tone="secondary"><ArrowLeft className="h-4 w-4" />Danh sách</AdminButton></Link>{order && orderTransitions[order.status].length > 0 && <AdminButton onClick={() => setStatusOrder(order)}><Edit3 className="h-4 w-4" />Cập nhật trạng thái</AdminButton>}</>} />{orderQuery.isError && <div role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">{getApiErrorMessage(orderQuery.error)}</div>}{order && <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4"><Panel className="p-4"><p className="text-xs font-bold uppercase text-slate-400">Trạng thái</p><div className="mt-2"><StatusBadge value={order.status} /></div></Panel><Panel className="p-4"><p className="text-xs font-bold uppercase text-slate-400">Tổng tiền</p><p className="mt-2 text-xl font-black">{formatCurrency(order.finalAmount)}</p></Panel><Panel className="p-4"><p className="text-xs font-bold uppercase text-slate-400">Khách hàng</p><p className="mt-2 font-black">User #{order.userId}</p></Panel><Panel className="p-4"><p className="text-xs font-bold uppercase text-slate-400">Ngày tạo</p><p className="mt-2 font-bold">{formatBackendDateTime(order.createdAt)}</p></Panel></div>}
+
+  const returnHistoryReason = histories.find((h) => h.status === "RETURN_REQUESTED")?.description?.replace(/^Khách hàng yêu cầu trả hàng\.?\s*(?:Lý do:\s*)?/i, "");
+
+  return <><PageHeader title={`Đơn hàng #${id}`} description="Chi tiết đơn, sản phẩm, lịch sử và thanh toán được tải trực tiếp từ backend." actions={<><Link to="/admin/orders"><AdminButton tone="secondary"><ArrowLeft className="h-4 w-4" />Danh sách</AdminButton></Link>{order && order.status === "RETURN_REQUESTED" && <AdminButton tone="warning" onClick={() => setReturnReviewOrder(order)}><RotateCcw className="h-4 w-4" />Xử lý trả hàng</AdminButton>}{order && order.status !== "RETURN_REQUESTED" && orderTransitions[order.status].length > 0 && <AdminButton onClick={() => setStatusOrder(order)}><Edit3 className="h-4 w-4" />Cập nhật trạng thái</AdminButton>}</>} />{orderQuery.isError && <div role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">{getApiErrorMessage(orderQuery.error)}</div>}
+    {order && order.status === "RETURN_REQUESTED" && (
+      <Panel className="border-2 border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 p-5 shadow-sm">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-amber-800">
+              <RotateCcw className="h-5 w-5 animate-pulse text-amber-600" />
+              <h3 className="text-base font-extrabold text-amber-950">Yêu cầu trả hàng từ khách hàng</h3>
+            </div>
+            <p className="text-sm text-amber-900 leading-relaxed">
+              <span className="font-bold text-amber-950">Nội dung / Lý do trả hàng: </span>
+              {order.returnReason || returnHistoryReason || "Khách hàng không cung cấp lý do chi tiết."}
+            </p>
+          </div>
+          <div className="flex items-center gap-2.5 shrink-0">
+            <AdminButton tone="warning" onClick={() => setReturnReviewOrder(order)}>
+              <RotateCcw className="h-4 w-4" /> Xử lý yêu cầu (Có / Không)
+            </AdminButton>
+          </div>
+        </div>
+      </Panel>
+    )}
+    {order && <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4"><Panel className="p-4"><p className="text-xs font-bold uppercase text-slate-400">Trạng thái</p><div className="mt-2"><StatusBadge value={order.status} /></div></Panel><Panel className="p-4"><p className="text-xs font-bold uppercase text-slate-400">Tổng tiền</p><p className="mt-2 text-xl font-black">{formatCurrency(order.finalAmount)}</p></Panel><Panel className="p-4"><p className="text-xs font-bold uppercase text-slate-400">Khách hàng</p><p className="mt-2 font-black">User #{order.userId}</p></Panel><Panel className="p-4"><p className="text-xs font-bold uppercase text-slate-400">Ngày tạo</p><p className="mt-2 font-bold">{formatBackendDateTime(order.createdAt)}</p></Panel></div>}
     <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]"><Panel><div className="border-b border-slate-200 p-5"><h2 className="font-extrabold text-slate-900">Sản phẩm trong đơn</h2></div><AdminTable rows={items} columns={[{ key: "product", header: "Sản phẩm", render: (item) => <div><p className="font-bold text-slate-900">{item.product?.name ?? "—"}</p><p className="text-xs text-slate-400">Variant #{item.productVariantId}</p></div> }, { key: "quantity", header: "SL", render: (item) => item.quantity }, { key: "price", header: "Giá mua", render: (item) => formatCurrency(item.priceAtPurchase) }, { key: "total", header: "Thành tiền", render: (item) => <strong>{formatCurrency(item.priceAtPurchase * item.quantity)}</strong> }]} error={results[0].isError ? getApiErrorMessage(results[0].error) : null} /></Panel><Panel className="p-5"><h2 className="font-extrabold text-slate-900">Timeline trạng thái</h2><div className="mt-5 space-y-0">{histories.map((history, index) => <div key={history.id} className="relative flex gap-3 pb-5">{index < histories.length - 1 && <span className="absolute left-[7px] top-4 h-full w-px bg-slate-200" />}<span className="relative mt-1 h-4 w-4 shrink-0 rounded-full border-4 border-indigo-100 bg-indigo-600" /><div><StatusBadge value={history.status} /><p className="mt-2 text-xs leading-5 text-slate-500">{history.description || "Không có mô tả"}</p><p className="mt-1 text-[11px] text-slate-400">{formatBackendDateTime(history.createdAt)}</p></div></div>)}{!histories.length && <p className="text-sm text-slate-400">Chưa có lịch sử</p>}</div></Panel></div>
-    <Panel><div className="border-b border-slate-200 p-5"><h2 className="font-extrabold text-slate-900">Payment attempts</h2></div><AdminTable rows={payments} columns={[{ key: "id", header: "ID", render: (payment) => `#${payment.id}` }, { key: "provider", header: "Cổng", render: (payment) => payment.provider }, { key: "transaction", header: "Mã giao dịch", render: (payment) => payment.transactionNo || "—" }, { key: "amount", header: "Số tiền", render: (payment) => formatCurrency(payment.amount) }, { key: "status", header: "Trạng thái", render: (payment) => <StatusBadge value={payment.status} /> }, { key: "created", header: "Ngày tạo", render: (payment) => formatBackendDateTime(payment.createdAt) }]} error={results[2].isError ? getApiErrorMessage(results[2].error) : null} /></Panel><OrderStatusDialog order={statusOrder} open={Boolean(statusOrder)} onOpenChange={(open) => !open && setStatusOrder(null)} /></>;
+    <Panel><div className="border-b border-slate-200 p-5"><h2 className="font-extrabold text-slate-900">Payment attempts</h2></div><AdminTable rows={payments} columns={[{ key: "id", header: "ID", render: (payment) => `#${payment.id}` }, { key: "provider", header: "Cổng", render: (payment) => payment.provider }, { key: "transaction", header: "Mã giao dịch", render: (payment) => payment.transactionNo || "—" }, { key: "amount", header: "Số tiền", render: (payment) => formatCurrency(payment.amount) }, { key: "status", header: "Trạng thái", render: (payment) => <StatusBadge value={payment.status} /> }, { key: "created", header: "Ngày tạo", render: (payment) => formatBackendDateTime(payment.createdAt) }]} error={results[2].isError ? getApiErrorMessage(results[2].error) : null} /></Panel><OrderStatusDialog order={statusOrder} open={Boolean(statusOrder)} onOpenChange={(open) => !open && setStatusOrder(null)} /><ReturnReviewDialog order={returnReviewOrder} open={Boolean(returnReviewOrder)} onOpenChange={(open) => !open && setReturnReviewOrder(null)} /></>;
 }
 
 export function PaymentsPage() {

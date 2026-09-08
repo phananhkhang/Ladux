@@ -649,15 +649,7 @@ export default function OrdersView({
                                             <Clock className="w-3.5 h-3.5 animate-pulse" />
                                             Đang chờ cửa hàng xem xét yêu cầu trả hàng
                                         </div>
-                                    )}
-
-                                    <button
-                                        onClick={() => showToast("Đang tải hóa đơn VAT điện tử (PDF)...")}
-                                        className="flex items-center gap-2 border border-neutral-800 hover:border-neutral-600 text-neutral-300 hover:text-white px-5 py-2.5 rounded-xl text-xs font-semibold transition"
-                                    >
-                                        <FileText className="w-3.5 h-3.5" />
-                                        Tải Hóa Đơn VAT
-                                    </button>
+                                    )} 
                                 </div>
                             </div>
                         )}

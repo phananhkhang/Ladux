@@ -55,6 +55,7 @@ export interface OrderResponse {
   paymentExpiresAt: string | null;
   orderItems: OrderItemResponse[];
   paymentProvider: PaymentProvider | null;
+  returnReason?: string | null;
 }
 
 export interface OrderPaymentRetryResponse {

@@ -83,6 +83,9 @@ public class Order {
 
     private Instant paymentExpiresAt;
 
+    @Column(name = "return_reason", columnDefinition = "TEXT")
+    private String returnReason;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default

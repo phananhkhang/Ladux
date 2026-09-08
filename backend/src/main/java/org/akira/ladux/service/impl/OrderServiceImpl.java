@@ -17,17 +17,18 @@ import org.akira.ladux.dto.system.response.PaymentCallbackResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.*;
+import org.akira.ladux.model.enums.NotificationType;
 import org.akira.ladux.model.enums.OrderStatus;
 import org.akira.ladux.model.enums.StockMovementType;
 import org.akira.ladux.model.enums.StockReferenceType;
 import org.akira.ladux.repository.CartRepository;
+import org.akira.ladux.repository.NotificationRepository;
 import org.akira.ladux.repository.OrderRepository;
 import org.akira.ladux.repository.UserRepository;
 import org.akira.ladux.service.*;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -54,6 +55,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository repo;
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
+    private final NotificationRepository notificationRepository;
     private final InventoryService inventoryService;
     private final CouponRedemptionService couponRedemptionService;
     private final PaymentAttemptService paymentAttemptService;
@@ -318,6 +320,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setStatus(OrderStatus.RETURN_REQUESTED);
+        order.setReturnReason(reason);
         String desc = "Khách hàng yêu cầu trả hàng" + (reason != null && !reason.isBlank() ? ". Lý do: " + reason : "");
         order.getHistories().add(OrderHistory.builder()
                 .order(order)
@@ -326,6 +329,26 @@ public class OrderServiceImpl implements OrderService {
                 .description(desc)
                 .build());
 
-        return OrderResponse.fromEntity(repo.save(order));
+        Order savedOrder = repo.save(order);
+
+        // Gửi thông báo đến tài khoản admin duy nhất
+        userRepository.findByUsername("admin").ifPresent(admin -> {
+            String customerName = (order.getUser() != null && order.getUser().getCustomer() != null && order.getUser().getCustomer().getFullName() != null)
+                    ? order.getUser().getCustomer().getFullName()
+                    : (order.getUser() != null ? order.getUser().getUsername() : "Khách hàng");
+            String reasonText = (reason != null && !reason.isBlank()) ? reason : "Không có lý do cụ thể";
+            Notification notification = Notification.builder()
+                    .recipient(admin)
+                    .title("Yêu cầu trả hàng đơn #" + orderId)
+                    .message("Khách hàng " + customerName + " yêu cầu trả hàng đơn #" + orderId + ". Lý do: " + reasonText)
+                    .type(NotificationType.ORDER_STATUS)
+                    .isRead(false)
+                    .isDeletedByUser(false)
+                    .createdAt(java.time.Instant.now())
+                    .build();
+            notificationRepository.save(notification);
+        });
+
+        return OrderResponse.fromEntity(savedOrder);
     }
 }

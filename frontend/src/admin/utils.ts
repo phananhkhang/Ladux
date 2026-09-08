@@ -81,7 +81,7 @@ export const orderTransitions: Record<OrderStatus, OrderStatus[]> = {
   PENDING: ["CONFIRMED", "CANCELLED"],
   CONFIRMED: ["SHIPPED", "CANCELLED"],
   SHIPPED: ["DELIVERED"],
-  DELIVERED: ["RETURN_REQUESTED", "RETURNED"],
+  DELIVERED: [],
   RETURN_REQUESTED: ["RETURNED", "DELIVERED"],
   RETURNED: ["REFUNDED"],
   REFUNDED: [],

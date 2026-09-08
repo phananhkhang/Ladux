@@ -50,6 +50,7 @@ describe("security and workflow helpers", () => {
   });
 
   it("keeps terminal transitions closed", () => {
+    expect(orderTransitions.DELIVERED).toEqual([]);
     expect(orderTransitions.REFUNDED).toEqual([]);
     expect(orderTransitions.CANCELLED).toEqual([]);
     expect(purchaseOrderTransitions.RECEIVED).toEqual([]);

@@ -23,7 +23,8 @@ public record OrderResponse(
         Instant createdAt,
         Instant paymentExpiresAt,
         List<OrderItemResponse> orderItems,
-        PaymentProvider paymentProvider
+        PaymentProvider paymentProvider,
+        String returnReason
 ) implements Serializable {
     public static OrderResponse fromEntity(Order order) {
         if (order == null) {
@@ -47,7 +48,8 @@ public record OrderResponse(
                 order.getItems().stream()
                         .map(OrderItemResponse::fromEntity)
                         .toList(),
-                provider
+                provider,
+                order.getReturnReason()
         );
     }
 
@@ -71,7 +73,8 @@ public record OrderResponse(
                 order.getCreatedAt(),
                 order.getPaymentExpiresAt(),
                 List.of(),
-                provider
+                provider,
+                order.getReturnReason()
         );
     }
 

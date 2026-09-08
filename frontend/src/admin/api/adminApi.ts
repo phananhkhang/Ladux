@@ -247,6 +247,8 @@ export const adminApi = {
     sendToUser: (userId: number, data: NotificationRequest) => post<string>(`/admin/notifications/user/${userId}`, data, { responseType: "text" }),
     delete: (id: number) => remove<string>(`/admin/notifications/${id}`, { responseType: "text" }),
     deleteAll: () => remove<string>("/admin/notifications/delete-all", { responseType: "text" }),
+    markAsRead: (id: number) => patch<void>(`/admin/notifications/${id}/read`),
+    unreadCount: () => get<number>("/admin/notifications/unread-count"),
   },
 
   chatbot: {

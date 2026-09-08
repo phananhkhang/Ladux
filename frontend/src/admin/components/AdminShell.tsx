@@ -13,6 +13,7 @@ import { env } from "../../config/env";
 import { useAdminAuth } from "../auth/AdminAuthProvider";
 import { AdminButton } from "./AdminUI";
 import { resolveImageUrl } from "../utils";
+import { AdminNotificationDropdown } from "./AdminNotificationDropdown";
 
 interface NavigationGroup {
   label: string;
@@ -197,6 +198,7 @@ export default function AdminShell() {
           </div>
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <button aria-label="Tìm kiếm" className="hidden h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 sm:flex"><Search className="h-4 w-4" /></button>
+            <AdminNotificationDropdown />
             <button aria-label={darkMode ? "Bật giao diện sáng" : "Bật giao diện tối"} onClick={() => setDarkMode((value) => !value)} className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50">{darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}</button>
             <div className="hidden h-9 w-px bg-slate-200 sm:block" />
             <div className="hidden text-right sm:block"><p className="max-w-36 truncate text-sm font-bold text-slate-900">{user?.fullName || user?.username}</p><p className="text-[11px] font-semibold uppercase tracking-wider text-indigo-600">Administrator</p></div>

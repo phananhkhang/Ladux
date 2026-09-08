@@ -193,6 +193,7 @@ export interface OrderResponse {
   paymentExpiresAt: string | null;
   orderItems: OrderItemResponse[];
   paymentProvider: PaymentProvider;
+  returnReason?: string | null;
 }
 
 export interface OrderHistoryResponse {

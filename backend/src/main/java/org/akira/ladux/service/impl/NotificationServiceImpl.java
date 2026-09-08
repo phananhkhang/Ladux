@@ -3,7 +3,6 @@ package org.akira.ladux.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.system.request.NotificationRequest;
 import org.akira.ladux.dto.system.response.NotificationResponse;
-import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Notification;
 import org.akira.ladux.model.User;
@@ -120,4 +119,17 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.deleteAll();
     }
 
+    @Override
+    @Transactional
+    public void markAsReadForAdmin(Integer notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông báo với id = " + notificationId));
+        notification.setRead(true);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int getUnreadNotificationCountForAdmin() {
+        return notificationRepository.countByIsReadFalse();
+    }
 }

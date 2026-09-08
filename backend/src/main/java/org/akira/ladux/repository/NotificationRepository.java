@@ -19,6 +19,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
 
     int countByRecipientIdAndIsReadFalseAndIsDeletedByUserFalse(Integer currentUserId);
 
+    int countByIsReadFalse();
+
     Optional<Notification> findByIdAndRecipientIdAndIsReadFalseAndIsDeletedByUserFalse(Integer notificationId, Integer currentUserId);
 
     Optional<Notification> findByIdAndRecipientIdAndIsDeletedByUserFalse(Integer notificationId, Integer currentUserId);
