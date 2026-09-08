@@ -54,8 +54,8 @@ public class ProviderCaptchaService implements CaptchaService {
             throw denied();
         }
         if (secret == null || secret.isBlank()) {
-            log.error("CAPTCHA is enabled but its server secret is not configured");
-            throw new IllegalStateException("CAPTCHA server configuration is incomplete");
+            log.error("CAPTCHA đang được bật nhưng chưa cấu hình server secret");
+            throw new IllegalStateException("Cấu hình CAPTCHA server chưa hoàn tất");
         }
 
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
@@ -79,7 +79,7 @@ public class ProviderCaptchaService implements CaptchaService {
             throw exception;
         } catch (RestClientException exception) {
             // CAPTCHA outages must fail closed; do not let them downgrade the password gate.
-            log.warn("CAPTCHA verification request failed: {}", exception.getClass().getSimpleName());
+            log.warn("Yêu cầu xác minh CAPTCHA thất bại: {}", exception.getClass().getSimpleName());
             throw denied();
         }
     }

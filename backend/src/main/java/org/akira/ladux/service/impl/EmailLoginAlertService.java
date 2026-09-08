@@ -53,7 +53,7 @@ public class EmailLoginAlertService implements LoginAlertService {
             ));
             mailSender.send(message);
         } catch (RuntimeException exception) {
-            log.error("Unable to send login alert for userId={}", user.getId(), exception);
+            log.error("Không thể gửi email cảnh báo đăng nhập cho userId={}", user.getId(), exception);
         }
     }
 

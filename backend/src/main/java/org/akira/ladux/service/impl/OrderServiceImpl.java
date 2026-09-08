@@ -232,7 +232,7 @@ public class OrderServiceImpl implements OrderService {
                 .order(order)
                 .user(order.getUser())
                 .status(OrderStatus.PENDING)
-                .description("Order created")
+                .description("Đơn hàng đã được tạo thành công")
                 .build());
 
         // B10: tạo payment ban đầu và set hạn thanh toán.
@@ -250,7 +250,7 @@ public class OrderServiceImpl implements OrderService {
                     StockMovementType.SALE_OUT,
                     StockReferenceType.ORDER,
                     orderRef,
-                    "Ban hang tu don #" + order.getId(),
+                    "Bán hàng từ đơn #" + order.getId(),
                     user);
         }
 
@@ -298,7 +298,7 @@ public class OrderServiceImpl implements OrderService {
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new BusinessRuleException("Chỉ có thể hủy đơn hàng đang ở trạng thái PENDING");
         }
-        orderLifecycleService.cancelOrder(order, "Order được hủy bởi người dùng");
+        orderLifecycleService.cancelOrder(order, "Đơn hàng được người dùng hủy");
     }
 
     @Override

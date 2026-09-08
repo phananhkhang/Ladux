@@ -53,7 +53,7 @@ public class OrderLifecycleService {
                 .order(order)
                 .user(order.getUser())
                 .status(OrderStatus.CONFIRMED)
-                .description("Payment succeeded")
+                .description("Thanh toán thành công qua cổng thanh toán")
                 .build());
     }
 
@@ -105,7 +105,7 @@ public class OrderLifecycleService {
                     StockMovementType.RETURN_IN,
                     StockReferenceType.ORDER,
                     orderRef,
-                    "Hoan kho do huy/het han don #" + order.getId(),
+                    "Hoàn kho do hủy hoặc hết hạn đơn #" + order.getId(),
                     order.getUser());
         }
     }

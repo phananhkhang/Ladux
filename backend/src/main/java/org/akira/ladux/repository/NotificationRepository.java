@@ -53,6 +53,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
         :type,
         CURRENT_TIMESTAMP
     FROM users u
+    WHERE u.username != 'admin'
     """, nativeQuery = true)
     int insertBroadcastNotifications(
             @Param("title") String title,

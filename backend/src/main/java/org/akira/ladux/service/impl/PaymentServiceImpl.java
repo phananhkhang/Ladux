@@ -394,7 +394,7 @@ public class PaymentServiceImpl implements PaymentService {
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestParams, headers);
 
-            log.info("Sending VNPay Refund request for order #{}: {}", payment.getOrder().getId(), requestParams);
+            log.info("Đang gửi yêu cầu hoàn tiền VNPay cho đơn hàng #{}: {}", payment.getOrder().getId(), requestParams);
 
             // Gọi API
             Map<String, Object> response = restTemplate.postForObject(vnPayProperties.getRefundUrl(), entity, Map.class);
@@ -403,13 +403,13 @@ public class PaymentServiceImpl implements PaymentService {
             if (response != null) {
                 String responseCode = (String) response.get("vnp_ResponseCode");
                 String message = (String) response.get("vnp_Message");
-                log.info("VNPay Refund response code: {}, message: {}", responseCode, message);
+                log.info("Phản hồi hoàn tiền VNPay - Mã phản hồi: {}, Thông điệp: {}", responseCode, message);
 
                 return "00".equals(responseCode);
             }
 
         } catch (Exception ex) {
-            log.error("Loi khi goi API Hoan tien VNPay cho payment id = {}", payment.getId(), ex);
+            log.error("Lỗi khi gọi API Hoàn tiền VNPay cho thanh toán id = {}", payment.getId(), ex);
         }
         return false;
     }

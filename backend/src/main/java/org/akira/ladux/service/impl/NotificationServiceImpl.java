@@ -99,11 +99,16 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.save(notification);
         return "Thông báo đã được gửi đến người dùng.";
     }
-    // Admin xem tất cả thông báo
+    // Admin xem tất cả thông báo gửi đến admin (yêu cầu trả hàng, hệ thống...)
     @Override
     @Transactional(readOnly = true)
     public Page<NotificationResponse> getAllNotificationsForAdmin(Pageable pageable) {
-        return notificationRepository.findAllByOrderByCreatedAtDesc(pageable).map(NotificationResponse::fromEntity);
+        User admin = userRepository.findByUsername("admin").orElse(null);
+        if (admin == null) {
+            return Page.empty(pageable);
+        }
+        return notificationRepository.findByRecipientIdAndIsDeletedByUserFalseOrderByCreatedAtDesc(admin.getId(), pageable)
+                .map(NotificationResponse::fromEntity);
     }
     // Xoa thong bao cho admin (Hard delete từ DB)
     @Override
@@ -112,11 +117,14 @@ public class NotificationServiceImpl implements NotificationService {
         Notification notification = notificationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông báo với id = " + id));
         notificationRepository.delete(notification);
     }
-    // Xoa tat ca thong bao cho admin (Hard delete tất cả từ DB)
+    // Xoa tat ca thong bao cho admin (chỉ soft-delete thông báo gửi đến admin)
     @Override
     @Transactional
     public void deleteAllNotificationsForAdmin() {
-        notificationRepository.deleteAll();
+        User admin = userRepository.findByUsername("admin").orElse(null);
+        if (admin != null) {
+            notificationRepository.softDeleteAllByUserId(admin.getId());
+        }
     }
 
     @Override
@@ -130,6 +138,10 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional(readOnly = true)
     public int getUnreadNotificationCountForAdmin() {
-        return notificationRepository.countByIsReadFalse();
+        User admin = userRepository.findByUsername("admin").orElse(null);
+        if (admin == null) {
+            return 0;
+        }
+        return notificationRepository.countByRecipientIdAndIsReadFalseAndIsDeletedByUserFalse(admin.getId());
     }
 }

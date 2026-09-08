@@ -120,8 +120,6 @@ export function NotificationsPage() {
   };
 
   const columns: AdminColumn<NotificationResponse>[] = [
-    { key: "userId", header: "ID Người dùng", render: (notification) => <code className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">#{notification.userId ?? "—"}</code> },
-    { key: "userName", header: "Tên người dùng", render: (notification) => <span className="font-bold text-slate-900">{notification.userName || "—"}</span> },
     { key: "title", header: "Thông báo", render: (notification) => <div className="max-w-xl"><p className="font-extrabold text-slate-900">{notification.title}</p><p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-500">{notification.message}</p></div> },
     { key: "type", header: "Loại", render: (notification) => <StatusBadge value={notification.type} /> },
     { key: "created", header: "Ngày tạo", render: (notification) => formatBackendDateTime(notification.createdAt) },
@@ -137,7 +135,7 @@ export function NotificationsPage() {
   };
 
   return <>
-    <PageHeader title="Thông báo hệ thống" description="Gửi broadcast hoặc chọn người dùng qua thanh tìm kiếm tên, SĐT, Email để gửi riêng." actions={<><AdminButton tone="secondary" className="text-rose-600" onClick={() => setDeleteAllOpen(true)}><Trash2 className="h-4 w-4" />Xóa tất cả</AdminButton><AdminButton onClick={() => { setForm(emptyNotification); setMode("broadcast"); setSelectedUser(null); setUserSearchQuery(""); setError(null); setDialogOpen(true); }}><Send className="h-4 w-4" />Gửi thông báo</AdminButton></>} />
+    <PageHeader title="Thông báo hệ thống" description="Hộp thư thông báo quản trị và phát thông báo tới người dùng hệ thống." actions={<><AdminButton tone="secondary" className="text-rose-600" onClick={() => setDeleteAllOpen(true)}><Trash2 className="h-4 w-4" />Xóa tất cả</AdminButton><AdminButton onClick={() => { setForm(emptyNotification); setMode("broadcast"); setSelectedUser(null); setUserSearchQuery(""); setError(null); setDialogOpen(true); }}><Send className="h-4 w-4" />Gửi thông báo</AdminButton></>} />
     <Panel>
       <AdminTable rows={query.data?.content ?? []} columns={columns} isLoading={query.isLoading} error={query.isError ? getApiErrorMessage(query.error) : null} onRetry={() => query.refetch()} />
       <PaginationBar page={page} totalPages={query.data?.totalPages ?? 0} totalElements={query.data?.totalElements ?? 0} size={size} onPageChange={updatePage} onSizeChange={(value) => { const next = new URLSearchParams(params); next.set("size", String(value)); next.set("page", "0"); setParams(next); }} />

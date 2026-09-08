@@ -7,10 +7,13 @@ import org.akira.ladux.dto.order.response.OrderResponse;
 import org.akira.ladux.event.OrderDeliveredEvent;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
+import org.akira.ladux.model.Notification;
 import org.akira.ladux.model.Order;
 import org.akira.ladux.model.OrderHistory;
 import org.akira.ladux.model.User;
+import org.akira.ladux.model.enums.NotificationType;
 import org.akira.ladux.model.enums.OrderStatus;
+import org.akira.ladux.repository.NotificationRepository;
 import org.akira.ladux.repository.OrderRepository;
 import org.akira.ladux.repository.UserRepository;
 import org.akira.ladux.service.OrderLifecycleService;
@@ -44,6 +47,7 @@ public class OrderStateMachineImpl implements OrderStateMachine {
     private final PaymentService paymentService;
     private final ApplicationEventPublisher eventPublisher;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     @Override
     @Transactional
@@ -65,7 +69,8 @@ public class OrderStateMachineImpl implements OrderStateMachine {
 
         validateTransition(current, target);
         if (target == OrderStatus.CANCELLED) {
-            orderLifecycleService.cancelOrder(order, "Order cancelled by user");
+            orderLifecycleService.cancelOrder(order, "Đơn hàng đã được người dùng hủy");
+            sendOrderStatusNotification(order, target);
             return OrderResponse.fromEntity(order);
         }
 
@@ -75,17 +80,20 @@ public class OrderStateMachineImpl implements OrderStateMachine {
                     .order(order)
                     .user(admin)
                     .status(target)
-                    .description("Admin từ chối yêu cầu trả hàng của khách")
+                    .description("Quản trị viên từ chối yêu cầu trả hàng của khách")
                     .build());
+            sendReturnDecisionNotification(order, false);
             return OrderResponse.fromEntity(order);
         }       
 
         if (target == OrderStatus.RETURNED) {
-            return orderLifecycleService.processReturnOrder(orderId, "Admin xác nhận chấp nhận trả hàng và nhập lại kho", admin);
+            OrderResponse resp = orderLifecycleService.processReturnOrder(orderId, "Quản trị viên xác nhận chấp nhận trả hàng và nhập lại kho", admin);
+            sendReturnDecisionNotification(order, true);
+            return resp;
         }
 
         if (target == OrderStatus.REFUNDED) {
-            return paymentService.processRefund(orderId, order.getFinalAmount(), "Xác nhận hoàn tiền qua Admin API", admin);
+            return paymentService.processRefund(orderId, order.getFinalAmount(), "Xác nhận hoàn tiền qua giao diện quản trị", admin);
         }
         // Tao ma trackingNumber khi chuyen sang SHIPPED (tu dong neu khong duoc truyen hoac rong).
         if (target == OrderStatus.SHIPPED) {
@@ -100,8 +108,9 @@ public class OrderStateMachineImpl implements OrderStateMachine {
                 .order(order)
                 .user(order.getUser())
                 .status(target)
-                .description("Order status changed from " + current.name() + " to " + target.name())
+                .description("Trạng thái đơn hàng chuyển từ " + formatStatusVi(current) + " sang " + formatStatusVi(target))
                 .build());
+        sendOrderStatusNotification(order, target);
         if (target == OrderStatus.DELIVERED) {
             eventPublisher.publishEvent(new OrderDeliveredEvent(order));
         }
@@ -178,6 +187,82 @@ public class OrderStateMachineImpl implements OrderStateMachine {
         } catch (Exception ignored) {
         }
         return userRepository.findByUsername("admin").orElse(order.getUser());
+    }
+
+    private String formatStatusVi(OrderStatus status) {
+        if (status == null) return "";
+        return switch (status) {
+            case PENDING -> "Chờ xử lý";
+            case CONFIRMED -> "Đã xác nhận";
+            case SHIPPED -> "Đang giao hàng";
+            case DELIVERED -> "Đã giao thành công";
+            case RETURN_REQUESTED -> "Yêu cầu trả hàng";
+            case RETURNED -> "Đã trả hàng";
+            case REFUNDED -> "Đã hoàn tiền";
+            case CANCELLED -> "Đã hủy";
+        };
+    }
+
+    private void sendOrderStatusNotification(Order order, OrderStatus status) {
+        if (order.getUser() == null) return;
+        String title;
+        String message;
+        switch (status) {
+            case CONFIRMED -> {
+                title = "Đơn hàng #" + order.getId() + " đã được xác nhận";
+                message = "Đơn hàng #" + order.getId() + " của bạn đã được xác nhận và đang được chuẩn bị hàng.";
+            }
+            case SHIPPED -> {
+                title = "Đơn hàng #" + order.getId() + " đang được giao";
+                message = "Đơn hàng #" + order.getId() + " đã được xuất kho và đang trên đường giao đến bạn."
+                        + (order.getTrackingNumber() != null ? " Mã vận đơn: " + order.getTrackingNumber() : "");
+            }
+            case DELIVERED -> {
+                title = "Đơn hàng #" + order.getId() + " đã giao thành công";
+                message = "Đơn hàng #" + order.getId() + " đã được giao thành công. Cảm ơn bạn đã mua sắm tại Ladux!";
+            }
+            case CANCELLED -> {
+                title = "Đơn hàng #" + order.getId() + " đã bị hủy";
+                message = "Đơn hàng #" + order.getId() + " của bạn đã được cập nhật sang trạng thái đã hủy.";
+            }
+            default -> {
+                return;
+            }
+        }
+        try {
+            notificationRepository.save(Notification.builder()
+                    .recipient(order.getUser())
+                    .title(title)
+                    .message(message)
+                    .type(NotificationType.ORDER_STATUS)
+                    .isRead(false)
+                    .isDeletedByUser(false)
+                    .createdAt(Instant.now())
+                    .build());
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void sendReturnDecisionNotification(Order order, boolean accepted) {
+        if (order.getUser() == null) return;
+        String title = accepted
+                ? "Yêu cầu trả hàng đơn #" + order.getId() + " đã được chấp nhận"
+                : "Yêu cầu trả hàng đơn #" + order.getId() + " đã bị từ chối";
+        String message = accepted
+                ? "Yêu cầu trả hàng cho đơn hàng #" + order.getId() + " của bạn đã được chấp nhận. Sản phẩm đã được nhận lại về kho."
+                : "Yêu cầu trả hàng cho đơn hàng #" + order.getId() + " của bạn đã bị từ chối bởi quản trị viên.";
+        try {
+            notificationRepository.save(Notification.builder()
+                    .recipient(order.getUser())
+                    .title(title)
+                    .message(message)
+                    .type(NotificationType.ORDER_STATUS)
+                    .isRead(false)
+                    .isDeletedByUser(false)
+                    .createdAt(Instant.now())
+                    .build());
+        } catch (Exception ignored) {
+        }
     }
 
     private String generateTrackingNumber() {

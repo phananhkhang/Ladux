@@ -166,7 +166,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                     StockMovementType.PURCHASE_IN,
                     StockReferenceType.PURCHASE_ORDER,
                     po.getId().intValue(),
-                    "Nhan hang tu don mua #" + po.getId(),
+                    "Nhận hàng từ đơn mua #" + po.getId(),
                     receivedBy);
 
             item.setReceivedQuantity(newReceived);

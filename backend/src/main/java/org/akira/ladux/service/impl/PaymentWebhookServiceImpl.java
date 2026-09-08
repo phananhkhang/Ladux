@@ -58,12 +58,12 @@ public class PaymentWebhookServiceImpl implements PaymentWebhookService {
         // --- BUOC 1: Validate Signature ---
         String secureHash = params.get("vnp_SecureHash");
         if (secureHash == null || secureHash.isBlank()) {
-            log.warn("[WEBHOOK] VNPay callback thieu vnp_SecureHash");
+            log.warn("[WEBHOOK] VNPay callback thiếu vnp_SecureHash");
             return PaymentWebhookResult.invalidSignature();
         }
 
         if (!isValidVNPaySignature(params, secureHash)) {
-            log.warn("[WEBHOOK] VNPay callback co chu ky khong hop le");
+            log.warn("[WEBHOOK] VNPay callback có chữ ký không hợp lệ");
             return PaymentWebhookResult.invalidSignature();
         }
 
@@ -82,7 +82,7 @@ public class PaymentWebhookServiceImpl implements PaymentWebhookService {
         String transactionStatus = params.get("vnp_TransactionStatus");
 
         if (merchantTxnRef == null || merchantTxnRef.isBlank()) {
-            log.warn("[WEBHOOK] VNPay callback thieu vnp_TxnRef (merchantTxnRef)");
+            log.warn("[WEBHOOK] VNPay callback thiếu vnp_TxnRef (merchantTxnRef)");
             return PaymentWebhookResult.orderNotFound();
         }
 
@@ -90,7 +90,7 @@ public class PaymentWebhookServiceImpl implements PaymentWebhookService {
         try {
             return processPaymentUpdate(merchantTxnRef, gatewayTransactionNo, gatewayAmountRaw, responseCode, transactionStatus);
         } catch (DataIntegrityViolationException ex) {
-            log.info("[WEBHOOK] Race condition tren gateway_transaction_no={}, tra ve idempotent 200", gatewayTransactionNo);
+            log.info("[WEBHOOK] Xung đột xử lý đồng thời trên gateway_transaction_no={}, trả về idempotent 200", gatewayTransactionNo);
             return PaymentWebhookResult.idempotent();
         }
     }
@@ -106,7 +106,7 @@ public class PaymentWebhookServiceImpl implements PaymentWebhookService {
         if (gatewayTransactionNo != null && !gatewayTransactionNo.isBlank()) {
             Optional<Payment> existingByGatewayTxn = paymentRepository.findByTransactionNo(gatewayTransactionNo);
             if (existingByGatewayTxn.isPresent() && existingByGatewayTxn.get().getStatus() == PaymentStatus.SUCCESS) {
-                log.info("[WEBHOOK] Idempotent: gateway_transaction_no={} da SUCCESS, bo qua xu ly", gatewayTransactionNo);
+                log.info("[WEBHOOK] Idempotent: gateway_transaction_no={} đã thành công (SUCCESS), bỏ qua xử lý lại", gatewayTransactionNo);
                 return PaymentWebhookResult.idempotent();
             }
         }
@@ -114,31 +114,31 @@ public class PaymentWebhookServiceImpl implements PaymentWebhookService {
         // Lock payment theo merchantTxnRef
         Payment payment = paymentRepository.findByMerchantTxnRefForUpdate(merchantTxnRef).orElse(null);
         if (payment == null) {
-            log.warn("[WEBHOOK] Khong tim thay payment cho merchantTxnRef={}", merchantTxnRef);
+            log.warn("[WEBHOOK] Không tìm thấy thanh toán cho merchantTxnRef={}", merchantTxnRef);
             return PaymentWebhookResult.orderNotFound();
         }
 
         if (payment.getProvider() != PaymentProvider.VNPAY) {
-            log.warn("[WEBHOOK] Payment id={} khong phai VNPAY provider", payment.getId());
+            log.warn("[WEBHOOK] Thanh toán id={} không phải cổng VNPAY", payment.getId());
             return PaymentWebhookResult.orderNotFound();
         }
 
         if (payment.getStatus() == PaymentStatus.SUCCESS) {
-            log.info("[WEBHOOK] Idempotent: payment merchantTxnRef={} da SUCCESS", merchantTxnRef);
+            log.info("[WEBHOOK] Idempotent: thanh toán merchantTxnRef={} đã thành công (SUCCESS)", merchantTxnRef);
             return PaymentWebhookResult.idempotent();
         }
 
         Order order = orderRepository.findWithItemsByIdForUpdate(payment.getOrder().getId()).orElse(null);
         if (order == null) {
-            log.warn("[WEBHOOK] Khong tim thay order cho payment id={}", payment.getId());
+            log.warn("[WEBHOOK] Không tìm thấy đơn hàng cho thanh toán id={}", payment.getId());
             return PaymentWebhookResult.orderNotFound();
         }
 
         // So sanh amount tu gateway voi payment.getAmount()
         if (!isAmountMatched(payment, gatewayAmountRaw)) {
-            log.error("[WEBHOOK][ALERT] AMOUNT MISMATCH — merchantTxnRef={}, payment.amount={}, gateway.vnp_Amount={}",
+            log.error("[WEBHOOK][CẢNH BÁO] LỆCH SỐ TIỀN THANH TOÁN — merchantTxnRef={}, payment.amount={}, gateway.vnp_Amount={}",
                     merchantTxnRef, payment.getAmount(), gatewayAmountRaw);
-            return PaymentWebhookResult.amountMismatch("Invalid amount");
+            return PaymentWebhookResult.amountMismatch("Số tiền không khớp");
         }
 
         if (gatewayTransactionNo != null && !gatewayTransactionNo.isBlank()) {
@@ -157,7 +157,7 @@ public class PaymentWebhookServiceImpl implements PaymentWebhookService {
 
         paymentRepository.save(payment);
 
-        log.info("[WEBHOOK] Da xu ly webhook: merchantTxnRef={}, status={}", merchantTxnRef, payment.getStatus());
+        log.info("[WEBHOOK] Đã xử lý webhook thành công: merchantTxnRef={}, trạng thái={}", merchantTxnRef, payment.getStatus());
         return PaymentWebhookResult.processed();
     }
 

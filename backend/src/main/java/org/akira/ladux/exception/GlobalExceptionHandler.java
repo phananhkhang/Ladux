@@ -143,7 +143,7 @@ public class GlobalExceptionHandler {
         String message = (ex != null && ex.getMessage() != null && !ex.getMessage().isBlank()
                 && !"Access Denied".equalsIgnoreCase(ex.getMessage().trim()))
                 ? ex.getMessage()
-                : "Ban khong co quyen thuc hien thao tac nay";
+                : "Bạn không có quyền thực hiện thao tác này";
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.FORBIDDEN.value())
@@ -166,12 +166,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex) {
-        log.error("Unhandled exception in request", ex);
+        log.error("Ngoại lệ chưa được xử lý trong yêu cầu", ex);
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .message("Da xay ra loi he thong")
+                .message("Đã xảy ra lỗi hệ thống")
                 .build();
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
