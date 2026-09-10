@@ -38,4 +38,22 @@ public class AdminBrandController {
         BrandResponse response = service.updateBrand(id, brand);
         return ResponseEntity.ok(response);
     }
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BrandResponse> getBrandById(@PathVariable int id) {
+        BrandResponse response = service.getBrandById(id);
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BrandResponse> getBrandByName(@RequestParam String name) {
+        BrandResponse response = service.getBrandByName(name);
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/slug/{slug}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BrandResponse> getBrandBySlug(@PathVariable String slug) {
+        BrandResponse response = service.getBrandBySlug(slug);
+        return ResponseEntity.ok(response);
+    }
 }

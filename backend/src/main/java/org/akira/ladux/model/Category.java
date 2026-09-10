@@ -33,18 +33,6 @@ public class Category {
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 
-    // Self-reference: category cha
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    @ToString.Exclude
-    private Category parent;
-
-    // Self-reference: danh sách category con
-    @OneToMany(mappedBy = "parent")
-    @ToString.Exclude
-    @Builder.Default
-    private List<Category> children = new ArrayList<>();
-
     @OneToMany(mappedBy = "category")
     @ToString.Exclude
     @Builder.Default

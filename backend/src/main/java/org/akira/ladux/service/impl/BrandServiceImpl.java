@@ -3,6 +3,7 @@ package org.akira.ladux.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.catalog.request.BrandRequest;
 import org.akira.ladux.dto.catalog.response.BrandResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Brand;
 import org.akira.ladux.repository.BrandRepository;
@@ -10,7 +11,6 @@ import org.akira.ladux.service.BrandService;
 import org.akira.ladux.utils.SlugUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +22,10 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "brands", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
-    public Page<BrandResponse> getAllBrands(Pageable pageable) {
-        return repo.findAll(pageable)
-                .map(BrandResponse::fromEntity);
+    @Cacheable(value = "brands", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort.toString()")
+    public PageResponse<BrandResponse> getAllBrands(Pageable pageable) {
+        return PageResponse.from(repo.findAll(pageable)
+                .map(BrandResponse::fromEntity));
     }
 
     @Override
@@ -39,23 +39,34 @@ public class BrandServiceImpl implements BrandService {
     @Transactional(readOnly = true)
     @Cacheable(value = "brands", key = "'name:' + #name")
     public BrandResponse getBrandByName(String name) {
-        return BrandResponse.fromEntity(repo.findByName(name));
+       Brand brand = repo.findByName(name)
+               .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thương hiệu với tên = " + name));
+       return BrandResponse.fromEntity(brand);
     }
 
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "brands", key = "'slug:' + #slug")
     public BrandResponse getBrandBySlug(String slug) {
-        return BrandResponse.fromEntity(repo.findBySlug(slug));
+      Brand brand = repo.findBySlug(slug)
+              .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thương hiệu với slug = " + slug));
+      return BrandResponse.fromEntity(brand);
     }
 
     @Override
     @Transactional
     @CacheEvict(value = "brands", allEntries = true)
     public BrandResponse createBrand(BrandRequest request) {
-        String slug = SlugUtils.toSlug(request.name());
+        if (request.name() == null || request.name().isBlank()) {
+            throw new IllegalArgumentException("Tên thương hiệu không được để trống");
+        }
+        if (repo.existsByName(request.name())) {
+            throw new IllegalArgumentException("Tên thương hiệu đã tồn tại");
+        }
+        String nameTrimmed = request.name().trim();
+        String slug = SlugUtils.toSlug(nameTrimmed);
         Brand brand = Brand.builder()
-                .name(request.name())
+                .name(nameTrimmed)
                 .slug(slug)
                 .logoUrl(request.logoUrl())
                 .build();
@@ -69,10 +80,16 @@ public class BrandServiceImpl implements BrandService {
     @Transactional
     @CacheEvict(value = "brands", allEntries = true)
     public BrandResponse updateBrand(int id, BrandRequest brand) {
+        if (brand.name() == null || brand.name().isBlank()) {
+            throw new IllegalArgumentException("Tên thương hiệu không được để trống");
+        }
         Brand b = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thương hiệu với id = " + id));
-        if (b == null) return null;
-        b.setName(brand.name());
-        b.setSlug(SlugUtils.toSlug(brand.name()));
+        if (!b.getName().equalsIgnoreCase(brand.name()) && repo.existsByName(brand.name())) {
+            throw new IllegalArgumentException("Tên thương hiệu đã tồn tại");
+        }
+        String nameTrimmed = brand.name().trim();
+        b.setName(nameTrimmed);
+        b.setSlug(SlugUtils.toSlug(nameTrimmed));
         b.setLogoUrl(brand.logoUrl());
         return BrandResponse.fromEntity(b);
     }
@@ -81,6 +98,9 @@ public class BrandServiceImpl implements BrandService {
     @Transactional
     @CacheEvict(value = "brands", allEntries = true)
     public void deleteBrandById(int id) {
+        if (!repo.existsById(id)) {
+            throw new ResourceNotFoundException("Không tìm thấy thương hiệu với id = " + id);
+        }
         repo.deleteById(id);
     }
 

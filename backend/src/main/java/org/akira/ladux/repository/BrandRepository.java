@@ -1,12 +1,17 @@
 package org.akira.ladux.repository;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.akira.ladux.model.Brand;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 public interface BrandRepository extends JpaRepository<Brand, Integer> {
 
-    Brand findByName(String name);
+    Optional<Brand> findByName(String name);
 
-    Brand findBySlug(String slug);
+    Optional<Brand> findBySlug(String slug);
+
+    Boolean existsByName(String name);
 }

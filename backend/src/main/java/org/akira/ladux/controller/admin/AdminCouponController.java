@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminCouponController {
     private final CouponService service;
 
-    @GetMapping
+    @GetMapping 
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<CouponResponse>> getAllCoupons(Pageable pageable) {
         return ResponseEntity.ok(service.getAllCoupons(pageable));
