@@ -12,8 +12,6 @@ import org.akira.ladux.service.FileStorageService;
 import org.akira.ladux.service.ProductImageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,37 +34,51 @@ public class ProductImageServiceImpl implements ProductImageService {
     private String productUploadDir;
 
     @Override
-    @Transactional(readOnly = true)
-    @Cacheable(value = "productImages", key = "'product:' + #productId")
-    public List<ProductImageResponse> getProductImagesByProductId(int productId) {
-        return repo.findByProductId(productId).stream()
-                .map(ProductImageResponse::fromEntity)
-                .toList();
-    }
-
-    @Override
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "productImages", allEntries = true),
-            @CacheEvict(value = "products", allEntries = true)
-    })
-    public List<ProductImageResponse> addImages(int productId, List<String> imageUrls) {
+    @CacheEvict(value = "products", allEntries = true)
+    public List<ProductImageResponse> uploadImage(int productId, List<MultipartFile> files, List<String> imageUrls) {
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham voi id = " + productId));
 
         Set<String> existingUrls = repo.findByProductId(productId).stream()
                 .map(ProductImage::getImageUrl)
                 .collect(Collectors.toSet());
-        Set<String> uniqueUrls = imageUrls.stream()
-                .filter(Objects::nonNull)
-                .map(String::trim)
-                .filter(imageUrl -> !imageUrl.isBlank())
-                .collect(Collectors.toCollection(LinkedHashSet::new)); // dùng linkedHashSet để giữ nguyên thứ tự và loại bỏ trùng lặp
+
+        Set<String> candidateUrls = new LinkedHashSet<>();
+
+        // 1. Thu thập URL có sẵn từ client nếu có
+        if (imageUrls != null) {
+            imageUrls.stream()
+                    .filter(Objects::nonNull)
+                    .map(String::trim)
+                    .filter(url -> !url.isBlank())
+                    .forEach(candidateUrls::add);
+        }
+
+        // 2. Upload các file từ máy nếu có
+        if (files != null) {
+            for (MultipartFile file : files) {
+                if (file != null && !file.isEmpty()) {
+                    String storedUrl = fileStorage.store(productUploadDir, file);
+                    if (storedUrl != null && !storedUrl.isBlank()) {
+                        candidateUrls.add(storedUrl.trim());
+                    }
+                }
+            }
+        }
+
+        if (candidateUrls.isEmpty()) {
+            return List.of();
+        }
 
         boolean currentEmpty = existingUrls.isEmpty();
-        List<String> newUrls = uniqueUrls.stream()
-                .filter(imageUrl -> !existingUrls.contains(imageUrl))
+        List<String> newUrls = candidateUrls.stream()
+                .filter(url -> !existingUrls.contains(url))
                 .toList();
+
+        if (newUrls.isEmpty()) {
+            return List.of();
+        }
 
         List<ProductImage> productImages = new ArrayList<>();
         for (int i = 0; i < newUrls.size(); i++) {
@@ -76,9 +88,6 @@ public class ProductImageServiceImpl implements ProductImageService {
                     .isPrimary(currentEmpty && i == 0)
                     .build());
         }
-        if (productImages.isEmpty()) {
-            return List.of(); // Trả về list rỗng nhưng ko có saveAll nên yên tâm không mất dữ liệu ảnh đâu!
-        }
 
         return repo.saveAll(productImages).stream()
                 .map(ProductImageResponse::fromEntity)
@@ -87,34 +96,7 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     @Override
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "productImages", allEntries = true),
-            @CacheEvict(value = "products", allEntries = true)
-    })
-    public List<ProductImageResponse> uploadImage(int productId, List<MultipartFile> files) {
-        Product product = productRepo.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay san pham voi id = " + productId));
-        List<ProductImageResponse> responses = new ArrayList<>();
-        for (MultipartFile file : files) {
-            if (file.isEmpty()) {
-                continue;
-            }
-            String url = fileStorage.store(productUploadDir, file);
-            ProductImage image = ProductImage.builder()
-                    .product(product)
-                    .imageUrl(url)
-                    .build();
-            responses.add(ProductImageResponse.fromEntity(repo.save(image)));
-        }
-        return responses;
-    }
-
-    @Override
-    @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "productImages", allEntries = true),
-            @CacheEvict(value = "products", allEntries = true)
-    })
+    @CacheEvict(value = "products", allEntries = true)
     public void deleteProductImageById(int productId, int imageId) {
         ProductImage image = repo.findById(imageId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay product image voi id = " + imageId));

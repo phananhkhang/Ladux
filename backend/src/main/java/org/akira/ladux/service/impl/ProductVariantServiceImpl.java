@@ -31,6 +31,9 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         if (productId == null || colorId == null || ram == null || rom == null || price == null || stockQuantity < 0) {
             throw new IllegalArgumentException("Không được để trống bất kì trường nào và StockQuantity không được âm");
         }
+        if (ram.isBlank() || rom.isBlank()) {
+            throw new IllegalArgumentException("RAM và ROM không được để trống");
+        }
         if (colorId == null) {
             throw new IllegalArgumentException("Màu sắc không hợp lệ");
         }
@@ -58,6 +61,9 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     public ProductVariantResponse updateProductVariant(Integer id, Integer colorId, String ram, String rom, BigDecimal price, BigDecimal discountPrice, int stockQuantity, boolean active) {
         if (id == null || colorId == null || ram == null || rom == null || price == null || stockQuantity < 0) {
             throw new IllegalArgumentException("Không được để trống bất kì trường nào và StockQuantity không được âm");
+        }
+        if (ram.isBlank() || rom.isBlank()) {
+            throw new IllegalArgumentException("RAM và ROM không được để trống");
         }
         ProductVariant existingVariant = productVariantRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy ProductVariant với id: " + id));
         Color color = colorRepository.findById(colorId)

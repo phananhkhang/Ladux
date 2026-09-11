@@ -126,18 +126,21 @@ export const adminApi = {
     byBrand: (brandId: number, params?: PageParams) => get<PageResponse<ProductResponse>>(`/products/brand/${brandId}`, { params }),
     byCategory: (categoryId: number, params?: PageParams) => get<PageResponse<ProductResponse>>(`/products/category/${categoryId}`, { params }),
     variant: (variantId: number) => get<ProductVariantResponse>(`/products/variant/${variantId}`),
-    images: (productId: number) => get<ProductImageResponse[]>(`/products/${productId}/images`),
     create: (data: ProductRequest) => post<ProductResponse>("/admin/products", data),
     update: (id: number, data: ProductRequest) => put<ProductResponse>(`/admin/products/${id}`, data),
     delete: (id: number) => remove<void>(`/admin/products/${id}`),
     createVariant: (data: ProductVariantRequest) => post<ProductVariantResponse>("/admin/product-variants", data),
     updateVariant: (id: number, data: ProductVariantRequest) => put<ProductVariantResponse>(`/admin/product-variants/${id}`, data),
     deleteVariant: (id: number) => remove<void>(`/admin/product-variants/${id}`),
-    addImageUrls: (productId: number, urls: string[]) => post<ProductImageResponse[]>(`/admin/products/${productId}/images`, urls),
-    uploadImages: (productId: number, files: File[]) => {
+    uploadImages: (productId: number, files?: File[], imageUrls?: string[]) => {
       const formData = new FormData();
-      files.forEach((file) => formData.append("file", file));
-      return post<ProductImageResponse[]>(`/admin/products/${productId}/images/upload`, formData);
+      if (files) {
+        files.forEach((file) => formData.append("file", file));
+      }
+      if (imageUrls) {
+        imageUrls.forEach((url) => formData.append("imageUrls", url));
+      }
+      return post<ProductImageResponse[]>(`/admin/products/${productId}/images`, formData);
     },
     deleteImage: (productId: number, imageId: number) => remove<void>(`/admin/products/${productId}/images/${imageId}`),
   },

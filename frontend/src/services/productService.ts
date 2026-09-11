@@ -155,14 +155,6 @@ export const productService = {
     return apiClient.get(`/products/variant/${variantId}`);
   },
 
-  /**
-   * Lấy danh sách hình ảnh của 1 sản phẩm
-   * GET /api/v1/products/{productId}/images
-   */
-  getProductImagesByProductId: (productId: number): Promise<ProductImageResponse[]> => {
-    return apiClient.get(`/products/${productId}/images`);
-  },
-
   // ==========================================
   // 2. ADMIN ENDPOINTS (/api/v1/admin/...)
   // ==========================================
@@ -216,21 +208,22 @@ export const productService = {
   },
 
   /**
-   * [Admin] Thêm danh sách URL ảnh phụ cho sản phẩm
+   * [Admin] Upload file ảnh hoặc thêm URL ảnh cho sản phẩm
    * POST /api/v1/admin/products/{productId}/images
    */
-  addSecondaryImages: (productId: number, imageUrls: string[]): Promise<ProductImageResponse[]> => {
-    return apiClient.post(`/admin/products/${productId}/images`, imageUrls);
-  },
-
-  /**
-   * [Admin] Upload file ảnh sản phẩm lên server
-   * POST /api/v1/admin/products/{productId}/images/upload
-   */
-  uploadProductImages: (productId: number, files: File[]): Promise<ProductImageResponse[]> => {
+  uploadProductImages: (
+    productId: number,
+    files?: File[],
+    imageUrls?: string[]
+  ): Promise<ProductImageResponse[]> => {
     const formData = new FormData();
-    files.forEach((file) => formData.append('file', file));
-    return apiClient.post(`/admin/products/${productId}/images/upload`, formData);
+    if (files) {
+      files.forEach((file) => formData.append('file', file));
+    }
+    if (imageUrls) {
+      imageUrls.forEach((url) => formData.append('imageUrls', url));
+    }
+    return apiClient.post(`/admin/products/${productId}/images`, formData);
   },
 
   /**

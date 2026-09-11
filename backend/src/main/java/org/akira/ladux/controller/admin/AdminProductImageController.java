@@ -1,8 +1,5 @@
 package org.akira.ladux.controller.admin;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.catalog.response.ProductImageResponse;
 import org.akira.ladux.service.ProductImageService;
@@ -14,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,23 +21,19 @@ import java.util.List;
 public class AdminProductImageController {
     private final ProductImageService service;
 
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ProductImageResponse>> addSecondaryImages(
-            @PathVariable int productId,
-            @RequestBody @NotEmpty(message = "Danh sach anh khong duoc de trong")
-            List<@NotBlank(message = "ImageUrl khong duoc de trong") @Size(max = 255, message = "ImageUrl khong duoc vuot qua 255 ky tu") String> imageUrls
-    ) {
-        return new ResponseEntity<>(service.addImages(productId, imageUrls), HttpStatus.CREATED);
-    }
-
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = {"", "/upload"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ProductImageResponse>> uploadProductImage(
             @PathVariable int productId,
-            @RequestPart("file") List<MultipartFile> files
+            @RequestParam(value = "file", required = false) List<MultipartFile> files,
+            @RequestParam(value = "files", required = false) List<MultipartFile> filesAlt,
+            @RequestParam(value = "imageUrls", required = false) List<String> imageUrls
     ) {
-        return new ResponseEntity<>(service.uploadImage(productId, files), HttpStatus.CREATED);
+        // Cho cả key "file" và "files" để tương thích với các client khác nhau
+        List<MultipartFile> allFiles = new ArrayList<>();
+        if (files != null) allFiles.addAll(files);
+        if (filesAlt != null) allFiles.addAll(filesAlt);
+        return new ResponseEntity<>(service.uploadImage(productId, allFiles, imageUrls), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{imageId}")

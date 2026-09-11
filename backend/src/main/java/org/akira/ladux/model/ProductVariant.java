@@ -61,5 +61,4 @@ public class ProductVariant {
     @ToString.Exclude
     @Builder.Default
     private List<OrderItem> orderItems = new ArrayList<>();
-
 }

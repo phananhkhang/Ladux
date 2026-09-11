@@ -36,7 +36,7 @@ export default function ProductDetailPage() {
     mutationFn: () => {
       const normalizedUrl = imageUrl.trim();
       const exists = productQuery.data?.images.some((image) => image.imageUrl === normalizedUrl);
-      return exists ? Promise.resolve([] as ProductImageResponse[]) : adminApi.products.addImageUrls(id, [normalizedUrl]);
+      return exists ? Promise.resolve([] as ProductImageResponse[]) : adminApi.products.uploadImages(id, undefined, [normalizedUrl]);
     },
     onSuccess: (images) => { images.length ? toast.success("Đã thêm ảnh") : toast.info("Ảnh này đã có trong sản phẩm"); setImageUrl(""); invalidate(); },
     onError: (error) => toast.error(getApiErrorMessage(error)),
