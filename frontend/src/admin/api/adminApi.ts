@@ -94,9 +94,6 @@ export const adminApi = {
 
   categories: {
     list: (params?: PageParams) => get<PageResponse<CategoryResponse>>("/categories", { params }),
-    detail: (id: number) => get<CategoryResponse>(`/categories/${id}`),
-    byName: (name: string) => get<CategoryResponse>(`/categories/name/${encodeURIComponent(name)}`),
-    roots: (params?: PageParams) => get<PageResponse<CategoryResponse>>("/categories/roots", { params }),
     create: (data: CategoryRequest) => post<CategoryResponse>("/admin/categories", data),
     update: (id: number, data: CategoryRequest) => put<CategoryResponse>(`/admin/categories/${id}`, data),
     delete: (id: number) => remove<void>(`/admin/categories/${id}`),

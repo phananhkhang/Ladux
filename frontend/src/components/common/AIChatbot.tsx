@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X, Send, CheckCheck, ChevronRight, Laptop, ShoppingBag, Tag, Headphones } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import botAvatarImg from "../../assets/avatar_chatbot.png";
+import botAvatarImg from "../../assets/avatar_chatbot_green.png";
 import { useStorefront } from "../../app/StorefrontProvider";
 import { productPath } from "../../app/routePaths";
 import { LaptopProduct } from "../../types";

@@ -9,23 +9,11 @@ import org.springframework.web.multipart.MultipartFile;
 public interface CategoryService {
     Page<CategoryResponse> getAllCategories(Pageable pageable);
 
-    CategoryResponse getCategoryById(int id);
-
-    CategoryResponse getCategoryByName(String name);
-
-    CategoryResponse getCategoryBySlug(String slug);
-
-    Page<CategoryResponse> getRootCategories(Pageable pageable);
-
     CategoryResponse createCategory(CategoryRequest request);
 
     CategoryResponse updateCategory(int id, CategoryRequest request);
 
     void deleteCategoryById(int id);
 
-    /**
-     * Store category image on disk; return public path (e.g. /uploads/categories/uuid.webp).
-     * Caller attaches path via create/update JSON {@code imageUrl}.
-     */
     String uploadCategoryImage(MultipartFile file);
 }

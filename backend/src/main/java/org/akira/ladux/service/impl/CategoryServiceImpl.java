@@ -40,48 +40,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    @Cacheable(value = "categories", key = "'id:' + #id")
-    public CategoryResponse getCategoryById(int id) {
-        return CategoryResponse.fromEntity(repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + id)));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    @Cacheable(value = "categories", key = "'name:' + #name")
-    public CategoryResponse getCategoryByName(String name) {
-        return CategoryResponse.fromEntity(repo.findByName(name));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    @Cacheable(value = "categories", key = "'slug:' + #slug")
-    public CategoryResponse getCategoryBySlug(String slug) {
-        return CategoryResponse.fromEntity(repo.findBySlug(slug));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    @Cacheable(value = "categories", key = "'root:' + #pageable.pageNumber + ':' + #pageable.pageSize")
-    public Page<CategoryResponse> getRootCategories(Pageable pageable) {
-        return repo.findByParentIsNull(pageable)
-                .map(CategoryResponse::fromEntity);
-    }
-
-    @Override
     @Transactional
     @CacheEvict(value = "categories", allEntries = true)
     public CategoryResponse createCategory(CategoryRequest request) {
-        Category parent = null;
-        if (request.parentId() != null) {
-            parent = repo.findById(request.parentId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.parentId()));
-        }
         Category category = Category.builder()
                 .name(request.name())
                 .slug(SlugUtils.toSlug(request.name()))
-                .parent(parent)
                 .imageUrl(blankToNull(request.imageUrl()))
                 .build();
         return CategoryResponse.fromEntity(repo.save(category));
@@ -96,12 +60,6 @@ public class CategoryServiceImpl implements CategoryService {
         if (request.name() != null) {
             category.setName(request.name());
             category.setSlug(SlugUtils.toSlug(request.name()));
-        }
-        if (request.parentId() != null) {
-            Category parent = repo.findById(request.parentId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.parentId()));
-            validateParentDoesNotCreateCycle(category, parent);
-            category.setParent(parent);
         }
         // imageUrl optional: null/absent = keep current; empty string = clear
         if (request.imageUrl() != null) {
@@ -127,9 +85,6 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategoryById(int id) {
         Category category = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + id));
-        if (repo.existsByParentId(id)) {
-            throw new BusinessRuleException("Không thể xóa category này vì nó có category con");
-        }
         if (productRepo.existsByCategoryId(id)) {
             throw new BusinessRuleException("Không thể xóa category này vì nó có sản phẩm liên quan");
         }
@@ -143,16 +98,4 @@ public class CategoryServiceImpl implements CategoryService {
         return fileStorage.store(categoryUploadDir, file);
     }
 
-    private void validateParentDoesNotCreateCycle(Category category, Category parentCandidate) {
-        if (parentCandidate.getId().equals(category.getId())) {
-            throw new BusinessRuleException("Category khong the lam parent cua chinh no");
-        }
-        Category cursor = parentCandidate;
-        while (cursor != null) {
-            if (cursor.getId().equals(category.getId())) {
-                throw new BusinessRuleException("Parent category khong duoc nam trong cay con cua category hien tai");
-            }
-            cursor = cursor.getParent();
-        }
-    }
 }

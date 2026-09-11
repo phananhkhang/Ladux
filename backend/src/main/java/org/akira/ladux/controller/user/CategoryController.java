@@ -18,19 +18,4 @@ public class CategoryController {
     public ResponseEntity<Page<CategoryResponse>> getAllCategories(Pageable pageable) {
         return ResponseEntity.ok(service.getAllCategories(pageable));
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable int id) {
-        return ResponseEntity.ok(service.getCategoryById(id));
-    }
-
-    @GetMapping("/name/{name}")
-    public ResponseEntity<CategoryResponse> getCategoryByName(@PathVariable String name) {
-        return ResponseEntity.ok(service.getCategoryByName(name));
-    }
-
-    @GetMapping("/roots")
-    public ResponseEntity<Page<CategoryResponse>> getRootCategories(Pageable pageable) {
-        return ResponseEntity.ok(service.getRootCategories(pageable));
-    }
 }

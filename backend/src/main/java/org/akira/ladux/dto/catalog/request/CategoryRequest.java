@@ -9,9 +9,6 @@ public record CategoryRequest(
         @Size(min = 1, max = 100, message = "Ten category phai tu 1 den 100 ky tu")
         String name,
 
-        @Positive(message = "ParentId phai la so duong")
-        Integer parentId,
-
         /** Optional: path/URL ảnh category (vd. /uploads/categories/...) */
         @Size(max = 500, message = "imageUrl toi da 500 ky tu")
         String imageUrl

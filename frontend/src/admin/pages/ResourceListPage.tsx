@@ -113,18 +113,17 @@ const definitions: Record<ResourceName, ResourceDefinition> = {
     },
   },
   categories: {
-    title: "Danh mục", description: "Cấu trúc danh mục cha–con của catalog Ladux.",
+    title: "Danh mục", description: "Danh mục sản phẩm của catalog Ladux.",
     columns: [
       { key: "id", header: "ID", render: (row) => `#${text(row, "id")}` },
       { key: "name", header: "Danh mục", render: (row) => <div className="flex items-center gap-3">{row.imageUrl ? <img src={resolveImageUrl(String(row.imageUrl), env.backendOrigin) ?? String(row.imageUrl)} alt="" className="h-9 w-9 rounded-lg object-cover" /> : <span className="h-9 w-9 rounded-lg bg-slate-100" />}<div><p className="font-bold text-slate-900">{text(row, "name")}</p><p className="text-xs text-slate-400">{text(row, "slug")}</p></div></div> },
-      { key: "parent", header: "Danh mục cha", render: (row) => row.parentId ? `#${row.parentId}` : "Danh mục gốc" },
     ],
     fetcher: (params) => adminApi.categories.list(params).then(asAdminPage),
     form: {
-      title: "danh mục", fields: [{ key: "name", label: "Tên danh mục" }, { key: "parentId", label: "ID danh mục cha", type: "number", placeholder: "Để trống nếu là danh mục gốc" }, { key: "imageUrl", label: "URL ảnh" }],
-      schema: z.object({ name: z.string().trim().min(1).max(100), parentId: z.union([z.number().positive(), z.string(), z.null()]).optional(), imageUrl: z.string().trim().max(500).optional().nullable() }).passthrough(),
-      defaults: { name: "", parentId: "", imageUrl: "" }, normalize: (values) => ({ name: String(values.name).trim(), parentId: values.parentId ? Number(values.parentId) : null, imageUrl: String(values.imageUrl || "").trim() || null }),
-      submit: (id, values) => id ? adminApi.categories.update(id, values as unknown as { name: string; parentId?: number | null; imageUrl?: string | null }) : adminApi.categories.create(values as unknown as { name: string; parentId?: number | null; imageUrl?: string | null }),
+      title: "danh mục", fields: [{ key: "name", label: "Tên danh mục" }, { key: "imageUrl", label: "URL ảnh" }],
+      schema: z.object({ name: z.string().trim().min(1).max(100), imageUrl: z.string().trim().max(500).optional().nullable() }).passthrough(),
+      defaults: { name: "", imageUrl: "" }, normalize: (values) => ({ name: String(values.name).trim(), imageUrl: String(values.imageUrl || "").trim() || null }),
+      submit: (id, values) => id ? adminApi.categories.update(id, values as unknown as { name: string; imageUrl?: string | null }) : adminApi.categories.create(values as unknown as { name: string; imageUrl?: string | null }),
       remove: adminApi.categories.delete, name: (row) => text(row, "name"),
       uploadImage: (file) => adminApi.categories.uploadImage(file).then((response) => response.url),
     },

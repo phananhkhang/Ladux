@@ -8,7 +8,6 @@ public record CategoryResponse(
         Integer id,
         String name,
         String slug,
-        Integer parentId,
         String imageUrl
 ) implements Serializable {
     public static CategoryResponse fromEntity(Category category) {
@@ -19,7 +18,6 @@ public record CategoryResponse(
                 category.getId(),
                 category.getName(),
                 category.getSlug(),
-                category.getParent() == null ? null : category.getParent().getId(),
                 category.getImageUrl()
         );
     }

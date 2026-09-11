@@ -79,8 +79,7 @@ export interface CategoryResponse {
   id: number;
   name: string;
   slug: string;
-  parentId: number | null;
-  imageUrl: string | null;
+  imageUrl?: string | null;
 }
 
 export interface ColorResponse {
@@ -329,7 +328,7 @@ export interface NotificationResponse {
 }
 
 export interface BrandRequest { name: string; logoUrl?: string | null }
-export interface CategoryRequest { name: string; parentId?: number | null; imageUrl?: string | null }
+export interface CategoryRequest { name: string; imageUrl?: string | null }
 export interface ColorRequest { name: string; hexCode: string }
 export interface CouponRequest {
   code: string;

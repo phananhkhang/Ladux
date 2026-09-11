@@ -11,8 +11,5 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
     Category findBySlug(String slug);
 
-    Page<Category> findByParentIsNull(Pageable pageable);
-
-    boolean existsByParentId(int id);
 }
 
