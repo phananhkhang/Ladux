@@ -13,7 +13,7 @@ import org.akira.ladux.utils.SlugUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,9 +34,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "categories", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
-    public Page<CategoryResponse> getAllCategories(Pageable pageable) {
-        return repo.findAll(pageable)
-                .map(CategoryResponse::fromEntity);
+    public PageResponse<CategoryResponse> getAllCategories(Pageable pageable) {
+        return PageResponse.from(repo.findAll(pageable)
+                .map(CategoryResponse::fromEntity));
     }
 
     @Override
@@ -46,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = Category.builder()
                 .name(request.name())
                 .slug(SlugUtils.toSlug(request.name()))
-                .imageUrl(blankToNull(request.imageUrl()))
+                .imageUrl(standardizeNameCategory(request.imageUrl()))
                 .build();
         return CategoryResponse.fromEntity(repo.save(category));
     }
@@ -63,7 +63,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
         // imageUrl optional: null/absent = keep current; empty string = clear
         if (request.imageUrl() != null) {
-            String newUrl = blankToNull(request.imageUrl());
+            String newUrl = standardizeNameCategory(request.imageUrl());
             String oldUrl = category.getImageUrl();
             if (oldUrl != null && !oldUrl.equals(newUrl)) {
                 fileStorage.deleteIfLocal(oldUrl);
@@ -73,7 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryResponse.fromEntity(category);
     }
 
-    private static String blankToNull(String value) {
+    private static String standardizeNameCategory(String value) {
         if (value == null) return null;
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;

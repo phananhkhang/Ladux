@@ -3,8 +3,8 @@ package org.akira.ladux.controller.user;
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.catalog.response.ProductResponse;
 import org.akira.ladux.dto.catalog.response.ProductVariantResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.service.ProductService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,7 @@ public class ProductController {
     private final ProductService service;
 
     @GetMapping
-    public ResponseEntity<Page<ProductResponse>> getAllProducts(
+    public ResponseEntity<PageResponse<ProductResponse>> getAllProducts(
             @RequestParam(value = "search", required = false) String search,
             Pageable pageable
     ) {
@@ -32,19 +32,15 @@ public class ProductController {
     }
 
     @GetMapping("/brand/{brandId}")
-    public ResponseEntity<Page<ProductResponse>> getProductsByBrandId(@PathVariable int brandId, Pageable pageable) {
+    public ResponseEntity<PageResponse<ProductResponse>> getProductsByBrandId(@PathVariable int brandId, Pageable pageable) {
         return ResponseEntity.ok(service.getProductsByBrandId(brandId, pageable));
     }
 
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<Page<ProductResponse>> getProductsByCategoryId(@PathVariable int categoryId, Pageable pageable) {
+    public ResponseEntity<PageResponse<ProductResponse>> getProductsByCategoryId(@PathVariable int categoryId, Pageable pageable) {
         return ResponseEntity.ok(service.getProductsByCategoryId(categoryId, pageable));
     }
 
-    @GetMapping("/active")
-    public ResponseEntity<Page<ProductResponse>> getActiveProducts(Pageable pageable) {
-        return ResponseEntity.ok(service.getActiveProducts(pageable));
-    }
     // Lấy san pham theo variant
     @GetMapping("/variant/{variantId}")
     public ResponseEntity<ProductVariantResponse> getProductVariantById(@PathVariable Integer variantId) {

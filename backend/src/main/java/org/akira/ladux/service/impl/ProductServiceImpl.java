@@ -5,6 +5,7 @@ import org.akira.ladux.dto.catalog.request.ProductRequest;
 import org.akira.ladux.dto.catalog.request.ProductVariantRequest;
 import org.akira.ladux.dto.catalog.response.ProductResponse;
 import org.akira.ladux.dto.catalog.response.ProductVariantResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.model.*;
 import org.akira.ladux.repository.*;
 import org.akira.ladux.service.ProductService;
@@ -14,7 +15,6 @@ import org.akira.ladux.exception.ResourceNotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +37,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "products", key = "'v4:all:' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
-    public Page<ProductResponse> getAllProducts(Pageable pageable) {
+    public PageResponse<ProductResponse> getAllProducts(Pageable pageable) {
         return toSummaryPage(repo.findAllIds(pageable), pageable);
     }
 
@@ -63,46 +63,65 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "products", key = "'v4:brand:' + #brandId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
-    public Page<ProductResponse> getProductsByBrandId(int brandId, Pageable pageable) {
+    public PageResponse<ProductResponse> getProductsByBrandId(int brandId, Pageable pageable) {
+        if (!brandRepository.existsById(brandId)) {
+            throw new IllegalArgumentException("Không tìm thấy brand với id = " + brandId);
+        }
         return toSummaryPage(repo.findIdsByBrandId(brandId, pageable), pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "products", key = "'v4:category:' + #categoryId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
-    public Page<ProductResponse> getProductsByCategoryId(int categoryId, Pageable pageable) {
+    public PageResponse<ProductResponse> getProductsByCategoryId(int categoryId, Pageable pageable) {
+        if (!categoryRepository.existsById(categoryId)) {
+            throw new IllegalArgumentException("Không tìm thấy category với id = " + categoryId);
+        }
         return toSummaryPage(repo.findIdsByCategoryId(categoryId, pageable), pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'v4:active:' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
-    public Page<ProductResponse> getActiveProducts(Pageable pageable) {
-        return toSummaryPage(repo.findIdsByIsActiveTrue(pageable), pageable);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     @Cacheable(value = "products", key = "'v4:search:' + #search + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
-    public Page<ProductResponse> searchProducts(String search, Pageable pageable) {
+    public PageResponse<ProductResponse> searchProducts(String search, Pageable pageable) {
         if (search == null || search.isBlank()) {
             return getAllProducts(pageable);
         }
-        return toSummaryPage(repo.searchIds(search.trim(), pageable), pageable);
+        String searchClean = search.trim();
+        return toSummaryPage(repo.searchIds(searchClean, pageable), pageable);
     }
 
-    private Page<ProductResponse> toSummaryPage(Page<Integer> idPage, Pageable pageable) {
+    // Dùng phương phap Two-Phase ID Pagination để query nhanh
+    private PageResponse<ProductResponse> toSummaryPage(Page<Integer> idPage, Pageable pageable) {
         if (idPage.isEmpty()) {
-            return new PageImpl<>(List.of(), pageable, idPage.getTotalElements());
+            return new PageResponse<>(
+                    List.of(),
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    idPage.getTotalElements(),
+                    idPage.getTotalPages(),
+                    idPage.isFirst(),
+                    idPage.isLast(),
+                    true
+            );
         }
         Map<Integer, Product> productsById = repo.findSummariesByIdIn(idPage.getContent()).stream()
-                .collect(java.util.stream.Collectors.toMap(Product::getId, product -> product));
+                .collect(Collectors.toMap(product -> product.getId(), product -> product));
         List<ProductResponse> content = idPage.getContent().stream()
-                .map(productsById::get)
-                .filter(java.util.Objects::nonNull)
-                .map(ProductResponse::summaryFromEntity)
+                .map(id -> productsById.get(id))
+                .filter(product -> product != null)
+                .map(product -> ProductResponse.summaryFromEntity(product))
                 .toList();
-        return new PageImpl<>(content, pageable, idPage.getTotalElements());
+        return new PageResponse<>(
+                content,
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                idPage.getTotalElements(),
+                idPage.getTotalPages(),
+                idPage.isFirst(),
+                idPage.isLast(),
+                false
+        );
     }
 
     @Override
@@ -166,7 +185,7 @@ public class ProductServiceImpl implements ProductService {
                     .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay category voi id = " + request.categoryId()));
             product.setCategory(category);
         }
-        if (request.name() != null) {
+        if (request.name() != null || !request.name().isBlank()) {
             product.setName(request.name());
             product.setSlug(SlugUtils.toSlug(request.name()));
         }
@@ -210,6 +229,9 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @CacheEvict(value = "products", allEntries = true)
     public void deleteProductById(int id) {
+        if (!repo.existsById(id)) {
+            throw new IllegalArgumentException("Khong tim thay product voi id = " + id);
+        }
         repo.deleteById(id);
     }
 
@@ -242,7 +264,6 @@ public class ProductServiceImpl implements ProductService {
         String candidate = base.length() > 50 ? base.substring(0, 50) : base;
         int suffix = 2;
 
-        // SỬA CHỖ NÀY: Dùng productVariantRepository thay vì repo (Product)
         while (productVariantRepository.existsBySku(candidate)) {
             String withSuffix = base + "-" + suffix++;
             candidate = withSuffix.length() > 50 ? withSuffix.substring(0, 50) : withSuffix;

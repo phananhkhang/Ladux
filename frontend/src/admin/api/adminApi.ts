@@ -125,7 +125,6 @@ export const adminApi = {
     detail: (id: number) => get<ProductResponse>(`/products/${id}`),
     byBrand: (brandId: number, params?: PageParams) => get<PageResponse<ProductResponse>>(`/products/brand/${brandId}`, { params }),
     byCategory: (categoryId: number, params?: PageParams) => get<PageResponse<ProductResponse>>(`/products/category/${categoryId}`, { params }),
-    active: (params?: PageParams) => get<PageResponse<ProductResponse>>("/products/active", { params }),
     variant: (variantId: number) => get<ProductVariantResponse>(`/products/variant/${variantId}`),
     images: (productId: number) => get<ProductImageResponse[]>(`/products/${productId}/images`),
     create: (data: ProductRequest) => post<ProductResponse>("/admin/products", data),

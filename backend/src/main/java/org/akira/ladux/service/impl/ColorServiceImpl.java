@@ -2,12 +2,13 @@ package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.catalog.request.ColorRequest;
+import org.akira.ladux.dto.catalog.response.ColorResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Color;
 import org.akira.ladux.repository.ColorRepository;
 import org.akira.ladux.repository.ProductVariantRepository;
 import org.akira.ladux.service.ColorService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +21,9 @@ public class ColorServiceImpl implements ColorService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Color> getAllColors(Pageable pageable) {
-        return colorRepository.findAll(pageable);
+    public PageResponse<ColorResponse> getAllColors(Pageable pageable) {
+        return PageResponse.from(colorRepository.findAll(pageable)
+                .map(ColorResponse::fromEntity));
     }
 
     @Override
@@ -33,9 +35,12 @@ public class ColorServiceImpl implements ColorService {
         if (request.hexCode() == null || request.hexCode().isBlank()) {
             throw new IllegalArgumentException("Color hexCode không được null hoặc bỏ trống");
         }
-        // Kiem tra trung lap
+        // Kiểm tra trùng lặp tên color
         if (colorRepository.existsByName(request.name())) {
             throw new IllegalArgumentException("Color name đã tồn tại");
+        }
+        if (colorRepository.existsByHexCode(request.hexCode())) {
+            throw new IllegalArgumentException("Color hexCode đã tồn tại");
         }
         Color color = Color.builder()
                 .name(request.name())
@@ -52,6 +57,12 @@ public class ColorServiceImpl implements ColorService {
         if (request.hexCode() == null || request.hexCode().isBlank()) {
             throw new IllegalArgumentException("Color hexCode không được null hoặc bỏ trống");
         }
+        if (colorRepository.existsByNameAndIdNot(request.name(), id)) {
+            throw new IllegalArgumentException("Color name đã tồn tại");
+        }
+        if (colorRepository.existsByHexCodeAndIdNot(request.hexCode(), id)) {
+            throw new IllegalArgumentException("Color hexCode đã tồn tại");
+        }
         Color color = colorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy color với id = " + id));
         color.setName(request.name());
         color.setHexCode(request.hexCode());
@@ -60,7 +71,8 @@ public class ColorServiceImpl implements ColorService {
     @Override
     @Transactional
     public void deleteColor(int id) {
-        Color color = colorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy color với id = " + id));
+        Color color = colorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy color với id = " + id));
         // Kiểm tra color đã được sử dụng ở trong sản phẩm hay chưa. Nếu đã được sử dụng, không cho phép xóa.
         if (productVariantRepository.existsByColorId(id)) {
             throw new IllegalArgumentException("Không thể xóa color đã được sử dụng trong sản phẩm");

@@ -14,11 +14,21 @@ public record PageResponse<T>(
         int pageSize,
         long totalElements,
         int totalPages,
-        boolean last
+        boolean first,
+        boolean last,
+        boolean empty
 ) implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
+    public int getNumber() {
+        return pageNumber;
+    }
+
+    public int getSize() {
+        return pageSize;
+    }
 
     /**
      * Factory method tiện lợi để convert trực tiếp từ Spring Data Page
@@ -30,7 +40,9 @@ public record PageResponse<T>(
                 page.getSize(),
                 page.getTotalElements(),
                 page.getTotalPages(),
-                page.isLast()
+                page.isFirst(),
+                page.isLast(),
+                page.isEmpty()
         );
     }
 }

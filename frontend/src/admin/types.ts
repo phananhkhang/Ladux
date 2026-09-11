@@ -4,7 +4,9 @@ export interface PageResponse<T> {
   totalPages: number;
   size: number;
   number: number;
-  numberOfElements: number;
+  pageNumber?: number;
+  pageSize?: number;
+  numberOfElements?: number;
   first: boolean;
   last: boolean;
   empty: boolean;

@@ -20,12 +20,11 @@ export default function ProductsPage() {
   const search = params.get("search") ?? "";
   const brandId = Number(params.get("brand") ?? 0);
   const categoryId = Number(params.get("category") ?? 0);
-  const activeOnly = params.get("active") === "true";
-  const queryParams = useMemo(() => ({ page, size, search, brandId, categoryId, activeOnly }), [page, size, search, brandId, categoryId, activeOnly]);
+  const queryParams = useMemo(() => ({ page, size, search, brandId, categoryId }), [page, size, search, brandId, categoryId]);
 
   const productsQuery = useQuery({
     queryKey: adminQueryKeys.resource("products", queryParams),
-    queryFn: () => brandId ? adminApi.products.byBrand(brandId, { page, size }) : categoryId ? adminApi.products.byCategory(categoryId, { page, size }) : activeOnly ? adminApi.products.active({ page, size }) : adminApi.products.list({ page, size, search: search || undefined, sort: "createdAt,desc" }),
+    queryFn: () => brandId ? adminApi.products.byBrand(brandId, { page, size }) : categoryId ? adminApi.products.byCategory(categoryId, { page, size }) : adminApi.products.list({ page, size, search: search || undefined, sort: "createdAt,desc" }),
     placeholderData: (previous) => previous,
   });
   const brandsQuery = useQuery({ queryKey: adminQueryKeys.resource("brands-lookup", {}), queryFn: () => adminApi.brands.list({ page: 0, size: 100 }), staleTime: 5 * 60_000 });
@@ -53,11 +52,10 @@ export default function ProductsPage() {
   return <>
     <PageHeader title="Sản phẩm" description="Quản lý toàn bộ catalog, thông số kỹ thuật, cấu hình, hình ảnh và tồn kho theo variant." actions={<Link to="/admin/products/new"><AdminButton><Plus className="h-4 w-4" />Thêm sản phẩm</AdminButton></Link>} />
     <Panel>
-      <div className="grid gap-3 border-b border-slate-200 p-4 lg:grid-cols-[1fr_220px_220px_160px]">
+      <div className="grid gap-3 border-b border-slate-200 p-4 lg:grid-cols-[1fr_240px_240px]">
         <form className="relative" onSubmit={(event) => { event.preventDefault(); updateParam("search", searchDraft.trim()); }}><Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" /><input className={`${fieldClassName} pl-10`} placeholder="Tìm sản phẩm..." value={searchDraft} onChange={(event) => setSearchDraft(event.target.value)} /></form>
         <select aria-label="Lọc thương hiệu" className={fieldClassName} value={brandId || ""} onChange={(event) => updateParam("brand", event.target.value)}><option value="">Tất cả thương hiệu</option>{brandsQuery.data?.content.map((brand) => <option key={brand.id} value={brand.id}>{brand.name}</option>)}</select>
         <select aria-label="Lọc danh mục" className={fieldClassName} value={categoryId || ""} onChange={(event) => updateParam("category", event.target.value)}><option value="">Tất cả danh mục</option>{categoriesQuery.data?.content.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select>
-        <label className="flex min-h-11 items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700"><input type="checkbox" checked={activeOnly} onChange={(event) => updateParam("active", event.target.checked ? "true" : "")} />Chỉ đang bán</label>
       </div>
       <AdminTable rows={productsQuery.data?.content ?? []} columns={columns} isLoading={productsQuery.isLoading} error={productsQuery.isError ? getApiErrorMessage(productsQuery.error) : null} onRetry={() => productsQuery.refetch()} />
       <PaginationBar page={page} totalPages={productsQuery.data?.totalPages ?? 0} totalElements={productsQuery.data?.totalElements ?? 0} size={size} onPageChange={(value) => updateParam("page", String(value))} onSizeChange={(value) => updateParam("size", String(value))} />

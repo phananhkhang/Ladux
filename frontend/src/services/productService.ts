@@ -146,13 +146,6 @@ export const productService = {
     return apiClient.get(`/products/category/${categoryId}`, { params });
   },
 
-  /**
-   * Lấy danh sách sản phẩm đang hoạt động (Active)
-   * GET /api/v1/products/active
-   */
-  getActiveProducts: (params?: PageParams): Promise<PageResponse<ProductResponse>> => {
-    return apiClient.get('/products/active', { params });
-  },
 
   /**
    * Lấy chi tiết biến thể sản phẩm (Variant ID)

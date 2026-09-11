@@ -4,12 +4,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.catalog.request.ColorRequest;
 import org.akira.ladux.dto.catalog.response.ColorResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.model.Color;
 import org.akira.ladux.service.ColorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +22,8 @@ public class AdminColorController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<ColorResponse>> getAllColors(Pageable pageable) {
-        return ResponseEntity.ok(colorService.getAllColors(pageable).map(ColorResponse::fromEntity));
+    public ResponseEntity<PageResponse<ColorResponse>> getAllColors(Pageable pageable) {
+        return ResponseEntity.ok(colorService.getAllColors(pageable));
     }
 
     @PostMapping

@@ -3,23 +3,21 @@ package org.akira.ladux.service;
 import org.akira.ladux.dto.catalog.request.ProductRequest;
 import org.akira.ladux.dto.catalog.response.ProductResponse;
 import org.akira.ladux.dto.catalog.response.ProductVariantResponse;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface ProductService {
-    Page<ProductResponse> getAllProducts(Pageable pageable);
+    PageResponse<ProductResponse> getAllProducts(Pageable pageable);
 
     ProductResponse getProductById(int id);
 
     ProductResponse getProductBySlug(String slug);
 
-    Page<ProductResponse> getProductsByBrandId(int brandId, Pageable pageable);
+    PageResponse<ProductResponse> getProductsByBrandId(int brandId, Pageable pageable);
 
-    Page<ProductResponse> getProductsByCategoryId(int categoryId, Pageable pageable);
+    PageResponse<ProductResponse> getProductsByCategoryId(int categoryId, Pageable pageable);
 
-    Page<ProductResponse> getActiveProducts(Pageable pageable);
-
-    Page<ProductResponse> searchProducts(String search, Pageable pageable);
+    PageResponse<ProductResponse> searchProducts(String search, Pageable pageable);
 
     ProductResponse createProduct(ProductRequest request);
 
