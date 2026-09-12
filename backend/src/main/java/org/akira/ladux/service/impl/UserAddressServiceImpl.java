@@ -3,6 +3,7 @@ package org.akira.ladux.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.user.request.UserAddressRequest;
 import org.akira.ladux.dto.user.response.UserAddressResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.UserAddress;
 import org.akira.ladux.repository.UserAddressRepository;
@@ -12,7 +13,6 @@ import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,9 +28,9 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "userAddresses", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
-    public Page<UserAddressResponse> getAllUserAddresses(Pageable pageable) {
-        return repo.findAll(pageable)
-                .map(UserAddressResponse::fromEntity);
+    public PageResponse<UserAddressResponse> getAllUserAddresses(Pageable pageable) {
+        return PageResponse.from(repo.findAll(pageable)
+                .map(UserAddressResponse::fromEntity));
     }
 
     @Override

@@ -3,7 +3,7 @@ package org.akira.ladux.controller.admin;
 import org.akira.ladux.dto.inventory.request.SupplierRequest;
 import org.akira.ladux.dto.inventory.response.SupplierResponse;
 import org.akira.ladux.service.SupplierService;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +22,12 @@ public class AdminSupplierController {
     private final SupplierService service;
 
     @GetMapping
-    public ResponseEntity<Page<SupplierResponse>> getAllSuppliers(Pageable pageable) {
+    public ResponseEntity<PageResponse<SupplierResponse>> getAllSuppliers(Pageable pageable) {
         return ResponseEntity.ok(service.getAllSuppliers(pageable));
     }
 
     @GetMapping("/active")
-    public ResponseEntity<Page<SupplierResponse>> getActive(Pageable pageable) {
+    public ResponseEntity<PageResponse<SupplierResponse>> getActive(Pageable pageable) {
         return ResponseEntity.ok(service.getActiveSuppliers(pageable));
     }
 
@@ -37,7 +37,7 @@ public class AdminSupplierController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<SupplierResponse>> searchSuppliers(
+    public ResponseEntity<PageResponse<SupplierResponse>> searchSuppliers(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String phone,
             Pageable pageable) {

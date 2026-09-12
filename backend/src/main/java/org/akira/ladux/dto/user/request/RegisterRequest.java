@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 
 public record RegisterRequest(
         @NotBlank(message = "Ho va ten khong duoc de trong")
-        @Size(min = 2, max = 50, message = "Ho ten phai tu 2 den 50 ky tu")
+        @Size(min = 2, max = 100, message = "Ho ten phai tu 2 den 100 ky tu")
         String fullName,
 
         @NotBlank(message = "Username khong duoc de trong")

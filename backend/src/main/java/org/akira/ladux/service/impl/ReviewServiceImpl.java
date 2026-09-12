@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.catalog.request.ReviewCreateRequest;
 import org.akira.ladux.dto.catalog.request.ReviewUpdateRequest;
 import org.akira.ladux.dto.catalog.response.ReviewResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.model.Product;
 import org.akira.ladux.model.Review;
 import org.akira.ladux.model.User;
@@ -18,7 +19,6 @@ import org.akira.ladux.exception.ResourceNotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +36,9 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "reviews", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
-    public Page<ReviewResponse> getAllReviews(Pageable pageable) {
-        return repo.findAll(pageable)
-                .map(ReviewResponse::fromEntity);
+    public PageResponse<ReviewResponse> getAllReviews(Pageable pageable) {
+        return PageResponse.from(repo.findAll(pageable)
+                .map(ReviewResponse::fromEntity));
     }
 
     @Override
@@ -52,17 +52,17 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "reviews", key = "'product:' + #productId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
-    public Page<ReviewResponse> getReviewsByProductId(int productId, Pageable pageable) {
-        return repo.findByProductId(productId, pageable)
-                .map(ReviewResponse::fromEntity);
+    public PageResponse<ReviewResponse> getReviewsByProductId(int productId, Pageable pageable) {
+        return PageResponse.from(repo.findByProductId(productId, pageable)
+                .map(ReviewResponse::fromEntity));
     }
 
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "reviews", key = "'user:' + #userId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
-    public Page<ReviewResponse> getReviewsByUserId(int userId, Pageable pageable) {
-        return repo.findByUserId(userId, pageable)
-                .map(ReviewResponse::fromEntity);
+    public PageResponse<ReviewResponse> getReviewsByUserId(int userId, Pageable pageable) {
+        return PageResponse.from(repo.findByUserId(userId, pageable)
+                .map(ReviewResponse::fromEntity));
     }
 
     @Override
@@ -134,12 +134,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
     @Override
     @Transactional(readOnly = true)
-    public Page<ReviewResponse> findReviewByNameUser(String name, Pageable pageable) {
+    public PageResponse<ReviewResponse> findReviewByNameUser(String name, Pageable pageable) {
         if (name == null || name.isBlank()) {
             return getAllReviews(pageable);
         }
-        return repo.findByReviewerNameContainingIgnoreCase(name.trim(), pageable)
-                .map(ReviewResponse::fromEntity);
+        return PageResponse.from(repo.findByReviewerNameContainingIgnoreCase(name.trim(), pageable)
+                .map(ReviewResponse::fromEntity));
     }
 
 }

@@ -5,7 +5,7 @@ import org.akira.ladux.dto.inventory.request.PurchaseOrderCreateRequest;
 import org.akira.ladux.dto.inventory.request.PurchaseOrderStatusUpdateRequest;
 import org.akira.ladux.dto.inventory.response.PurchaseOrderResponse;
 import org.akira.ladux.model.enums.PurchaseOrderStatus;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface PurchaseOrderService {
@@ -14,11 +14,11 @@ public interface PurchaseOrderService {
 
     PurchaseOrderResponse getPurchaseOrderById(int id);
 
-    Page<PurchaseOrderResponse> getAllPurchaseOrders(Pageable pageable);
+    PageResponse<PurchaseOrderResponse> getAllPurchaseOrders(Pageable pageable);
 
-    Page<PurchaseOrderResponse> getPurchaseOrdersByStatus(PurchaseOrderStatus status, Pageable pageable);
+    PageResponse<PurchaseOrderResponse> getPurchaseOrdersByStatus(PurchaseOrderStatus status, Pageable pageable);
 
-    Page<PurchaseOrderResponse> getPurchaseOrdersBySupplier(int supplierId, Pageable pageable);
+    PageResponse<PurchaseOrderResponse> getPurchaseOrdersBySupplier(int supplierId, Pageable pageable);
 
     PurchaseOrderResponse updateStatus(int id, PurchaseOrderStatusUpdateRequest request);
 

@@ -2,13 +2,13 @@ package org.akira.ladux.service;
 
 import org.akira.ladux.dto.inventory.request.SupplierRequest;
 import org.akira.ladux.dto.inventory.response.SupplierResponse;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface SupplierService {
-    Page<SupplierResponse> getAllSuppliers(Pageable pageable);
+    PageResponse<SupplierResponse> getAllSuppliers(Pageable pageable);
 
-    Page<SupplierResponse> getActiveSuppliers(Pageable pageable);
+    PageResponse<SupplierResponse> getActiveSuppliers(Pageable pageable);
 
     SupplierResponse getSupplierById(int id);
 
@@ -18,5 +18,5 @@ public interface SupplierService {
 
     void deleteSupplierById(int id);
 
-    Page<SupplierResponse> searchSuppliers(String name, String phone, Pageable pageable);
+    PageResponse<SupplierResponse> searchSuppliers(String name, String phone, Pageable pageable);
 }

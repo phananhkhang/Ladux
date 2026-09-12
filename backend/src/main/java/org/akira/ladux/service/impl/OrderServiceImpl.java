@@ -13,6 +13,7 @@ import org.akira.ladux.dto.internal.OrderLineRequest;
 import org.akira.ladux.dto.order.request.OrderRequest;
 import org.akira.ladux.dto.order.request.OrderStatusUpdateRequest;
 import org.akira.ladux.dto.order.response.OrderResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.dto.system.response.PaymentCallbackResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
@@ -30,7 +31,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "orders", key = "'v2:all:' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
-    public Page<OrderResponse> getAllOrders(Pageable pageable) {
+    public PageResponse<OrderResponse> getAllOrders(Pageable pageable) {
         return toSummaryPage(repo.findAllIds(pageable), pageable);
     }
 
@@ -102,11 +102,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<OrderResponse> getOrdersByUserId(int userId, Pageable pageable) {
+    public PageResponse<OrderResponse> getOrdersByUserId(int userId, Pageable pageable) {
         // Bước 1: Lấy page IDs với pagination đúng — query đơn giản, không JOIN collection.
         Page<Integer> idPage = repo.findIdsByUserId(userId, pageable);
         if (idPage.isEmpty()) {
-            return idPage.map(id -> (OrderResponse) null); // trả empty page giữ metadata
+            return PageResponse.from(idPage.map(id -> (OrderResponse) null)); // trả empty page giữ metadata
         }
         // Bước 2: Fetch đầy đủ entity (có items + payments) theo IDs đã biết.
         List<Order> orders = repo.findByIdIn(idPage.getContent());
@@ -117,19 +117,19 @@ public class OrderServiceImpl implements OrderService {
                 .map(id -> OrderResponse.fromEntity(byId.get(id)))
                 .filter(r -> r != null)
                 .toList();
-        return new PageImpl<>(content, pageable, idPage.getTotalElements());
+        return PageResponse.from(new org.springframework.data.domain.PageImpl<>(content, pageable, idPage.getTotalElements()));
     }
 
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "orders", key = "'v2:status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
-    public Page<OrderResponse> getOrdersByStatus(OrderStatus status, Pageable pageable) {
+    public PageResponse<OrderResponse> getOrdersByStatus(OrderStatus status, Pageable pageable) {
         return toSummaryPage(repo.findIdsByStatus(status, pageable), pageable);
     }
 
-    private Page<OrderResponse> toSummaryPage(Page<Integer> idPage, Pageable pageable) {
+    private PageResponse<OrderResponse> toSummaryPage(Page<Integer> idPage, Pageable pageable) {
         if (idPage.isEmpty()) {
-            return new PageImpl<>(List.of(), pageable, idPage.getTotalElements());
+            return PageResponse.from(new org.springframework.data.domain.PageImpl<>(List.of(), pageable, idPage.getTotalElements()));
         }
         Map<Integer, Order> ordersById = repo.findSummariesByIdIn(idPage.getContent()).stream()
                 .collect(java.util.stream.Collectors.toMap(Order::getId, order -> order));
@@ -138,7 +138,7 @@ public class OrderServiceImpl implements OrderService {
                 .filter(java.util.Objects::nonNull)
                 .map(OrderResponse::summaryFromEntity)
                 .toList();
-        return new PageImpl<>(content, pageable, idPage.getTotalElements());
+        return PageResponse.from(new org.springframework.data.domain.PageImpl<>(content, pageable, idPage.getTotalElements()));
     }
 
     @Override

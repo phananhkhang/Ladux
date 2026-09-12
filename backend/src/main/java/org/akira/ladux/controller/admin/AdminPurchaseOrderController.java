@@ -7,7 +7,7 @@ import org.akira.ladux.dto.inventory.response.PurchaseOrderResponse;
 import org.akira.ladux.model.UserPrincipal;
 import org.akira.ladux.model.enums.PurchaseOrderStatus;
 import org.akira.ladux.service.PurchaseOrderService;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,18 +33,18 @@ public class AdminPurchaseOrderController {
     private final PurchaseOrderService service;
 
     @GetMapping
-    public ResponseEntity<Page<PurchaseOrderResponse>> getAllPurchaseOrders(Pageable pageable) {
+    public ResponseEntity<PageResponse<PurchaseOrderResponse>> getAllPurchaseOrders(Pageable pageable) {
         return ResponseEntity.ok(service.getAllPurchaseOrders(pageable));
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<Page<PurchaseOrderResponse>> getByStatus(
+    public ResponseEntity<PageResponse<PurchaseOrderResponse>> getByStatus(
             @PathVariable PurchaseOrderStatus status, Pageable pageable) {
         return ResponseEntity.ok(service.getPurchaseOrdersByStatus(status, pageable));
     }
 
     @GetMapping("/supplier/{supplierId}")
-    public ResponseEntity<Page<PurchaseOrderResponse>> getBySupplier(
+    public ResponseEntity<PageResponse<PurchaseOrderResponse>> getBySupplier(
             @PathVariable int supplierId, Pageable pageable) {
         return ResponseEntity.ok(service.getPurchaseOrdersBySupplier(supplierId, pageable));
     }

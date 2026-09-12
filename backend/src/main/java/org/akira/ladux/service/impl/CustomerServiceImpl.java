@@ -5,6 +5,7 @@ import org.akira.ladux.dto.user.request.EmailRegisterRequest;
 import org.akira.ladux.dto.user.request.UpdateInformationPersonal;
 import org.akira.ladux.dto.user.response.CustomerResponse;
 import org.akira.ladux.dto.user.response.UserResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Customer;
@@ -14,7 +15,6 @@ import org.akira.ladux.service.CustomerService;
 import org.akira.ladux.utils.PhoneNumberUtils;
 import org.akira.ladux.utils.SecurityUtils;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,14 +32,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CustomerResponse> getAllCustomers(Pageable pageable) {
-        return repo.findAll(pageable).map(CustomerResponse::fromEntity);
+    public PageResponse<CustomerResponse> getAllCustomers(Pageable pageable) {
+        return PageResponse.from(repo.findAll(pageable).map(CustomerResponse::fromEntity));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CustomerResponse> getCustomersByLevel(CustomerLevel level, Pageable pageable) {
-        return repo.findByLevel(level, pageable).map(CustomerResponse::fromEntity);
+    public PageResponse<CustomerResponse> getCustomersByLevel(CustomerLevel level, Pageable pageable) {
+        return PageResponse.from(repo.findByLevel(level, pageable).map(CustomerResponse::fromEntity));
     }
 
     @Override
@@ -50,7 +50,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CustomerResponse> searchCustomers(String name, String phone, Pageable pageable) {
+    public PageResponse<CustomerResponse> searchCustomers(String name, String phone, Pageable pageable) {
         String searchName = cleanSearch(name);
         String searchPhone = cleanSearch(phone);
         if (searchPhone != null) {
@@ -61,7 +61,7 @@ public class CustomerServiceImpl implements CustomerService {
                 // Keep raw input so partial/non-Vietnamese phone search still works.
             }
         }
-        return repo.findByNameOrPhone(searchName, searchPhone, pageable);
+        return PageResponse.from(repo.findByNameOrPhone(searchName, searchPhone, pageable));
     }
 
     @Override

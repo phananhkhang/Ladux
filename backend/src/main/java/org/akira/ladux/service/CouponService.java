@@ -4,11 +4,11 @@ import org.akira.ladux.dto.promotion.request.CouponAdminRequest;
 import org.akira.ladux.dto.promotion.request.CouponApplyRequest;
 import org.akira.ladux.dto.promotion.response.CouponApplyResponse;
 import org.akira.ladux.dto.promotion.response.CouponResponse;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface CouponService {
-    Page<CouponResponse> getAllCoupons(Pageable pageable);
+    PageResponse<CouponResponse> getAllCoupons(Pageable pageable);
 
     CouponResponse getCouponById(int id);
 

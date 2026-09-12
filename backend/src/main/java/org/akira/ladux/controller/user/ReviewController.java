@@ -7,7 +7,7 @@ import org.akira.ladux.dto.catalog.request.ReviewUpdateRequest;
 import org.akira.ladux.dto.catalog.response.ReviewResponse;
 import org.akira.ladux.model.UserPrincipal;
 import org.akira.ladux.service.ReviewService;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class ReviewController {
     private final ReviewService service;
 
     @GetMapping("/product/{productId}")
-    public ResponseEntity<Page<ReviewResponse>> getReviewsByProductId(@PathVariable int productId, Pageable pageable) {
+    public ResponseEntity<PageResponse<ReviewResponse>> getReviewsByProductId(@PathVariable int productId, Pageable pageable) {
         return ResponseEntity.ok(service.getReviewsByProductId(productId, pageable));
     }
 

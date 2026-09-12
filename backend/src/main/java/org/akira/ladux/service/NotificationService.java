@@ -2,15 +2,15 @@ package org.akira.ladux.service;
 
 import org.akira.ladux.dto.system.request.NotificationRequest;
 import org.akira.ladux.dto.system.response.NotificationResponse;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface NotificationService {
-    Page<NotificationResponse> getAllNotifications(Pageable pageable);
+    PageResponse<NotificationResponse> getAllNotifications(Pageable pageable);
 
-    Page<NotificationResponse> getAllUnReadNotifications(Pageable pageable);
+    PageResponse<NotificationResponse> getAllUnReadNotifications(Pageable pageable);
 
-    Page<NotificationResponse> getAllReadNotifications(Pageable pageable);
+    PageResponse<NotificationResponse> getAllReadNotifications(Pageable pageable);
 
     int getUnreadNotificationCount();
 
@@ -25,7 +25,7 @@ public interface NotificationService {
     
     String sendNotificationToUser(NotificationRequest request, Integer id);
     
-    Page<NotificationResponse> getAllNotificationsForAdmin(Pageable pageable);
+    PageResponse<NotificationResponse> getAllNotificationsForAdmin(Pageable pageable);
 
     void deleteNotificationForAdmin(Integer id);
 

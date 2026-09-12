@@ -6,6 +6,7 @@ import org.akira.ladux.dto.promotion.request.CouponAdminRequest;
 import org.akira.ladux.dto.promotion.request.CouponApplyRequest;
 import org.akira.ladux.dto.promotion.response.CouponApplyResponse;
 import org.akira.ladux.dto.promotion.response.CouponResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Coupon;
@@ -14,7 +15,6 @@ import org.akira.ladux.repository.CouponRepository;
 import org.akira.ladux.service.CouponService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +29,9 @@ public class CouponServiceImpl implements CouponService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "coupons", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
-    public Page<CouponResponse> getAllCoupons(Pageable pageable) {
-        return repo.findAll(pageable)
-                .map(CouponResponse::fromEntity);
+    public PageResponse<CouponResponse> getAllCoupons(Pageable pageable) {
+        return PageResponse.from(repo.findAll(pageable)
+                .map(CouponResponse::fromEntity));
     }
 
     @Override

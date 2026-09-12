@@ -3,7 +3,7 @@ package org.akira.ladux.controller.admin;
 import org.akira.ladux.dto.user.request.UserAdminUpdateRequest;
 import org.akira.ladux.dto.user.response.UserResponse;
 import org.akira.ladux.service.UserService;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class AdminUserController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<UserResponse>> getAllUsers(Pageable pageable) {
+    public ResponseEntity<PageResponse<UserResponse>> getAllUsers(Pageable pageable) {
         return ResponseEntity.ok(service.getAllUsers(pageable));
     }
 
@@ -40,13 +40,13 @@ public class AdminUserController {
 
     @GetMapping("/search")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<UserResponse>> searchUserByNameOrPhone(@RequestParam(required = false) String name, @RequestParam(required = false) String phone, Pageable pageable) {
+    public ResponseEntity<PageResponse<UserResponse>> searchUserByNameOrPhone(@RequestParam(required = false) String name, @RequestParam(required = false) String phone, Pageable pageable) {
         return ResponseEntity.ok(service.searchUserByNameOrPhone(name, phone, pageable));
     }
 
     @GetMapping("/active")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<UserResponse>> getActiveUsers(Pageable pageable) {
+    public ResponseEntity<PageResponse<UserResponse>> getActiveUsers(Pageable pageable) {
         return ResponseEntity.ok(service.getActiveUsers(pageable));
     }
 

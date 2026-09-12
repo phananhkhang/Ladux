@@ -2,8 +2,8 @@ package org.akira.ladux.controller.user;
 
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.system.response.NotificationResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.service.NotificationService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -17,28 +17,28 @@ public class NotificationController {
 
     // Lấy tất cả thông báo
     @GetMapping
-    public ResponseEntity<Page<NotificationResponse>> getAllNotifications(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<PageResponse<NotificationResponse>> getAllNotifications(@RequestParam(defaultValue = "0") int page,
                                                                         @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<NotificationResponse> response = notificationService.getAllNotifications(pageable);
+        PageResponse<NotificationResponse> response = notificationService.getAllNotifications(pageable);
         return ResponseEntity.ok(response);
     }
 
     // Lấy tất cả thông báo chưa đọc
     @GetMapping("/unread")
-    public ResponseEntity<Page<NotificationResponse>> getAllUnReadNotifications(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<PageResponse<NotificationResponse>> getAllUnReadNotifications(@RequestParam(defaultValue = "0") int page,
                                                                                      @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<NotificationResponse> response = notificationService.getAllUnReadNotifications(pageable);
+        PageResponse<NotificationResponse> response = notificationService.getAllUnReadNotifications(pageable);
         return ResponseEntity.ok(response);
     }
 
     // Lấy tất cả thông báo đã đọc
     @GetMapping("/read")
-    public ResponseEntity<Page<NotificationResponse>> getAllReadNotifications(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<PageResponse<NotificationResponse>> getAllReadNotifications(@RequestParam(defaultValue = "0") int page,
                                                                                     @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<NotificationResponse> response = notificationService.getAllReadNotifications(pageable);
+        PageResponse<NotificationResponse> response = notificationService.getAllReadNotifications(pageable);
         return ResponseEntity.ok(response);
     }
 

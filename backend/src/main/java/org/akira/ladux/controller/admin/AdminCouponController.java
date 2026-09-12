@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.promotion.request.CouponAdminRequest;
 import org.akira.ladux.dto.promotion.response.CouponResponse;
 import org.akira.ladux.service.CouponService;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class AdminCouponController {
 
     @GetMapping 
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<CouponResponse>> getAllCoupons(Pageable pageable) {
+    public ResponseEntity<PageResponse<CouponResponse>> getAllCoupons(Pageable pageable) {
         return ResponseEntity.ok(service.getAllCoupons(pageable));
     }
 

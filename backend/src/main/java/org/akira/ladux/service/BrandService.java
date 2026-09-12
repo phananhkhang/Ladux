@@ -3,7 +3,6 @@ package org.akira.ladux.service;
 import org.akira.ladux.dto.catalog.request.BrandRequest;
 import org.akira.ladux.dto.catalog.response.BrandResponse;
 import org.akira.ladux.dto.common.PageResponse;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface BrandService {

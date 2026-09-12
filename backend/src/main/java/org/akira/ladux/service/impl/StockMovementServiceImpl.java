@@ -2,6 +2,7 @@ package org.akira.ladux.service.impl;
 
 import org.akira.ladux.dto.inventory.request.StockMovementRequest;
 import org.akira.ladux.dto.inventory.response.StockMovementResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.InsufficientStockException;
 import org.akira.ladux.exception.ResourceNotFoundException;
@@ -14,7 +15,6 @@ import org.akira.ladux.repository.ProductVariantRepository;
 import org.akira.ladux.repository.StockMovementRepository;
 import org.akira.ladux.repository.UserRepository;
 import org.akira.ladux.service.StockMovementService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -51,14 +51,14 @@ public class StockMovementServiceImpl implements StockMovementService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<StockMovementResponse> getMovementsByProduct(int productId, Pageable pageable) {
-        return repo.findByProductVariantId(productId, pageable).map(StockMovementResponse::fromEntity);
+    public PageResponse<StockMovementResponse> getMovementsByProduct(int productId, Pageable pageable) {
+        return PageResponse.from(repo.findByProductVariantId(productId, pageable).map(StockMovementResponse::fromEntity));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<StockMovementResponse> getAllMovements(Pageable pageable) {
-        return repo.findAll(pageable).map(StockMovementResponse::fromEntity);
+    public PageResponse<StockMovementResponse> getAllMovements(Pageable pageable) {
+        return PageResponse.from(repo.findAll(pageable).map(StockMovementResponse::fromEntity));
     }
 
     @Transactional(propagation = Propagation.MANDATORY)

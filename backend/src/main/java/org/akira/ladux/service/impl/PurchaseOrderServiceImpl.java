@@ -7,6 +7,7 @@ import org.akira.ladux.dto.inventory.request.AdminPurchaseOrderItemRequest;
 import org.akira.ladux.dto.inventory.request.PurchaseOrderCreateRequest;
 import org.akira.ladux.dto.inventory.request.PurchaseOrderStatusUpdateRequest;
 import org.akira.ladux.dto.inventory.response.PurchaseOrderResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.*;
@@ -16,7 +17,6 @@ import org.akira.ladux.model.enums.StockReferenceType;
 import org.akira.ladux.repository.*;
 import org.akira.ladux.service.PurchaseOrderService;
 import org.akira.ladux.service.StockMovementService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,20 +88,20 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PurchaseOrderResponse> getAllPurchaseOrders(Pageable pageable) {
-        return repo.findAll(pageable).map(PurchaseOrderResponse::summaryFromEntity);
+    public PageResponse<PurchaseOrderResponse> getAllPurchaseOrders(Pageable pageable) {
+        return PageResponse.from(repo.findAll(pageable).map(PurchaseOrderResponse::summaryFromEntity));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PurchaseOrderResponse> getPurchaseOrdersByStatus(PurchaseOrderStatus status, Pageable pageable) {
-        return repo.findByStatus(status, pageable).map(PurchaseOrderResponse::summaryFromEntity);
+    public PageResponse<PurchaseOrderResponse> getPurchaseOrdersByStatus(PurchaseOrderStatus status, Pageable pageable) {
+        return PageResponse.from(repo.findByStatus(status, pageable).map(PurchaseOrderResponse::summaryFromEntity));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PurchaseOrderResponse> getPurchaseOrdersBySupplier(int supplierId, Pageable pageable) {
-        return repo.findBySupplierId(supplierId, pageable).map(PurchaseOrderResponse::summaryFromEntity);
+    public PageResponse<PurchaseOrderResponse> getPurchaseOrdersBySupplier(int supplierId, Pageable pageable) {
+        return PageResponse.from(repo.findBySupplierId(supplierId, pageable).map(PurchaseOrderResponse::summaryFromEntity));
     }
 
     @Override

@@ -8,7 +8,7 @@ import org.akira.ladux.dto.system.response.PaymentCallbackResponse;
 import org.akira.ladux.model.UserPrincipal;
 import org.akira.ladux.model.enums.PaymentStatus;
 import org.akira.ladux.service.PaymentService;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,14 +23,14 @@ public class PaymentController {
     private final PaymentService service;
 
     @GetMapping("/my")
-    public ResponseEntity<Page<PaymentCallbackResponse>> getMyPayments(
+    public ResponseEntity<PageResponse<PaymentCallbackResponse>> getMyPayments(
             @AuthenticationPrincipal UserPrincipal principal,
             Pageable pageable) {
         return ResponseEntity.ok(service.getMyPayments(principal.getId(), pageable));
     }
 
     @GetMapping("/my/order/{orderId}")
-    public ResponseEntity<Page<PaymentCallbackResponse>> getMyPaymentsByOrderId(
+    public ResponseEntity<PageResponse<PaymentCallbackResponse>> getMyPaymentsByOrderId(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable int orderId,
             Pageable pageable) {
@@ -38,7 +38,7 @@ public class PaymentController {
     }
 
     @GetMapping("/my/status/{status}")
-    public ResponseEntity<Page<PaymentCallbackResponse>> getMyPaymentsByStatus(
+    public ResponseEntity<PageResponse<PaymentCallbackResponse>> getMyPaymentsByStatus(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable PaymentStatus status,
             Pageable pageable) {

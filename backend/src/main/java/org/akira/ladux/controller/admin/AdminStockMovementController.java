@@ -4,7 +4,7 @@ import org.akira.ladux.dto.inventory.request.StockMovementRequest;
 import org.akira.ladux.dto.inventory.response.StockMovementResponse;
 import org.akira.ladux.model.UserPrincipal;
 import org.akira.ladux.service.StockMovementService;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,12 +29,12 @@ public class AdminStockMovementController {
     private final StockMovementService service;
 
     @GetMapping
-    public ResponseEntity<Page<StockMovementResponse>> getAllStockMovements(Pageable pageable) {
+    public ResponseEntity<PageResponse<StockMovementResponse>> getAllStockMovements(Pageable pageable) {
         return ResponseEntity.ok(service.getAllMovements(pageable));
     }
 
     @GetMapping("/product/{productId}")
-    public ResponseEntity<Page<StockMovementResponse>> getByProduct(@PathVariable int productId, Pageable pageable) {
+    public ResponseEntity<PageResponse<StockMovementResponse>> getByProduct(@PathVariable int productId, Pageable pageable) {
         return ResponseEntity.ok(service.getMovementsByProduct(productId, pageable));
     }
 

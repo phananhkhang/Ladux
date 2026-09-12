@@ -6,7 +6,7 @@ import org.akira.ladux.dto.system.request.PaymentCallbackRequest;
 import org.akira.ladux.dto.system.response.PaymentCallbackResponse;
 import org.akira.ladux.model.enums.PaymentStatus;
 import org.akira.ladux.service.PaymentService;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,13 +22,13 @@ public class AdminPaymentController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<PaymentCallbackResponse>> getAllPayments(Pageable pageable) {
+    public ResponseEntity<PageResponse<PaymentCallbackResponse>> getAllPayments(Pageable pageable) {
         return ResponseEntity.ok(service.getAllPayments(pageable));
     }
 
     @GetMapping("/order/{orderId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<PaymentCallbackResponse>> getPaymentsByOrderId(
+    public ResponseEntity<PageResponse<PaymentCallbackResponse>> getPaymentsByOrderId(
             @PathVariable int orderId, Pageable pageable) {
         return ResponseEntity.ok(service.getPaymentsByOrderId(orderId, pageable));
     }
@@ -42,7 +42,7 @@ public class AdminPaymentController {
 
     @GetMapping("/status/{status}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<PaymentCallbackResponse>> getPaymentsByStatus(
+    public ResponseEntity<PageResponse<PaymentCallbackResponse>> getPaymentsByStatus(
             @PathVariable PaymentStatus status, Pageable pageable) {
         return ResponseEntity.ok(service.getPaymentsByStatus(status, pageable));
     }

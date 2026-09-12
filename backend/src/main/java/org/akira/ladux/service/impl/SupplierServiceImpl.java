@@ -2,12 +2,12 @@ package org.akira.ladux.service.impl;
 
 import org.akira.ladux.dto.inventory.request.SupplierRequest;
 import org.akira.ladux.dto.inventory.response.SupplierResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Supplier;
 import org.akira.ladux.repository.SupplierRepository;
 import org.akira.ladux.service.SupplierService;
 import org.akira.ladux.utils.PhoneNumberUtils;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,14 +22,14 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<SupplierResponse> getAllSuppliers(Pageable pageable) {
-        return repo.findAll(pageable).map(SupplierResponse::fromEntity);
+    public PageResponse<SupplierResponse> getAllSuppliers(Pageable pageable) {
+        return PageResponse.from(repo.findAll(pageable).map(SupplierResponse::fromEntity));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<SupplierResponse> getActiveSuppliers(Pageable pageable) {
-        return repo.findByIsActiveTrue(pageable).map(SupplierResponse::fromEntity);
+    public PageResponse<SupplierResponse> getActiveSuppliers(Pageable pageable) {
+        return PageResponse.from(repo.findByIsActiveTrue(pageable).map(SupplierResponse::fromEntity));
     }
 
     @Override
@@ -40,10 +40,10 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<SupplierResponse> searchSuppliers(String name, String phone, Pageable pageable) {
+    public PageResponse<SupplierResponse> searchSuppliers(String name, String phone, Pageable pageable) {
         String searchName = (name != null && !name.isBlank()) ? name.trim() : null;
         String searchPhone = (phone != null && !phone.isBlank()) ? phone.trim() : null;
-        return repo.searchByNameOrPhone(searchName, searchPhone, pageable);
+        return PageResponse.from(repo.searchByNameOrPhone(searchName, searchPhone, pageable));
     }
 
     @Override

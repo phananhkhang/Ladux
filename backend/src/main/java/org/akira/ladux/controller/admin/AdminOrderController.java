@@ -6,7 +6,7 @@ import org.akira.ladux.dto.order.request.OrderStatusUpdateRequest;
 import org.akira.ladux.dto.order.response.OrderResponse;
 import org.akira.ladux.model.enums.OrderStatus;
 import org.akira.ladux.service.OrderService;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,13 +20,13 @@ public class AdminOrderController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<OrderResponse>> getAllOrders(Pageable pageable) {
+    public ResponseEntity<PageResponse<OrderResponse>> getAllOrders(Pageable pageable) {
         return ResponseEntity.ok(service.getAllOrders(pageable));
     }
 
     @GetMapping("/status/{status}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<OrderResponse>> getOrdersByStatus(@PathVariable OrderStatus status, Pageable pageable) {
+    public ResponseEntity<PageResponse<OrderResponse>> getOrdersByStatus(@PathVariable OrderStatus status, Pageable pageable) {
         return ResponseEntity.ok(service.getOrdersByStatus(status, pageable));
     }
 

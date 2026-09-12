@@ -7,7 +7,7 @@ import org.akira.ladux.model.StockMovement;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.enums.StockMovementType;
 import org.akira.ladux.model.enums.StockReferenceType;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface StockMovementService {
@@ -15,9 +15,9 @@ public interface StockMovementService {
     /** Tao bien dong kho thu cong (dieu chinh kiem ke, hang hong...). */
     StockMovementResponse createAdjustment(StockMovementRequest request, Integer createdByUserId);
 
-    Page<StockMovementResponse> getMovementsByProduct(int productId, Pageable pageable);
+    PageResponse<StockMovementResponse> getMovementsByProduct(int productId, Pageable pageable);
 
-    Page<StockMovementResponse> getAllMovements(Pageable pageable);
+    PageResponse<StockMovementResponse> getAllMovements(Pageable pageable);
 
     /**
      * Ghi nhan bien dong kho + cap nhat ton kho cua product (1 noi duy nhat).

@@ -3,6 +3,7 @@ package org.akira.ladux.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.system.request.NotificationRequest;
 import org.akira.ladux.dto.system.response.NotificationResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Notification;
 import org.akira.ladux.model.User;
@@ -25,21 +26,21 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<NotificationResponse> getAllNotifications(Pageable pageable) {
+    public PageResponse<NotificationResponse> getAllNotifications(Pageable pageable) {
         Integer currentUserId = SecurityUtils.getCurrentUserId();
-        return notificationRepository.findByRecipientIdAndIsDeletedByUserFalseOrderByCreatedAtDesc(currentUserId, pageable).map(NotificationResponse::fromEntity);
+        return PageResponse.from(notificationRepository.findByRecipientIdAndIsDeletedByUserFalseOrderByCreatedAtDesc(currentUserId, pageable).map(NotificationResponse::fromEntity));
     }
     @Override
     @Transactional(readOnly = true)
-    public Page<NotificationResponse> getAllUnReadNotifications(Pageable pageable) {
+    public PageResponse<NotificationResponse> getAllUnReadNotifications(Pageable pageable) {
         Integer currentUserId = SecurityUtils.getCurrentUserId();
-        return notificationRepository.findByRecipientIdAndIsReadFalseAndIsDeletedByUserFalseOrderByCreatedAtDesc(currentUserId, pageable).map(NotificationResponse::fromEntity);
+        return PageResponse.from(notificationRepository.findByRecipientIdAndIsReadFalseAndIsDeletedByUserFalseOrderByCreatedAtDesc(currentUserId, pageable).map(NotificationResponse::fromEntity));
     }
     @Override
     @Transactional(readOnly = true)
-    public Page<NotificationResponse> getAllReadNotifications(Pageable pageable) {
+    public PageResponse<NotificationResponse> getAllReadNotifications(Pageable pageable) {
         Integer currentUserId = SecurityUtils.getCurrentUserId();
-        return notificationRepository.findByRecipientIdAndIsReadTrueAndIsDeletedByUserFalseOrderByCreatedAtDesc(currentUserId, pageable).map(NotificationResponse::fromEntity);
+        return PageResponse.from(notificationRepository.findByRecipientIdAndIsReadTrueAndIsDeletedByUserFalseOrderByCreatedAtDesc(currentUserId, pageable).map(NotificationResponse::fromEntity));
     }
     @Override
     @Transactional(readOnly = true)
@@ -102,13 +103,13 @@ public class NotificationServiceImpl implements NotificationService {
     // Admin xem tất cả thông báo gửi đến admin (yêu cầu trả hàng, hệ thống...)
     @Override
     @Transactional(readOnly = true)
-    public Page<NotificationResponse> getAllNotificationsForAdmin(Pageable pageable) {
+    public PageResponse<NotificationResponse> getAllNotificationsForAdmin(Pageable pageable) {
         User admin = userRepository.findByUsername("admin").orElse(null);
         if (admin == null) {
-            return Page.empty(pageable);
+            return PageResponse.from(Page.empty(pageable));
         }
-        return notificationRepository.findByRecipientIdAndIsDeletedByUserFalseOrderByCreatedAtDesc(admin.getId(), pageable)
-                .map(NotificationResponse::fromEntity);
+        return PageResponse.from(notificationRepository.findByRecipientIdAndIsDeletedByUserFalseOrderByCreatedAtDesc(admin.getId(), pageable)
+                .map(NotificationResponse::fromEntity));
     }
     // Xoa thong bao cho admin (Hard delete từ DB)
     @Override

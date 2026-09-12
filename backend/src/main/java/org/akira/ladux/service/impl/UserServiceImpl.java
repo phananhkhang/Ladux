@@ -9,6 +9,7 @@ import org.akira.ladux.dto.user.request.RegisterRequest;
 import org.akira.ladux.dto.user.request.UserAdminUpdateRequest;
 import org.akira.ladux.dto.user.request.UserUpdatePassword;
 import org.akira.ladux.dto.user.response.UserResponse;
+import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
 import org.akira.ladux.model.Cart;
@@ -25,7 +26,6 @@ import org.akira.ladux.service.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
         String username = request.username().trim();
 
         if (repo.existsByUsername(username)) {
-            throw new BusinessRuleException("Username nay da ton tai trong DB. Hay dung username khac.");
+            throw new BusinessRuleException("Username nay da ton tai. Hay dung username khac.");
         }
 
         Role customerRole = roleRepository.findByName(RoleName.CUSTOMER);
@@ -78,7 +78,8 @@ public class UserServiceImpl implements UserService {
                 .totalSpent(BigDecimal.ZERO)
                 .build();
         user.setCustomer(customer);
-        User saved = repo.save(user); // cascade ALL -> luu luon Customer (MapsId)
+        customerRepository.save(customer);
+        User saved = repo.save(user);
         cartRepository.save(Cart.builder().user(saved).build());
         return UserResponse.fromEntity(saved);
     }
@@ -86,9 +87,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "users", key = "'all:' + #pageable.pageNumber + ':' + #pageable.pageSize")
-    public Page<UserResponse> getAllUsers(Pageable pageable) {
-        return repo.findAll(pageable)
-                .map(UserResponse::fromEntity);
+    public PageResponse<UserResponse> getAllUsers(Pageable pageable) {
+        return PageResponse.from(repo.findAll(pageable)
+                .map(UserResponse::fromEntity));
     }
 
     @Override
@@ -114,9 +115,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "users", key = "'active:' + #pageable.pageNumber + ':' + #pageable.pageSize")
-    public Page<UserResponse> getActiveUsers(Pageable pageable) {
-        return repo.findByIsActiveTrue(pageable)
-                .map(UserResponse::fromEntity);
+    public PageResponse<UserResponse> getActiveUsers(Pageable pageable) {
+        return PageResponse.from(repo.findByIsActiveTrue(pageable)
+                .map(UserResponse::fromEntity));
     }
 
     @Override
@@ -271,7 +272,7 @@ public class UserServiceImpl implements UserService {
         }
         return roles;
     }
-    public Page<UserResponse> searchUserByNameOrPhone(String name, String phone, Pageable pageable) {
+    public PageResponse<UserResponse> searchUserByNameOrPhone(String name, String phone, Pageable pageable) {
         String searchName = cleanSearch(name);
         String searchPhone = cleanSearch(phone);
         if (searchPhone != null) {
@@ -281,8 +282,8 @@ public class UserServiceImpl implements UserService {
                 // Keep raw input for partial/non-Vietnamese phone search.
             }
         }
-        return repo.findByNameOrPhone(searchName, searchPhone, pageable)
-                .map(UserResponse::fromEntity);
+        return PageResponse.from(repo.findByNameOrPhone(searchName, searchPhone, pageable)
+                .map(UserResponse::fromEntity));
     }
 
     private String cleanSearch(String value) {

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.system.request.NotificationRequest;
 import org.akira.ladux.dto.system.response.NotificationResponse;
 import org.akira.ladux.service.NotificationService;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +32,7 @@ public class AdminNotificationController {
     // Admin xem lai toan bo thong báo
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<NotificationResponse>> getAllNotifications(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<PageResponse<NotificationResponse>> getAllNotifications(@RequestParam(defaultValue = "0") int page,
                                                                           @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(notificationService.getAllNotificationsForAdmin(pageable));

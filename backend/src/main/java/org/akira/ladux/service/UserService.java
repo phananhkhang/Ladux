@@ -4,18 +4,18 @@ import org.akira.ladux.dto.user.request.RegisterRequest;
 import org.akira.ladux.dto.user.request.UserAdminUpdateRequest;
 import org.akira.ladux.dto.user.request.UserUpdatePassword;
 import org.akira.ladux.dto.user.response.UserResponse;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
-    Page<UserResponse> getAllUsers(Pageable pageable);
+    PageResponse<UserResponse> getAllUsers(Pageable pageable);
 
     UserResponse getUserById(int id);
 
     UserResponse getUserByEmail(String email);
 
-    Page<UserResponse> getActiveUsers(Pageable pageable);
+    PageResponse<UserResponse> getActiveUsers(Pageable pageable);
 
     UserResponse updateUser(int id, UserAdminUpdateRequest request);
 
@@ -29,5 +29,5 @@ public interface UserService {
 
     UserResponse uploadAvatar(Integer id, MultipartFile file);
 
-    Page<UserResponse> searchUserByNameOrPhone(String name, String phone, Pageable pageable);
+    PageResponse<UserResponse> searchUserByNameOrPhone(String name, String phone, Pageable pageable);
 }

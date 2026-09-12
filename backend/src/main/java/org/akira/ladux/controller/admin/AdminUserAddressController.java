@@ -3,7 +3,7 @@ package org.akira.ladux.controller.admin;
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.user.response.UserAddressResponse;
 import org.akira.ladux.service.UserAddressService;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,7 +20,7 @@ public class AdminUserAddressController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<UserAddressResponse>> getAllUserAddresses(Pageable pageable) {
+    public ResponseEntity<PageResponse<UserAddressResponse>> getAllUserAddresses(Pageable pageable) {
         return ResponseEntity.ok(service.getAllUserAddresses(pageable));
     }
 

@@ -3,7 +3,7 @@ package org.akira.ladux.controller.admin;
 import lombok.RequiredArgsConstructor;
 import org.akira.ladux.dto.catalog.response.ReviewResponse;
 import org.akira.ladux.service.ReviewService;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,22 +17,22 @@ public class AdminReviewController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<Page<ReviewResponse>> getAllReviews(Pageable pageable) {
+    public ResponseEntity<PageResponse<ReviewResponse>> getAllReviews(Pageable pageable) {
         return ResponseEntity.ok(service.getAllReviews(pageable));
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/{userId}")
-    public ResponseEntity<Page<ReviewResponse>> getReviewsByUserId(@PathVariable int userId, Pageable pageable) {
+    public ResponseEntity<PageResponse<ReviewResponse>> getReviewsByUserId(@PathVariable int userId, Pageable pageable) {
         return ResponseEntity.ok(service.getReviewsByUserId(userId, pageable));
     }
     @GetMapping("/search/product/{productId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<ReviewResponse>> getReviewsByProductId(@PathVariable int productId, Pageable pageable) {
+    public ResponseEntity<PageResponse<ReviewResponse>> getReviewsByProductId(@PathVariable int productId, Pageable pageable) {
         return ResponseEntity.ok(service.getReviewsByProductId(productId, pageable));
     }
     @GetMapping("/search")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<ReviewResponse>> findReviewByNameUser(@RequestParam(required = false) String name, Pageable pageable) {
+    public ResponseEntity<PageResponse<ReviewResponse>> findReviewByNameUser(@RequestParam(required = false) String name, Pageable pageable) {
         return ResponseEntity.ok(service.findReviewByNameUser(name, pageable));
     }
 }

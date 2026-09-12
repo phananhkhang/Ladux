@@ -10,7 +10,7 @@ import org.akira.ladux.dto.order.response.OrderResponse;
 import org.akira.ladux.dto.system.response.PaymentCallbackResponse;
 import org.akira.ladux.model.UserPrincipal;
 import org.akira.ladux.service.OrderService;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +33,7 @@ public class OrderController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<Page<OrderResponse>> getOrdersByUserId(@AuthenticationPrincipal UserPrincipal principal, Pageable pageable) {
+    public ResponseEntity<PageResponse<OrderResponse>> getOrdersByUserId(@AuthenticationPrincipal UserPrincipal principal, Pageable pageable) {
         return ResponseEntity.ok(service.getOrdersByUserId(principal.getId(), pageable));
     }
 

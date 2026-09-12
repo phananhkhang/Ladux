@@ -4,7 +4,7 @@ import org.akira.ladux.dto.user.request.AdminCustomerUpdateRequest;
 import org.akira.ladux.dto.user.response.CustomerResponse;
 import org.akira.ladux.model.enums.CustomerLevel;
 import org.akira.ladux.service.CustomerService;
-import org.springframework.data.domain.Page;
+import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,12 +22,12 @@ public class AdminCustomerController {
     private final CustomerService service;
 
     @GetMapping
-    public ResponseEntity<Page<CustomerResponse>> getAllCustomers(Pageable pageable) {
+    public ResponseEntity<PageResponse<CustomerResponse>> getAllCustomers(Pageable pageable) {
         return ResponseEntity.ok(service.getAllCustomers(pageable));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<CustomerResponse>> searchCustomers(
+    public ResponseEntity<PageResponse<CustomerResponse>> searchCustomers(
         @RequestParam(required = false) String name,
         @RequestParam(required = false) String phone,
         Pageable pageable) {
@@ -36,7 +36,7 @@ public class AdminCustomerController {
 }
 
     @GetMapping("/level/{level}")
-    public ResponseEntity<Page<CustomerResponse>> getByLevel(@PathVariable CustomerLevel level, Pageable pageable) {
+    public ResponseEntity<PageResponse<CustomerResponse>> getByLevel(@PathVariable CustomerLevel level, Pageable pageable) {
         return ResponseEntity.ok(service.getCustomersByLevel(level, pageable));
     }
 
