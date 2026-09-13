@@ -18,7 +18,7 @@ class AuthenticationTokenServiceImplTest {
         RefreshTokenService refreshTokenService = mock(RefreshTokenService.class);
         User user = User.builder().id(9).username("customer").build();
         when(jwtService.generateAccessToken(user)).thenReturn("access-token");
-        when(refreshTokenService.create(user)).thenReturn(RefreshToken.builder().token("opaque-refresh").user(user).build());
+        when(refreshTokenService.create(user)).thenReturn(RefreshToken.builder().tokenHash("opaque-refresh").user(user).build());
 
         AuthenticationTokenService.IssuedAuthenticationTokens result =
                 new AuthenticationTokenServiceImpl(jwtService, refreshTokenService).issueAuthenticationTokens(user);

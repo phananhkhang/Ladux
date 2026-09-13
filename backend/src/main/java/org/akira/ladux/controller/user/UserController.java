@@ -46,6 +46,7 @@ public class UserController {
         return ResponseEntity.ok(phoneVerificationService.sendPasswordChangeOtp());
     }
 
+    // Gửi OTP xác thực thay đổi mật khẩu qua điện thoại
     @PostMapping("/me/password/phone/verify")
     public ResponseEntity<PasswordVerificationResponse> verifyPasswordChangePhoneOtp(
             @Valid @RequestBody PhoneVerifyRequest request

@@ -60,7 +60,7 @@ class RefreshTokenServiceTest {
         String legacyRaw = "legacy-token-stored-by-old-version";
         User user = User.builder().id(8).username("legacy").build();
         RefreshToken current = RefreshToken.builder()
-                .token(legacyRaw)
+                .tokenHash(legacyRaw)
                 .user(user)
                 .expiryDate(Instant.now().plusSeconds(600))
                 .revoked(false)

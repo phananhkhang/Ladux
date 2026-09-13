@@ -16,7 +16,7 @@ class RefreshTokenTest {
     @Test
     void usable_whenNotRevokedAndNotExpired() {
         RefreshToken token = RefreshToken.builder()
-                .token("abc")
+                .tokenHash("abc")
                 .expiryDate(Instant.now().plus(1, ChronoUnit.DAYS))
                 .revoked(false)
                 .build();
@@ -26,7 +26,7 @@ class RefreshTokenTest {
     @Test
     void notUsable_whenRevoked() {
         RefreshToken token = RefreshToken.builder()
-                .token("abc")
+                .tokenHash("abc")
                 .expiryDate(Instant.now().plus(1, ChronoUnit.DAYS))
                 .revoked(true)
                 .build();
@@ -36,7 +36,7 @@ class RefreshTokenTest {
     @Test
     void notUsable_whenExpired() {
         RefreshToken token = RefreshToken.builder()
-                .token("abc")
+                .tokenHash("abc")
                 .expiryDate(Instant.now().minus(1, ChronoUnit.SECONDS))
                 .revoked(false)
                 .build();

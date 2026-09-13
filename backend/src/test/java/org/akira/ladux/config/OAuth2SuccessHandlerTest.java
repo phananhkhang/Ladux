@@ -77,7 +77,7 @@ class OAuth2SuccessHandlerTest {
                 .password("encoded-random")
                 .build();
         RefreshToken refreshToken = RefreshToken.builder()
-                .token("refresh-token")
+                .tokenHash("refresh-token")
                 .user(user)
                 .build();
 
