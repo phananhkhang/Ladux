@@ -1,458 +1,112 @@
-# Backend Ladux — Ranh giới Module
+# Backend Ladux — Ranh giới module
 
-Tài liệu này định nghĩa **quyền sở hữu logic (logical ownership)**.
+## 1. Nguyên tắc sở hữu
 
-Khi một class / use case / thao tác sửa đổi dữ liệu chưa rõ thuộc về đâu, không được tạo ngay dependency chéo module. Hãy làm rõ quyền sở hữu trước tiên.
+Mỗi invariant và thao tác ghi có một chủ sở hữu. Vị trí cột vật lý không tự quyết định quyền sở hữu logic. Không đọc/ghi repository, entity hay SQL của module khác; ngoại lệ chuyển tiếp duy nhất được định nghĩa cụ thể cho tồn kho bên dưới và phải có thời hạn/điều kiện kết thúc.
 
----
+Đây là đặc tả mục tiêu. Tên entity phản ánh tài liệu đầu vào, cần đối chiếu tên và hành vi thật trong repository trước khi sửa source.
 
-## 1. Identity
+## 2. Identity
 
-### Sở hữu
+Sở hữu `User`, `Role`, `Customer`, `UserAddress`, `RefreshToken`, `EmailVerification`, `PhoneVerification`, `UserMfaMethod`, `LoginHistory`, `SecurityEvent`, authentication và principal nội bộ.
 
-```text
-User
-Role
-Customer
-UserAddress
-RefreshToken
-EmailVerification
-PhoneVerification
-UserMfaMethod
-LoginHistory
-SecurityEvent
-UserPrincipal
-```
-
-### Các use case
+Use case: đăng ký/đăng nhập, JWT, refresh rotation/revocation, đổi/quên mật khẩu, OAuth2, MFA, OTP, hồ sơ/địa chỉ, lịch sử và sự kiện bảo mật. Email/SMS phục vụ OTP và xác minh bảo mật có thể tiếp tục ở Identity qua output port; không buộc đi qua Notification.
 
-- Đăng ký / đăng nhập;
-- JWT access token;
-- Xoay vòng / thu hồi refresh token (rotation/revocation);
-- OAuth2;
-- MFA;
-- OTP qua email;
-- OTP qua điện thoại;
-- Xác minh / đổi mật khẩu;
-- Tài khoản / hồ sơ / địa chỉ;
-- Lịch sử đăng nhập;
-- Xử lý sự kiện bảo mật;
-- Truy vấn vai trò (role).
-
-### Các adapter bên ngoài
-
-```text
-Email sender
-SMS / nhà cung cấp OTP qua điện thoại
-CAPTCHA
-Các nhà cung cấp OAuth
-Thử thách MFA lưu trên Redis
-```
+API chỉ trả snapshot danh tính, địa chỉ hoặc quyền tối thiểu. Không xuất `User`, Hibernate proxy hay `UserPrincipal` gắn framework. Ordering lưu shipping snapshot tại lúc đặt hàng; không giữ association tới `UserAddress`.
 
-Việc gửi OTP / email phục vụ riêng cho bảo mật có thể tiếp tục đặt bên trong Identity thay vì ép buộc phải đi qua Notification.
+Nếu điểm khách hàng đang nằm trong `Customer`, Identity tiếp tục sở hữu số dư và invariant cho tới ADR khác. Workflow có thể tiếp nhận event của Ordering rồi gọi Identity API với event ID và tham chiếu đơn; Identity chống áp dụng trùng, xử lý bù đúng và không import Ordering. Nếu điểm có giá trị quy đổi, cần ledger và giao nhận event bền. Không để listener trong Identity import Ordering event rồi tạo cycle qua các module khác.
 
----
-
-## 2. Catalog
-
-### Sở hữu
-
-```text
-Product
-ProductVariant
-ProductImage
-Brand
-Category
-Color
-Review
-Wishlist
-```
+## 3. Catalog
 
-### Các use case
+Sở hữu `Product`, danh tính/cấu hình `ProductVariant`, `ProductImage`, `Brand`, `Category`, `Color`, `Review`, `Wishlist`; quản lý thông tin sản phẩm, giá hiển thị, tìm kiếm, hình ảnh và nội dung đánh giá.
 
-- CRUD sản phẩm;
-- Truy vấn / tìm kiếm sản phẩm;
-- Quản lý biến thể;
-- Thương hiệu / danh mục / màu sắc;
-- Hình ảnh;
-- Đánh giá (review);
-- Danh sách yêu thích (wishlist);
-- Thông tin giá hiển thị trên catalog.
+API cung cấp projection/snapshot theo ID và truy vấn batch. Giá cuối cùng của đơn phải được Ordering chốt cùng Promotion theo quy tắc tại checkout; không tin giá từ client. Review cần chứng minh đã mua được phối hợp qua workflow; Catalog không gọi Ordering. Endpoint đọc sản phẩm kèm stock được workflow ghép dữ liệu Catalog và Inventory, giữ nguyên URL/JSON nếu cần.
 
-### Ranh giới quan trọng
+Catalog không được ghi tồn kho bằng entity save, mapper, native query, import CSV, job hoặc endpoint quản trị. Quy tắc này bao gồm thao tác tạo/cập nhật biến thể có quantity đầu vào: phần quantity phải chuyển tới Inventory theo đơn vị transaction phù hợp.
 
-`ProductVariant.stockQuantity` là điểm nóng mô hình hóa vật lý.
+<a id="4-inventory-va-cot-stock-dung-chung"></a>
+## 4. Inventory và cột stock dùng chung
 
-Quyền sở hữu logic:
+Inventory sở hữu `StockMovement`, loại/tham chiếu biến động, reservation, release, receiving, adjustment và availability. API gợi ý: `reserveForOrder`, `releaseForOrder`, `receivePurchase`, `adjustStock`, `getAvailability` và bản batch.
 
-```text
-Catalog sở hữu danh tính và cấu hình của biến thể.
+### 4.1 Một nơi duy nhất được ghi
 
-Inventory sở hữu toàn bộ ngữ nghĩa thay đổi tồn kho.
-```
+Trong giai đoạn giữ cột `ProductVariant.stockQuantity` trên bảng biến thể:
 
-Không thay đổi ngay schema DB.
-
-Trước mắt, hãy đảm bảo mọi thao tác ghi dữ liệu tồn kho đều phải thông qua Inventory.
+1. Catalog tiếp tục sở hữu danh tính và cấu hình biến thể; **Inventory là writer duy nhất của stock**.
+2. Inventory có adapter persistence riêng thực hiện cập nhật có điều kiện/khóa và ledger. Adapter dùng SQL hoặc mapping nội bộ của Inventory; không import `CatalogRepository` hay entity Catalog.
+3. Mapping Catalog cho stock phải không sinh UPDATE (`updatable = false`), bỏ setter và loại stock khỏi mapper/update/import. Bỏ setter riêng lẻ không đủ bảo vệ khi entity vẫn dirty hoặc có native query.
+4. `insertable = false` chỉ dùng khi schema/default đã bảo đảm giá trị khởi tạo hợp lệ. Nếu cần, thêm migration mới đặt default ban đầu và kiểm tra dữ liệu hiện hữu. Số lượng ban đầu khác 0 phải qua Inventory và ledger trong cùng transaction; không âm thầm mất hành vi nhập stock khi tạo sản phẩm.
+5. Khi bulk/native update, quy định đọc lại/refresh có chủ đích và vô hiệu hóa cache sau commit. Không tin entity Catalog đã load trước cập nhật; không gọi `EntityManager.clear()` tùy tiện làm mất thay đổi chưa flush.
+6. Kiểm kê mọi writer bằng tìm repository/native SQL/job/import và kiểm thử hồi quy. ArchUnit không chứng minh được SQL không sửa cột trái quyền.
 
----
+`updatable` điều khiển SQL do mapping sinh; bulk update không tự đồng bộ persistence context hoặc kiểm tra optimistic version. Nếu dùng `@Version`, adapter phải quản lý version/check conflict đúng, không giả định native update đã bảo vệ. [Jakarta Persistence: bulk update và column mapping](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2).
 
-## 3. Ordering
+Ngoại lệ vật lý chỉ cho phép Inventory truy cập các cột khóa/stock/version cần thiết của bảng biến thể đã được ghi nhận trong baseline. Không mở quyền sửa giá, SKU hay thuộc tính Catalog. Khi tách bảng stock về Inventory trong một thay đổi schema riêng, phải backfill, đối chiếu và chuyển writer có kiểm soát; không bật hai writer song song.
 
-### Sở hữu
-
-```text
-Cart
-CartItem
-Order
-OrderItem
-OrderHistory
-ShippingAddress
-OrderStatus
-```
+### 4.2 Bất biến tồn kho
 
-### Các use case
-
-- Giỏ hàng (cart);
-- Thanh toán đặt hàng (checkout);
-- Tạo đơn hàng;
-- Truy vấn đơn hàng;
-- Máy trạng thái đơn hàng (order state machine);
-- Hủy đơn hàng;
-- Trả hàng;
-- Lịch sử đơn hàng.
+- Chốt ý nghĩa quantity hiện tại trước khi sửa: tồn vật lý hay lượng khả dụng. Nếu reserve đã trừ lượng khả dụng, confirm không được trừ lần nữa. Không tự thêm mô hình reservation mới làm thay đổi semantics trong refactor package.
+- Reserve chỉ thành công khi đủ số lượng; không âm kho nếu chính sách hiện hành không cho phép. Kiểm tra và ghi phải nguyên tử dưới concurrency.
+- Biến động stock và ledger cùng commit/rollback; ledger ghi actor, lý do, loại, tham chiếu nghiệp vụ, operation ID và số lượng trước/sau hoặc dữ liệu tương đương đủ đối soát.
+- Release tham chiếu reservation đã có, không giải phóng quá lượng đã giữ và chưa giải phóng; không tăng stock hai lần vì cancel/expire/retry trùng.
+- Mọi operation ID có scope, unique constraint và dữ liệu định danh request rõ. Cùng ID với payload khác phải báo conflict, không coi là lần gọi trùng hợp lệ.
+- Khóa nhiều variant theo thứ tự ổn định; giữ cùng thứ tự giữa các luồng.
 
-### Được phép phụ thuộc vào
+## 5. Ordering
 
-```text
-Catalog.api
-Inventory.api
-Promotion.api
-Actor / user ID từ Identity
-```
+Sở hữu `Cart`, `CartItem`, `Order`, `OrderItem`, `OrderHistory`, `ShippingAddress` dạng snapshot và `OrderStatus`. Quản lý tạo đơn, giỏ hàng, query, state machine, cancel và return.
 
-### Nghiêm cấm phụ thuộc vào
+Ordering gọi Catalog/Inventory/Promotion/Identity qua API được phép; không gọi Payment. Nó cung cấp API cần thiết để Payment đọc số tiền/currency/trạng thái thanh toán được phép và áp dụng payment outcome lũy đẳng. Không có API “set status” tổng quát bỏ qua state machine. API áp dụng payment outcome phân biệt đã áp dụng, trùng và order đã ở trạng thái không tiếp nhận; trường hợp đến muộn dự kiến là kết quả nghiệp vụ để Payment ghi fact/intent, không ném lỗi làm transaction bắt buộc rollback toàn bộ. Lỗi integrity hoặc kỹ thuật thực sự vẫn phải rollback.
 
-```text
-CatalogRepository
-ProductVariantRepository
-CouponRepository
-Chi tiết triển khai persistence của Inventory
-```
+Chốt price, discount, tax/phí nếu hiện có, địa chỉ và item snapshot ở server. Mọi transition kiểm tra trạng thái hiện tại, quyền actor và version/lock. Phân biệt hủy đơn, yêu cầu hoàn tiền và đã hoàn tiền; không đánh dấu refunded chỉ vì đã gửi yêu cầu.
 
----
+Checkout cần order và local payment attempt nguyên tử được workflow gọi vào hai API. Cancel cần đồng thời ghi refund intent cũng dùng workflow; Ordering vẫn quyết định có được hủy, release stock và rollback coupon hay không. Đơn vị phối hợp không chuyển ownership của các invariant sang workflow.
 
-## 4. Payment
-
-### Sở hữu
+## 6. Payment
 
-```text
-Payment
-PaymentStatus
-PaymentProvider
-Mã tham chiếu giao dịch phía merchant (merchant transaction reference)
-Vòng đời lần thử thanh toán (payment attempt lifecycle)
-Xử lý webhook / đảm bảo tính idempotency từ cổng thanh toán
-Điều phối hoàn tiền (refund orchestration)
-```
+Sở hữu `Payment`, attempt, merchant reference, provider result, IPN/webhook, refund intent và trạng thái đối soát. Gateway cụ thể nằm trong `payment.infrastructure.integration`, sau port do Payment định nghĩa. Payment chỉ phụ thuộc API Ordering và Identity khi cần; không truy cập `OrderRepository`.
 
-### Phụ thuộc công khai
+### 6.1 Thanh toán và callback
 
-```text
-Payment -> Ordering.api
-```
+- Dùng định danh attempt/merchant reference unique trong DB; idempotency key có scope, payload fingerprint và quy tắc trả lại kết quả cũ. Không chỉ dựa vào Redis hoặc kiểm tra “exists” rồi insert.
+- Xác minh chữ ký bằng dữ liệu/canonicalization theo provider; đối chiếu reference, amount, currency và trạng thái hợp lệ. Khóa hoặc update có điều kiện để callback trùng/đến đồng thời không tạo hiệu ứng lần hai.
+- Return URL phục vụ điều hướng/hiển thị; IPN hoặc kết quả đối soát được xác minh mới là nguồn cập nhật theo hợp đồng gateway. [VNPay PAY](https://sandbox.vnpayment.vn/apis/docs/thanh-toan-pay/pay.html).
+- IPN thành công đến sau cancel/expire vẫn là sự thật tiền đã nhận cần ghi nhận. Không tự mở lại đơn hoặc reserve lại stock. Persist kết quả và intent đối soát/hoàn tiền theo chính sách, rồi trả phản hồi protocol phù hợp khi đã ghi bền; không lặp lỗi vô hạn chỉ vì order không còn nhận transition bình thường.
+- Cancel, expire và IPN tranh chấp phải có thứ tự khóa/state transition nhất quán. Có bảng quyết định cho success, failure, duplicate, out-of-order, late và amount mismatch.
 
-Payment không được gọi trực tiếp `OrderRepository` sau khi đã di chuyển.
+### 6.2 Hoàn tiền
 
-### Ranh giới bên ngoài
+Tạo refund intent trong transaction DB trước khi gọi provider. Intent gồm operation ID duy nhất, payment reference, số tiền/currency, lý do, trạng thái, attempt/retry metadata và correlation ID. Tổng số đã hoàn cộng số đang giữ cho refund chưa kết thúc không được vượt số tiền được phép hoàn; kiểm tra này cần lock hoặc update có điều kiện.
 
-```text
-PaymentGatewayPort
-    |
-    +-- VNPayAdapter
-```
+Worker gọi HTTP ngoài transaction giữ khóa nghiệp vụ. Timeout/mất kết nối có thể là **chưa rõ kết quả**, không đồng nghĩa thất bại. Lưu trạng thái `UNKNOWN` hoặc tương đương, đối soát khả năng provider thực sự hỗ trợ; chỉ retry khi biết an toàn, dùng lại định danh logic theo hợp đồng provider. Nếu không xác định được, đưa vào xử lý vận hành thay vì tạo request mới mù quáng.
 
-Các nhà cung cấp trong tương lai như MoMo phải là các adapter mới, không được rẽ nhánh trực tiếp bên trong core use case thanh toán.
+Tên trạng thái cụ thể phải ánh xạ vào model hiện có; tối thiểu phân biệt pending/in-flight, succeeded, failed xác định và unknown. Crash giữa provider success và DB update phải được phục hồi bằng đối soát/lũy đẳng. Unique request ID của provider không tự chứng minh provider sẽ trả cùng kết quả khi gửi lại. [VNPay query/refund](https://sandbox.vnpayment.vn/apis/docs/truy-van-hoan-tien/querydr&refund.html).
 
----
+## 7. Procurement
 
-## 5. Inventory
+Sở hữu `Supplier`, `ProductSupplier`, `PurchaseOrder`, `PurchaseOrderItem`, trạng thái và lượng đã nhận. Gọi Inventory API để tăng stock, Catalog API để xác minh biến thể và Identity API khi cần.
 
-### Sở hữu
+Nhập từng phần phải có định danh **lần nhận/receipt** riêng; PO ID + variant ID không đủ vì cùng PO được nhận nhiều lần. Một request nhận hàng cần receipt ID ổn định, item/variant, quantity và actor. Procurement kiểm tra lượng được phép nhận và cập nhật received quantity; Inventory chống biến động trùng và ghi ledger, cùng transaction.
 
-```text
-StockMovement
-StockMovementType
-StockReferenceType
-Thay đổi tồn kho (stock mutation)
-Khả năng cung ứng (availability)
-Giữ hàng (reservation)
-Giải phóng hàng (release)
-Nhập kho (receiving)
-Điều chỉnh kho (adjustment)
-Sổ cái tồn kho (stock ledger)
-```
+Đề xuất unique `(receiptId, purchaseOrderItemId)` tại Procurement và khóa operation phù hợp tại Inventory, ví dụ `(operationId, variantId, movementKind)` sau khi tổng hợp item trùng. Ràng buộc chính xác phải khớp model thật. Cùng receipt với nội dung khác là conflict. Receipt khác phải được kiểm tra tránh nhận quá số lượng, kể cả khi chạy đồng thời.
 
-### Các thao tác công khai
+## 8. Promotion
 
-Khuyến nghị:
+Sở hữu `Coupon`, `DiscountType`, thời hạn, hạn mức, redemption và rollback. Tách quote khỏi redeem: quote không đảm bảo còn quota khi commit. Redeem xác minh lại điều kiện và trừ quota nguyên tử; rollback tham chiếu redemption đã có và lũy đẳng.
 
-```text
-reserveForOrder(...)
-releaseForOrder(...)
-receivePurchase(...)
-adjustStock(...)
-getAvailability(...)
-```
+API nhận dữ liệu đủ tính toán từ Ordering như customer ID, item/amount snapshot và operation ID; không gọi ngược Ordering hoặc truy cập order entity. Không lấy subtotal/discount từ client làm nguồn tin. Không thay đổi thứ tự tính giảm giá hoặc làm tròn trong refactor.
 
-### Quy tắc sở hữu cốt lõi
+## 9. Notification
 
-Các module khác không được phép trực tiếp cập nhật số lượng tồn kho.
+Sở hữu `Notification`, `NotificationType`, inbox/thông báo nghiệp vụ và adapter gửi chung. Nó có thể import event/API từ các publisher theo ma trận, và Identity API để lấy thông tin liên hệ được phép. Publisher không import Notification để phát event.
 
-```text
-Ordering    -> Inventory.api
-Procurement -> Inventory.api
-```
+Notification lỗi không rollback checkout. Nếu thông báo bắt buộc phải giao, dùng publication bền, retry có giới hạn/backoff, trạng thái lỗi và dedup `(eventId, recipient, channel)` phù hợp. Nếu email provider không có idempotency, phải chấp nhận/giảm thiểu khả năng gửi trùng và ghi rõ chính sách; không hứa exactly-once end-to-end.
 
----
+## 10. Shared và Workflow
 
-## 6. Procurement
+`shared` chỉ chứa lỗi nền tảng, pagination trung lập, clock/time, ID/correlation/actor primitive hoặc cấu hình kỹ thuật chung thực sự. Không có `User`, `Product`, `Order`, repository nghiệp vụ, service tổng hợp hoặc DTO chứa entity. Primitive công khai đặt ở `shared.api`, không tham chiếu framework/SDK hoặc shared internals; cấu hình/adapter chung ở `shared.infrastructure`. Module khác chỉ import shared API, không đi tắt qua shared infrastructure. Shared không import module nghiệp vụ hay workflow.
 
-### Sở hữu
+`workflow` chỉ điều phối qua API. Không tạo domain entity, repository hoặc schema nghiệp vụ riêng trong workflow. Worker/event infrastructure dùng cơ chế publication đã chọn; state thuộc Order, Payment, Identity… phải được ghi qua module chủ sở hữu. Nếu cần process state lâu dài riêng, bổ sung ADR xác định owner trước khi mở rộng vai trò workflow.
 
-```text
-Supplier
-ProductSupplier
-PurchaseOrder
-PurchaseOrderItem
-PurchaseOrderStatus
-```
-
-### Các use case
-
-- Quản lý nhà cung cấp;
-- Mối quan hệ sản phẩm - nhà cung cấp;
-- Tạo đơn mua hàng (purchase order);
-- Phê duyệt / cập nhật đơn mua hàng;
-- Nhập kho một phần;
-- Nhập kho toàn bộ.
-
-### Phụ thuộc vào
-
-```text
-Catalog.api
-Inventory.api
-Actor ID từ Identity
-```
-
-Quy trình nhập kho:
-
-```text
-Procurement
-    |
-    +--> Inventory.receivePurchase(...)
-```
-
-Procurement tuyệt đối không được sửa đổi trực tiếp `ProductVariant.stockQuantity`.
-
----
-
-## 7. Promotion
-
-### Sở hữu
-
-```text
-Coupon
-DiscountType
-Thời hạn coupon
-Giới hạn sử dụng
-Quy tắc áp dụng mã (redemption rules)
-Quy tắc hoàn trả mã (rollback rules)
-```
-
-API công khai khuyến nghị:
-
-```text
-PromotionOperations
-├── quote(...)
-├── redeem(...)
-└── rollback(...)
-```
-
-Ordering không được sử dụng `CouponRepository` sau khi di chuyển.
-
-Promotion không được phụ thuộc vào JPA entity của Ordering.
-
-Sử dụng các giá trị dữ liệu bất biến:
-
-```text
-orderId
-userId
-couponCode
-amount
-```
-
----
-
-## 8. Notification
-
-### Sở hữu
-
-```text
-Notification
-NotificationType
-Thông báo nghiệp vụ chung
-Hành vi thông báo liên hệ / hỗ trợ
-```
-
-Khuyến nghị dùng sự kiện (event-driven) cho các tác vụ phụ (side effects):
-
-```text
-OrderDeliveredEvent
-OrderCancelledEvent
-PaymentSucceededEvent
-```
-
-Tuyệt đối không dùng luồng thông báo/sự kiện bất đồng bộ để thay thế các thao tác có tính nhất quán sống còn của kho / coupon / đơn hàng.
-
----
-
-## 9. Shared
-
-Package `shared` được chủ động giữ ở mức tối giản.
-
-Các ví dụ được phép:
-
-```text
-shared/
-├── error/
-├── pagination/
-├── time/
-└── common primitives/
-```
-
-Các ví dụ bị cấm:
-
-```text
-OrderService
-ProductRepository
-Payment
-Coupon
-Quy tắc nghiệp vụ của User
-```
-
-Quy tắc:
-
-```text
-business module -> shared
-shared -X-> business module
-```
-
----
-
-## 10. Bảng ma trận sở hữu
-
-| Khái niệm | Chủ sở hữu logic | Cách truy cập từ bên ngoài |
-|---|---|---|
-| User / tài khoản / bảo mật | Identity | ID / `identity.api` |
-| Sản phẩm (Product) | Catalog | `catalog.api` |
-| Biến thể sản phẩm (ProductVariant) | Catalog | ID / immutable view |
-| Biến động tồn kho | Inventory | `inventory.api` |
-| Giỏ hàng / Đơn hàng | Ordering | `ordering.api` |
-| Thanh toán | Payment | Application/API của payment |
-| Mã giảm giá (Coupon) | Promotion | `promotion.api` |
-| Nhà cung cấp / Đơn mua hàng | Procurement | Application/API của procurement |
-| Thông báo | Notification | Event / API |
-| Kiểu dữ liệu chung về lỗi / phân trang | Shared | Shared type |
-
----
-
-## 11. Biểu đồ phụ thuộc mục tiêu
-
-```mermaid
-flowchart TD
-    ID[Identity]
-    CAT[Catalog]
-    ORD[Ordering]
-    PAY[Payment]
-    INV[Inventory]
-    PROC[Procurement]
-    PROMO[Promotion]
-    NOTI[Notification]
-    SH[Shared]
-
-    ORD --> CAT
-    ORD --> INV
-    ORD --> PROMO
-
-    PAY --> ORD
-
-    INV --> CAT
-    PROC --> CAT
-    PROC --> INV
-
-    ORD -. event .-> NOTI
-    PAY -. event .-> NOTI
-    PROC -. event .-> NOTI
-
-    ID --> SH
-    CAT --> SH
-    ORD --> SH
-    PAY --> SH
-    INV --> SH
-    PROC --> SH
-    PROMO --> SH
-    NOTI --> SH
-```
-
----
-
-## 12. Quy tắc dữ liệu chéo module
-
-Không để lộ entity:
-
-```java
-public interface InventoryApi {
-    ProductVariant reserve(ProductVariant variant, int quantity);
-}
-```
-
-Ưu tiên sử dụng contract bất biến:
-
-```java
-public interface InventoryApi {
-    StockReservation reserve(ReserveStockCommand command);
-}
-
-public record ReserveStockCommand(
-        Integer variantId,
-        int quantity,
-        String referenceType,
-        Integer referenceId
-) {}
-```
-
----
-
-## 13. Quy tắc sử dụng Event
-
-Sử dụng API đồng bộ cho các bất biến (invariants) bắt buộc phải thành công hoặc thất bại một cách nguyên tử:
-
-```text
-giữ tồn kho (stock reservation)
-giải phóng tồn kho (stock release)
-áp dụng coupon (coupon redeem)
-hoàn trả coupon (coupon rollback)
-chuyển đổi trạng thái đơn hàng quan trọng
-```
-
-Sử dụng event cho các tác vụ phụ có thể diễn ra sau khi transaction đã commit thành công:
-
-```text
-thông báo (notification)
-phân tích số liệu (analytics)
-đánh chỉ mục tìm kiếm (search indexing)
-cập nhật điểm thưởng không quan trọng
-```
-
-Nếu trong tương lai cần đảm bảo chuyển phát tin cậy qua ranh giới tiến trình, hãy chủ động đưa vào mẫu Transactional Outbox một cách có tính toán.
+API có thể được phép về chiều import nhưng vẫn phải tuân thủ quyền dữ liệu. Contract “internal” không miễn xác thực/ủy quyền và kiểm tra invariant.

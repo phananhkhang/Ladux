@@ -1,335 +1,86 @@
-# ADR-001 — Modular Monolith theo Miền Nghiệp vụ kết hợp Kiến trúc Clean/Hexagonal có chọn lọc
-
-**Trạng thái:** Đã chấp thuận (Accepted)  
-**Ngày:** 2026-09-13  
-**Phạm vi:** `backend/`
-
-## Bối cảnh (Context)
-
-Ladux đã phát triển vượt ra khỏi quy mô của một ứng dụng CRUD thông thường.
-
-Codebase hiện tại bao gồm nhiều mảng nghiệp vụ như:
-- Catalog (danh mục sản phẩm);
-- Ordering (đặt hàng);
-- Payment (thanh toán);
-- Inventory (kho vận);
-- Procurement (thu mua);
-- Promotion (khuyến mãi);
-- Authentication / bảo mật;
-- Notification (thông báo).
+# ADR-001 — Modular Monolith và Clean/Hexagonal có chọn lọc
 
-Ứng dụng cũng chứa nhiều chi tiết hạ tầng kỹ thuật và hành vi có tính nhạy cảm cao về tính nhất quán:
-- Redis;
-- Flyway;
-- Scheduled jobs (tác vụ định kỳ);
-- ShedLock;
-- Xử lý webhook thanh toán;
-- Sổ cái tồn kho (stock ledger);
-- MFA / OTP / JWT;
-- Vòng đời đơn hàng quản lý theo transaction;
-- Kiểm thử tích hợp (integration tests).
+- Trạng thái: Quyết định kiến trúc mục tiêu; mức hoàn thành triển khai phải được xác nhận riêng.
+- Phạm vi: Backend Ladux.
+- Bản cập nhật tài liệu: 2026-09-13.
+- Thay thế kiến trúc triển khai: Không; vẫn một ứng dụng và một đơn vị triển khai.
 
-Tuy nhiên, mã nguồn vẫn đang được tổ chức chủ yếu theo các tầng kỹ thuật:
+## 1. Bối cảnh
 
-```text
-controller/
-service/
-repository/
-model/
-```
+Bộ tài liệu đầu vào mô tả backend tổ chức theo tầng kỹ thuật toàn cục, có liên kết service/repository/entity giữa các nghiệp vụ. Checkout, tồn kho, coupon, order lifecycle và payment đòi hỏi bảo toàn transaction, lock và tính lũy đẳng. Các tích hợp VNPay, Redis, email/SMS, OAuth2 và scheduler cần ranh giới rõ để thay đổi/kiểm thử an toàn.
 
-Khi dự án tiếp tục mở rộng, cách tổ chức này làm mờ nhạt quyền sở hữu logic và tạo điều kiện cho các truy cập repository tùy tiện xuyên miền nghiệp vụ.
+Đánh giá tài liệu cho thấy hướng Modular Monolith phù hợp, nhưng quy tắc ownership chưa đủ để ngăn ghi stock ngoài Inventory; chiều Payment → Ordering thiếu nơi điều phối checkout kết hợp; event hậu commit chưa có tiêu chí durability thống nhất; rule kiến trúc cần bảo vệ API và cycle từ đầu. Các vấn đề này được giải quyết trong bản quyết định cập nhật.
 
-Một số luồng nghiệp vụ hiện tại cũng dựa vào tính nhất quán giao dịch mạnh mẽ (strong transactional consistency). Việc phân tách thành microservices ngay lúc này sẽ đưa vào sự phức tạp lớn về tính nhất quán phân tán và chi phí vận hành mà chưa hề có nhu cầu thực sự.
+Không có kết luận từ ADR này về hiệu năng, độ sẵn sàng production hoặc mức đạt kiến trúc của repository hiện tại. Chúng phải được xác minh bằng source, test và số liệu vận hành.
 
-## Quyết định (Decision)
+## 2. Quyết định
 
-Ladux sẽ được di chuyển từng bước sang:
+Tiếp tục **Modular Monolith theo năng lực nghiệp vụ**, một Spring Boot deployable, PostgreSQL và Redis dùng chung. Tám module nghiệp vụ: Identity, Catalog, Ordering, Payment, Inventory, Procurement, Promotion, Notification; thêm shared cho primitive/hạ tầng chung thực sự.
 
-> **Modular Monolith theo miền nghiệp vụ (business domain) + áp dụng có chọn lọc Kiến trúc Clean/Hexagonal**
+Áp dụng Clean/Hexagonal tại ranh giới có giá trị: persistence phục vụ use case, payment gateway, email/SMS/CAPTCHA/OAuth, Redis và giao tiếp module. Không bắt buộc domain thuần framework ở mọi nơi, một class cho mỗi GET, hoặc hai model domain/JPA giống nhau. Tư tưởng port/adapter bảo vệ chính sách khỏi chi tiết tích hợp; cấu trúc cụ thể được chọn theo nhu cầu Ladux. [Alistair Cockburn: Hexagonal Architecture](https://alistair.cockburn.us/hexagonal-architecture).
 
-Các module cấp cao nhất:
+API chéo module ở `*.api`, không lộ entity/repository/SDK. Domain không phụ thuộc module khác. Ma trận import duy nhất tại [quy tắc phụ thuộc](../03-dependency-rules.md#2-ma-tran-phu-thuoc).
 
-```text
-identity
-catalog
-ordering
-payment
-inventory
-procurement
-promotion
-notification
-shared
-```
+### 2.1 Workflow khi cần điều phối
 
-Ứng dụng vẫn tiếp tục là:
+Cho phép `workflow` như lớp application/infrastructure mỏng gọi các business API. Không module nghiệp vụ nào phụ thuộc workflow; workflow không sở hữu entity, repository hoặc bảng nghiệp vụ.
 
-```text
-một ứng dụng Spring Boot duy nhất
-một đơn vị triển khai duy nhất (deployable unit)
-dùng chung một PostgreSQL ban đầu
-dùng chung một Redis ban đầu
-```
+Checkout yêu cầu order và local payment attempt cùng transaction được điều phối tại workflow, giữ Payment → Ordering và không thêm chiều ngược. Các luồng đọc Catalog + availability, xác minh review từ đơn đã mua, hoặc bridge event sang điểm Customer hiện có cũng có thể dùng workflow để tránh cycle. Không tạo workflow cho các CRUD đơn module hoặc đưa toàn bộ nghiệp vụ vào đó.
 
-Chiều phụ thuộc mã nguồn chéo module:
+### 2.2 Inventory là writer duy nhất
 
-```text
-module A -> module B.api
-```
+Giữ schema vật lý hiện hữu khi có thể, nhưng loại mọi writer stock ngoài Inventory. Catalog mapping không cập nhật cột stock; init stock, native SQL, import/job, optimistic version và cache đều phải được kiểm soát. Inventory adapter được phép truy cập phạm vi cột stock/khóa/version cụ thể trên bảng biến thể trong giai đoạn chuyển tiếp, không import Catalog persistence.
 
-Tuyệt đối không được phép:
+Tách bảng stock là lựa chọn schema về sau nếu có lợi ích đã chứng minh. Không tạo bảng mới chỉ để làm đẹp sơ đồ; không để physical schema thành lý do hợp thức hóa nhiều writer.
 
-```text
-module A -> module B.repository
-module A -> module B.infrastructure
-module A -> module B JPA entity nội bộ
-```
+### 2.3 Nhất quán và tích hợp bên ngoài
 
-Kiến trúc Clean/Hexagonal được ưu tiên áp dụng có chọn lọc cho các ranh giới có giá trị cao như:
+Các thay đổi DB cốt lõi cần atomic dùng API đồng bộ trong cùng transaction. Coordinator không biến transaction DB thành transaction phân tán với HTTP/Redis. Payment/refund remote dùng intent bền, operation ID, state machine, retry an toàn và đối soát khi chưa rõ kết quả.
 
-```text
-Payment -> VNPay
-Identity -> Email/SMS/CAPTCHA/OAuth
-Ordering -> Inventory
-Procurement -> Inventory
-```
+Event bắt buộc không mất phải được lưu cùng transaction với nghiệp vụ bằng outbox hoặc publication registry bền; áp dụng ngay cả trong một process. Listener hậu commit đơn thuần chỉ thích hợp khi chấp nhận khả năng mất. Consumer lũy đẳng và cơ chế phục hồi là bắt buộc cho event bền. Không thay core stock/coupon operation bằng event hậu commit.
 
-## Lý do / Cơ sở quyết định (Rationale)
+### 2.4 Thực thi ranh giới
 
-### 1. Giúp năng lực nghiệp vụ hiển hiện rõ ràng trong codebase
+Bật ArchUnit và cycle gate từ Foundation; baseline có kiểm soát cho vi phạm legacy, không thêm vi phạm mới. Module chỉ hoàn tất khi ranh giới của nó chạy strict và ngoại lệ tạm đã được gỡ. Có fixture kiểm tra chính rule, cùng integration test cho các bất biến mà bytecode không chứng minh được.
 
-Mục tiêu:
+Spring Modulith có thể bổ sung verification hoặc durable publication khi phù hợp stack, nhưng không bắt buộc chỉ vì tên kiến trúc là modular monolith. Nếu dùng, cấu hình export `*.api` đúng với named interface và phiên bản thực tế. [Modulith fundamentals](https://docs.spring.io/spring-modulith/reference/fundamentals.html).
 
-```text
-catalog/
-ordering/
-payment/
-inventory/
-```
+## 3. Lựa chọn đã cân nhắc
 
-thay vì phải tìm kiếm logic nghiệp vụ rải rác trong các thư mục kỹ thuật toàn cục.
+| Lựa chọn | Lợi ích | Hạn chế và quyết định |
+| --- | --- | --- |
+| Giữ layered monolith toàn cục | Ít thay đổi ngay | Ownership/import dễ lan rộng, khó bảo vệ invariant; không chọn làm mục tiêu |
+| Modular Monolith, Hexagonal chọn lọc | Ranh giới rõ, giữ DB transaction và vận hành đơn giản | Cần CI và discipline để ranh giới có hiệu lực; được chọn |
+| Clean nghiêm ngặt toàn bộ | Cô lập framework đồng đều | Nhiều mapping/abstraction ít giá trị cho CRUD; không bắt buộc |
+| Microservices ngay | Có thể triển khai/scale riêng | Phát sinh nhất quán phân tán và vận hành chưa có yêu cầu chứng minh; ngoài phạm vi |
+| Cho module gọi nhau hai chiều | Viết workflow trước mắt nhanh | Tạo cycle và khó cô lập; không chọn |
+| Event hóa mọi luồng | Tách thời điểm thực thi | Không giữ được atomic checkout nếu thiếu thiết kế khác; không chọn |
 
-### 2. Bảo toàn lợi thế về transaction của Monolith
+## 4. Hệ quả
 
-Các luồng nghiệp vụ đòi hỏi tính nhất quán cao có thể tiếp tục nằm gọn trong cùng một database transaction.
+Phát triển tiếp được với mức đầu tư kiến trúc có giới hạn: tách API đúng ranh giới, gom query đơn giản, không nhân đôi model vô ích. Giá phải trả là mapping snapshot, kiểm kê writer, duy trì gate và xử lý durability/idempotency cho hiệu ứng bên ngoài.
 
-Ví dụ:
+Workflow có nguy cơ thành service tổng hợp quá lớn: hạn chế bằng quy tắc không sở hữu dữ liệu, một luồng phối hợp có trách nhiệm rõ và giữ invariant trong module. Shared có nguy cơ thành kho chứa tùy tiện: primitive xuất ở `shared.api`, adapter/cấu hình nội bộ không thành đường vòng dependency.
 
-```text
-hủy đơn hàng
-    ->
-giải phóng tồn kho
-    ->
-hoàn trả coupon
-    ->
-cập nhật đơn hàng
-```
+Shared DB hỗ trợ transaction nhưng không tự ngăn truy cập bảng trái quyền; cần review SQL và test. Outbox/registry tạo công việc vận hành backlog/retry/replay, nhưng cần thiết khi nghiệp vụ không chấp nhận mất sự kiện. Không tuyên bố exactly-once end-to-end nếu provider không hỗ trợ.
 
-Không cần thiết phải ép buộc áp dụng tính nhất quán sau cùng (eventual consistency) trong giai đoạn di chuyển kiến trúc này.
+## 5. Di chuyển và nghiệm thu
 
-### 3. Giảm bớt sự liên kết ngẫu nhiên (accidental coupling)
+Thực hiện [kế hoạch tăng dần](../04-migration-plan.md), bắt đầu Foundation và pilot Catalog nhỏ; chỉ đóng Catalog khi xong seam liên quan Inventory và foreign association. Tạo các API tối thiểu sớm theo dependency, di chuyển đầy đủ module theo rủi ro và coverage.
 
-Các module phơi bày các contract công khai gọn gàng thay vì để lộ chi tiết nội bộ của repository/entity.
+Giữ REST contract, transaction/lock, pricing/coupon semantics, JWT/MFA/OTP, cache/job và Flyway history. Schema durability/idempotency mới phải có migration mới cùng rollout/rollback tương thích. Không gộp nâng framework hoặc tính năng không liên quan.
 
-### 4. Các nhà cung cấp bên ngoài trở thành adapter dễ dàng thay thế
+Nghiệm thu dựa trên gate kiến trúc strict cho phần đã đóng, test behavior/concurrency/failure phù hợp, `verify` thực sự chạy test cần thiết và không còn writer trái quyền. Bản tài liệu không thay thế các bằng chứng này.
 
-Ví dụ:
+## 6. Khi nào xem xét lại ADR
 
-```text
-PaymentGatewayPort
-    |
-    +-- VNPayAdapter
-    +-- MoMoAdapter trong tương lai
-```
+Xem xét khi có nhu cầu triển khai độc lập, cô lập lỗi, đội ngũ sở hữu độc lập hoặc điểm nghẽn tải được đo rõ mà tối ưu trong monolith không giải quyết hợp lý; hoặc khi workflow cần state lâu dài riêng làm thay đổi ownership. ADR mới phải chỉ ra lợi ích, transaction/data migration, vận hành và rollback, không chỉ tên công nghệ mong muốn.
 
-### 5. Kiến trúc có thể được kiểm chứng tự động
+## 7. Tài liệu liên quan
 
-Sử dụng:
-
-```text
-tài liệu kiến trúc
-+
-ArchUnit
-+
-các bước kiểm tra bắt buộc trên CI
-```
-
-thay vì chỉ trông đợi vào trí nhớ của lập trình viên hoặc AI agent.
-
-## Các phương án thay thế đã xem xét (Alternatives considered)
-
-### A. Giữ nguyên cấu trúc phân tầng toàn cục (package-by-layer)
-
-Ưu điểm:
-- Thay đổi tối thiểu;
-- Quen thuộc.
-
-Nhược điểm:
-- Quyền sở hữu nghiệp vụ không rõ ràng;
-- Dễ phát sinh truy cập repository chéo;
-- Sự phụ thuộc lẫn nhau tăng dần theo quy mô dự án.
-
-**Quyết định:** Bác bỏ việc coi đây là mục tiêu dài hạn.
-
-### B. Áp dụng Clean Architecture toàn diện ở mọi nơi ngay lập tức
-
-Ví dụ các nghi thức bắt buộc:
-
-```text
-DomainEntity
-JpaEntity
-Mapper
-RepositoryPort
-RepositoryAdapter
-```
-
-cho mọi model.
-
-Ưu điểm:
-- Tách biệt framework ở mức tối đa.
-
-Nhược điểm:
-- Chi phí di chuyển cực lớn;
-- Rất nhiều code lặp lại (boilerplate);
-- Khó phân định giữa giá trị thực tế và thủ tục hình thức;
-- Nguy cơ hồi quy (regression) cao ở các luồng giao dịch phức tạp.
-
-**Quyết định:** Bác bỏ chiến lược làm một lần toàn diện (big-bang).
-
-Clean Architecture nghiêm ngặt chỉ được áp dụng có chọn lọc.
-
-### C. Chuyển đổi sang Microservices
-
-Phân tách các module thành các dịch vụ độc lập:
-
-```text
-catalog-service
-order-service
-payment-service
-inventory-service
-```
-
-Ưu điểm tiềm năng:
-- Khả năng triển khai / scale độc lập nếu thực sự phát sinh nhu cầu.
-
-Chi phí tức thời:
-- Phải xử lý lỗi mạng;
-- Xác thực giữa các dịch vụ;
-- Cơ chế thử lại (retry) / tính lũy kế (idempotency);
-- Phân phối tin nhắn/sự kiện;
-- Nhất quán sau cùng (eventual consistency);
-- Distributed tracing (truy vết phân tán);
-- Quá nhiều đơn vị triển khai;
-- Mất đi tính tiện lợi của transaction trên DB chung.
-
-**Quyết định:** Bác bỏ trong giai đoạn hiện tại.
-
-Chỉ xem xét lại khi có lý do đo lường được về quy mô đội ngũ / lưu lượng truy cập / độ tin cậy / nhu cầu triển khai độc lập.
-
-### D. Áp dụng Spring Modulith ngay lập tức
-
-Spring Modulith tương thích tốt với thiết kế mục tiêu và có thể cung cấp thêm:
-- Kiểm tra cấu trúc;
-- Kiểm thử theo module;
-- Sinh tài liệu kiến trúc.
-
-**Quyết định:** Tạm hoãn / là tùy chọn sau này.
-
-Trước mắt bắt đầu với ranh giới package + ArchUnit.
-
-## Hệ quả (Consequences)
-
-### Tích cực
-
-- Quyền sở hữu miền nghiệp vụ rõ ràng hơn;
-- Giảm thiểu sự liên kết ngẫu nhiên;
-- Dễ dàng tiếp cận dự án cho người mới (onboarding);
-- An toàn hơn khi sử dụng AI agent để sinh code;
-- Dễ dàng thay thế các nhà cung cấp bên thứ ba;
-- Kiến trúc có thể kiểm thử tự động;
-- Vẫn giữ được sự đơn giản khi triển khai của monolith;
-- Tạo sẵn các đường cắt (seam) thuận lợi nếu cần tách dịch vụ sau này.
-
-### Tiêu cực
-
-- Quá trình di chuyển cần thời gian;
-- Tồn tại cấu trúc lai tạm thời trong giai đoạn chuyển tiếp;
-- Cần khai báo thêm các API/mapper tường minh;
-- Cần duy trì một số class bridge tạm thời;
-- Phải bảo trì thêm các bài test kiến trúc.
-
-## Trạng thái chuyển tiếp được chấp nhận (Accepted transition state)
-
-Trạng thái sau hoàn toàn hợp lệ trong quá trình di chuyển:
-
-```text
-catalog/
-controller/
-service/
-repository/
-model/
-```
-
-đồng thời cùng tồn tại, miễn là:
-- Ranh giới của module đã di chuyển được bảo vệ nghiêm ngặt;
-- Không phát sinh thêm nợ kỹ thuật ở code legacy;
-- Tiếp tục thực hiện các cột mốc di chuyển tiếp theo.
-
-## Phương pháp tiếp cận di chuyển (Migration approach)
-
-```text
-đặc tả hành vi (characterize behavior)
-    ->
-tạo ranh giới công khai (introduce public seam)
-    ->
-điều hướng bên tiêu thụ (redirect consumers)
-    ->
-di chuyển code nội bộ (move internals)
-    ->
-thêm kiểm thử ArchUnit
-    ->
-chạy verify toàn bộ
-```
-
-Trình tự khuyến nghị:
-
-```text
-Foundation (Nền tảng)
-Catalog
-Promotion
-Inventory
-Procurement
-Ordering
-Payment
-Identity
-Notification
-Hardening (Gia cố)
-```
-
-## Tiêu chí nghiệm thu (Acceptance criteria)
-
-- [ ] Tài liệu kiến trúc được commit đầy đủ;
-- [ ] Quy tắc cho Agent (AGENT.md) được commit;
-- [ ] Bổ sung ArchUnit;
-- [ ] CI tự động chạy các bài kiểm thử kiến trúc;
-- [ ] Module Catalog được di chuyển đầu tiên;
-- [ ] Các module khác không truy cập nội bộ Catalog;
-- [ ] Inventory sở hữu hoàn toàn việc thay đổi tồn kho;
-- [ ] Ordering không truy cập repository của Inventory/Promotion;
-- [ ] Payment không truy cập repository của Ordering;
-- [ ] VNPay nằm phía sau port của Payment;
-- [ ] Các REST contract công khai giữ nguyên khả năng tương thích;
-- [ ] Lịch sử Flyway giữ nguyên bất biến;
-- [ ] Lệnh Maven verify chạy pass hoàn toàn.
-
-## Xem xét lại ADR này khi nào (Revisit this ADR when)
-
-Xem xét lại quyết định nếu một hoặc nhiều điều kiện sau xuất hiện:
-- Một module cần triển khai độc lập vì lý do lưu lượng truy cập đo lường được;
-- Một đội ngũ kỹ sư riêng biệt chịu trách nhiệm trọn vẹn một bounded context;
-- Chu kỳ release cần phải tách biệt độc lập;
-- Transaction trên cơ sở dữ liệu chung trở thành điểm nghẽn hiệu năng đo lường được;
-- Ranh giới module đủ ổn định để ước tính chính xác chi phí tách dịch vụ;
-- Yêu cầu về độ tin cậy đòi hỏi sự cô lập lỗi độc lập hoàn toàn.
-
-Tuyệt đối không tách microservices chỉ vì cảm tính rằng codebase đang "lớn dần lên".
+- [Kiến trúc mục tiêu](../01-target-architecture.md)
+- [Ranh giới module](../02-module-boundaries.md)
+- [Quy tắc phụ thuộc](../03-dependency-rules.md)
+- [Kế hoạch di chuyển](../04-migration-plan.md)
+- [ArchUnit](../05-archunit-rules.md)
+- [Ví dụ refactor](../06-examples-refactor.md)

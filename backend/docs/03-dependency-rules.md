@@ -1,329 +1,88 @@
-# Backend Ladux — Quy tắc Phụ thuộc (Dependency Rules)
+# Backend Ladux — Quy tắc phụ thuộc
 
-Các quy tắc dưới đây là ràng buộc kiến trúc bắt buộc, không phải gợi ý về văn phong.
+## 1. Quy tắc nền tảng
 
-## 1. Quy tắc phụ thuộc cốt lõi
+Dependency trong tài liệu này là tham chiếu Java lúc biên dịch: import, kiểu field/method/generic, inheritance, annotation hoặc lời gọi. Nó khác với hướng sự kiện chạy lúc runtime.
 
-Chiều phụ thuộc của mã nguồn phải hướng về chính sách nghiệp vụ (business policy), không hướng về công nghệ bên ngoài.
+- Module khác chỉ được tham chiếu `org.akira.ladux.<module>.api..` nếu được ma trận cho phép.
+- `api` không tham chiếu nội bộ chính module, module khác hoặc kiểu framework/SDK không được duyệt.
+- `domain` không tham chiếu application, infrastructure hoặc module khác. Cho phép JPA annotation có chọn lọc, không cho association entity chéo module.
+- `application` có thể dùng domain, API nội bộ, output port và API module được phép; không phụ thuộc infrastructure.
+- `infrastructure` triển khai port, gọi application/API và ánh xạ domain nội bộ khi cần. Controller không truy cập persistence/domain trực tiếp.
+- `shared` không phụ thuộc nghiệp vụ hoặc workflow. Module nghiệp vụ không phụ thuộc workflow.
 
-Mục tiêu thực tế:
+<a id="2-ma-tran-phu-thuoc"></a>
+## 2. Ma trận phụ thuộc
 
-```text
-web adapter
-    |
-    v
-application
-    |
-    v
-domain
+Đây là nguồn duy nhất cho danh sách dependency chéo module. Mỗi dòng là **module sử dụng → API module được phép dùng**, không phải nghĩa vụ phải tạo đủ dependency.
 
-application --> port abstraction
-infrastructure --> triển khai port
-```
+| Module sử dụng | API module được phép |
+| --- | --- |
+| `identity` | Không có module nghiệp vụ khác |
+| `catalog` | `identity.api` |
+| `inventory` | `catalog.api` |
+| `promotion` | `identity.api` |
+| `ordering` | `catalog.api`, `inventory.api`, `promotion.api`, `identity.api` |
+| `procurement` | `catalog.api`, `inventory.api`, `identity.api` |
+| `payment` | `ordering.api`, `identity.api` |
+| `notification` | `identity.api`, `catalog.api`, `inventory.api`, `promotion.api`, `ordering.api`, `procurement.api`, `payment.api` |
+| `workflow` | API của tám module nghiệp vụ khi luồng cụ thể cần |
+| `shared` | Không có module ứng dụng nào |
 
-## 2. Các phụ thuộc được phép
+Các module được dùng primitive công khai ở `shared.api`; `shared.infrastructure` là nội bộ và không được module khác import; không dùng shared làm đường vòng tới nghiệp vụ. Không thêm `catalog → inventory`, `ordering → payment`, `identity → ordering` hay chiều ngược từ nghiệp vụ về workflow. Nếu cần, dùng workflow hoặc thay đổi ranh giới bằng ADR và kiểm tra lại toàn đồ thị.
 
-Bên trong một module:
+Chỉ application/infrastructure được gọi API module khác. Domain và exported API không được kéo dependency chéo module dù dòng ma trận có cho phép. Điều này tránh một contract trung gian vô tình xuất toàn bộ graph kiểu dữ liệu.
 
-```text
-infrastructure -> application
-infrastructure -> domain
-infrastructure -> api
-application    -> domain
-application    -> port abstractions
-```
+## 3. Contract API và dữ liệu
 
-Giữa các module:
+Export interface/record/value type có tên theo nghiệp vụ; không export entity, repository, persistence context, Spring Data `Page`, servlet, security principal framework hoặc kiểu SDK VNPay. Pagination dùng DTO trung lập. API dùng kiểu của chính `api`, primitive ở `shared.api` hoặc JDK; annotation validation có thể được cho phép tường minh.
 
-```text
-module A -> module B.api
-```
+Kiểm tra cả generic, superclass, annotation và DTO lồng nhau: `List<Product>` vẫn là entity leak. DTO của API A không được chứa `B.api.SomeDto`; A ánh xạ về snapshot của A khi cần xuất dữ liệu. Không đưa DTO REST vào API Java để tiết kiệm một lớp mapping nếu làm contract phụ thuộc web.
 
-## 3. Các phụ thuộc bị cấm
+Contract nên chỉ rõ actor, tiền/currency, đơn vị quantity, operation ID, expected version khi cần, lỗi nghiệp vụ và semantics khi gọi lặp. Internal API vẫn phải kiểm tra dữ liệu và quyền cần thiết; validation chỉ ở controller không đủ.
 
-```text
-domain -X-> infrastructure
-domain -X-> controller/web
-application -X-> triển khai cụ thể của infrastructure
-module A -X-> module B.infrastructure
-module A -X-> module B.repository
-module A -X-> module B JPA entity
-shared -X-> business module
-controller -X-> repository
-```
+ID chéo module là giá trị/scalar. Foreign key DB có thể giữ để bảo toàn tính toàn vẹn nhưng không phải quyền import entity hoặc repository. Dùng batch API/projection để tránh N+1 khi bỏ JPA association; giới hạn kích thước batch và kết quả theo nhu cầu.
 
-## 4. Quy tắc API module công khai
+## 4. Controller và application
 
-Được phép:
+Controller xử lý HTTP binding, validation đầu vào, lấy actor và ánh xạ response; gọi application service cùng module. Controller của luồng phối hợp thuộc workflow và gọi workflow application. Không gọi repository/EntityManager/JDBC trực tiếp hoặc đi tắt vào domain để đổi trạng thái.
 
-```java
-import org.akira.ladux.catalog.api.CatalogVariantQuery;
-```
+Application đặt transaction, kiểm tra quyền nghiệp vụ và gọi port. Không tạo hai interface chỉ để bọc một method đơn giản. `OrderQueries` có thể gom các truy vấn liên quan; command phức tạp nên tách theo invariant/transaction. Khi controller trực tiếp dùng application class ở package khác, class đó phải public.
 
-Bị cấm:
+## 5. Persistence và transaction
 
-```java
-import org.akira.ladux.catalog.infrastructure.persistence.ProductVariantJpaRepository;
-```
+Repository adapter thuộc module sở hữu dữ liệu. Port mà application cần thuộc application; Spring Data repository nội bộ thuộc infrastructure. Không tự thêm một repository port cho mọi bảng khi use case không cần abstraction đó.
 
-Bị cấm:
+Các bước cần nguyên tử phải cùng physical transaction và DB. Không dùng `@Async`, event hậu commit hoặc `REQUIRES_NEW` để gọi reserve/release, redeem/rollback trong transaction cốt lõi. Giữ isolation/lock/rollback thật của baseline và kiểm thử rollback từ module cuối quay về các module trước. [Spring transaction propagation](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/tx-propagation.html).
 
-```java
-import org.akira.ladux.catalog.domain.ProductVariant;
-```
+Không dùng transaction annotation để hứa nguyên tử với Redis hoặc HTTP. Payment/refund remote dùng persisted intent và đối soát; xem [Payment](02-module-boundaries.md#6-payment). Ngoại lệ Inventory ghi cột stock trên bảng biến thể phải tuân thủ đầy đủ [quy tắc writer](02-module-boundaries.md#4-inventory-va-cot-stock-dung-chung), không cho nhập repository Catalog.
 
-khi sử dụng từ module khác.
+Không chỉnh migration Flyway đã áp dụng; thêm versioned migration mới, tương thích rollout/rollback đã xác định. Refactor package mặc định không cần đổi schema. Nếu cần schema cho durability/idempotency, đó là thay đổi có chủ đích với kế hoạch triển khai riêng trong cùng chương trình di chuyển. [Flyway versioned migrations](https://documentation.red-gate.com/flyway/flyway-concepts/migrations/versioned-migrations).
 
-Nếu một module khác cần dữ liệu sản phẩm / biến thể, hãy cung cấp một view bất biến (immutable view).
+## 6. Event: hướng import và độ bền
 
-## 5. Quy tắc Controller
+Event do publisher sở hữu, đặt trong `<publisher>.api.event`. Consumer import kiểu đó nên dependency Java đi **consumer → publisher.api**. Ví dụ `notification → ordering.api`, dù lúc chạy OrderPlaced đi từ Ordering tới Notification. Đổi direct call thành listener không tự loại bỏ cycle.
 
-Trách nhiệm của Controller:
+Event có event ID, aggregate ID/version hoặc khóa thứ tự phù hợp, occurredAt, schema version khi cần và payload snapshot tối thiểu; không chứa entity, lazy proxy hoặc dữ liệu nhạy cảm không cần thiết.
 
-```text
-parse request
-xác thực request
-xác định bối cảnh bảo mật/actor
-gọi use case tầng application
-ánh xạ kết quả sang response
-```
+| Nhu cầu | Cơ chế |
+| --- | --- |
+| Lỗi phải rollback nghiệp vụ đang chạy | API đồng bộ trong cùng transaction |
+| Hiệu ứng sau commit, được phép mất có chủ đích | Listener in-process; ghi rõ chính sách và theo dõi lỗi |
+| Hiệu ứng sau commit, không được mất | Outbox/publication registry bền, lưu cùng transaction gốc, worker/retry và consumer lũy đẳng |
 
-Controller tuyệt đối không được:
-- Gọi trực tiếp JPA repository;
-- Trực tiếp thay đổi trạng thái của entity;
-- Cài đặt chính sách nghiệp vụ;
-- Tự điều phối các transaction phức tạp;
-- Truy cập vào persistence của module khác.
+`AFTER_COMMIT` không tự cung cấp async, retry hoặc durability. Khi listener ghi DB sau commit, phải có transaction mới hoặc worker transaction riêng. Chọn Spring Modulith registry chỉ sau khi xác minh phiên bản Spring Boot/Modulith và cơ chế retry tương thích; không bắt buộc thêm broker hoặc microservice. [Spring events](https://docs.spring.io/spring-framework/reference/data-access/transaction/event.html), [Modulith events](https://docs.spring.io/spring-modulith/reference/events.html).
 
-Ví dụ mục tiêu:
+Consumer phải chịu được duplicate, out-of-order và crash. Dedup với unique constraint cùng transaction áp dụng hiệu ứng; thất bại transaction không được giữ dấu “đã xử lý”. Có retry/backoff, giới hạn, trạng thái lỗi, replay có kiểm soát và theo dõi backlog/tuổi event. Không cam kết exactly-once đối với provider không hỗ trợ.
 
-```java
-@RestController
-@RequiredArgsConstructor
-class AdminRoleController {
+## 7. Ngoại lệ trong giai đoạn chuyển tiếp
 
-    private final RoleQueryUseCase roleQueryUseCase;
+Giữ một registry ngoại lệ trong repository hoặc sử dụng baseline có kiểm soát. Mỗi ngoại lệ ghi source class/member, target class/member hoặc cột SQL cụ thể, lý do, owner, mốc hết hạn/điều kiện gỡ và kiểm thử bảo vệ. Không dùng wildcard cho cả module, không tự bổ sung ngoại lệ khi CI đỏ.
 
-    @GetMapping
-    ResponseEntity<List<RoleResponse>> getAllRoles() {
-        return ResponseEntity.ok(
-                roleQueryUseCase.getRoles()
-                        .stream()
-                        .map(RoleResponse::from)
-                        .toList()
-        );
-    }
-}
-```
+Code mới và phần đã di chuyển không thêm vi phạm. Legacy caller phải qua API của module đã đóng; không coi “chưa migrate” là quyền truy cập internals mãi mãi. Nếu chưa gỡ được association/SQL cũ, ghi trạng thái module là đang chuyển tiếp và giữ exception cụ thể; chưa đánh dấu hoàn thành.
 
-## 6. Quy tắc tầng Application
+Bật kiểm tra cycle từ đầu trên graph thực tế, đóng băng vi phạm hiện hữu nếu cần; không chờ hardening mới kiểm tra. ArchUnit kiểm tra bytecode, không phát hiện đầy đủ SQL/reflection/configuration; bổ sung review và integration test. Xem [các gate](05-archunit-rules.md).
 
-Tầng Application nắm giữ việc điều phối use case và thông thường sẽ là nơi xác định ranh giới transaction.
+## 8. Spring Modulith là lựa chọn bổ sung
 
-Ví dụ:
-
-```java
-@Service
-@RequiredArgsConstructor
-class CancelOrderUseCase {
-
-    private final InventoryOperations inventory;
-    private final PromotionOperations promotion;
-    private final OrderStore orders;
-
-    @Transactional
-    public void execute(Integer orderId, String reason) {
-        ...
-    }
-}
-```
-
-Mã nguồn trong Application nên phụ thuộc vào các output port hoặc API của module, không phụ thuộc vào các lớp triển khai cụ thể của bên thứ ba / hạ tầng.
-
-## 7. Quy tắc Transaction
-
-Backend hiện tại của Ladux chứa nhiều luồng xử lý có tính chất sống còn về tính nhất quán.
-
-Không được thay đổi ngữ nghĩa transaction trong quá trình di chuyển package trừ khi tác vụ đó có mục tiêu thiết kế lại hành vi một cách rõ ràng.
-
-Một transaction hợp lệ trong Modular Monolith có thể đi xuyên qua các API của module logic:
-
-```text
-@Transactional Ordering.cancel(...)
-    |
-    +--> Inventory.release(...)
-    +--> Promotion.rollback(...)
-    +--> cập nhật trạng thái Ordering
-```
-
-Quy tắc:
-1. Use case / application service làm chủ transaction;
-2. Lỗi nghiêm trọng phải được lan truyền (propagate) để rollback;
-3. Lời gọi đồng bộ chéo module có thể tham gia vào cùng một transaction;
-4. Mặc định không thay thế các lời gọi quan trọng bằng event bất đồng bộ;
-5. Bảo toàn các thiết lập propagation hiện có như `MANDATORY` khi nó thể hiện một bất biến thực sự;
-6. Bảo toàn hành vi khóa bi quan (pessimistic lock) / cập nhật nguyên tử (atomic update).
-
-## 8. Quy tắc Event
-
-Không sử dụng event chỉ vì tư tưởng "event giúp giảm coupling".
-
-Nguyên tắc quyết định:
-
-```text
-bất biến quan trọng
-    -> API đồng bộ + transaction
-
-tác vụ phụ không quan trọng
-    -> event
-
-chuyển phát tin cậy qua tiến trình trong tương lai
-    -> transactional outbox
-```
-
-Ví dụ:
-
-```text
-Hủy đơn hàng (Order cancellation)
-├── giải phóng kho      -> đồng bộ
-├── hoàn trả coupon     -> đồng bộ
-└── thông báo khách hàng -> event / sau khi commit
-```
-
-## 9. Quy tắc Persistence
-
-Triển khai Repository thuộc về module sở hữu nó.
-
-Trạng thái mục tiêu bị cấm:
-
-```text
-ordering.application -> ProductRepository
-payment.application -> OrderRepository
-procurement.application -> ProductVariantRepository
-```
-
-Ưu tiên:
-
-```text
-ordering.application -> CatalogVariantQuery
-payment.application -> OrderingPaymentApi
-procurement.application -> CatalogVariantQuery
-```
-
-## 10. Chiến lược về độ thuần khiết của Domain
-
-Không ép buộc "cấm hoàn toàn JPA trong domain" trên toàn bộ repository ngay lập tức.
-
-### Tính module hóa cơ sở — bắt buộc sau khi di chuyển
-
-- Không truy cập repository ngoại lai;
-- Không import infrastructure ngoại lai;
-- Không để lộ JPA entity qua ranh giới module;
-- Không để controller gọi trực tiếp repository;
-- Không có chu trình phụ thuộc vòng;
-- API công khai của module phải tường minh.
-
-### Clean Architecture nghiêm ngặt — áp dụng có chọn lọc
-
-Chỉ áp dụng khi thực sự mang lại giá trị cho:
-
-```text
-Payment
-Ranh giới bảo mật / nhà cung cấp của Identity
-Chính sách vòng đời của Ordering
-Chính sách kho phức tạp của Inventory
-```
-
-Quy tắc nghiêm ngặt tiềm năng:
-
-```text
-domain -X-> Spring
-domain -X-> Jakarta Persistence
-application -X-> concrete adapters
-```
-
-Các tính năng CRUD của Catalog không cần thiết phải nhân bản model domain/JPA chỉ vì mục đích lý thuyết thuần túy.
-
-## 11. REST DTO so với DTO của Module API
-
-Đây là hai mối quan tâm tách biệt nhau.
-
-Cấu trúc gợi ý:
-
-```text
-catalog/api/ProductView.java
-catalog/infrastructure/web/dto/ProductResponse.java
-```
-
-Không để các module khác phụ thuộc vào các REST DTO.
-
-Không sử dụng các web response record làm contract giao tiếp nội bộ giữa các module.
-
-## 12. Quy tắc cho package Shared
-
-Được phép:
-
-```text
-ordering -> shared
-catalog  -> shared
-payment  -> shared
-```
-
-Bị cấm:
-
-```text
-shared -> ordering
-shared -> catalog
-shared -> payment
-```
-
-Một kiểu dữ liệu được hai module cùng sử dụng không tự động biến nó thành "shared".
-
-Nếu kiểu đó mang ngữ nghĩa nghiệp vụ rõ ràng, module sở hữu nó phải phơi bày ra thông qua API của chính module đó.
-
-## 13. Bảng ma trận chéo module
-
-| Bên gọi (Consumer) | Identity | Catalog | Ordering | Payment | Inventory | Procurement | Promotion | Notification |
-|---|---|---|---|---|---|---|---|---|
-| Identity | — | — | — | — | — | — | — | event tùy chọn |
-| Catalog | ID/API tùy chọn | — | — | — | — | — | — | event |
-| Ordering | user/actor ID | API | — | — | API | — | API | EVENT |
-| Payment | user/actor ID | — | API | — | — | — | — | EVENT |
-| Inventory | — | API | — | — | — | — | — | EVENT |
-| Procurement | actor ID | API | — | — | API | — | — | EVENT |
-| Promotion | — | — | — | — | — | — | — | EVENT |
-| Notification | Identity API tùy chọn | payload của event | payload của event | payload của event | payload của event | payload của event | payload của event | — |
-
-Mọi trường hợp ngoại lệ đều phải được ghi lại trong tài liệu ADR.
-
-## 14. Quy tắc Flyway
-
-Các file migration hiện có là lịch sử bất biến.
-
-Tuyệt đối không:
-- Chỉnh sửa file `V*.sql` đã được áp dụng;
-- Đổi tên migration đã được áp dụng;
-- Thay đổi thứ tự migration đã áp dụng;
-- Xóa migration đã áp dụng.
-
-Nếu cần thay đổi schema:
-1. Tạo một file migration mới;
-2. Duy trì khả năng tương thích ngược khi cần thiết;
-3. Chạy kiểm thử migration / tích hợp;
-4. Nêu rõ rủi ro dữ liệu và phương án phục hồi.
-
-Việc tái cấu trúc package không được phép kích hoạt sửa đổi DB migration trừ khi thực sự cần thiết.
-
-## 15. Checklist rà soát
-
-- [ ] Code nằm đúng trong module sở hữu.
-- [ ] Không phát sinh thêm truy cập repository ngoại lai.
-- [ ] Không có API module công khai nào để lộ JPA entity.
-- [ ] Không có controller nào gọi trực tiếp repository.
-- [ ] Không có class application nào phụ thuộc vào triển khai cụ thể của infrastructure.
-- [ ] Không tạo ra phụ thuộc vòng giữa các module.
-- [ ] Ngữ nghĩa transaction được bảo toàn.
-- [ ] Cơ chế locking được bảo toàn.
-- [ ] Contract REST API không bị thay đổi trừ khi có yêu cầu rõ ràng.
-- [ ] Lịch sử Flyway không bị chỉnh sửa.
-- [ ] Các bài kiểm thử kiến trúc (ArchUnit) bao phủ được ranh giới mới.
+ArchUnit là gate kiến trúc cơ sở của kế hoạch này. Nếu dùng thêm Spring Modulith, cấu hình rõ API subpackage như named interface; không giả định mọi `*.api` được export theo convention mặc định của Modulith. Verification cần kiểm tra cycle, truy cập nội bộ và allowed dependencies theo cấu hình thực tế. Không thêm framework thứ hai chỉ để lặp lại gate đã đủ. [Modulith fundamentals](https://docs.spring.io/spring-modulith/reference/fundamentals.html), [verification](https://docs.spring.io/spring-modulith/reference/verification.html).
