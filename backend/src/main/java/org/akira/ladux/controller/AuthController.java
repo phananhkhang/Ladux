@@ -70,12 +70,20 @@ public class AuthController {
     @PostMapping({"/refresh", "/refresh/"})
     public ResponseEntity<Map<String, String>> refresh(HttpServletRequest request) {
         String rawRefresh = readCookie(request, refreshTokenCookieService.refreshCookieName());
-        RefreshToken rotated = refreshTokenService.verifyAndRotate(rawRefresh);
-        User user = rotated.getUser();
+        RefreshToken newRefreshToken = refreshTokenService.verifyAndRotate(rawRefresh);
+        User user = newRefreshToken.getUser();
         String newAccessToken = jwtService.generateAccessToken(user);
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, refreshTokenCookieService.createRefreshCookie(rotated.getToken()).toString())
-                .body(Map.of("message", "Token refreshed successfully", "accessToken", newAccessToken, "tokenType", "Bearer"));
+                .header(HttpHeaders.SET_COOKIE,
+                        refreshTokenCookieService
+                                .createRefreshCookie(newRefreshToken.getTokenHash())
+                                .toString())
+                .body(Map.of("message",
+                        "Token refreshed successfully",
+                        "accessToken",
+                            newAccessToken,
+                        "tokenType",
+                        "Bearer"));
     }
 
     @PostMapping({"/logout", "/logout/"})

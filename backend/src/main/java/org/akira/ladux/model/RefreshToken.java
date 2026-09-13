@@ -38,7 +38,13 @@ public class RefreshToken {
     private Long id;
 
     @Column(nullable = false, unique = true, length = 200)
-    private String token;
+    private String tokenHash;
+
+    private String familyId;
+
+    private Long parentId;
+
+    private Long replaceByTokenId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -52,6 +58,10 @@ public class RefreshToken {
     @Column(nullable = false)
     private boolean revoked = false; // Bị thu hồi?
 
+    private Instant revokedAt; // Thời gian bị thu hồi
+
+    private Instant usedAt; // Thời gian lúc bị sử dụng
+
     @CreationTimestamp // Được tạo thời gian khi insert vào DB
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -59,5 +69,9 @@ public class RefreshToken {
     /** Token con dung duoc khi chua bi thu hoi va chua het han. */
     public boolean isUsable() {
         return !revoked && expiryDate.isAfter(Instant.now());
+    }
+
+    public String getToken() {
+        return tokenHash;
     }
 }
