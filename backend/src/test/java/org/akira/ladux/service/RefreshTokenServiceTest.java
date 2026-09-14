@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import org.akira.ladux.service.impl.RefreshTokenServiceImpl;
+
 class RefreshTokenServiceTest {
 
     private RefreshTokenRepository repository;
@@ -31,7 +33,7 @@ class RefreshTokenServiceTest {
     @BeforeEach
     void setUp() {
         repository = mock(RefreshTokenRepository.class);
-        service = new RefreshTokenService(repository, mock(UserRepository.class));
+        service = new RefreshTokenServiceImpl(repository, mock(UserRepository.class), mock(RefreshTokenSecurityService.class));
         ReflectionTestUtils.setField(service, "refreshExpirationMs", 604_800_000L);
     }
 

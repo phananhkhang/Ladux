@@ -7,9 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseCookie;
 
+import org.akira.ladux.service.impl.RefreshTokenCookieServiceImpl;
+
 class RefreshTokenCookieServiceTest {
 
-    private final RefreshTokenCookieService service = new RefreshTokenCookieService(
+    private final RefreshTokenCookieService service = new RefreshTokenCookieServiceImpl(
             "REFRESH_TOKEN",
             "ADMIN_REFRESH_TOKEN",
             "/api/v1/auth",
