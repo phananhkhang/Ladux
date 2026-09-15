@@ -2,6 +2,7 @@ package org.akira.ladux.service.impl;
 
 import java.math.BigDecimal;
 
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.akira.ladux.dto.order.response.OrderResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
@@ -9,7 +10,6 @@ import org.akira.ladux.model.Coupon;
 import org.akira.ladux.model.Order;
 import org.akira.ladux.model.OrderHistory;
 import org.akira.ladux.model.OrderItem;
-import org.akira.ladux.model.ProductVariant;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.enums.OrderStatus;
 import org.akira.ladux.model.enums.StockMovementType;

@@ -1,7 +1,7 @@
 package org.akira.ladux.service.user;
 
-import org.akira.ladux.model.Product;
-import org.akira.ladux.model.ProductVariant;
+import org.akira.ladux.catalog.domain.model.Product;
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.akira.ladux.repository.ProductRepository;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;

@@ -2,11 +2,11 @@ package org.akira.ladux.service.impl;
 
 import java.util.List;
 
+import org.akira.ladux.catalog.domain.model.Product;
 import org.akira.ladux.dto.inventory.request.ProductSupplierRequest;
 import org.akira.ladux.dto.inventory.response.ProductSupplierResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
-import org.akira.ladux.model.Product;
 import org.akira.ladux.model.ProductSupplier;
 import org.akira.ladux.model.Supplier;
 import org.akira.ladux.repository.ProductRepository;

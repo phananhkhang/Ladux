@@ -1,10 +1,11 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
+
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.akira.ladux.dto.internal.LineDraft;
 import org.akira.ladux.dto.internal.OrderLineRequest;
 import org.akira.ladux.exception.ResourceNotFoundException;
-import org.akira.ladux.model.ProductVariant;
 import org.akira.ladux.repository.ProductVariantRepository;
 import org.akira.ladux.service.InventoryService;
 import org.akira.ladux.service.PricingService;

@@ -2,6 +2,8 @@ package org.akira.ladux.model;
 
 import java.math.BigDecimal;
 
+import org.akira.ladux.catalog.domain.model.ProductVariant;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

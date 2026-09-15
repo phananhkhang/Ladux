@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.akira.ladux.AbstractIntegrationTest;
-import org.akira.ladux.model.Product;
+import org.akira.ladux.catalog.domain.model.Product;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

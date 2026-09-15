@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import org.akira.ladux.AbstractIntegrationTest;
+import org.akira.ladux.catalog.domain.model.Product;
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.akira.ladux.dto.order.request.OrderRequest;
 import org.akira.ladux.dto.order.request.OrderStatusUpdateRequest;
 import org.akira.ladux.dto.order.request.ShippingAddressRequest;
@@ -16,8 +18,6 @@ import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.model.Cart;
 import org.akira.ladux.model.CartItem;
 import org.akira.ladux.model.Order;
-import org.akira.ladux.model.Product;
-import org.akira.ladux.model.ProductVariant;
 import org.akira.ladux.model.enums.OrderStatus;
 import org.akira.ladux.model.enums.PaymentProvider;
 import org.akira.ladux.repository.BrandRepository;

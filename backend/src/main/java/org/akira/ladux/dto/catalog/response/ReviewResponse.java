@@ -3,7 +3,7 @@ package org.akira.ladux.dto.catalog.response;
 import java.io.Serializable;
 import java.time.Instant;
 
-import org.akira.ladux.model.Review;
+import org.akira.ladux.catalog.domain.model.Review;
 
 public record ReviewResponse(
         Integer id,

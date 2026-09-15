@@ -2,11 +2,12 @@ package org.akira.ladux.service.impl;
 
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import org.akira.ladux.catalog.domain.model.Color;
+import org.akira.ladux.catalog.domain.model.Product;
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.akira.ladux.dto.catalog.response.ProductVariantResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;
-import org.akira.ladux.model.Color;
-import org.akira.ladux.model.Product;
-import org.akira.ladux.model.ProductVariant;
 import org.akira.ladux.repository.*;
 import org.akira.ladux.service.ProductVariantService;
 import org.akira.ladux.utils.SkuUtils;
@@ -23,6 +24,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     private final ProductVariantRepository productVariantRepository;
     private final ColorRepository colorRepository;
     private final CartItemRepository cartItemRepository;
+    private final OrderItemRepository orderItemRepository;
 
     // Dành cho Admin
     @Override
@@ -92,7 +94,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         ProductVariant productVariantExisting = productVariantRepository.findById(variantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ProductVariant với id: " + variantId));
         // KIểm tra xem ProductVariant có tồn tại trong OrderItem hay không, nếu có thì không được xóa
-        if (!productVariantExisting.getOrderItems().isEmpty()) {
+        if (orderItemRepository.existsByProductVariantId(variantId)) {
             productVariantExisting.setActive(false);
             productVariantExisting.setStockQuantity(0);
             productVariantRepository.save(productVariantExisting);

@@ -1,10 +1,10 @@
 package org.akira.ladux.service.impl;
 
+import org.akira.ladux.catalog.domain.model.Category;
 import org.akira.ladux.dto.catalog.request.CategoryRequest;
 import org.akira.ladux.dto.catalog.response.CategoryResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
-import org.akira.ladux.model.Category;
 import org.akira.ladux.repository.CategoryRepository;
 import org.akira.ladux.repository.ProductRepository;
 import org.akira.ladux.service.CategoryService;

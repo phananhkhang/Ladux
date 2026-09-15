@@ -2,6 +2,8 @@ package org.akira.ladux.model;
 
 import java.math.BigDecimal;
 
+import org.akira.ladux.catalog.domain.model.Product;
+
 import jakarta.persistence.*;
 import lombok.*;
 

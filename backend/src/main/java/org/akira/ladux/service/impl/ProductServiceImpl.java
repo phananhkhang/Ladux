@@ -1,6 +1,13 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
+
+import org.akira.ladux.catalog.domain.model.Brand;
+import org.akira.ladux.catalog.domain.model.Category;
+import org.akira.ladux.catalog.domain.model.Color;
+import org.akira.ladux.catalog.domain.model.Product;
+import org.akira.ladux.catalog.domain.model.ProductImage;
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.akira.ladux.dto.catalog.request.ProductRequest;
 import org.akira.ladux.dto.catalog.request.ProductVariantRequest;
 import org.akira.ladux.dto.catalog.response.ProductResponse;

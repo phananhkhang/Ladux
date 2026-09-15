@@ -1,9 +1,9 @@
 package org.akira.ladux.dto.user.response;
 
-import org.akira.ladux.model.Wishlist;
 import java.io.Serializable;
 import java.time.Instant;
 
+import org.akira.ladux.catalog.domain.model.Wishlist;
 import org.akira.ladux.dto.catalog.response.ProductResponse;
 public record WishlistResponse(
         Integer id,

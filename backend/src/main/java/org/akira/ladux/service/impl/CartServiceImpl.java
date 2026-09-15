@@ -1,6 +1,8 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
+
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.akira.ladux.dto.order.response.CartResponse;
 import org.akira.ladux.model.*;
 import org.akira.ladux.repository.CartRepository;

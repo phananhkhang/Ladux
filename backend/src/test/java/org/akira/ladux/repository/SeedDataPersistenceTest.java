@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.akira.ladux.AbstractIntegrationTest;
-import org.akira.ladux.model.Product;
+import org.akira.ladux.catalog.domain.model.Product;
 import org.junit.jupiter.api.Test;
 import org.akira.ladux.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;

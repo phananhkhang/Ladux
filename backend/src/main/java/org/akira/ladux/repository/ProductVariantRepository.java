@@ -2,7 +2,8 @@ package org.akira.ladux.repository;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import org.akira.ladux.model.ProductVariant;
+
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;

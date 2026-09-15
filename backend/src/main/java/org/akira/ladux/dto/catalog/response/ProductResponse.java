@@ -1,7 +1,8 @@
 package org.akira.ladux.dto.catalog.response;
 
+import org.akira.ladux.catalog.domain.model.Product;
 import org.akira.ladux.dto.catalog.response.BrandResponse;
-import org.akira.ladux.model.Product;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;

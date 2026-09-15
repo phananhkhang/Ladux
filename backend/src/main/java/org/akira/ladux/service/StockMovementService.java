@@ -2,11 +2,11 @@ package org.akira.ladux.service;
 
 import org.akira.ladux.dto.inventory.request.StockMovementRequest;
 import org.akira.ladux.dto.inventory.response.StockMovementResponse;
-import org.akira.ladux.model.ProductVariant;
 import org.akira.ladux.model.StockMovement;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.enums.StockMovementType;
 import org.akira.ladux.model.enums.StockReferenceType;
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.akira.ladux.dto.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 

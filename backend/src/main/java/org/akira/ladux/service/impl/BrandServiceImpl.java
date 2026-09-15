@@ -1,11 +1,12 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
+
+import org.akira.ladux.catalog.domain.model.Brand;
 import org.akira.ladux.dto.catalog.request.BrandRequest;
 import org.akira.ladux.dto.catalog.response.BrandResponse;
 import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;
-import org.akira.ladux.model.Brand;
 import org.akira.ladux.repository.BrandRepository;
 import org.akira.ladux.service.BrandService;
 import org.akira.ladux.utils.SlugUtils;

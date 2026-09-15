@@ -2,11 +2,11 @@ package org.akira.ladux.service.impl;
 
 import org.akira.ladux.dto.inventory.request.StockMovementRequest;
 import org.akira.ladux.dto.inventory.response.StockMovementResponse;
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.InsufficientStockException;
 import org.akira.ladux.exception.ResourceNotFoundException;
-import org.akira.ladux.model.ProductVariant;
 import org.akira.ladux.model.StockMovement;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.enums.StockMovementType;

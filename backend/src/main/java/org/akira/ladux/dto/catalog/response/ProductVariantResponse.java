@@ -1,9 +1,9 @@
 package org.akira.ladux.dto.catalog.response;
 
-import org.akira.ladux.model.ProductVariant;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
+
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 
 public record ProductVariantResponse(
     Integer id,

@@ -1,5 +1,7 @@
 package org.akira.ladux.model;
 
+import org.akira.ladux.catalog.domain.model.ProductVariant;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.*;

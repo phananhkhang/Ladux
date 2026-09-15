@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
+    boolean existsByProductVariantId(Integer productVariantId);
+
     @EntityGraph(attributePaths = {"order", "product"})
     @Override
     Page<OrderItem> findAll(Pageable pageable);

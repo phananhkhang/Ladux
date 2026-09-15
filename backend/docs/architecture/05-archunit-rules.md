@@ -23,7 +23,7 @@ Khai báo `archunit.version` bằng phiên bản tương thích đã xác nhận
 
 ## 3. Mẫu gate ranh giới
 
-Đặt test ở `src/test/java/org/akira/ladux/architecture/ArchitectureRulesTest.java`. Ma trận trong code phải khớp [quy tắc phụ thuộc](03-dependency-rules.md#2-ma-tran-phu-thuoc); mọi thay đổi phải cập nhật cả hai cùng PR.
+Đặt test ở `src/test/java/org/akira/ladux/architecture/ArchitectureRuleTest.java`. Ma trận trong code phải khớp [quy tắc phụ thuộc](03-dependency-rules.md#2-ma-tran-phu-thuoc); mọi thay đổi phải cập nhật cả hai cùng PR.
 
 Mẫu dùng `shared.api` cho primitive xuất ra ngoài; cấu hình/adapter chung ở `shared.infrastructure` không được import trực tiếp từ module khác. Phần `api` chỉ tham chiếu JDK, validation annotation, chính API và primitive shared.
 
@@ -49,20 +49,21 @@ import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.sli
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ArchitectureRulesTest {
+class ArchitectureRuleTest {
     private static final String ROOT = "org.akira.ladux.";
     private static final Map<String, Set<String>> ALLOWED = Map.ofEntries(
         Map.entry("identity", Set.of()),
+        Map.entry("customer", Set.of("identity")),
         Map.entry("catalog", Set.of("identity")),
         Map.entry("inventory", Set.of("catalog")),
-        Map.entry("promotion", Set.of("identity")),
-        Map.entry("ordering", Set.of("catalog", "inventory", "promotion", "identity")),
+        Map.entry("promotion", Set.of("customer")),
+        Map.entry("ordering", Set.of("catalog", "inventory", "promotion", "identity", "customer")),
         Map.entry("procurement", Set.of("catalog", "inventory", "identity")),
         Map.entry("payment", Set.of("ordering", "identity")),
-        Map.entry("notification", Set.of("identity", "catalog", "inventory",
-            "promotion", "ordering", "procurement", "payment")),
-        Map.entry("workflow", Set.of("identity", "catalog", "inventory",
-            "promotion", "ordering", "procurement", "payment", "notification")),
+        Map.entry("notification", Set.of("identity", "ordering", "payment")),
+        Map.entry("assistant", Set.of("catalog")),
+        Map.entry("workflow", Set.of("identity", "customer", "catalog", "inventory",
+            "promotion", "procurement", "ordering", "payment", "notification")),
         Map.entry("shared", Set.of())
     );
     private static final JavaClasses MAIN = new ClassFileImporter()
@@ -254,8 +255,8 @@ Baseline chỉ bảo vệ “không thêm vi phạm”; nó chưa chứng minh m
 
 Đây là các test có ý nghĩa vì gate sai có thể cho phép phá ranh giới lâu dài. Dùng fixture ngoài package production được import, kiểm tra `rule.evaluate(fixture).hasViolation()` theo kỳ vọng.
 
-- Hợp lệ: Ordering application → Inventory API; Payment → Ordering API; workflow → Ordering/Payment API; Catalog domain dùng JPA theo chính sách.
-- Vi phạm: Ordering → Payment API; Catalog → Inventory API; Identity listener import Ordering event; shared → nghiệp vụ.
+- Hợp lệ: Customer → Identity API; Promotion → Customer API; Ordering application → Catalog/Inventory/Promotion/Identity/Customer API; Assistant → Catalog API; Payment → Ordering/Identity API; workflow → Ordering/Payment API; Catalog domain dùng JPA theo chính sách.
+- Vi phạm: Promotion → Identity API trực tiếp (phải qua Customer API theo ma trận); Ordering → Payment API; Catalog → Inventory API; Identity listener import Ordering event (ngược chiều event/dependency); shared → nghiệp vụ; nghiệp vụ → workflow; Assistant → repository/internal Catalog.
 - Vi phạm: API trả `List<Entity>`/array/nested DTO chứa entity; API tham chiếu SDK hoặc Spring Data Page; domain gọi application.
 - Vi phạm: controller gọi repository đổi tên, hoặc repository đặt sai package; legacy caller vào Catalog internal.
 - Vi phạm: thêm dependency cycle; import rỗng hoặc module mong đợi không có class.

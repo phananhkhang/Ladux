@@ -2,7 +2,8 @@ package org.akira.ladux.repository;
 
 import io.micrometer.observation.ObservationFilter;
 import jakarta.persistence.LockModeType;
-import org.akira.ladux.model.Review;
+
+import org.akira.ladux.catalog.domain.model.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;

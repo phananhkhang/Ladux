@@ -1,6 +1,6 @@
 package org.akira.ladux.repository;
 
-import org.akira.ladux.model.Color;
+import org.akira.ladux.catalog.domain.model.Color;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ColorRepository extends JpaRepository<Color, Integer> {

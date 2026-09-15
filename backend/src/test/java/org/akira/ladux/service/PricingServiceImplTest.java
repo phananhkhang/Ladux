@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 
-import org.akira.ladux.model.ProductVariant;
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.akira.ladux.service.impl.PricingServiceImpl;
 import org.junit.jupiter.api.Test;
 

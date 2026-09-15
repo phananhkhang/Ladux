@@ -2,7 +2,8 @@ package org.akira.ladux.repository;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import org.akira.ladux.model.Brand;
+
+import org.akira.ladux.catalog.domain.model.Brand;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

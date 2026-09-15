@@ -1,7 +1,7 @@
 package org.akira.ladux.service.impl;
 
-import org.akira.ladux.model.Product;
-import org.akira.ladux.model.ProductVariant;
+import org.akira.ladux.catalog.domain.model.Product;
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.akira.ladux.service.PricingService;
 import org.springframework.stereotype.Service;
 

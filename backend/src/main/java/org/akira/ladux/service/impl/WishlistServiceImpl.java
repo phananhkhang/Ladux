@@ -1,11 +1,12 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
+
+import org.akira.ladux.catalog.domain.model.Product;
+import org.akira.ladux.catalog.domain.model.Wishlist;
 import org.akira.ladux.dto.user.response.WishlistResponse;
 import org.akira.ladux.exception.BusinessRuleException;
-import org.akira.ladux.model.Product;
 import org.akira.ladux.model.User;
-import org.akira.ladux.model.Wishlist;
 import org.akira.ladux.repository.ProductRepository;
 import org.akira.ladux.repository.UserRepository;
 import org.akira.ladux.repository.WishlistRepository;

@@ -1,8 +1,8 @@
 package org.akira.ladux.dto.catalog.response;
 
-import org.akira.ladux.model.Category;
-
 import java.io.Serializable;
+
+import org.akira.ladux.catalog.domain.model.Category;
 
 public record CategoryResponse(
         Integer id,

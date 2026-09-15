@@ -2,10 +2,11 @@ package org.akira.ladux.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.akira.ladux.catalog.domain.model.Color;
 import org.akira.ladux.dto.catalog.request.ColorRequest;
 import org.akira.ladux.dto.catalog.response.ColorResponse;
 import org.akira.ladux.dto.common.PageResponse;
-import org.akira.ladux.model.Color;
 import org.akira.ladux.service.ColorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

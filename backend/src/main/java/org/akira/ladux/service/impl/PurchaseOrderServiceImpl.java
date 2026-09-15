@@ -7,6 +7,7 @@ import org.akira.ladux.dto.inventory.request.AdminPurchaseOrderItemRequest;
 import org.akira.ladux.dto.inventory.request.PurchaseOrderCreateRequest;
 import org.akira.ladux.dto.inventory.request.PurchaseOrderStatusUpdateRequest;
 import org.akira.ladux.dto.inventory.response.PurchaseOrderResponse;
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;

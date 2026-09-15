@@ -3,6 +3,8 @@ package org.akira.ladux.model;
 import java.time.Instant;
 
 import jakarta.persistence.*;
+
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.akira.ladux.model.enums.StockMovementType;
 import org.akira.ladux.model.enums.StockReferenceType;
 import org.hibernate.annotations.CreationTimestamp;

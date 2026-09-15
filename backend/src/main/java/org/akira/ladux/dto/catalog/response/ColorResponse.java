@@ -1,8 +1,8 @@
 package org.akira.ladux.dto.catalog.response;
 
-import org.akira.ladux.model.Color;
-
 import java.io.Serializable;
+
+import org.akira.ladux.catalog.domain.model.Color;
 
 public record ColorResponse(
         Integer id,

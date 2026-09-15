@@ -1,11 +1,12 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
+
+import org.akira.ladux.catalog.domain.model.Product;
+import org.akira.ladux.catalog.domain.model.ProductImage;
 import org.akira.ladux.dto.catalog.response.ProductImageResponse;
 import org.akira.ladux.exception.BusinessRuleException;
 import org.akira.ladux.exception.ResourceNotFoundException;
-import org.akira.ladux.model.Product;
-import org.akira.ladux.model.ProductImage;
 import org.akira.ladux.repository.ProductImageRepository;
 import org.akira.ladux.repository.ProductRepository;
 import org.akira.ladux.service.FileStorageService;

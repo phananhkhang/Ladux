@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.UUID;
   
 import org.akira.ladux.AbstractIntegrationTest;
+import org.akira.ladux.catalog.domain.model.Product;
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.akira.ladux.dto.order.request.OrderRequest;
 import org.akira.ladux.dto.order.request.OrderStatusUpdateRequest;
 import org.akira.ladux.dto.inventory.request.PurchaseOrderCreateRequest;
@@ -18,8 +20,6 @@ import org.akira.ladux.dto.inventory.response.PurchaseOrderResponse;
 import org.akira.ladux.model.Cart;
 import org.akira.ladux.model.CartItem;
 import org.akira.ladux.model.Order;
-import org.akira.ladux.model.Product;
-import org.akira.ladux.model.ProductVariant;
 import org.akira.ladux.model.StockMovement;
 import org.akira.ladux.model.enums.OrderStatus;
 import org.akira.ladux.model.enums.PaymentProvider;

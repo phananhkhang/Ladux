@@ -1,6 +1,6 @@
 package org.akira.ladux.repository;
 
-import org.akira.ladux.model.ProductImage;
+import org.akira.ladux.catalog.domain.model.ProductImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

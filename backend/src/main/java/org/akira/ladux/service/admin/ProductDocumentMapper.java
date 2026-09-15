@@ -1,7 +1,7 @@
 package org.akira.ladux.service.admin;
 
-import org.akira.ladux.model.Product;
-import org.akira.ladux.model.ProductVariant;
+import org.akira.ladux.catalog.domain.model.Product;
+import org.akira.ladux.catalog.domain.model.ProductVariant;
 import org.springframework.ai.document.Document;
 import org.springframework.stereotype.Component;
 

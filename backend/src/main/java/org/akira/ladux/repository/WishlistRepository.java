@@ -2,7 +2,7 @@ package org.akira.ladux.repository;
 
 import java.util.List;
 
-import org.akira.ladux.model.Wishlist;
+import org.akira.ladux.catalog.domain.model.Wishlist;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 

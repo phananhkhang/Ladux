@@ -16,17 +16,23 @@ Dependency trong tài liệu này là tham chiếu Java lúc biên dịch: impor
 
 Đây là nguồn duy nhất cho danh sách dependency chéo module. Mỗi dòng là **module sử dụng → API module được phép dùng**, không phải nghĩa vụ phải tạo đủ dependency.
 
+Global rule:
+All modules may depend on shared.api.
+No module may depend on shared.infrastructure.
+
 | Module sử dụng | API module được phép |
 | --- | --- |
 | `identity` | Không có module nghiệp vụ khác |
+| `customer` | `identity.api` |
 | `catalog` | `identity.api` |
 | `inventory` | `catalog.api` |
-| `promotion` | `identity.api` |
-| `ordering` | `catalog.api`, `inventory.api`, `promotion.api`, `identity.api` |
+| `promotion` | `customer.api` |
+| `ordering` | `catalog.api`, `inventory.api`, `promotion.api`, `identity.api`, `customer.api` |
 | `procurement` | `catalog.api`, `inventory.api`, `identity.api` |
 | `payment` | `ordering.api`, `identity.api` |
-| `notification` | `identity.api`, `catalog.api`, `inventory.api`, `promotion.api`, `ordering.api`, `procurement.api`, `payment.api` |
-| `workflow` | API của tám module nghiệp vụ khi luồng cụ thể cần |
+| `notification` | `identity.api`, `ordering.api`, `payment.api`|
+| `assistant` | `catalog.api`|
+| `workflow` | API của chín module nghiệp vụ khi luồng cụ thể cần |
 | `shared` | Không có module ứng dụng nào |
 
 Các module được dùng primitive công khai ở `shared.api`; `shared.infrastructure` là nội bộ và không được module khác import; không dùng shared làm đường vòng tới nghiệp vụ. Không thêm `catalog → inventory`, `ordering → payment`, `identity → ordering` hay chiều ngược từ nghiệp vụ về workflow. Nếu cần, dùng workflow hoặc thay đổi ranh giới bằng ADR và kiểm tra lại toàn đồ thị.

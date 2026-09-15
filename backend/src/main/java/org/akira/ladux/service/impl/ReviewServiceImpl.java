@@ -1,12 +1,13 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
+
+import org.akira.ladux.catalog.domain.model.Product;
+import org.akira.ladux.catalog.domain.model.Review;
 import org.akira.ladux.dto.catalog.request.ReviewCreateRequest;
 import org.akira.ladux.dto.catalog.request.ReviewUpdateRequest;
 import org.akira.ladux.dto.catalog.response.ReviewResponse;
 import org.akira.ladux.dto.common.PageResponse;
-import org.akira.ladux.model.Product;
-import org.akira.ladux.model.Review;
 import org.akira.ladux.model.User;
 import org.akira.ladux.model.enums.OrderStatus;
 import org.akira.ladux.repository.OrderRepository;

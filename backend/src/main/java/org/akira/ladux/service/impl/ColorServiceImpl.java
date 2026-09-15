@@ -1,11 +1,12 @@
 package org.akira.ladux.service.impl;
 
 import lombok.RequiredArgsConstructor;
+
+import org.akira.ladux.catalog.domain.model.Color;
 import org.akira.ladux.dto.catalog.request.ColorRequest;
 import org.akira.ladux.dto.catalog.response.ColorResponse;
 import org.akira.ladux.dto.common.PageResponse;
 import org.akira.ladux.exception.ResourceNotFoundException;
-import org.akira.ladux.model.Color;
 import org.akira.ladux.repository.ColorRepository;
 import org.akira.ladux.repository.ProductVariantRepository;
 import org.akira.ladux.service.ColorService;
